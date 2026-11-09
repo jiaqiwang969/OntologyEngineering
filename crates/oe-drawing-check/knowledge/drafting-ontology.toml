@@ -97,7 +97,7 @@ md:dxfLayer a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "DXF 图
 md:colourIndex a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:label "颜色索引（自身颜色，否则随层）"@zh .
 md:layerColourIndex a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:label "所在图层的颜色索引"@zh .
 md:overshootPaperMm a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "中心线一端超出图形边缘的长度（纸面毫米）"@zh ;
-    rdfs:comment "同一表达内共线的中心线段按整条量：与可见轮廓线或断裂边界线（局部视图、局部放大图的边缘）的所有交点中，最外侧交点到该端的距离；两端各一个值，记在到达该端的那一段上；不与图形边缘相交时无值；按图幅比例换成纸面毫米，比例未知时无值。"@zh .
+    rdfs:comment "同一表达内共线的中心线段按整条量：与可见轮廓线或断裂边界线（局部视图、局部放大图的边缘）的所有交点中，最外侧交点到该端的距离；两端各一个值，记在到达该端的那一段上；圆弧与圆只在其圆心落在该中心线上（在线的范围内）时才算该中心线所属图形的边缘，如螺孔的圆之于螺孔的径向中心线，中心线顺带到达的别的圆（法兰外圆）不算；不与图形边缘相交时无值；按图幅比例换成纸面毫米，比例未知时无值。"@zh .
 md:extensionBeyondPaperMm a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "尺寸界线超出尺寸线的长度（纸面毫米）"@zh ;
     rdfs:comment "同一表达内共线的尺寸界线段按整条量：越过所遇最外侧尺寸线之后的长度；原生尺寸把越过部分画成单独一段时取该段长度；尺寸界线未到本尺寸的尺寸线时为负；按图幅比例换成纸面毫米，比例未知时无值。"@zh .
 md:angleToDimensionLineDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "尺寸界线与本尺寸尺寸线的夹角，度，[0,90]"@zh .
@@ -107,7 +107,7 @@ md:extentPaperMm a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "�
 # ---- 对象属性：由通用几何谓词计算的关系
 md:crossedBy a owl:ObjectProperty ; rdfs:domain [ owl:unionOf ( md:Text md:Line ) ] ; rdfs:range md:Line ;
     rdfs:label "被图线穿过"@zh ;
-    rdfs:comment "文字：一条图线穿过文字框内部，框内弦长不小于 0.3 倍字高。图线：另一条图线与它在两者内部相交，不在端点。"@zh .
+    rdfs:comment "文字：一条图线穿过文字框内部，框内弦长不小于 0.3 倍字高；本注释指引线上与文字平行的一段（台肩）承托文字，文字写在其上、其下或上下各一行，不算穿过本注释。图线：另一条图线与它在两者内部相交，不在端点。"@zh .
 md:coincidentWith a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "与图线重合"@zh ;
     rdfs:comment "两条直线段方向相同、距离不超过 0.15 单位且重叠长度不小于 1 单位；曲线与直线：曲线上一半以上采样点落在该直线段上且走向平行。"@zh .

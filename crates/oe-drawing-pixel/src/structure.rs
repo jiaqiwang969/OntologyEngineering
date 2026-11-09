@@ -10,7 +10,8 @@ use crate::geom::{
 };
 use crate::pattern::Dsu;
 use crate::stroke::{Pattern, Primitive, Stroke};
-use crate::vector::{merge_collinear, vectorize};
+use crate::pattern::PatternContext;
+use crate::vector::{merge_collinear, vectorize_in};
 use crate::{Ink, Segment};
 
 /// Thresholds of the structure step, in pixels at 300 dpi.
@@ -30,6 +31,8 @@ pub struct StructureParams {
     pub touch_gap_px: f64,
     /// A dash-dot stroke this close to a proposed centre line (and parallel to it) is that line.
     pub centre_cover_px: f64,
+    /// Page pixels per paper millimetre, for the paper lengths of the line types.
+    pub px_per_mm: f64,
 }
 
 impl Default for StructureParams {
@@ -43,6 +46,26 @@ impl Default for StructureParams {
             explained_gap_px: 150.0,
             touch_gap_px: 8.0,
             centre_cover_px: 12.0,
+            px_per_mm: 300.0 / 25.4,
+        }
+    }
+}
+
+impl StructureParams {
+    /// The thresholds at a page resolution: every length scales with `dpi / 300`, the defaults being lengths at
+    /// 300 dpi (3 mm of paper is 35 px there and 71 px at 600 dpi).
+    pub fn at_dpi(dpi: f64) -> Self {
+        let k = if dpi.is_finite() && dpi > 0.0 { dpi / 300.0 } else { 1.0 };
+        let d = Self::default();
+        StructureParams {
+            min_length_px: d.min_length_px * k,
+            merge_offset_px: d.merge_offset_px * k,
+            merge_gap_px: d.merge_gap_px * k,
+            explained_gap_px: d.explained_gap_px * k,
+            touch_gap_px: d.touch_gap_px * k,
+            centre_cover_px: d.centre_cover_px * k,
+            px_per_mm: d.px_per_mm * k,
+            ..d
         }
     }
 }
@@ -222,18 +245,23 @@ pub fn vectorise_remainder(
     centre_lines: &[(P, P)],
     params: &StructureParams,
 ) -> (Vec<Classified>, f64, usize) {
-    let mut strokes = vectorize(rest, params.min_length_px);
+    // Patterns are read with the original page beside the remainder: a gap the page inks is a crossing that was
+    // erased, not a dash gap.
+    let mut strokes = vectorize_in(rest, params.min_length_px, &PatternContext { px_per_mm: params.px_per_mm, original: Some(page) });
     let before = strokes.len();
     strokes.retain(|s| !remnant_of_erased(s, erased));
     let remnants = before - strokes.len();
     let (patterned, plain): (Vec<Stroke>, Vec<Stroke>) = strokes
         .into_iter()
         .partition(|s| matches!(s.pattern, Pattern::Dashed | Pattern::DashDot));
+    // The dashes of one line are merged across their own gaps, which may be longer than the plain merge gap (a
+    // hidden line plotted with a large linetype scale): up to the longest dash gap on paper the pattern inference
+    // allows.
     let merged = merge_collinear(
         patterned,
         params.merge_angle_rad,
         params.merge_offset_px,
-        params.merge_gap_px,
+        params.merge_gap_px.max(crate::pattern::MAX_DASH_GAP_PAPER_MM * params.px_per_mm),
     );
     let mut all: Vec<Stroke> = plain.into_iter().chain(merged).collect();
     for s in &mut all {
@@ -492,5 +520,17 @@ mod tests {
         assert_eq!(groups[0], vec![0, 1, 2]);
         assert_eq!(groups[1], vec![3]);
         assert_eq!(groups[2], vec![4]);
+    }
+
+    #[test]
+    fn thresholds_follow_the_page_resolution() {
+        assert_eq!(StructureParams::at_dpi(300.0), StructureParams::default());
+        let (a, b) = (StructureParams::at_dpi(300.0), StructureParams::at_dpi(600.0));
+        for (x, y) in [(a.min_length_px, b.min_length_px), (a.merge_gap_px, b.merge_gap_px), (a.explained_gap_px, b.explained_gap_px),
+            (a.touch_gap_px, b.touch_gap_px), (a.centre_cover_px, b.centre_cover_px), (a.merge_offset_px, b.merge_offset_px)] {
+            assert!((y - 2.0 * x).abs() < 1e-9, "{x} {y}");
+        }
+        assert_eq!(a.thick_ratio, b.thick_ratio);
+        assert!((b.min_length_px - 3.0 * 600.0 / 25.4).abs() < 1e-9);
     }
 }

@@ -259,7 +259,8 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
         let mut stack: Vec<String> = triples
             .iter()
             .filter(|(p, _)| p.starts_with(SH))
-            .filter_map(|(_, o)| matches!(o, Term::BlankNode(_) | Term::NamedNode(_)).then(|| o.to_string()))
+            .filter(|&(_, o)| matches!(o, Term::BlankNode(_) | Term::NamedNode(_)))
+            .map(|(_, o)| o.to_string())
             .collect();
         let mut seen = BTreeSet::new();
         while let Some(node) = stack.pop() {
@@ -400,6 +401,15 @@ impl Sheet {
 const HATCH_ANGLE_DEG: f64 = 3.0;
 const HATCH_SPACING_RATIO: f64 = 1.3;
 
+/// Sampled chains of a curve record and the arcs (centre, radius) among them.
+type Chains = (Vec<Vec<P>>, Vec<(P, f64)>);
+/// One chain of a structural line and the arc it lies on, if any.
+type Chain = (Vec<P>, Vec<(P, f64)>);
+/// A text record's main box, its stack box, its plain text and its rotation in degrees.
+type TextBoxes = (TextBox, Option<TextBox>, String, f64);
+/// Findings by fact layer.
+pub type LayerFindings = BTreeMap<String, Vec<MdDraftingFinding>>;
+
 /// Geometry of one drawing object: straight pieces (chains of points), the arcs among them and, for text, boxes.
 #[derive(Debug, Clone, Default)]
 struct Geometry {
@@ -425,6 +435,11 @@ impl TextBox {
         let (c, s) = (self.rotation_rad.cos(), self.rotation_rad.sin());
         let (dx, dy) = (p.0 - self.origin.0, p.1 - self.origin.1);
         (dx * c + dy * s, -dx * s + dy * c)
+    }
+    /// A straight segment parallel to the text (within about 3°).
+    fn is_parallel(&self, a: P, b: P) -> bool {
+        let (p0, p1) = (self.local(a), self.local(b));
+        (p1.1 - p0.1).abs() <= 0.05 * dist(a, b).max(1e-9)
     }
     /// A straight segment parallel to the text that runs along the bottom band of the box.
     fn is_shelf(&self, a: P, b: P) -> bool {
@@ -508,7 +523,7 @@ fn segment_intersection(a: P, b: P, c: P, d: P) -> Option<P> {
     let t = (qp.0 * s.1 - qp.1 * s.0) / denominator;
     let u = (qp.0 * r.1 - qp.1 * r.0) / denominator;
     let inside = |x: f64| (-1e-9..=1. + 1e-9).contains(&x);
-    (inside(t) && inside(u)).then(|| (a.0 + t * r.0, a.1 + t * r.1))
+    (inside(t) && inside(u)).then_some((a.0 + t * r.0, a.1 + t * r.1))
 }
 /// Two curves cross when some pieces intersect at a point away from the ends of both curves: a corner shared by
 /// two outlines and a line ending on another are not crossings; a line through a vertex of a polyline is.
@@ -740,7 +755,7 @@ impl<'a> Dxf<'a> {
     }
 
     /// Straight chains of a curve record, in drawing coordinates plus an offset, and the arcs among them.
-    fn chains(&self, r: &dxf::Record, offset: P) -> Result<(Vec<Vec<P>>, Vec<(P, f64)>)> {
+    fn chains(&self, r: &dxf::Record, offset: P) -> Result<Chains> {
         let pt = |x: i64, y: i64| -> Result<P> { Ok((r.float(x)? + offset.0, r.float(y)? + offset.1)) };
         let mut arcs = Vec::new();
         let chains = match r.kind.as_str() {
@@ -841,7 +856,7 @@ impl<'a> Dxf<'a> {
     }
 
     /// Text boxes of a TEXT, MTEXT or ATTRIB record (main text and stacked part); the cleaned text and rotation.
-    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<(TextBox, Option<TextBox>, String, f64)>> {
+    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<TextBoxes>> {
         let height = match r.float(40) {
             Ok(h) if h > 0. => h,
             _ => return Ok(None),
@@ -1915,7 +1930,7 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
 /// with the arc's centre and radius when it is one.
 /// Chain of a structural line: an arc or circle `[cx, cy, r, start, sweep]` (radians, counter-clockwise, the
 /// contract's carrier) sampled from start through start + sweep, else its two points.
-fn structural_chain(v: &Value) -> Result<(Vec<P>, Vec<(P, f64)>)> {
+fn structural_chain(v: &Value) -> Result<Chain> {
     if let Some(arc) = v.get("arc").and_then(Value::as_array)
         && arc.len() == 5
     {
@@ -2036,9 +2051,14 @@ fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
             {
                 continue;
             }
+            // The shelf of the note's own leader — a segment parallel to its text — carries the text written above it,
+            // below it or both (a thread size above, its depth below, read as one box on a page): not a crossing. The
+            // leader's other segments still cross the text they pass through.
+            let own_leader = objects[li].is("LeaderLine") && objects[li].expression_id.is_some() && objects[li].expression_id == t.expression_id;
             let crossed = objects[li].geometry.chains.iter().any(|chain| {
                 chain
                     .windows(2)
+                    .filter(|w| !(own_leader && tb.is_parallel(w[0], w[1])))
                     .map(|w| t.boxes().map(|b| b.chord(w[0], w[1])).sum::<f64>())
                     .sum::<f64>()
                     >= threshold
@@ -2215,6 +2235,17 @@ fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
             {
                 continue;
             }
+            // An arc or circle is an edge of the centre line's figure only when it is centred on the centre line within
+            // its extent (a hole's circles for the hole's centre line); a circle of another feature the line happens to
+            // reach (a flange circle beyond a bolt hole's radial centre line) is not.
+            if !o.geometry.arcs.is_empty()
+                && !o.geometry.arcs.iter().any(|(centre, radius)| {
+                    let (d, t) = point_line(*centre, a, b);
+                    d <= RADIAL_EPS.max(0.05 * radius) && (-1e-9..=1. + 1e-9).contains(&t)
+                })
+            {
+                continue;
+            }
             for chain in &o.geometry.chains {
                 for w in chain.windows(2) {
                     if let Some(p) = segment_intersection(a, b, w[0], w[1]) {
@@ -2226,11 +2257,10 @@ fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
         if let (Some(min), Some(max)) = (
             params.iter().copied().reduce(f64::min),
             params.iter().copied().reduce(f64::max),
-        ) {
-            if let (Some(at_a), Some(at_b)) = (sheet.paper(min * length), sheet.paper((1. - max) * length)) {
-                out.push(Relation::number(piece_at(objects, &group, a), "overshootPaperMm", at_a));
-                out.push(Relation::number(piece_at(objects, &group, b), "overshootPaperMm", at_b));
-            }
+        ) && let (Some(at_a), Some(at_b)) = (sheet.paper(min * length), sheet.paper((1. - max) * length))
+        {
+            out.push(Relation::number(piece_at(objects, &group, a), "overshootPaperMm", at_a));
+            out.push(Relation::number(piece_at(objects, &group, b), "overshootPaperMm", at_b));
         }
     }
     // A radial dimension line (all its collinear pieces) passes through the centre of an arc and reaches it. A
@@ -2297,11 +2327,10 @@ fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
             .collect();
         if let (Some(min), Some(max)) = (params.iter().copied().reduce(f64::min), params.iter().copied().reduce(f64::max))
             && max - min > 1e-9
+            && let Some(mm) = sheet.paper((max - min) * length)
         {
-            if let Some(mm) = sheet.paper((max - min) * length) {
-                for &g in &group {
-                    out.push(Relation::number(g, "extentPaperMm", mm));
-                }
+            for &g in &group {
+                out.push(Relation::number(g, "extentPaperMm", mm));
             }
         }
     }
@@ -2844,7 +2873,7 @@ pub fn layer_geometry(graph: &Value, dxf_bytes: Option<&[u8]>, layer: &str) -> R
 
 /// Findings of a graph of either profile and where every rule applied (targets, measured, not applicable), as the
 /// report gives them; no files are written.
-pub fn evaluate_with_application(graph: &Value, dxf_bytes: Option<&[u8]>) -> Result<(BTreeMap<String, Vec<MdDraftingFinding>>, Vec<MdRuleApplication>)> {
+pub fn evaluate_with_application(graph: &Value, dxf_bytes: Option<&[u8]>) -> Result<(LayerFindings, Vec<MdRuleApplication>)> {
     let records = if is_pixel_graph(graph) {
         records_from_pixel_graph(graph)?
     } else {
@@ -2857,7 +2886,7 @@ fn evaluate_records(records: &[dxf::Record], graph: &Value) -> Result<BTreeMap<S
     Ok(evaluate_records_applied(records, graph)?.0)
 }
 
-fn evaluate_records_applied(records: &[dxf::Record], graph: &Value) -> Result<(BTreeMap<String, Vec<MdDraftingFinding>>, Vec<MdRuleApplication>)> {
+fn evaluate_records_applied(records: &[dxf::Record], graph: &Value) -> Result<(LayerFindings, Vec<MdRuleApplication>)> {
     let k = knowledge()?;
     let rules = rules(&k.shapes)?;
     let d = Dxf::new(records)?;

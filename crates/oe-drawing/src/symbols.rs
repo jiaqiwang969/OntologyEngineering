@@ -238,11 +238,14 @@ fn text_font(cx: &Ctx, id: &str) -> String {
         .to_lowercase()
 }
 
+/// Source handles of one symbol group, its kind and its box.
+type SymbolGroup = (Vec<String>, &'static str, [f64; 4]);
+
 /// Characteristic symbols written as text: a Unicode glyph, or a letter of a GD&T font.
 pub(super) fn text_glyphs(
     cx: &Ctx,
     b: &Builder,
-) -> Result<Vec<(Vec<String>, &'static str, [f64; 4])>> {
+) -> Result<Vec<SymbolGroup>> {
     let c = representation::card_ref("gdt_characteristic")?;
     let fonts = values(c, "", "font_file");
     let mut out = Vec::new();
@@ -989,7 +992,7 @@ pub(super) fn view_arrow_block(s: &dd::Shape) -> Option<String> {
     let reach = representation::param(c, "letter_reach").ok()?;
     let letters: Vec<&(String, P, f64)> =
         s.texts.iter().filter(|t| !t.0.trim().is_empty()).collect();
-    if letters.len() != 1 || s.circles.len() > 0 {
+    if letters.len() != 1 || !s.circles.is_empty() {
         return None;
     }
     let (t, at, h) = letters[0];
@@ -1018,7 +1021,7 @@ pub(super) fn view_arrow_block(s: &dd::Shape) -> Option<String> {
     // the head's apex is the vertex farthest from the shaft's line; it must lie beyond one end
     let tip_at_end = head.iter().any(|v| {
         let (t0, d) = project(*v, a, b);
-        d.abs() < 0.15 * len && (t0 > 0.95 || t0 < 0.05)
+        d.abs() < 0.15 * len && !(0.05..=0.95).contains(&t0)
     });
     let near = seg_dist(*at, a, b) < reach * h.max(1e-6)
         || dist(*at, mid(a, b)) < reach * h.max(1e-6) + 0.5 * len;

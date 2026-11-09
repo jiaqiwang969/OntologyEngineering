@@ -645,8 +645,13 @@ pub(super) fn frame_rectangles(cx: &Ctx, b: &Builder) -> Vec<(Vec<String>, [f64;
     out
 }
 
+/// Source handles of one loose glyph group, its kind and its box.
+type GlyphGroup = (Vec<String>, &'static str, [f64; 4]);
+/// A hatch handle, its pattern angle and its boundary segments.
+type HatchBoundary = (String, f64, Vec<(P, P)>);
+
 /// Characteristic symbols drawn with loose lines and circles inside a frame cell.
-pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, &'static str, [f64; 4])>> {
+pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<GlyphGroup>> {
     let c = card("gdt_frame_symbol")?;
     let inset = param(c, "cell_inset")?;
     let mut cells: Vec<[f64; 4]> = cx
@@ -768,7 +773,7 @@ pub(super) fn special_marks(
     let cosmin = param(c, "direction_cos_min")?;
     let is_mark = |s: &str| {
         let t = s.trim();
-        !t.is_empty() && t.chars().all(|ch| c.markers.iter().any(|m| m.chars().next() == Some(ch)))
+        !t.is_empty() && t.chars().all(|ch| c.markers.iter().any(|m| m.starts_with(ch)))
     };
     // Value texts of dimensions: native text geometry or text members.
     let mut values: Vec<(usize, TextFact)> = Vec::new();
@@ -979,7 +984,7 @@ pub(super) fn section_lines(cx: &Ctx, b: &mut Builder) -> Result<()> {
     let c = card("section_line_region")?;
     let atol = param(c, "angle_tolerance_deg")?;
     let btol = param(c, "boundary_tolerance")? * cx.scale.max(1e-6);
-    let hatches: Vec<(String, f64, Vec<(P, P)>)> = cx
+    let hatches: Vec<HatchBoundary> = cx
         .rec
         .iter()
         .filter(|(_, r)| r.kind == "HATCH" && int(r, 70) == 0)
@@ -1138,13 +1143,11 @@ pub(super) fn visible_edges(cx: &Ctx, b: &mut Builder) -> Result<()> {
         .lines
         .iter()
         .filter(|(h, (p, q))| {
-            !b.used(h)
-                && !cx.structural_style(h)
-                && cx.style.get(*h).is_some_and(|st| matches!(st.pattern, Pattern::Continuous | Pattern::ByBlock))
-                && !(cx.conv.qualified && cx.style.get(*h).is_some_and(|st| matches!(st.layer.as_str(), "08" | "09" | "10" | "11" | "12")))
-                && !tipped(*p)
-                && !tipped(*q)
-                && dist(*p, *q) > 1e-9
+            let st = cx.style.get(*h);
+            let continuous = st.is_some_and(|st| matches!(st.pattern, Pattern::Continuous | Pattern::ByBlock));
+            let annotation_layer = cx.conv.qualified && st.is_some_and(|st| matches!(st.layer.as_str(), "08" | "09" | "10" | "11" | "12"));
+            let free = !(b.used(h) || cx.structural_style(h) || annotation_layer || tipped(*p) || tipped(*q));
+            continuous && free && dist(*p, *q) > 1e-9
         })
         .map(|(h, (p, q))| (h.clone(), *p, *q))
         .collect();

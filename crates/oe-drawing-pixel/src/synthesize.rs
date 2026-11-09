@@ -339,6 +339,17 @@ struct Piece {
     class: &'static str,
 }
 
+/// An outline arc piece in image coordinates, waiting to join the other pieces of its circle.
+struct ArcPiece {
+    member: String,
+    view: String,
+    class: &'static str,
+    c: P,
+    r: f64,
+    start_rad: f64,
+    sweep_rad: f64,
+}
+
 struct Builder<'a> {
     ink: &'a Ink,
     cal: &'a Calibration,
@@ -493,7 +504,7 @@ impl<'a> Builder<'a> {
             callout_counts: BTreeMap::new(),
             shared_uses: BTreeMap::new(),
             width_contrast: Value::Null,
-            view_margin_px: 2.0 * 300.0 / 25.4,
+            view_margin_px: 2.0 * cal.dpi / 25.4,
             unreadable_texts: 0,
             unread_members_omitted: 0,
             shared_members: 0,
@@ -1706,9 +1717,10 @@ impl<'a> Builder<'a> {
             ));
         }
         let technical = self.layout.and_then(|l| l.technical_requirements.as_ref().map(|t| t.0));
-        let min_remnant_px = 2.0 * 300.0 / 25.4;
+        let min_remnant_px = 2.0 * self.cal.dpi / 25.4;
         let mut groups: BTreeMap<(String, &'static str), String> = BTreeMap::new();
         let mut pieces: Vec<Piece> = Vec::new();
+        let mut arc_pieces: Vec<ArcPiece> = Vec::new();
         for (c, view) in classified.iter().zip(&views) {
             if c.stroke.primitive.length() < min_remnant_px {
                 *self.stroke_counts.entry("shorter_than_2mm".into()).or_insert(0) += 1;
@@ -1818,38 +1830,152 @@ impl<'a> Builder<'a> {
                         pieces.push(Piece { entity, member: mid_id, p, q, view, class });
                     }
                     Primitive::Arc { c: centre, r, start_rad, sweep_rad } => {
-                        self.arc_structural_line(&entity, &mid_id, &view, class, kind, centre, r, start_rad, sweep_rad);
+                        arc_pieces.push(ArcPiece { member: mid_id, view, class, c: centre, r, start_rad, sweep_rad });
                     }
                 }
             }
         }
         self.line_structural_lines(pieces, params);
+        self.arc_structural_lines(arc_pieces, params);
+    }
+
+    /// Structural lines of the arc pieces, as the DWG route forms them: pieces on one circle (centre within 2 px or
+    /// 2 % of the radius, radius within 1.5 px or 2 %) of one view and class are one line, joined across a gap that
+    /// touches (within the touch gap) or that the original page inks along the circle (a crossing erased before
+    /// vectorizing). With every gap joined the line is a circle; otherwise each run between open gaps is one arc.
+    fn arc_structural_lines(&mut self, pieces: Vec<ArcPiece>, params: &StructureParams) {
+        use std::f64::consts::TAU;
+        let n = pieces.len();
+        let mut dsu = crate::pattern::Dsu::new(n);
+        for a in 0..n {
+            for b in a + 1..n {
+                let (x, y) = (&pieces[a], &pieces[b]);
+                let r = x.r.max(y.r);
+                if x.view == y.view && x.class == y.class && dist(x.c, y.c) <= 2.0f64.max(0.02 * r) && (x.r - y.r).abs() <= 1.5f64.max(0.02 * r) {
+                    dsu.union(a, b);
+                }
+            }
+        }
+        let mut groups: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+        for k in 0..n {
+            groups.entry(dsu.find(k)).or_default().push(k);
+        }
+        for members in groups.into_values() {
+            let weight = |k: usize| (pieces[k].sweep_rad.abs() * pieces[k].r).max(1e-9);
+            let total: f64 = members.iter().map(|&k| weight(k)).sum();
+            let c = members.iter().fold((0.0, 0.0), |acc, &k| (acc.0 + pieces[k].c.0 * weight(k) / total, acc.1 + pieces[k].c.1 * weight(k) / total));
+            let r = members.iter().map(|&k| pieces[k].r * weight(k) / total).sum::<f64>();
+            // Intervals with y up (the contract's turn), sorted by start.
+            let mut items: Vec<(f64, f64, &str)> = members
+                .iter()
+                .map(|&k| {
+                    let p = &pieces[k];
+                    if p.sweep_rad.abs() >= TAU - 1e-6 {
+                        (0.0, TAU, p.member.as_str())
+                    } else {
+                        let (s, w) = drawing_arc(p.start_rad, p.sweep_rad);
+                        (s, w, p.member.as_str())
+                    }
+                })
+                .collect();
+            items.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.2.cmp(b.2)));
+            let m = items.len();
+            // A gap on the circle from angle a to b (y up) is joined when it touches or the page inks it.
+            let inked = |a: f64, b: f64| -> bool {
+                let span = b - a;
+                if span * r <= params.touch_gap_px {
+                    return true;
+                }
+                let steps = ((span * r) / 2.0).ceil().max(1.0) as usize;
+                let (mut dark, mut all) = (0usize, 0usize);
+                for j in 0..=steps {
+                    let t = a + 1.5 / r + (span - 3.0 / r) * j as f64 / steps as f64;
+                    let (x, y) = (c.0 + r * t.cos(), c.1 - r * t.sin());
+                    all += 1;
+                    if self.ink.has_dark_within(x, y, 1.5) {
+                        dark += 1;
+                    }
+                }
+                dark as f64 >= 0.8 * all as f64
+            };
+            let full = items.iter().any(|i| i.1 >= TAU - 1e-6);
+            // Cyclic gaps after each item: (from, to, joined, angular gap).
+            let mut gaps: Vec<(bool, f64)> = Vec::with_capacity(m);
+            // The coverage reached by the pieces up to each one (pieces may overlap).
+            let mut reach = f64::MIN;
+            let ends: Vec<f64> = items
+                .iter()
+                .map(|it| {
+                    reach = reach.max(it.0 + it.1);
+                    reach
+                })
+                .collect();
+            for k in 0..m {
+                let next = if k + 1 < m { items[k + 1].0 } else { items[0].0 + TAU };
+                let end = ends[k];
+                let g = (next - end).max(0.0);
+                gaps.push((full || g <= 1e-12 || inked(end, next), g));
+            }
+            let cu = self.to_drawing(c);
+            let ru = r / self.s;
+            let class = pieces[members[0]].class;
+            let view = pieces[members[0]].view.clone();
+            let line_type = if class == "visible_outline" { "thick_continuous" } else { "thin_dashed" };
+            let at = |a: f64| (cu.0 + ru * a.cos(), cu.1 + ru * a.sin());
+            let joined = |range: &[usize]| -> Vec<String> {
+                range.iter().filter(|&&k| gaps[k].1 > 1e-12 && gaps[k].1 * r > params.touch_gap_px).map(|&k| format!("joined_gap:{:.5}", gaps[k].1)).collect()
+            };
+            if gaps.iter().all(|g| g.0) {
+                let start = items[0].0;
+                let p = at(start);
+                let mut evidence = vec![format!("pieces:{m}")];
+                evidence.extend(joined(&(0..m).collect::<Vec<_>>()));
+                let state = if evidence.len() > 1 { "candidate" } else { "observed" };
+                self.push_arc_line("circle", vec![p.0, p.1], vec![cu.0, cu.1, ru, start, TAU], items.iter().map(|i| i.2).collect(), evidence, class, line_type, &view, state);
+                continue;
+            }
+            // Runs between open gaps, starting after the first open one.
+            let first_open = gaps.iter().position(|g| !g.0).expect("an open gap");
+            let mut run: Vec<usize> = Vec::new();
+            for step in 1..=m {
+                let k = (first_open + step) % m;
+                run.push(k);
+                if !gaps[k].0 {
+                    let (k0, kl) = (run[0], *run.last().expect("a piece"));
+                    let start = items[k0].0;
+                    let mut end = ends[kl];
+                    while end < start {
+                        end += TAU;
+                    }
+                    let sweep = (end - start).min(TAU);
+                    let (a, b) = (at(start), at(start + sweep));
+                    let mut evidence = vec![format!("pieces:{}", run.len())];
+                    evidence.extend(joined(&run[..run.len() - 1]));
+                    let state = if evidence.len() > 1 { "candidate" } else { "observed" };
+                    self.push_arc_line("arc", vec![a.0, a.1, b.0, b.1], vec![cu.0, cu.1, ru, start, sweep], run.iter().map(|&k| items[k].2).collect(), evidence, class, line_type, &view, state);
+                    run.clear();
+                }
+            }
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn arc_structural_line(&mut self, entity: &str, member: &str, view: &str, class: &str, kind: &str, centre: P, r: f64, start_rad: f64, sweep_rad: f64) {
-        let cu = self.to_drawing(centre);
-        let ru = r / self.s;
-        let full = sweep_rad.abs() >= std::f64::consts::TAU - 1e-6;
-        // A structural arc is written as the graph contract writes arcs (the DWG route's way), which the review page
-        // and the checker read; a circle is [cx, cy, r, start, TAU] with its start point.
-        let (start, sweep) = drawing_arc(start_rad, sweep_rad);
+    fn push_arc_line(&mut self, geometry: &str, points: Vec<f64>, arc: Vec<f64>, members: Vec<&str>, evidence: Vec<String>, class: &str, line_type: &str, view: &str, state: &str) {
         let id = format!("line:{}", self.structural_lines.len());
-        let line_type = if kind == "visible_contour" { "thick_continuous" } else { "thin_dashed" };
-        let at = |a: f64| (cu.0 + ru * a.cos(), cu.1 + ru * a.sin());
-        let (geometry, points, arc) = if full {
-            let p = at(start);
-            ("circle", vec![p.0, p.1], vec![cu.0, cu.1, ru, start, std::f64::consts::TAU])
-        } else {
-            let (a, b) = (at(start), at(start + sweep));
-            ("arc", vec![a.0, a.1, b.0, b.1], vec![cu.0, cu.1, ru, start, sweep])
-        };
         self.structural_lines.push(json!({
-            "arc": arc.iter().map(|x| fin(*x)).collect::<Vec<_>>(), "coincident": [], "evidence_ids": ["pieces:1"], "geometry": geometry, "id": id,
-            "line_class": class, "line_type": line_type, "pieces": [format!("member:{member}")],
-            "points": points.iter().map(|x| fin(*x)).collect::<Vec<_>>(), "state": "observed", "trimmed": [], "unknowns": [], "view_id": view,
+            "arc": arc.iter().map(|x| fin(*x)).collect::<Vec<_>>(), "coincident": [], "evidence_ids": evidence, "geometry": geometry, "id": id,
+            "line_class": class, "line_type": line_type, "pieces": members.iter().map(|m| format!("member:{m}")).collect::<Vec<_>>(),
+            "points": points.iter().map(|x| fin(*x)).collect::<Vec<_>>(), "state": state, "trimmed": [], "unknowns": [], "view_id": view,
         }));
-        let _ = entity;
+    }
+
+    /// One arc piece as its own structural line (a circle when it is full), through the same writer as the joined
+    /// pieces of a circle.
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
+    fn arc_structural_line(&mut self, member: &str, view: &str, class: &'static str, centre: P, r: f64, start_rad: f64, sweep_rad: f64) {
+        let piece = ArcPiece { member: member.to_owned(), view: view.to_owned(), class, c: centre, r, start_rad, sweep_rad };
+        self.arc_structural_lines(vec![piece], &StructureParams::default());
     }
 
     /// The sheet scale as the graph contract's condition: paper millimetres of the nominal sheet per drawing unit. The
@@ -2317,7 +2443,7 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
     b.annotations(&kept);
     b.callouts(&kept);
     b.centre_axes(&kept);
-    b.structure(&StructureParams::default());
+    b.structure(&StructureParams::at_dpi(cal.dpi));
     let (graph, provenance, refined_records, overlay, frame, counts) = b.finish(&page_sha256);
     let entity_kinds = count_by(graph["source"]["entities"].as_array().into_iter().flatten(), "kind");
     let member_roles = count_by(graph["members"].as_array().into_iter().flatten(), "member_role");
@@ -2488,15 +2614,78 @@ mod tests {
     }
 
     #[test]
+    fn pieces_of_one_circle_join_across_crossings_and_stay_open_at_a_true_opening() {
+        use std::f64::consts::TAU;
+        let rad = |deg: f64| deg.to_radians();
+        // A ring of radius 40 about (100, 100), 3 px wide, drawn whole on the page except, on the opened page, a
+        // true opening between image angles 250° and 290°.
+        let (w, h) = (200usize, 200usize);
+        let ring = |open: bool| {
+            let mut m = vec![false; w * h];
+            for y in 0..h {
+                for x in 0..w {
+                    let (dx, dy) = (x as f64 - 100.0, y as f64 - 100.0);
+                    let a = dy.atan2(dx).to_degrees().rem_euclid(360.0);
+                    if ((dx * dx + dy * dy).sqrt() - 40.0).abs() <= 1.5 && !(open && (250.0..=290.0).contains(&a)) {
+                        m[y * w + x] = true;
+                    }
+                }
+            }
+            Ink::from_mask(w, h, m)
+        };
+        let cal = calibration();
+        let piece = |m: &str, c: P, r: f64, from: f64, to: f64| ArcPiece {
+            member: m.into(), view: "view:0".into(), class: "visible_outline", c, r, start_rad: rad(from), sweep_rad: rad(to - from),
+        };
+        // Pieces of the image circle cut where crossings were erased (gaps of 8.6°, about 6 px), centres and radii a
+        // little apart as fitted pieces are.
+        let whole = ring(false);
+        let mut b = Builder::new(&whole, &cal, (w as u32, h as u32), None);
+        b.arc_structural_lines(vec![
+            piece("e:0:m0", (100.0, 100.0), 40.0, 0.0, 90.0),
+            piece("e:0:m1", (100.3, 99.8), 40.2, 98.6, 190.0),
+            piece("e:0:m2", (99.8, 100.1), 39.9, 198.6, 351.4),
+        ], &StructureParams::default());
+        assert_eq!(b.structural_lines.len(), 1, "{:?}", b.structural_lines);
+        assert_eq!(b.structural_lines[0]["geometry"], "circle");
+        assert_eq!(b.structural_lines[0]["pieces"].as_array().unwrap().len(), 3);
+        // On the opened page the gap from 250° to 290° is blank: one arc over everything else.
+        let opened = ring(true);
+        let mut b = Builder::new(&opened, &cal, (w as u32, h as u32), None);
+        b.arc_structural_lines(vec![
+            piece("e:0:m0", (100.0, 100.0), 40.0, 0.0, 90.0),
+            piece("e:0:m1", (100.3, 99.8), 40.2, 98.6, 190.0),
+            piece("e:0:m2", (99.8, 100.1), 39.9, 198.6, 250.0),
+            piece("e:0:m3", (100.0, 100.0), 40.0, 290.0, 351.4),
+        ], &StructureParams::default());
+        assert_eq!(b.structural_lines.len(), 1, "{:?}", b.structural_lines);
+        assert_eq!(b.structural_lines[0]["geometry"], "arc");
+        let a = b.structural_lines[0]["arc"].as_array().unwrap().iter().map(|x| x.as_f64().unwrap()).collect::<Vec<_>>();
+        assert!((a[4] - (TAU - rad(40.0))).abs() < 0.02, "the arc spans all but the 40° opening: {a:?}");
+        assert_eq!(b.structural_lines[0]["pieces"].as_array().unwrap().len(), 4);
+    }
+
+    #[test]
+    fn paper_thresholds_follow_the_calibrated_resolution() {
+        let ink = Ink::from_mask(300, 100, vec![false; 30000]);
+        for dpi in [300.0, 600.0] {
+            let cal = Calibration { dpi, ..calibration() };
+            let b = Builder::new(&ink, &cal, (300, 100), None);
+            assert!((b.view_margin_px - 2.0 * dpi / 25.4).abs() < 1e-9, "{dpi}: {}", b.view_margin_px);
+            assert!((b.arrow_default_px - 4.0 * dpi / 25.4).abs() < 1e-9, "{dpi}: {}", b.arrow_default_px);
+        }
+    }
+
+    #[test]
     fn a_structural_arc_is_written_in_radians_counter_clockwise_as_the_dwg_route_writes_it() {
         use std::f64::consts::{FRAC_PI_2, TAU};
         let ink = Ink::from_mask(300, 100, vec![false; 30000]);
         let cal = calibration();
         let mut b = Builder::new(&ink, &cal, (300, 100), None);
         // A quarter arc on the image (y down) from (60, 50) up to (50, 40), traced either way, and a full circle.
-        b.arc_structural_line("PX-ARC-0000", "expression:0:m0", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, 0.0, -FRAC_PI_2);
-        b.arc_structural_line("PX-ARC-0001", "expression:0:m1", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, -FRAC_PI_2, FRAC_PI_2);
-        b.arc_structural_line("PX-CIRCLE-0000", "expression:0:m2", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, 0.0, TAU);
+        b.arc_structural_line("expression:0:m0", "view:0", "visible_outline", (50.0, 50.0), 10.0, 0.0, -FRAC_PI_2);
+        b.arc_structural_line("expression:0:m1", "view:0", "visible_outline", (50.0, 50.0), 10.0, -FRAC_PI_2, FRAC_PI_2);
+        b.arc_structural_line("expression:0:m2", "view:0", "visible_outline", (50.0, 50.0), 10.0, 0.0, TAU);
         let close = |v: &Value, want: &[f64]| {
             let got: Vec<f64> = v.as_array().expect("numbers").iter().map(|x| x.as_f64().expect("number")).collect();
             assert!(got.len() == want.len() && got.iter().zip(want).all(|(g, w)| (g - w).abs() < 1e-9), "{got:?} vs {want:?}");
@@ -2514,7 +2703,7 @@ mod tests {
         // A start away from zero: the image quarter from (50, 60) round to (40, 50) is, with y up, the
         // counter-clockwise arc from 180° sweeping 90° to 270° — a reader taking the fifth number as
         // an end angle would sample a different arc.
-        b.arc_structural_line("PX-ARC-0002", "expression:0:m3", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, FRAC_PI_2, FRAC_PI_2);
+        b.arc_structural_line("expression:0:m3", "view:0", "visible_outline", (50.0, 50.0), 10.0, FRAC_PI_2, FRAC_PI_2);
         let quarter = &b.structural_lines[3];
         close(&quarter["arc"], &[50.0, 50.0, 10.0, 2.0 * FRAC_PI_2, FRAC_PI_2]);
         close(&quarter["points"], &[40.0, 50.0, 50.0, 40.0]);

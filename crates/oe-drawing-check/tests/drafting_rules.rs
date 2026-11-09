@@ -869,3 +869,48 @@ fn application_counts_are_consistent_and_show_targets_without_a_measure() {
     assert_eq!(source.measured, Some(1), "the far centre line meets no outline: {source:?}");
     assert_eq!(source.findings, 0);
 }
+
+/// G1-021 measures a centre line against its own figure. A bolt hole's radial centre line runs 3 units past the
+/// hole (conforming); a flange circle about the view centre that the line reaches 0.5 units before its end is another
+/// feature's edge and is not measured against; a ring centred on the line within its extent is the line's figure.
+#[test]
+fn a_centre_line_is_measured_from_its_own_figure_not_from_another_circle_it_reaches() {
+    let rule = "G1-021-centre-line-beyond-outline";
+    let build = |flange: bool| {
+        let mut d = Drawing::default();
+        let h = d.circle([50.0, 0.0], 4.0);
+        d.member(&h, "contour_segment", "thick_continuous", "visible_contour", "");
+        let c = d.line([43.0, 0.0], [57.0, 0.0]);
+        d.member(&c, "center_line", "thin_dash_dot", "center_axis", "");
+        if flange {
+            let f = d.circle([0.0, 0.0], 56.5);
+            d.member(&f, "contour_segment", "thick_continuous", "visible_contour", "");
+        }
+        d
+    };
+    assert!(!build(false).rule_ids().contains(rule));
+    assert!(!build(true).rule_ids().contains(rule), "the flange circle is not the hole's figure");
+    let mut d = build(false);
+    let r = d.circle([50.0, 0.0], 6.5);
+    d.member(&r, "contour_segment", "thick_continuous", "visible_contour", "");
+    assert!(d.rule_ids().contains(rule), "a concentric ring 0.5 units short of the line's ends is its figure");
+}
+
+/// G1-028: the shelf of a note's own leader carries its text written above and below it (one box on a page for
+/// "M8" over "攻深22"); it does not cross that text. The inclined part of the leader passing through the text does.
+#[test]
+fn a_leader_shelf_between_its_two_text_lines_does_not_cross_its_own_text() {
+    let rule = "G1-028-leader-not-crossing-text-or-leader";
+    let build = |through: bool| {
+        let mut d = Drawing::default();
+        let e = d.expression("leader", "M8 攻深22");
+        let t = d.text("M8 攻深22", [10.0, 7.0], 7.0, 0.0);
+        d.member_in(&e, &t, "dimension_text", "text");
+        let start = if through { [20.0, 20.0] } else { [0.0, 0.0] };
+        let l = d.polyline(&[start, [10.0, 10.5], [40.0, 10.5]]);
+        d.member_in(&e, &l, "leader_line", "thin_continuous");
+        d
+    };
+    assert!(!build(false).rule_ids().contains(rule), "the shelf carries both lines of its text");
+    assert!(build(true).rule_ids().contains(rule), "the inclined part crossing the text still crosses it");
+}

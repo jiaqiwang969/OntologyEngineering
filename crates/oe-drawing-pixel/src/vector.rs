@@ -48,6 +48,13 @@ const WIDTH_SAMPLES: usize = 64;
 /// `min_length_px` are dropped unless they belong to a `Dashed` or `DashDot` run (dots are short by
 /// nature). Nothing else is filtered: blobs come out as short, wide strokes for the caller to judge.
 pub fn vectorize(ink: &Ink, min_length_px: f64) -> Vec<Stroke> {
+    vectorize_in(ink, min_length_px, &pattern::PatternContext::default())
+}
+
+/// [`vectorize`] with the page resolution and the original page ink for the line patterns: the ink vectorized may
+/// be a remainder with strokes erased from it, and a gap between pieces counts as a dash gap only where the
+/// original page is blank.
+pub fn vectorize_in(ink: &Ink, min_length_px: f64, ctx: &pattern::PatternContext) -> Vec<Stroke> {
     let grid = skeleton::thin(ink);
     let chains = skeleton::trace(&grid);
     let mut strokes = Vec::new();
@@ -76,7 +83,7 @@ pub fn vectorize(ink: &Ink, min_length_px: f64) -> Vec<Stroke> {
             });
         }
     }
-    pattern::assign(&mut strokes);
+    pattern::assign(&mut strokes, ctx);
     let min_len = if min_length_px.is_finite() {
         min_length_px.max(0.0)
     } else {

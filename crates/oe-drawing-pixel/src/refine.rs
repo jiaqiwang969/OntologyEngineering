@@ -314,6 +314,9 @@ pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
     if ons.len() < 3 {
         return Pattern::Unknown;
     }
+    // The first and last runs may be cut short where the line meets another (a hidden line ending on an outline):
+    // with enough runs the pattern is read from the interior ones.
+    let ons: Vec<f64> = if ons.len() >= 5 { ons[1..ons.len() - 1].to_vec() } else { ons };
     let lo = ons.iter().copied().fold(f64::INFINITY, f64::min);
     let hi = ons.iter().copied().fold(0.0, f64::max);
     let shorts = ons.iter().filter(|&&l| l <= lo * 1.8 + 2.0).count();
@@ -1738,6 +1741,20 @@ mod tests {
             notes: vec![],
             bbox: None,
         }
+    }
+
+    #[test]
+    fn a_hidden_line_cut_short_at_its_ends_is_dashed_not_dash_dot() {
+        // The 085 hidden line: a 29 px piece where it leaves an outline, dashes of 78 px every 115 px, an 8 px piece
+        // before the next outline. The short end pieces are cut dashes, not the dots of a centre line.
+        let ink = ink_with(800, 5, |x, y| {
+            let x = x as i64;
+            (1..=3).contains(&y) && ((10..39).contains(&x) || (76..725).contains(&x) && (x - 76) % 115 < 78 || (762..770).contains(&x))
+        });
+        assert_eq!(measure_pattern(&ink, (10.0, 2.0), (769.0, 2.0)), Pattern::Dashed);
+        // A centre line keeps its dots in the interior.
+        let ink = ink_with(800, 5, |x, y| (1..=3).contains(&y) && (10..790).contains(&x) && (x - 10) % 120 < 90 || (1..=3).contains(&y) && (10..790).contains(&x) && (x - 10) % 120 >= 102 && (x - 10) % 120 < 108);
+        assert_eq!(measure_pattern(&ink, (10.0, 2.0), (789.0, 2.0)), Pattern::DashDot);
     }
 
     #[test]

@@ -932,10 +932,13 @@ pub(super) fn series_tables(cx: &Ctx, b: &mut Builder) -> Result<()> {
 
 // ---------------------------------------------------------------- theoretically exact dimensions
 
+/// Source handles of a framed value, its box and its text.
+type TedBox = (Vec<String>, [f64; 4], String);
+
 /// A box around a dimension value (card theoretically_exact_dimension): a line above the value,
 /// two sides going down from its ends, and the bottom — often the shoulder the value stands on —
 /// joining the sides. Returns (box line ids, rectangle, text id) for free values.
-pub(super) fn ted_boxes(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, [f64; 4], String)>> {
+pub(super) fn ted_boxes(cx: &Ctx, b: &Builder) -> Result<Vec<TedBox>> {
     let c = representation::card_ref("theoretically_exact_dimension")?;
     let (omin, omax) = (
         representation::param(c, "top_offset_min")?,

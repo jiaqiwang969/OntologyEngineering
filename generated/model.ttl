@@ -45166,6 +45166,7 @@
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"annotation_scale\"" .
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"none\"" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"page_runs\"" .
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"stroke_widths\"" .
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"title_block_scale_text\"" .
 <urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
@@ -45196,6 +45197,9 @@
 <urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:unit> "Identifiers and quoted source text" .
 <urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"line_patterns.chain\"" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"line_patterns.dashed\"" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"line_patterns.double_chain\"" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"line_width_contrast\"" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"sheet_scale\"" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
@@ -45203,7 +45207,7 @@
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:meaning> "Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit) or line_width_contrast (whether thick and thin lines can be told apart on the page)" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:meaning> "Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit), line_width_contrast (whether thick and thin lines can be told apart on the page) or line_patterns.dashed / line_patterns.chain / line_patterns.double_chain (the elements of one family of discontinuous lines on the page, calibrated from its reliable runs; absent when the page draws no run of the family)" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:name> "id" .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
 <urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
@@ -45235,7 +45239,7 @@
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:meaning> "known: measured or declared and consistent; absent: measured and not there (one line width only); unknown: no source; conflict: sources disagree, the value is the preferred source's" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:meaning> "known: measured or declared and consistent; absent: measured and not there (one line width only; no run of a line family on the page); unknown: no source; conflict: sources disagree (for a line family: fewer than half of its runs agree on the gap), the value is the preferred source's" .
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:name> "state" .
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
 <urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
@@ -45249,7 +45253,7 @@
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:jsonOptional> "true" .
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:meaning> "sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; absent when unknown" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:meaning> "sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; line_patterns: the family's first element in page pixels (dashed: the gap; chain families: the long dash); absent when unknown" .
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:name> "value" .
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
 <urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
@@ -45263,7 +45267,7 @@
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:meaning> "Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels)" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:meaning> "Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels; line patterns: the elements in page pixels, then in nominal paper millimetres when the sheet scale is known, in the order the evidence states)" .
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:name> "values" .
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
 <urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
@@ -45870,7 +45874,7 @@
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:meaning> "Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast in pixel graphs" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:meaning> "Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast and the line patterns in pixel graphs" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:name> "conditions" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpressionGraph> .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
@@ -171760,7 +171764,7 @@
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:sha256 "ca76e7d5903003977094d777cd5b66b020fb6e96e5fd2bbe40537a8e4ed662e1" .
 <urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:path "crates/oe-drawing/knowledge/concepts/G1.toml" .
-<urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:sha256 "9ef2e8dabe9ee2d7f8cef5f5bd39b1b7f14788fc1c48975bd899fc9c8940953f" .
+<urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:sha256 "88413a142cea68ca4747db3b3d6297df9f959e3f5bba9a813928813e71e936ac" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:path "vendor/spareval/src/tuple.rs" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:sha256 "9a145508610766694b7f1689f69ceb7e8e700a303535aa47eadb261054c34452" .
@@ -176839,6 +176843,22 @@ code:1bd609c691ba6dd0420aad430fac614d83b98089554dad07e0ca6731e667c618 sp:test "t
 code:1bd609c691ba6dd0420aad430fac614d83b98089554dad07e0ca6731e667c618 sp:test "test_feature_cannot_reenable_external_runtime_preflight" .
 code:1bd609c691ba6dd0420aad430fac614d83b98089554dad07e0ca6731e667c618 sp:test "test_feature_cannot_reenable_external_runtime_probe" .
 code:1bd609c691ba6dd0420aad430fac614d83b98089554dad07e0ca6731e667c618 sp:test "test_feature_cannot_reenable_external_wheel_build" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "Ok" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "OnceLock::new" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "get" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "parse" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "parse_steps" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "serde_json::from_str" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:calls "std::env::var" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:kind "RustCodeFile" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:path "crates/oe-drawing-pixel/src/linetypes.rs" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:production true .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:publicType "LineSteps" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:publicType "LineTypeBounds" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:sha256 "2ae2a8625167db9fc40998148cc03bd20c63ceac6d0a09ef8a65939ad2626daf" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:test "a_bound_without_a_source_or_one_the_classifier_does_not_read_is_refused" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:test "evaluation_steps_add_one_item_each_and_default_to_the_stage" .
+code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f sp:test "every_line_type_bound_comes_from_the_knowledge_file_with_a_source" .
 code:1c2bace5b135b08707962bdeb5a4f8b187be1e44c1850fb8f6f603fd1fa94d45 sp:calls "AtomicUsize::new" .
 code:1c2bace5b135b08707962bdeb5a4f8b187be1e44c1850fb8f6f603fd1fa94d45 sp:calls "BTreeMap::from" .
 code:1c2bace5b135b08707962bdeb5a4f8b187be1e44c1850fb8f6f603fd1fa94d45 sp:calls "Duration::from_secs" .
@@ -177940,7 +177960,7 @@ code:219ffb268e421c6e02308803e128c5699e6d317c787bb2970e0fd1afc589a6e8 sp:test "t
 code:21a8f419cb77b6c7afc13b2b14984d7388b2c3d63e04670a348dc0097d5629e3 sp:kind "RustCodeFile" .
 code:21a8f419cb77b6c7afc13b2b14984d7388b2c3d63e04670a348dc0097d5629e3 sp:path "crates/oe-drawing-pixel/src/lib.rs" .
 code:21a8f419cb77b6c7afc13b2b14984d7388b2c3d63e04670a348dc0097d5629e3 sp:production true .
-code:21a8f419cb77b6c7afc13b2b14984d7388b2c3d63e04670a348dc0097d5629e3 sp:sha256 "d9349066af5975acf61210919fa2216144c864efa350c381b014449aad8f4815" .
+code:21a8f419cb77b6c7afc13b2b14984d7388b2c3d63e04670a348dc0097d5629e3 sp:sha256 "915f4b63fba225c6a9da075b130a724d722b4e773bccf51e4265dc354d1878d3" .
 code:21e99904bb747bafeb36a02a64e4436c93b3435a83cec40697661043f2045cdb sp:kind "RustCodeFile" .
 code:21e99904bb747bafeb36a02a64e4436c93b3435a83cec40697661043f2045cdb sp:module <urn:oev2:design:semantic_litellm_wrapper> .
 code:21e99904bb747bafeb36a02a64e4436c93b3435a83cec40697661043f2045cdb sp:module <urn:oev2:design:semantic_page_content3> .
@@ -184715,20 +184735,31 @@ code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "assign_cocircular" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "assign_collinear" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "at" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "bounds" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "chain_short" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "circle_of" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "classify_run" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "collinear_pair" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "dash_pattern" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "dash_pattern_round3" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "dist" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "dot" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "ends" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "gap_points_full_line" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "gap_points_line" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "line_direction" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "line_ends_in_gap" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "longest" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "median" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "medians" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "mul" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "on_circle" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "perp" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "same_circle" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "short_groups" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "side" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "skip" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "steps" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "sub" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "undirected_angle" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "unit" .
@@ -184737,7 +184768,7 @@ code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:kind "R
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:path "crates/oe-drawing-pixel/src/pattern.rs" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:production true .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:publicType "PatternContext" .
-code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:sha256 "6d8ce92f0d084c9f8b1402809f2c910c088ddf13f34ace3c0ed7281a798ab9e1" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:sha256 "739576cdc8779319897254f7990e1a2fb79034ac2327177f793fc0b17daa196e" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:test "a_dash_is_at_most_a_paper_length" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:test "a_dash_run_is_found_beside_unrelated_pieces_on_the_same_row" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:test "a_line_cut_by_crossings_is_not_dashed" .
@@ -187643,6 +187674,7 @@ code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "oe_drawing_check::browser::check_page" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "oe_drawing_check::drafting::check_rules" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "oe_drawing_check::graph::check" .
+code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "oe_drawing_pixel::structure::pixel_lines" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "oe_drawing_pixel::synthesize_page" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "pixel_synthesize" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:calls "read" .
@@ -187666,7 +187698,7 @@ code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:module 
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:path "crates/oe-cli/src/drawing.rs" .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:production true .
 code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:publicType "DrawingCommand" .
-code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:sha256 "e52b18cf0ca7192c32da006926338f4dbdb9f0f6de26a6326675de7b20dc5a6d" .
+code:5b87766d8dff7a815050aebd482685473060aae7464d66531dfbc15f323e880e sp:sha256 "b5eade77867562e0956d5e3313578e69e54bd9222c7030380e98cc52b8b917ab" .
 code:5b8ec5cbdaaa123806608707ead3dd366750b4d0c93d1e8f430f6e5f71284c2d sp:calls "BTreeSet::new" .
 code:5b8ec5cbdaaa123806608707ead3dd366750b4d0c93d1e8f430f6e5f71284c2d sp:calls "Ok" .
 code:5b8ec5cbdaaa123806608707ead3dd366750b4d0c93d1e8f430f6e5f71284c2d sp:calls "checked_label" .
@@ -202848,6 +202880,7 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "Some" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "StructureParams::at_dpi" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "Value::Array" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "Value::String" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "Vec::new" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "Vec::with_capacity" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "add" .
@@ -202864,7 +202897,10 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "count_by" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::geom::median" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::lines::snap_axis" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::linetypes::steps" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::pattern::Dsu::new" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::refine::measure_runs_texts" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::refine::stroke_pattern" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::structure::merge_cocircular_axes" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "dedupe" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "dist" .
@@ -202874,6 +202910,7 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "expression_identity" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "extension_span" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "f64::from" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "fin" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "find_detail_circle" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "find_title_bar" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "find_view_arrow" .
@@ -202926,7 +202963,7 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:path "c
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:production true .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:publicType "PageInput" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:publicType "SynthesisOutput" .
-code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:sha256 "875823243a7f0a4764bcbc4086f169c41c52fc1fbc58d91695950c1b1a323102" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:sha256 "8230d0e671436687dd00b1c63d7b2164ef11a69aa70eac128fcde0b21e84890f" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "a_reread_goes_to_the_one_unread_text_it_covers_best" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "a_structural_arc_is_written_in_radians_counter_clockwise_as_the_dwg_route_writes_it" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "collinear_pieces_join_across_a_text_and_split_at_a_drafting_gap" .
@@ -203504,10 +203541,12 @@ code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "line_direction" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "line_of" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "median" .
+code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "merge_collinear_groups" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "merge_group" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "mergeable" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "mul" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "normal_at" .
+code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "pattern::Dsu::new" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "pattern::PatternContext::default" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "pattern::assign" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "perp" .
@@ -203522,11 +203561,13 @@ code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "undirected_angle" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "unit" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "vectorize_in" .
+code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "vectorize_pieces" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:calls "wrap_pi" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:kind "RustCodeFile" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:path "crates/oe-drawing-pixel/src/vector.rs" .
 code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:production true .
-code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:sha256 "c4d509384091f4b00af874c229540e64f8e392917207581353e8016ee3aece14" .
+code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:sha256 "1e0a47219ad87c8db0a51604369637c73e976d2f3db038046ac4d5210be996d0" .
+code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c sp:test "short_pieces_of_a_crossed_line_are_rejoined" .
 code:bdc3cd3373ecf3b104cebb33e2d852673fad0c5f249abde3d46e25ba6bf1e3c7 sp:calls "BTreeMap::from" .
 code:bdc3cd3373ecf3b104cebb33e2d852673fad0c5f249abde3d46e25ba6bf1e3c7 sp:calls "Duration::from_millis" .
 code:bdc3cd3373ecf3b104cebb33e2d852673fad0c5f249abde3d46e25ba6bf1e3c7 sp:calls "Instant::now" .
@@ -206135,42 +206176,91 @@ code:d03aa44623ce03f704ae1edcba88fbbf1e922dbf45609e7fa8e984ca77e1ce88 sp:product
 code:d03aa44623ce03f704ae1edcba88fbbf1e922dbf45609e7fa8e984ca77e1ce88 sp:sha256 "a3ade4ee330a9b1029525283635e6719f9426e02ea07e92c89d58426906c505e" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "BTreeMap::new" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Dsu::new" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Ink::from_png" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Ok" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Self::default" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Some" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "StructureParams::at_dpi" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "Vec::new" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "add" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "at" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "beyond" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "blocked" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "bounds" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "calibrate" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "clip_line_to_box" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "covered" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crate::members::erase" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crate::pattern::Dsu::new" .
-code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crate::refine::measure_pattern" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crate::pattern::line_ends_in_gap" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crosses_pair" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "crossing_point" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "dist" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "dist_point_segment" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "dot" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "drawn_ends" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "erase_polygons" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "erased_strokes" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "explained" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "family" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "gap_edge_walled" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "geo" .
-code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "merge_collinear" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "hidden_closure" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "in_view" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "joined" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "junction" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "line_stretches" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "measure_pattern_round3" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "measure_runs_texts" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "median" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "merge_cocircular_axes" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "merge_collinear_groups" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "mul" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "on_one_line" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "orient" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "perp" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "point_in_polygon" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "remeasure_chains" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "remnant_of_erased" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "segment" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "segment_hits_box" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "segments_cross" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "side" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "solid_extent" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "steps" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "stroke_pattern" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "sub" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "two_dash_pairs" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "undirected_angle" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "unit" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "vectorise_remainder" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "vectorize_in" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "vectorize_in_rescued" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "walk" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "wall_at" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:calls "wall_side" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:kind "RustCodeFile" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:path "crates/oe-drawing-pixel/src/structure.rs" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:production true .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "Classified" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "FamilyCalibration" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "LineEvidence" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "LinePatterns" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "StrokeClass" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:publicType "StructureParams" .
-code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:sha256 "eb6a13bd8ddade564536b9bc4494660579fea7124aaa39aabc10faf3fc60001b" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:sha256 "4a318060ed307819212c8cfb21cd16dafa0dada59cb236cf74343184c2102b76" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_crossing_erased_before_vectorizing_does_not_cut_a_dash" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_line_ending_in_a_gap_leaves_it_a_dash_gap_and_walls_at_both_edges_do_not" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_piece_is_short_as_drawn_only_where_its_ink_ends" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_run_whose_gap_disagrees_with_the_page_is_not_of_the_family" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_short_line_across_two_parallel_hidden_lines_is_hidden_and_one_crossing_is_not_enough" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "a_two_dash_line_is_hidden_against_the_page_calibration_and_undecided_without_it" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "an_outline_broken_by_grooves_is_no_two_dash_line" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "chain_lines_read_with_a_dot_or_a_short_dash_and_two_short_elements_are_no_centre_line" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "collinear_pieces_group_across_explained_gaps_only" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "polygons_boxes_and_segments_intersect_as_expected" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "rejoined_pieces_no_rule_takes_are_dropped" .
+code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "the_closure_joins_short_hidden_edges_at_corners_and_stops_at_a_visible_corner" .
 code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 sp:test "thresholds_follow_the_page_resolution" .
 code:d0a341a071e78c5ebb0ed3c0fbe13b5f50820aab40195d0dca8831fca5a50022 sp:calls "BTreeMap::new" .
 code:d0a341a071e78c5ebb0ed3c0fbe13b5f50820aab40195d0dca8831fca5a50022 sp:calls "BTreeSet::new" .
@@ -208450,7 +208540,10 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "claim_tip" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "components" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "crate::geom::fit_circle" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "crate::linetypes::bounds" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "crate::linetypes::steps" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "crate::observe::snap_axis" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "crate::pattern::short_groups" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "cut" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "cv" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "dark_in_box" .
@@ -208466,6 +208559,8 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "gdt_cells" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "histogram" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "idx" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "is_long" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "is_short" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "is_wide" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "lines::dimension_extent" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "lines::robust_width" .
@@ -208474,6 +208569,9 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "long_runs" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_hatch" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_pattern" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_pattern_round3" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_runs" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_runs_texts" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "measure_width" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "median" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "mul" .
@@ -208483,6 +208581,7 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "perp_extent" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "perpendicular" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "place_arrow" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "plain" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "point_in_polygon" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "probe" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "profile" .
@@ -208505,16 +208604,20 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:kind "RustCodeFile" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:path "crates/oe-drawing-pixel/src/refine.rs" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:production true .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "InkRuns" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "LineFamily" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefineParams" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefinedMember" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefinedProposal" .
-code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:sha256 "1ab55fe5bc3090133f7d9327aef5a18a48ce5bac964d1db05a30a21347006240" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:sha256 "42b13b2f92bb4bc575b49be5d65474f46ec64b7aae09b81193d229a2e1a2247a" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "a_fitted_extension_line_stops_at_the_gap_before_a_collinear_contour" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "a_hidden_line_cut_short_at_its_ends_is_dashed_not_dash_dot" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "an_extension_line_stops_at_the_outline_it_touches_but_passes_a_crossing" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "an_extension_span_runs_from_the_crossing_to_the_first_junction" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "arrowhead_base_is_measured_and_the_line_is_cut_back_to_it" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "arrowhead_is_read_from_its_taper_whatever_the_proposed_sense_and_through_a_continuing_line" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "chain_lines_are_read_from_short_elements_between_long_dashes" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "glyph_ink_in_an_observed_text_and_crossing_lines_are_no_elements_of_the_line" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "hatch_angle_and_spacing_are_measured_on_the_ink" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "patterns_are_read_from_ink_runs" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "text_boxes_keep_glyphs_and_drop_crossing_strokes" .
@@ -220400,6 +220503,9 @@ function:2ba09ba215a60894399c6bae686f34a0d1bf229ef611353fba237d49e4ac07f8 sp:nam
 function:2ba32d73f16acf596baf42a783409f686a7935fcf499b581c7f3e73e5edbd5fa sp:file code:363267f77e1ae2295cacdacb627b77b38e378449000518d57efc6df82c0f2e11 .
 function:2ba32d73f16acf596baf42a783409f686a7935fcf499b581c7f3e73e5edbd5fa sp:kind "RustFunction" .
 function:2ba32d73f16acf596baf42a783409f686a7935fcf499b581c7f3e73e5edbd5fa sp:name "syntax" .
+function:2bc36b6b843bf811e593f90fe3657560dde45a2303b8417a029c8ecea7be26d5 sp:file code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f .
+function:2bc36b6b843bf811e593f90fe3657560dde45a2303b8417a029c8ecea7be26d5 sp:kind "RustFunction" .
+function:2bc36b6b843bf811e593f90fe3657560dde45a2303b8417a029c8ecea7be26d5 sp:name "parse_steps" .
 function:2bc55fb2ba27d8398786c917a4de027965d0f88eafcbba45e400a75c35ba8f98 sp:executes <urn:oev2:design:semantic_source_literal_bound_bridge> .
 function:2bc55fb2ba27d8398786c917a4de027965d0f88eafcbba45e400a75c35ba8f98 sp:file code:7c8d6d44724fec9b7da36400137392b16215733700f0bb239ad69e6366b481f2 .
 function:2bc55fb2ba27d8398786c917a4de027965d0f88eafcbba45e400a75c35ba8f98 sp:kind "RustFunction" .
@@ -221112,6 +221218,9 @@ function:3036f689ff953f1d1e4c31fa80281513760200a39d21ea51ce516f9716263593 sp:nam
 function:3037c92923d10d695b28770cfad2f50de3e5c63428afe433dc6bc9645e47ed8c sp:file code:d5911eb97fcaeb0cc3ff4c631dbec25643a83dc2ff3382d225f805ed999f7e29 .
 function:3037c92923d10d695b28770cfad2f50de3e5c63428afe433dc6bc9645e47ed8c sp:kind "RustFunction" .
 function:3037c92923d10d695b28770cfad2f50de3e5c63428afe433dc6bc9645e47ed8c sp:name "root" .
+function:3039f344069d30da5b4345673b067ea9382fd23b599dfc64baf728644677f0dd sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:3039f344069d30da5b4345673b067ea9382fd23b599dfc64baf728644677f0dd sp:kind "RustFunction" .
+function:3039f344069d30da5b4345673b067ea9382fd23b599dfc64baf728644677f0dd sp:name "remeasure_chains" .
 function:303e59d43a6b57a7712a31c29e0d505cc94baecaf6ef6ec58509c79fc1dcfa53 sp:file code:123e11e331988d091bad845d26e268f903b6c96cb7ae0214a9ca132093157fde .
 function:303e59d43a6b57a7712a31c29e0d505cc94baecaf6ef6ec58509c79fc1dcfa53 sp:kind "RustFunction" .
 function:303e59d43a6b57a7712a31c29e0d505cc94baecaf6ef6ec58509c79fc1dcfa53 sp:name "prepare_with_constructor" .
@@ -221240,6 +221349,9 @@ function:30f930f2a67f1d3fe0d29d5dcc90bb6a03c35b66ed8f5176538acd154b6dfd2d sp:nam
 function:30fbb4103d902d2b0126fd8a29138c842f4e31519e799a86c5d70eaaa959b358 sp:file code:c2a6780c16f12f83560c88a563c24f0a02b51244e15ed2755966a732431affd4 .
 function:30fbb4103d902d2b0126fd8a29138c842f4e31519e799a86c5d70eaaa959b358 sp:kind "RustFunction" .
 function:30fbb4103d902d2b0126fd8a29138c842f4e31519e799a86c5d70eaaa959b358 sp:name "headers" .
+function:31060493d673b178b38d39406b9a11067a1bdd175cbe2639940c9ff84cb5718b sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:31060493d673b178b38d39406b9a11067a1bdd175cbe2639940c9ff84cb5718b sp:kind "RustFunction" .
+function:31060493d673b178b38d39406b9a11067a1bdd175cbe2639940c9ff84cb5718b sp:name "matches" .
 function:31074888f25f5078f7d8f50335d77fa8172bcd0b54943d4ffaf142ea4a3f6305 sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
 function:31074888f25f5078f7d8f50335d77fa8172bcd0b54943d4ffaf142ea4a3f6305 sp:kind "RustFunction" .
 function:31074888f25f5078f7d8f50335d77fa8172bcd0b54943d4ffaf142ea4a3f6305 sp:name "exploded_frames" .
@@ -221289,6 +221401,9 @@ function:31491f305cf4ba62a129bc383d61c5e4f0a9301e2cf3b1ce2ae5497388cb5d95 sp:nam
 function:314ad8ff16dc99b12ad41e2f48fbd046722737455cbeb625537fdff028203737 sp:file code:8864b6a0575ae14d4d9aaa1c36a6d2ca2e23a26b9e7a7037c50946e152d9171f .
 function:314ad8ff16dc99b12ad41e2f48fbd046722737455cbeb625537fdff028203737 sp:kind "RustFunction" .
 function:314ad8ff16dc99b12ad41e2f48fbd046722737455cbeb625537fdff028203737 sp:name "text_limit" .
+function:314ae8ab4dc5253ccd4756dafa75d570b39660d6e8aa216e38696b1a5b058ec7 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:314ae8ab4dc5253ccd4756dafa75d570b39660d6e8aa216e38696b1a5b058ec7 sp:kind "RustFunction" .
+function:314ae8ab4dc5253ccd4756dafa75d570b39660d6e8aa216e38696b1a5b058ec7 sp:name "gap_edge_walled" .
 function:314bce43e14410ad18e5b81ac0012ed0ee9ac02f7c83365311ac379ed853fd20 sp:file code:67c921ae806cd962f395375f43a69997bc0764f00fc55b769e1954c3a36508f4 .
 function:314bce43e14410ad18e5b81ac0012ed0ee9ac02f7c83365311ac379ed853fd20 sp:kind "RustFunction" .
 function:314bce43e14410ad18e5b81ac0012ed0ee9ac02f7c83365311ac379ed853fd20 sp:name "fmt" .
@@ -221644,6 +221759,9 @@ function:337522bdaf3e324f746f744bb1cf169648badea8a76083d6c3a57d377d8a5e30 sp:nam
 function:3376f3dc1373ab0f0729b6f41cfe97722269665da3b47adcc3a3852eff603944 sp:file code:61d162a64bdb6c560c009cf3b121c53875f18ccb606710251d3b37150bae354f .
 function:3376f3dc1373ab0f0729b6f41cfe97722269665da3b47adcc3a3852eff603944 sp:kind "RustFunction" .
 function:3376f3dc1373ab0f0729b6f41cfe97722269665da3b47adcc3a3852eff603944 sp:name "remaining" .
+function:337726b783ad612c179c3412470fc15380b6ae23c79f804646d2d034bff37583 sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:337726b783ad612c179c3412470fc15380b6ae23c79f804646d2d034bff37583 sp:kind "RustFunction" .
+function:337726b783ad612c179c3412470fc15380b6ae23c79f804646d2d034bff37583 sp:name "gap_points_full_line" .
 function:3381c5b0a5ac298536f715413e0a28b932205baa87faa33ad187038db1dfedfa sp:file code:36841a5c2b963bde2b970caef5dd11ce2387bf3e5e92e8d2d80b3f3b7476342b .
 function:3381c5b0a5ac298536f715413e0a28b932205baa87faa33ad187038db1dfedfa sp:kind "RustFunction" .
 function:3381c5b0a5ac298536f715413e0a28b932205baa87faa33ad187038db1dfedfa sp:name "queried_body_capture2" .
@@ -222705,6 +222823,9 @@ function:39dc17bb0a3d30375ba3e17a011cdf8c7e60bdd86ac7e9aab3e4309af1141bfa sp:nam
 function:39ec79341191a9b5b018e3635585a200127b696a4f0d10d6e8359602f96b747a sp:file code:2e1b224dde8b513abeacf378941fd818993273bec07856412f6e9fb8a197b7b8 .
 function:39ec79341191a9b5b018e3635585a200127b696a4f0d10d6e8359602f96b747a sp:kind "RustFunction" .
 function:39ec79341191a9b5b018e3635585a200127b696a4f0d10d6e8359602f96b747a sp:name "contract" .
+function:39f0f1bb046c28bc4f3dd9152f4cae87bdf61800ca74a06eb546c04e2b7624ce sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:39f0f1bb046c28bc4f3dd9152f4cae87bdf61800ca74a06eb546c04e2b7624ce sp:kind "RustFunction" .
+function:39f0f1bb046c28bc4f3dd9152f4cae87bdf61800ca74a06eb546c04e2b7624ce sp:name "hidden_closure" .
 function:39f21c3240e02fb2343769e5a3400e50c853bdb13fc869f094abff7cf32ae8cc sp:file code:af4c44bd031bc3c0e0b9cba5379716bb33071a67296a7fe101d0ad0ac3268634 .
 function:39f21c3240e02fb2343769e5a3400e50c853bdb13fc869f094abff7cf32ae8cc sp:kind "RustFunction" .
 function:39f21c3240e02fb2343769e5a3400e50c853bdb13fc869f094abff7cf32ae8cc sp:name "term" .
@@ -223325,6 +223446,9 @@ function:3e2744985d071601a78f7c89e27249a6ae990650d7446d4b2adcf4b2512573ca sp:nam
 function:3e28e96b4d532365226b3d2472adeb171a7bf2351da414eff1a5af278e6462b9 sp:file code:e64914dc68ccbda8674cbfce5bdb8412c758dab498062e384dc203aa9c55f34f .
 function:3e28e96b4d532365226b3d2472adeb171a7bf2351da414eff1a5af278e6462b9 sp:kind "RustFunction" .
 function:3e28e96b4d532365226b3d2472adeb171a7bf2351da414eff1a5af278e6462b9 sp:name "import_parasolid" .
+function:3e2b145cb96e3780744f1c31d14075c3a7d710e469cbea5c4a03a6eb15576dde sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:3e2b145cb96e3780744f1c31d14075c3a7d710e469cbea5c4a03a6eb15576dde sp:kind "RustFunction" .
+function:3e2b145cb96e3780744f1c31d14075c3a7d710e469cbea5c4a03a6eb15576dde sp:name "joined" .
 function:3e30193cf50ca4bd1c7ac661a4cd08a58cd8a1a16232eea026d19a035b8b4be4 sp:file code:26b7be0b9b64d10679b5543650a8e829065ae71c0d010d6ce74b2d583386ee5e .
 function:3e30193cf50ca4bd1c7ac661a4cd08a58cd8a1a16232eea026d19a035b8b4be4 sp:kind "RustFunction" .
 function:3e30193cf50ca4bd1c7ac661a4cd08a58cd8a1a16232eea026d19a035b8b4be4 sp:name "terminal_kind10" .
@@ -223716,6 +223840,9 @@ function:4093e0f75484ec63349b4c0f239d2424f1e01b995890c1a38b5f2ba2b9b3cd32 sp:nam
 function:40950c0d910de5aa088cc705d7742436a931324861d42420034b2d7cee7341f8 sp:file code:4e0167e50f53c956ca4fcbe0ce14781df47a64da07a580e2a7b4a088967ce69f .
 function:40950c0d910de5aa088cc705d7742436a931324861d42420034b2d7cee7341f8 sp:kind "RustFunction" .
 function:40950c0d910de5aa088cc705d7742436a931324861d42420034b2d7cee7341f8 sp:name "u64le" .
+function:409901e288dd53e175c0e9f3c7005774bc142343d16db77616bc63fc01b5f24d sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:409901e288dd53e175c0e9f3c7005774bc142343d16db77616bc63fc01b5f24d sp:kind "RustFunction" .
+function:409901e288dd53e175c0e9f3c7005774bc142343d16db77616bc63fc01b5f24d sp:name "wall_side" .
 function:409ba5cd3db78edfc54252527aee9ae6c9d21b55fce2b888a26546e24b3ac17f sp:file code:42055aecc26e9025fbe6dea67ac7b2a3b45901b5e02fba7c03edea1a1428428c .
 function:409ba5cd3db78edfc54252527aee9ae6c9d21b55fce2b888a26546e24b3ac17f sp:kind "RustFunction" .
 function:409ba5cd3db78edfc54252527aee9ae6c9d21b55fce2b888a26546e24b3ac17f sp:name "task" .
@@ -224173,6 +224300,9 @@ function:43ac33ff97e052fd54e44ba06671046cc890d178fa31b40526b10071f2bf8037 sp:nam
 function:43ae01afce5d537399e6fa7c5da363d8d20475faddfec82d0fad64a97d1f7a67 sp:file code:c6d22ae19a598f3d5ee253fc723b3f5e28b37eec9bd8da9132d1a037b1bf4eae .
 function:43ae01afce5d537399e6fa7c5da363d8d20475faddfec82d0fad64a97d1f7a67 sp:kind "RustFunction" .
 function:43ae01afce5d537399e6fa7c5da363d8d20475faddfec82d0fad64a97d1f7a67 sp:name "request" .
+function:43ae5f5bdfb1d9591b5ca46bfc82a560fbdfdc3d84a5339fa3ed6cb658e32ada sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:43ae5f5bdfb1d9591b5ca46bfc82a560fbdfdc3d84a5339fa3ed6cb658e32ada sp:kind "RustFunction" .
+function:43ae5f5bdfb1d9591b5ca46bfc82a560fbdfdc3d84a5339fa3ed6cb658e32ada sp:name "dash_pattern_round3" .
 function:43af7ebc7a45b4a3eb5e2c1f091f25e40d72d9ded0d9aff25ba52a48d810a920 sp:file code:720334fabeebd4e50cc538a18de0e1ba9499ca5d2458c844fc8275370e82f8bc .
 function:43af7ebc7a45b4a3eb5e2c1f091f25e40d72d9ded0d9aff25ba52a48d810a920 sp:kind "RustFunction" .
 function:43af7ebc7a45b4a3eb5e2c1f091f25e40d72d9ded0d9aff25ba52a48d810a920 sp:name "create_sync" .
@@ -225551,6 +225681,9 @@ function:4cb7d2253ec4ed93ebac804ead9e2cf6d8853418c82177f126417743990dbc05 sp:nam
 function:4cbabf9dfe6f63c32f3143e329f3cba3cc7b6db5ddcb3e27ba35a1954766c5df sp:file code:83734acc105628863b707339c0ecd06956e685839955a652515502d009e1454f .
 function:4cbabf9dfe6f63c32f3143e329f3cba3cc7b6db5ddcb3e27ba35a1954766c5df sp:kind "RustFunction" .
 function:4cbabf9dfe6f63c32f3143e329f3cba3cc7b6db5ddcb3e27ba35a1954766c5df sp:name "virtual_module" .
+function:4cc93b81a4e079824eb5deac786c24a900e72eb2689ce4c7481c480a51e2c2ad sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:4cc93b81a4e079824eb5deac786c24a900e72eb2689ce4c7481c480a51e2c2ad sp:kind "RustFunction" .
+function:4cc93b81a4e079824eb5deac786c24a900e72eb2689ce4c7481c480a51e2c2ad sp:name "wall_at" .
 function:4ccca0fb4410d8790ae45ebbb8428f5dcf63939c5e1f5b4c6696950fe463cbbe sp:file code:779af4edddb996e2fa826d674af00a97b48efad8b65a71449b02aa99225996df .
 function:4ccca0fb4410d8790ae45ebbb8428f5dcf63939c5e1f5b4c6696950fe463cbbe sp:kind "RustFunction" .
 function:4ccca0fb4410d8790ae45ebbb8428f5dcf63939c5e1f5b4c6696950fe463cbbe sp:name "run_profile" .
@@ -226338,6 +226471,9 @@ function:52371383b6847acc8fb01761e62271b8c5d41ec779a8668cd6121e052149d4bf sp:nam
 function:523dcbefbc6d7a2d6cdfe943d628b89883b59f252ba8c1a5acf8ad1a585991af sp:file code:6fc49a631da823b4e4d1a7e0bcd1402c0ae21a3c1ae347159b82b8679af06bb5 .
 function:523dcbefbc6d7a2d6cdfe943d628b89883b59f252ba8c1a5acf8ad1a585991af sp:kind "RustFunction" .
 function:523dcbefbc6d7a2d6cdfe943d628b89883b59f252ba8c1a5acf8ad1a585991af sp:name "run_current" .
+function:524a6839cd581452fab727e66e48c9f4f759e00643a3cb3e03de2665f27a0333 sp:file code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c .
+function:524a6839cd581452fab727e66e48c9f4f759e00643a3cb3e03de2665f27a0333 sp:kind "RustFunction" .
+function:524a6839cd581452fab727e66e48c9f4f759e00643a3cb3e03de2665f27a0333 sp:name "merge_collinear_groups" .
 function:524f058a9632257edc18a5539ee373dd9ac6e9aca6a23bf9cc4564afe4d25fa6 sp:file code:b15cda758f6ab65254c20f57d5c251958490e9578409c8ef440fda874ec8bbb0 .
 function:524f058a9632257edc18a5539ee373dd9ac6e9aca6a23bf9cc4564afe4d25fa6 sp:kind "RustFunction" .
 function:524f058a9632257edc18a5539ee373dd9ac6e9aca6a23bf9cc4564afe4d25fa6 sp:name "params" .
@@ -226891,6 +227027,9 @@ function:55a9ae2c0cdab856208886caf33f1158095063faae21c5068a30a9305f516657 sp:nam
 function:55af4838396e46b795acd62f84d105e4b058c8f21d5dda38e08d2bfd8ee83055 sp:file code:294197655869eb4ac3f813ab8d9abc901e3b457ec4989334867284aceb543627 .
 function:55af4838396e46b795acd62f84d105e4b058c8f21d5dda38e08d2bfd8ee83055 sp:kind "RustFunction" .
 function:55af4838396e46b795acd62f84d105e4b058c8f21d5dda38e08d2bfd8ee83055 sp:name "drafting_display_part_query" .
+function:55b364aab2e98d9a0c6135b323ae206f39e3a181ac3f0f8987d1425eac6150bd sp:file code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c .
+function:55b364aab2e98d9a0c6135b323ae206f39e3a181ac3f0f8987d1425eac6150bd sp:kind "RustFunction" .
+function:55b364aab2e98d9a0c6135b323ae206f39e3a181ac3f0f8987d1425eac6150bd sp:name "vectorize_pieces" .
 function:55b6d92c54ad743f7ec3d506dc36bb9563b00b347fd7b0244417acacb58e2b3c sp:file code:d9bce57e1042bc6b4297c6ee0177f557ac063475f804abc7348ae7620cbfcd18 .
 function:55b6d92c54ad743f7ec3d506dc36bb9563b00b347fd7b0244417acacb58e2b3c sp:kind "RustFunction" .
 function:55b6d92c54ad743f7ec3d506dc36bb9563b00b347fd7b0244417acacb58e2b3c sp:name "default" .
@@ -229335,6 +229474,9 @@ function:64e446c1b3d5e1968f20c72242988e19c9160828bf798f41eefe074096d02ac2 sp:nam
 function:64e9534e6d27e621f57fe3fbf007e160a8eaa7add20e4cd38723b9f742a50807 sp:file code:38c01c00483c5e5e993ed76afa275d15246d6e8caa6d3ad28dbef944916f6640 .
 function:64e9534e6d27e621f57fe3fbf007e160a8eaa7add20e4cd38723b9f742a50807 sp:kind "RustFunction" .
 function:64e9534e6d27e621f57fe3fbf007e160a8eaa7add20e4cd38723b9f742a50807 sp:name "assert_error_value" .
+function:64e964e4b985ac98a678c9c79783612bf965db2036ece827c9b022bf2d8eba92 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:64e964e4b985ac98a678c9c79783612bf965db2036ece827c9b022bf2d8eba92 sp:kind "RustFunction" .
+function:64e964e4b985ac98a678c9c79783612bf965db2036ece827c9b022bf2d8eba92 sp:name "crossing_point" .
 function:64ee194224b9df33db8dc12e99ffaa89030153c3af707fb3242aa29b2ec34b4e sp:file code:396cd96009c4ca1146727a0ba763abe55d41e7790c3b045d3b22884fbe1bfd4c .
 function:64ee194224b9df33db8dc12e99ffaa89030153c3af707fb3242aa29b2ec34b4e sp:kind "RustFunction" .
 function:64ee194224b9df33db8dc12e99ffaa89030153c3af707fb3242aa29b2ec34b4e sp:name "exact" .
@@ -229511,6 +229653,9 @@ function:667f51e4f0befbd2953185af3892ff918ed900e3257f2f67677bebb10c855542 sp:nam
 function:668093df7300f8126ec22db554aacec344a7702a3a54707b5e399c0764c1ee76 sp:file code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef .
 function:668093df7300f8126ec22db554aacec344a7702a3a54707b5e399c0764c1ee76 sp:kind "RustFunction" .
 function:668093df7300f8126ec22db554aacec344a7702a3a54707b5e399c0764c1ee76 sp:name "unicode_pdf_pages" .
+function:6682c7d9c53a6220a23303dbcce9bf6826deffac6aa195efa1fb5edb256a288e sp:file code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 .
+function:6682c7d9c53a6220a23303dbcce9bf6826deffac6aa195efa1fb5edb256a288e sp:kind "RustFunction" .
+function:6682c7d9c53a6220a23303dbcce9bf6826deffac6aa195efa1fb5edb256a288e sp:name "measure_pattern_round3" .
 function:668725703e1f2fae5aa012ea27cabfc951dea099b18d6820077502082f54ddf5 sp:file code:967ff2aad553aa358ac8e84bc9c7ecdda3b38be79320131e5481202b9673c8ff .
 function:668725703e1f2fae5aa012ea27cabfc951dea099b18d6820077502082f54ddf5 sp:kind "RustFunction" .
 function:668725703e1f2fae5aa012ea27cabfc951dea099b18d6820077502082f54ddf5 sp:name "import_assembly_parameters" .
@@ -229715,6 +229860,9 @@ function:6781150e361d6fb7ef6e211b37bd72be70a13553d6345485a785d68ca53731aa sp:nam
 function:6782b646112b5bd9935b7b4f85423906dc20db0b5f3b723fc91c2586bc7d30cf sp:file code:5043a3973a6b48ad2773696d0f05e6e8d96006cdac27a79e02293cc1e138569d .
 function:6782b646112b5bd9935b7b4f85423906dc20db0b5f3b723fc91c2586bc7d30cf sp:kind "RustFunction" .
 function:6782b646112b5bd9935b7b4f85423906dc20db0b5f3b723fc91c2586bc7d30cf sp:name "new" .
+function:678acb5eb6643c6422bbd43d0bd4f499edf2a0d6bb9f1a6814915bbb3f643a42 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:678acb5eb6643c6422bbd43d0bd4f499edf2a0d6bb9f1a6814915bbb3f643a42 sp:kind "RustFunction" .
+function:678acb5eb6643c6422bbd43d0bd4f499edf2a0d6bb9f1a6814915bbb3f643a42 sp:name "calibrate" .
 function:678b01841197a0ac2569e6e9cd86466599358d23caa02a46a7e65224d33cac34 sp:file code:a2c5e1d0b920764f89832b93795d69d52f09fbf06debba3b2673e316a720c803 .
 function:678b01841197a0ac2569e6e9cd86466599358d23caa02a46a7e65224d33cac34 sp:kind "RustFunction" .
 function:678b01841197a0ac2569e6e9cd86466599358d23caa02a46a7e65224d33cac34 sp:name "passed" .
@@ -229968,6 +230116,9 @@ function:68b5b7250d28176446b1ee39e792ee9d97c10881afc60aea04b0097a517e4c7a sp:nam
 function:68b7429ed3bbe487fd591fe90f63d7e7d6b9bc0b50aa1f6fbd53887160545597 sp:file code:8754618da3080c77da9165f87669a7030b1e948310ee96b5d3f856300bc1d681 .
 function:68b7429ed3bbe487fd591fe90f63d7e7d6b9bc0b50aa1f6fbd53887160545597 sp:kind "RustFunction" .
 function:68b7429ed3bbe487fd591fe90f63d7e7d6b9bc0b50aa1f6fbd53887160545597 sp:name "add_support" .
+function:68c6c44a37f31ecd63ba32cab6c1df5d6253b4f6311de25fee639f23c987cc32 sp:file code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f .
+function:68c6c44a37f31ecd63ba32cab6c1df5d6253b4f6311de25fee639f23c987cc32 sp:kind "RustFunction" .
+function:68c6c44a37f31ecd63ba32cab6c1df5d6253b4f6311de25fee639f23c987cc32 sp:name "parse" .
 function:68c8b27ba457f860abce975a0f1bcb0088a5cd00faf20748899af46fb63c93d0 sp:executes <urn:oev2:design:semantic_temporal_range_entry> .
 function:68c8b27ba457f860abce975a0f1bcb0088a5cd00faf20748899af46fb63c93d0 sp:file code:0ecbe7538453e343e143b49dc2318bb73fcaf7a80d7f53585a8a940c9e8a9991 .
 function:68c8b27ba457f860abce975a0f1bcb0088a5cd00faf20748899af46fb63c93d0 sp:kind "RustFunction" .
@@ -231501,6 +231652,9 @@ function:726ef25f5db03685457d2106877dadf9c3ddf70f8b17b470083b68aaa8e5f5d7 sp:nam
 function:7271ffbe2290080ad07aef99c5bd35231558ba769051cb6dbac94ba739eb2884 sp:file code:68a8dcd9f3bab03057a322b271bce06de781477067970bd3c992ec24581588f0 .
 function:7271ffbe2290080ad07aef99c5bd35231558ba769051cb6dbac94ba739eb2884 sp:kind "RustFunction" .
 function:7271ffbe2290080ad07aef99c5bd35231558ba769051cb6dbac94ba739eb2884 sp:name "directory" .
+function:7274cc481a226939e61537928f3474cee0988b2475a2e19895cb885b198a3f4a sp:file code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f .
+function:7274cc481a226939e61537928f3474cee0988b2475a2e19895cb885b198a3f4a sp:kind "RustFunction" .
+function:7274cc481a226939e61537928f3474cee0988b2475a2e19895cb885b198a3f4a sp:name "steps" .
 function:72760f37d20cc0a3f4086c880e9980efb07da22eaff49e9462ccfe0ecb745e1b sp:file code:db22e4053da4569c5c1405ae1ceedcc1f52e29ed7ef078d1f376f6698f687994 .
 function:72760f37d20cc0a3f4086c880e9980efb07da22eaff49e9462ccfe0ecb745e1b sp:kind "RustFunction" .
 function:72760f37d20cc0a3f4086c880e9980efb07da22eaff49e9462ccfe0ecb745e1b sp:name "recognize_blank_node_label" .
@@ -237156,6 +237310,9 @@ function:97d16584719b5dd9d5a63da110501f66132724c5fd0b19d48194406f1ad6589a sp:nam
 function:97d214d856d62b6807bd3721cce43d2a74ce7a946eb33293ef6ec82fab3f1d7f sp:file code:f6f066781663c868389806092be2a40602626003f1a940da3219c6be1bda350b .
 function:97d214d856d62b6807bd3721cce43d2a74ce7a946eb33293ef6ec82fab3f1d7f sp:kind "RustFunction" .
 function:97d214d856d62b6807bd3721cce43d2a74ce7a946eb33293ef6ec82fab3f1d7f sp:name "visit_lines11" .
+function:97d418f62babfea849d384cf9b557c5e7910711eeabfe3e20e10e4de6d50644c sp:file code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 .
+function:97d418f62babfea849d384cf9b557c5e7910711eeabfe3e20e10e4de6d50644c sp:kind "RustFunction" .
+function:97d418f62babfea849d384cf9b557c5e7910711eeabfe3e20e10e4de6d50644c sp:name "family_name" .
 function:97d77bb73593215c9fc3622f484ec027b6e34c6b61dc7ec61aa035c9f6d4a694 sp:executes <urn:oev2:design:geometry_artifact_binding> .
 function:97d77bb73593215c9fc3622f484ec027b6e34c6b61dc7ec61aa035c9f6d4a694 sp:file code:a2c5e1d0b920764f89832b93795d69d52f09fbf06debba3b2673e316a720c803 .
 function:97d77bb73593215c9fc3622f484ec027b6e34c6b61dc7ec61aa035c9f6d4a694 sp:kind "RustFunction" .
@@ -237179,6 +237336,9 @@ function:97efc9cddc7dcca4870fd8b975bc0e99ad339677e8a9fbdeb6bb8b6e6909987d sp:nam
 function:97f9449b8557d0e81a07fc9688c529055be50011693ebacb2502b1f81a11fe33 sp:file code:17fa66c6673673308157de87940cff6cc98716d6c88ddf80e13ed6caeafd1e5b .
 function:97f9449b8557d0e81a07fc9688c529055be50011693ebacb2502b1f81a11fe33 sp:kind "RustFunction" .
 function:97f9449b8557d0e81a07fc9688c529055be50011693ebacb2502b1f81a11fe33 sp:name "envelope" .
+function:98043b086fca1bde69640f7148a51ab295115802635f2db745e3ad16ffb9c664 sp:file code:1becde0a140b6e799381e77efa4b1dace8637594937f55f2836fd6bdc8c8505f .
+function:98043b086fca1bde69640f7148a51ab295115802635f2db745e3ad16ffb9c664 sp:kind "RustFunction" .
+function:98043b086fca1bde69640f7148a51ab295115802635f2db745e3ad16ffb9c664 sp:name "bounds" .
 function:98075b03cb7fc436bfdab532bb0e26e09345e1c09af9ea322ff28475f8b96878 sp:file code:31bb137c804bdb5523dbd04cbee73c541067210441e883d0a54958c02d42b67d .
 function:98075b03cb7fc436bfdab532bb0e26e09345e1c09af9ea322ff28475f8b96878 sp:kind "RustFunction" .
 function:98075b03cb7fc436bfdab532bb0e26e09345e1c09af9ea322ff28475f8b96878 sp:name "run_source8" .
@@ -238081,6 +238241,9 @@ function:9e2c9a6192d1c6b2701dd759602aebcd6bd3fbf7e14c405f51096a313664ee10 sp:nam
 function:9e2e1eaab9a7acd136eff638ab350e94bbfb93b3614ee1a433f90f3c58d8c8e0 sp:file code:9b8bdff2ef18bfab930fc507e7d39df8e51974452cdd2c5c66a10c355e2a7494 .
 function:9e2e1eaab9a7acd136eff638ab350e94bbfb93b3614ee1a433f90f3c58d8c8e0 sp:kind "RustFunction" .
 function:9e2e1eaab9a7acd136eff638ab350e94bbfb93b3614ee1a433f90f3c58d8c8e0 sp:name "selected_environment" .
+function:9e2fb4f75047a12c364058e2bd609a79ce0926e1c8fea27e0a02b76eb0fddadb sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:9e2fb4f75047a12c364058e2bd609a79ce0926e1c8fea27e0a02b76eb0fddadb sp:kind "RustFunction" .
+function:9e2fb4f75047a12c364058e2bd609a79ce0926e1c8fea27e0a02b76eb0fddadb sp:name "short_groups" .
 function:9e312b199cae93e6574bbf1eb6748bc5b05bbf9bcd50c5b058cb1919b632047d sp:file code:b59355537d56cefbc9221ccea8378147e53702ed015afac480d2dc571fdb98e7 .
 function:9e312b199cae93e6574bbf1eb6748bc5b05bbf9bcd50c5b058cb1919b632047d sp:kind "RustFunction" .
 function:9e312b199cae93e6574bbf1eb6748bc5b05bbf9bcd50c5b058cb1919b632047d sp:name "lineage_session" .
@@ -238418,6 +238581,9 @@ function:a0772d9f27b48890f6e3fb8ecac2c3f6131b6c2fb69eebc3d34681a1b442ef15 sp:nam
 function:a090a3d6b787b5a47524cbbe3f9b951f06a60cd278f9ba07a056d6726392eeac sp:file code:98e49cc64ecf5f201d53e6aa6dbfd08571a159aa7232baf0f14b349057d9fffc .
 function:a090a3d6b787b5a47524cbbe3f9b951f06a60cd278f9ba07a056d6726392eeac sp:kind "RustFunction" .
 function:a090a3d6b787b5a47524cbbe3f9b951f06a60cd278f9ba07a056d6726392eeac sp:name "load_recipe" .
+function:a099f3a0ab95a323c686609b70749176e7b97cbfe54274a058d9c1d77b7a38ff sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:a099f3a0ab95a323c686609b70749176e7b97cbfe54274a058d9c1d77b7a38ff sp:kind "RustFunction" .
+function:a099f3a0ab95a323c686609b70749176e7b97cbfe54274a058d9c1d77b7a38ff sp:name "junction" .
 function:a09dd6bc83aac865fcc50ada2aee8e9a8c762c173d0a31e1d62da482494a803b sp:file code:838e2f1206b08d0995d81927236ea418035e67d6094ea19fb67dd43761edfec6 .
 function:a09dd6bc83aac865fcc50ada2aee8e9a8c762c173d0a31e1d62da482494a803b sp:kind "RustFunction" .
 function:a09dd6bc83aac865fcc50ada2aee8e9a8c762c173d0a31e1d62da482494a803b sp:name "trace_model_result_with_completion" .
@@ -238923,6 +239089,9 @@ function:a3af333381884eb5d021131a541df9479dfabce1bb8f69243bd9fa85a8ad4c32 sp:nam
 function:a3bd13f379937dd88bd3b02cff0448b4a968d427fa0b67e4cce0f6e3dec686b7 sp:file code:3b1ac3e5f76aec5f37e8c070e2588dbd55fde61cee36edd3ad0dbbc4d31dd506 .
 function:a3bd13f379937dd88bd3b02cff0448b4a968d427fa0b67e4cce0f6e3dec686b7 sp:kind "RustFunction" .
 function:a3bd13f379937dd88bd3b02cff0448b4a968d427fa0b67e4cce0f6e3dec686b7 sp:name "inventory" .
+function:a3c355dcd17d2b225246eb6bc56b896e524cc855e490824bbf3fe7d1808e3a0c sp:file code:bd9cb5fee75cc584f374a86fb3f93f0ef3a88a6b8a8a2756b7410a2d17d6770c .
+function:a3c355dcd17d2b225246eb6bc56b896e524cc855e490824bbf3fe7d1808e3a0c sp:kind "RustFunction" .
+function:a3c355dcd17d2b225246eb6bc56b896e524cc855e490824bbf3fe7d1808e3a0c sp:name "vectorize_in_rescued" .
 function:a3c8ec03c139060a91b0f4bcea37dbf43320f213fee88f8e9c9a9c24f4a84dbf sp:file code:f1e32073e52ef4ad2dbb0552703d847fd2e362414e72c811e29fa2cff217c74b .
 function:a3c8ec03c139060a91b0f4bcea37dbf43320f213fee88f8e9c9a9c24f4a84dbf sp:kind "RustFunction" .
 function:a3c8ec03c139060a91b0f4bcea37dbf43320f213fee88f8e9c9a9c24f4a84dbf sp:name "assembly" .
@@ -241879,6 +242048,9 @@ function:b7054e8d29d79b5ef9350d9da9af454e5e95d78325e6870fcf6ee43705cda9e6 sp:nam
 function:b7113d1d84e0479775fd8cc9ef7b76fe323087a928f8cbaef260007c399200c3 sp:file code:8b03c1673f73b715dd898ec58a4662add5fe7c2345733eeb934588fd93924b22 .
 function:b7113d1d84e0479775fd8cc9ef7b76fe323087a928f8cbaef260007c399200c3 sp:kind "RustFunction" .
 function:b7113d1d84e0479775fd8cc9ef7b76fe323087a928f8cbaef260007c399200c3 sp:name "sha" .
+function:b713280533c24c672dc66b67e8debdc80889be791b0858f2ad7385bacafe49f7 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:b713280533c24c672dc66b67e8debdc80889be791b0858f2ad7385bacafe49f7 sp:kind "RustFunction" .
+function:b713280533c24c672dc66b67e8debdc80889be791b0858f2ad7385bacafe49f7 sp:name "two_dash_pairs" .
 function:b7139cc199883638379de0451ad6f061ced6d3c62b53db588d9caaae12cd2230 sp:file code:fb7a60182d7e57aa1edc57c1a7fa6a47e92797d1c065bb18892b824ea1bfc68a .
 function:b7139cc199883638379de0451ad6f061ced6d3c62b53db588d9caaae12cd2230 sp:kind "RustFunction" .
 function:b7139cc199883638379de0451ad6f061ced6d3c62b53db588d9caaae12cd2230 sp:name "read_chapter_policy" .
@@ -242057,6 +242229,9 @@ function:b8210d414e3b5418eab6de6c547ed8eff7c69da2e00035117a559cc5ca5af069 sp:nam
 function:b8212a0cb7c292b22410f627709f001e0e806459b99a6c262fad8b64f96cb710 sp:file code:85b79922047178e15297ddb145eba26df243af9cff72e37b7aceb60455113b56 .
 function:b8212a0cb7c292b22410f627709f001e0e806459b99a6c262fad8b64f96cb710 sp:kind "RustFunction" .
 function:b8212a0cb7c292b22410f627709f001e0e806459b99a6c262fad8b64f96cb710 sp:name "copy_owned_build_source" .
+function:b82aafef9dbe6761e515be9a3404e12e326b0b025ab2975028c9a5e5b2eb83ae sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:b82aafef9dbe6761e515be9a3404e12e326b0b025ab2975028c9a5e5b2eb83ae sp:kind "RustFunction" .
+function:b82aafef9dbe6761e515be9a3404e12e326b0b025ab2975028c9a5e5b2eb83ae sp:name "filled" .
 function:b82dedfa1773e1c842f0ce6bd3dfc36b96684eeb0c4f606b9e51ede04665c262 sp:file code:ccf513cfe76369df1087d1b56fbb7b6444cddbb9ca87bf12798ae5f998087436 .
 function:b82dedfa1773e1c842f0ce6bd3dfc36b96684eeb0c4f606b9e51ede04665c262 sp:kind "RustFunction" .
 function:b82dedfa1773e1c842f0ce6bd3dfc36b96684eeb0c4f606b9e51ede04665c262 sp:name "is_whitespace" .
@@ -244283,6 +244458,9 @@ function:c61743a4a6072f4564a6a2123b15042c5a33ed0dd3fe9580eb27edef650a6dc7 sp:nam
 function:c625e6c746dff131a031249426f4baa9d7cfec0985841655a1803c295d2a4e69 sp:file code:0356f599c0dea0452068def94d644742b7744279517c950ca14f4e791f43f7b8 .
 function:c625e6c746dff131a031249426f4baa9d7cfec0985841655a1803c295d2a4e69 sp:kind "RustFunction" .
 function:c625e6c746dff131a031249426f4baa9d7cfec0985841655a1803c295d2a4e69 sp:name "wcs_observation" .
+function:c62c1aa1a4293143d9dabaf4afb855bf7d7cbaaa2caf75ff90a6ecaf902aa6ff sp:file code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 .
+function:c62c1aa1a4293143d9dabaf4afb855bf7d7cbaaa2caf75ff90a6ecaf902aa6ff sp:kind "RustFunction" .
+function:c62c1aa1a4293143d9dabaf4afb855bf7d7cbaaa2caf75ff90a6ecaf902aa6ff sp:name "stroke_pattern" .
 function:c62e7982c1650e93bd6493764475dacfb0111706bc7c4581bea5ded35d66df58 sp:file code:772206bcb8021d29ca23c6c891bfab8ee1637189898ca61c3e1a7a7681da138b .
 function:c62e7982c1650e93bd6493764475dacfb0111706bc7c4581bea5ded35d66df58 sp:kind "RustFunction" .
 function:c62e7982c1650e93bd6493764475dacfb0111706bc7c4581bea5ded35d66df58 sp:name "inspect_side" .
@@ -244906,6 +245084,9 @@ function:c9f262d881220b1744e810152ec296809977db8857e8a9a7d079781fd6be9cd1 sp:nam
 function:c9f388d0c462057a5224bb8702c45d16e38c683744c856bfee784809bcab712b sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
 function:c9f388d0c462057a5224bb8702c45d16e38c683744c856bfee784809bcab712b sp:kind "RustFunction" .
 function:c9f388d0c462057a5224bb8702c45d16e38c683744c856bfee784809bcab712b sp:name "bbox_gap" .
+function:c9f526be6c95efb480442b0948ce068a6d841fc980ab905f3b7f316e38080e87 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:c9f526be6c95efb480442b0948ce068a6d841fc980ab905f3b7f316e38080e87 sp:kind "RustFunction" .
+function:c9f526be6c95efb480442b0948ce068a6d841fc980ab905f3b7f316e38080e87 sp:name "segment" .
 function:c9f66eba1ef1a266ce3cebaeab92c10eeb35fb19ea95838cc191f0bd05383bf8 sp:file code:03e01537ebf240447c3aab077a1c92e28895817e892e17f35759292ce82589a7 .
 function:c9f66eba1ef1a266ce3cebaeab92c10eeb35fb19ea95838cc191f0bd05383bf8 sp:kind "RustFunction" .
 function:c9f66eba1ef1a266ce3cebaeab92c10eeb35fb19ea95838cc191f0bd05383bf8 sp:name "root" .
@@ -245119,6 +245300,9 @@ function:cb8d92ecc305b3e3a39943ea2ae4560124e7f8be0226c4e35d9bcb50ecd53885 sp:nam
 function:cb90af7305033d298986903fe0aaa7844dbf98faf7c956f064c93238cf7e771e sp:file code:aebd1a6d77d1a604d8f90deb50cbda0a6616464932ea0280a1b8be4b24f1a02a .
 function:cb90af7305033d298986903fe0aaa7844dbf98faf7c956f064c93238cf7e771e sp:kind "RustFunction" .
 function:cb90af7305033d298986903fe0aaa7844dbf98faf7c956f064c93238cf7e771e sp:name "parse_input8" .
+function:cb91563c3a3784d8c50a6c43c30d91c4c09dea0ad0797d57f34edd7b377d010d sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:cb91563c3a3784d8c50a6c43c30d91c4c09dea0ad0797d57f34edd7b377d010d sp:kind "RustFunction" .
+function:cb91563c3a3784d8c50a6c43c30d91c4c09dea0ad0797d57f34edd7b377d010d sp:name "drawn_ends" .
 function:cb9be465df7dbb0b24f18d3c9420ecd045a09f83215cfee0100c2c9701ac3a5a sp:file code:568a3efe457c925e81a8fc20feb8af9bf34fce4916aa5dd3791c0ea42a5a277a .
 function:cb9be465df7dbb0b24f18d3c9420ecd045a09f83215cfee0100c2c9701ac3a5a sp:kind "RustFunction" .
 function:cb9be465df7dbb0b24f18d3c9420ecd045a09f83215cfee0100c2c9701ac3a5a sp:name "source_physical_row" .
@@ -245730,6 +245914,9 @@ function:cff0c2960c0c13fbdd5aea157f2a4e8bd9d79705fcf0e56e75ea0e00150c5f7b sp:nam
 function:cff719dfae11f559b9224943867bcf879d16d29abf2082ba71ff86b6a4b15c4c sp:file code:219ffb268e421c6e02308803e128c5699e6d317c787bb2970e0fd1afc589a6e8 .
 function:cff719dfae11f559b9224943867bcf879d16d29abf2082ba71ff86b6a4b15c4c sp:kind "RustFunction" .
 function:cff719dfae11f559b9224943867bcf879d16d29abf2082ba71ff86b6a4b15c4c sp:name "private" .
+function:cffa5edb01628360d813f9e98e1faed29a2d57f82253f90a2534466228eaa2a7 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:cffa5edb01628360d813f9e98e1faed29a2d57f82253f90a2534466228eaa2a7 sp:kind "RustFunction" .
+function:cffa5edb01628360d813f9e98e1faed29a2d57f82253f90a2534466228eaa2a7 sp:name "on_one_line" .
 function:d0041cdf6e6dd5131aadbad89983caf4d76398190a3e3f3db483156777d5f41e sp:file code:5b8ec5cbdaaa123806608707ead3dd366750b4d0c93d1e8f430f6e5f71284c2d .
 function:d0041cdf6e6dd5131aadbad89983caf4d76398190a3e3f3db483156777d5f41e sp:kind "RustFunction" .
 function:d0041cdf6e6dd5131aadbad89983caf4d76398190a3e3f3db483156777d5f41e sp:name "validate_parameters" .
@@ -247003,6 +247190,9 @@ function:d82511166dafe14618c173d3b36d7e06673a1ee8e482edf0eb386a9cb0d1e2de sp:nam
 function:d825cb83380b7fa80195b1febebde1dd29e24f9420ea298fa6ae7343f4a73590 sp:file code:322d84d0cd5ec3687cc0f071e0d8412ac32089b2109f4fc00a1a03346238cb89 .
 function:d825cb83380b7fa80195b1febebde1dd29e24f9420ea298fa6ae7343f4a73590 sp:kind "RustFunction" .
 function:d825cb83380b7fa80195b1febebde1dd29e24f9420ea298fa6ae7343f4a73590 sp:name "import_step_new_part" .
+function:d82ac69952384d640c8ca50f952dc6938a8a0bc652f2c5898a549d2f9e4a83ac sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:d82ac69952384d640c8ca50f952dc6938a8a0bc652f2c5898a549d2f9e4a83ac sp:kind "RustFunction" .
+function:d82ac69952384d640c8ca50f952dc6938a8a0bc652f2c5898a549d2f9e4a83ac sp:name "pixel_lines" .
 function:d82b5e6aa8e8b74555aa450ed297b2532bc868a60e7d406f37589d8ef3b114b2 sp:file code:513b7f0de22e9ce03c0ec5d295ae4e7bf6b142b94eebfbc0f60e12bea025885d .
 function:d82b5e6aa8e8b74555aa450ed297b2532bc868a60e7d406f37589d8ef3b114b2 sp:kind "RustFunction" .
 function:d82b5e6aa8e8b74555aa450ed297b2532bc868a60e7d406f37589d8ef3b114b2 sp:name "resolve" .
@@ -247390,6 +247580,9 @@ function:db30dd9251bfe2ffe8c30f64c0632424e4cfc5b68f291bab30064da5be6c99af sp:nam
 function:db31a951f31a2feaf6864d36b55311af31d549af3b9a695c0758e482133e0e8e sp:file code:07ad3811dc026b0ba3c7b9a0610cbca3ed42be5d3f45b68342cbb406c4782543 .
 function:db31a951f31a2feaf6864d36b55311af31d549af3b9a695c0758e482133e0e8e sp:kind "RustFunction" .
 function:db31a951f31a2feaf6864d36b55311af31d549af3b9a695c0758e482133e0e8e sp:name "bag" .
+function:db32a1f98703d580039374583ccd9daa8cdf471851f31536fabc2f14f193f20f sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:db32a1f98703d580039374583ccd9daa8cdf471851f31536fabc2f14f193f20f sp:kind "RustFunction" .
+function:db32a1f98703d580039374583ccd9daa8cdf471851f31536fabc2f14f193f20f sp:name "line_ends_in_gap" .
 function:db37551af1086cb74653ea55ee44c8254119152228a54e7ea767d146408449a3 sp:file code:3c73859e7f267facbed174aabd8c689f76d59aa2f60d18ccebf500a1dc861195 .
 function:db37551af1086cb74653ea55ee44c8254119152228a54e7ea767d146408449a3 sp:kind "RustFunction" .
 function:db37551af1086cb74653ea55ee44c8254119152228a54e7ea767d146408449a3 sp:name "slots" .
@@ -247959,6 +248152,9 @@ function:de9ebf7ae68aa6c1f9be1814d5a8e383146396f74988f77e06bbbf4e1ba1a12e sp:nam
 function:de9efd33173abc776136902c8739bf733ed07b9e3cda5e45394a8565baf262d8 sp:file code:24ee6c84fa0b3c963bfedb8b191491e05d4b782e005748aa1d254aa406f81125 .
 function:de9efd33173abc776136902c8739bf733ed07b9e3cda5e45394a8565baf262d8 sp:kind "RustFunction" .
 function:de9efd33173abc776136902c8739bf733ed07b9e3cda5e45394a8565baf262d8 sp:name "base64_normalized" .
+function:dea395a5114c5b453e5f3741e05e6b5e518a58f037bed4f4ab5ae8abb4974c2d sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:dea395a5114c5b453e5f3741e05e6b5e518a58f037bed4f4ab5ae8abb4974c2d sp:kind "RustFunction" .
+function:dea395a5114c5b453e5f3741e05e6b5e518a58f037bed4f4ab5ae8abb4974c2d sp:name "line_stretches" .
 function:dea7e467088a173e12f0c4b595e2a96fe822d5a5a2ef52ca4c8f7cea8bc69c1b sp:file code:229bcdf1dbfaad9bd23c9902997d931d0afe3de594c3bf8a3ef40a61c18fcfd2 .
 function:dea7e467088a173e12f0c4b595e2a96fe822d5a5a2ef52ca4c8f7cea8bc69c1b sp:kind "RustFunction" .
 function:dea7e467088a173e12f0c4b595e2a96fe822d5a5a2ef52ca4c8f7cea8bc69c1b sp:name "build_is_variable_bound" .
@@ -248730,6 +248926,9 @@ function:e3a1265db12d2f88aa3cae4a619bb4379b398b567c33b1939b7f29b986c55092 sp:nam
 function:e3a280f25b8ec4fbfda974a454d4e43dcdc8d774035ac9d735b4cc360e736b49 sp:file code:ecf434a6872d64234cf6a179675b7b5861b1e9eebc4096111f76573bc5cc2a03 .
 function:e3a280f25b8ec4fbfda974a454d4e43dcdc8d774035ac9d735b4cc360e736b49 sp:kind "RustFunction" .
 function:e3a280f25b8ec4fbfda974a454d4e43dcdc8d774035ac9d735b4cc360e736b49 sp:name "drop" .
+function:e3b4789a5e1a743f5c103a05f3d7e19789ff1a4f0dc04bc3f08c7f8eb6bf72b2 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:e3b4789a5e1a743f5c103a05f3d7e19789ff1a4f0dc04bc3f08c7f8eb6bf72b2 sp:kind "RustFunction" .
+function:e3b4789a5e1a743f5c103a05f3d7e19789ff1a4f0dc04bc3f08c7f8eb6bf72b2 sp:name "dashed_elements" .
 function:e3b8c4e698504e6ee59469f75ee5feebd6de046ff2d56310bc931b37b98d5f8b sp:file code:a4fdf9c3875a3b1a7b21f3f4a9e085accb18a8bbc639be5108ae4d8c0075d3fe .
 function:e3b8c4e698504e6ee59469f75ee5feebd6de046ff2d56310bc931b37b98d5f8b sp:kind "RustFunction" .
 function:e3b8c4e698504e6ee59469f75ee5feebd6de046ff2d56310bc931b37b98d5f8b sp:name "files" .
@@ -249396,6 +249595,9 @@ function:e7b847e7aea91b1da5fa289228f76ffebf09f26d14386cad0213efa9d3b5eb5d sp:nam
 function:e7c4802cfdd1d6441ffc368fee49d8e0a3f2e16c48f543ea9175c391d497fae5 sp:file code:0356f599c0dea0452068def94d644742b7744279517c950ca14f4e791f43f7b8 .
 function:e7c4802cfdd1d6441ffc368fee49d8e0a3f2e16c48f543ea9175c391d497fae5 sp:kind "RustFunction" .
 function:e7c4802cfdd1d6441ffc368fee49d8e0a3f2e16c48f543ea9175c391d497fae5 sp:name "annotation_layout_receipt" .
+function:e7c6085eb1c987f45fa7b25e3f5e960c4f9df270f857817b4924044d577dbcb9 sp:file code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 .
+function:e7c6085eb1c987f45fa7b25e3f5e960c4f9df270f857817b4924044d577dbcb9 sp:kind "RustFunction" .
+function:e7c6085eb1c987f45fa7b25e3f5e960c4f9df270f857817b4924044d577dbcb9 sp:name "measure_runs_texts" .
 function:e7c98e3893d52e29f6cf6a2c697676aba4b28c4de195560d1977d0192d191ad2 sp:executes <urn:oev2:design:semantic_source_graph_terms_capture> .
 function:e7c98e3893d52e29f6cf6a2c697676aba4b28c4de195560d1977d0192d191ad2 sp:executes <urn:oev2:design:semantic_source_graph_terms_legacy> .
 function:e7c98e3893d52e29f6cf6a2c697676aba4b28c4de195560d1977d0192d191ad2 sp:file code:b4bfb2e9460d2a912984a71e24d27f53134e28facfc3ba1c3200d70386e7e25f .
@@ -249905,6 +250107,9 @@ function:ead4e6f857b101376b58bfa0b3865ce2a02b3df85491a64af4d54ee5205fdd6b sp:nam
 function:eade4040369f6c9e2520a49b703ac77a3c8f391424fec4514a591dcbb0283069 sp:file code:ccf513cfe76369df1087d1b56fbb7b6444cddbb9ca87bf12798ae5f998087436 .
 function:eade4040369f6c9e2520a49b703ac77a3c8f391424fec4514a591dcbb0283069 sp:kind "RustFunction" .
 function:eade4040369f6c9e2520a49b703ac77a3c8f391424fec4514a591dcbb0283069 sp:name "reify_and_annotation_source" .
+function:eaef9209cd99e717691606377e6e380e21da634e6b89599a3b95e8a9bf793a1f sp:file code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 .
+function:eaef9209cd99e717691606377e6e380e21da634e6b89599a3b95e8a9bf793a1f sp:kind "RustFunction" .
+function:eaef9209cd99e717691606377e6e380e21da634e6b89599a3b95e8a9bf793a1f sp:name "measure_runs" .
 function:eaefe84d72a0aae280edf2b445d9198e6623d5230bd7a80d0b1938d75b719159 sp:executes <urn:oev2:design:nx_native_published_input_copy> .
 function:eaefe84d72a0aae280edf2b445d9198e6623d5230bd7a80d0b1938d75b719159 sp:file code:fa326becc41479117b0a8f815cc830213abd334677f86bd71a56e8600f90d35f .
 function:eaefe84d72a0aae280edf2b445d9198e6623d5230bd7a80d0b1938d75b719159 sp:kind "RustFunction" .
@@ -249988,6 +250193,9 @@ function:eb52d1a2dc2fdc2cda96136d7b94d9de43728138a6f17f5edb98fdccb250b348 sp:nam
 function:eb741f66cc955ebf9c3149d9bff31b98d4cfa8cb1628129c19e38cf5ae1c5936 sp:file code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f .
 function:eb741f66cc955ebf9c3149d9bff31b98d4cfa8cb1628129c19e38cf5ae1c5936 sp:kind "RustFunction" .
 function:eb741f66cc955ebf9c3149d9bff31b98d4cfa8cb1628129c19e38cf5ae1c5936 sp:name "to_json" .
+function:eb7476afc68a564e7a2c891805eea0320426048d694d64b1c9ea5c259834fdfd sp:file code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 .
+function:eb7476afc68a564e7a2c891805eea0320426048d694d64b1c9ea5c259834fdfd sp:kind "RustFunction" .
+function:eb7476afc68a564e7a2c891805eea0320426048d694d64b1c9ea5c259834fdfd sp:name "line_pattern_conditions" .
 function:eb74cad4cb1a00f9126277da8859e1084f9cc2e4d9540c0ad4d96e81449763dd sp:file code:ef62a4cb5952dc9e473d38f46e794f3a1803efe201af20faf155f32115dddbf9 .
 function:eb74cad4cb1a00f9126277da8859e1084f9cc2e4d9540c0ad4d96e81449763dd sp:kind "RustFunction" .
 function:eb74cad4cb1a00f9126277da8859e1084f9cc2e4d9540c0ad4d96e81449763dd sp:name "fmt" .
@@ -251808,6 +252016,9 @@ function:f689e309ef13e68ca0f6792c8ef060e1a7bbd76c1699145da31bc2d07a52e6a8 sp:nam
 function:f68b45c2b1321cacab9944795e439dbfe4e0dad42a6f8f44956f56393f691f97 sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
 function:f68b45c2b1321cacab9944795e439dbfe4e0dad42a6f8f44956f56393f691f97 sp:kind "RustFunction" .
 function:f68b45c2b1321cacab9944795e439dbfe4e0dad42a6f8f44956f56393f691f97 sp:name "break_lines" .
+function:f68bebe6337e4864d08de9b3b18cc0637a2d803c41d8bcb2ec0b3d4e57dbc6d4 sp:file code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 .
+function:f68bebe6337e4864d08de9b3b18cc0637a2d803c41d8bcb2ec0b3d4e57dbc6d4 sp:kind "RustFunction" .
+function:f68bebe6337e4864d08de9b3b18cc0637a2d803c41d8bcb2ec0b3d4e57dbc6d4 sp:name "round4" .
 function:f68cec93b0fbe992a865251742f8f04767427b7ea334384ca166bc8b8e6f2657 sp:file code:3a15486602411c901a6b4ada80efba7b46a25dc5a527354ebbff3e85295644b0 .
 function:f68cec93b0fbe992a865251742f8f04767427b7ea334384ca166bc8b8e6f2657 sp:kind "RustFunction" .
 function:f68cec93b0fbe992a865251742f8f04767427b7ea334384ca166bc8b8e6f2657 sp:name "ensure_current" .
@@ -251848,6 +252059,9 @@ function:f6cfdf2791de0d5d95d529c8ec6e8fe3554ec5a1b8d96cb1b5b0a0a7e7c2edd8 sp:nam
 function:f6d38ac2fbfa9e1f1a5e59ac4f0e97387fb2a891550325bc3a3a775d8b436f52 sp:file code:9fc54c914b7f8391b8b37d45e98cabc3574cbe72973768f71c6a8b86635ac68f .
 function:f6d38ac2fbfa9e1f1a5e59ac4f0e97387fb2a891550325bc3a3a775d8b436f52 sp:kind "RustFunction" .
 function:f6d38ac2fbfa9e1f1a5e59ac4f0e97387fb2a891550325bc3a3a775d8b436f52 sp:name "effective_boolean_value_expression_evaluator" .
+function:f6db49bacecff129248fa66f4cb421cb79311fb9289f1bc69c3ceebe64b682a6 sp:file code:d07c32b2ce7eec1da807f23ea66f3b355a443b7d9c30b237119da947f5da6c32 .
+function:f6db49bacecff129248fa66f4cb421cb79311fb9289f1bc69c3ceebe64b682a6 sp:kind "RustFunction" .
+function:f6db49bacecff129248fa66f4cb421cb79311fb9289f1bc69c3ceebe64b682a6 sp:name "solid_extent" .
 function:f6dda52a312d505fbc165b305bbde784cbe4b6cd67ae33c2a3e4669c692a185d sp:file code:e64914dc68ccbda8674cbfce5bdb8412c758dab498062e384dc203aa9c55f34f .
 function:f6dda52a312d505fbc165b305bbde784cbe4b6cd67ae33c2a3e4669c692a185d sp:kind "RustFunction" .
 function:f6dda52a312d505fbc165b305bbde784cbe4b6cd67ae33c2a3e4669c692a185d sp:name "export_ap214" .

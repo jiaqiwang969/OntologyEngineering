@@ -32,6 +32,7 @@ pub mod dedupe;
 mod geom;
 mod ink;
 mod lines;
+pub mod linetypes;
 mod members;
 pub mod observe;
 pub mod overlay;

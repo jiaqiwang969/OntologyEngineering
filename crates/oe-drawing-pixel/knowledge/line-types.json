@@ -1,0 +1,366 @@
+{
+  "schema": "oe-drawing-pixel.line-types/1",
+  "purpose": "Line-type knowledge the pixel recognizer reads to tell discontinuous lines apart on page ink: the families and the bounds of their elements, how a drawing keeps them consistent, how CAD constructs and renders them, and how they meet other lines. Every bound the classifier uses is a value here; the classifier has no other line-type constant.",
+  "families": {
+    "dashed": {
+      "concepts": [
+        "DC-G1-045",
+        "DC-G1-001"
+      ],
+      "statement": "细虚线 No.02: dashes of about 12d and gaps of about 3d, no dot; on CAD drawings the dash is two to four times the gap (AutoCAD HIDDEN 2:1, ISO 02 4:1). Used for hidden edges and hidden outlines, including every line of a hidden thread.",
+      "sources": [
+        "GB/T 4457.4-2002 表1 02.1 (p5)",
+        "GB/T 17450-1998 3.2 表2 线素 (p4)",
+        "机械制图（第7版）表1-4 (p16)",
+        "GB/T 4459.1 不可见螺纹的所有图线用细虚线 (DC-G1-045 confusions)"
+      ]
+    },
+    "chain": {
+      "concepts": [
+        "DC-G1-044",
+        "DC-G1-019"
+      ],
+      "statement": "细点画线 No.04: long dashes of about 24d with gaps of about 3d and a dot (at most 0.5d) between them; by custom a very short dash may replace the dot, and CAD CENTER and CENTER2 (long dash and short dash, nominally ISO type 08) are used for chain lines on Chinese mechanical drawings. Axes, centre lines of circles, pitch circles, cutting-plane lines.",
+      "sources": [
+        "GB/T 4457.4-2002 表1 04.1 (p5)",
+        "机械制图（第7版）p16: 可按习惯用很短的短画代替点",
+        "DC-G1-019 recognition: CENTER、PHANTOM 实际是长画+短画，归入04/05的用途"
+      ]
+    },
+    "double_chain": {
+      "concepts": [
+        "DC-G1-042",
+        "DC-G1-019"
+      ],
+      "statement": "细双点画线 No.05: long dashes with two dots (or two short dashes, CAD PHANTOM) between them. Recorded as a family; not a centre line.",
+      "sources": [
+        "GB/T 4457.4-2002 表1 05.1",
+        "DC-G1-019 dxf_forms: PHANTOM (long + two short dashes) nominally type 09"
+      ]
+    }
+  },
+  "bounds": {
+    "blank_gap_max_dark": {
+      "value": 0.2,
+      "unit": "share of gap samples",
+      "statement": "A gap is a dash gap only where the original page is blank: at most this share of the samples over its central half is dark. A crossing erased before vectorizing leaves an inked gap; the line runs on through it.",
+      "sources": [
+        "DC-G1-061 confusions: 间隙是线型的一部分，不是结构的断开"
+      ],
+      "basis": "development"
+    },
+    "max_dash_gap_paper_mm": {
+      "value": 6.0,
+      "unit": "paper mm",
+      "statement": "Dash gaps are short (3d, about 1.5-2 mm for d of 0.5-0.7 mm; CAD up to about 3-6 mm at large linetype scales): pieces further apart are separate lines.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2: 短间隔 3d",
+        "DC-G1-045 components"
+      ],
+      "basis": "standard_margin"
+    },
+    "dashed_max_dash_paper_mm": {
+      "value": 10.0,
+      "unit": "paper mm",
+      "statement": "A dash of a hidden line is about 12d (6-8.4 mm at most for d up to 0.7 mm); a longer piece is not a dash.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2: 画 12d",
+        "DC-G1-045 variants"
+      ],
+      "basis": "standard_margin"
+    },
+    "dashed_min_gap_to_dash": {
+      "value": 0.12,
+      "unit": "ratio",
+      "statement": "A dashed line's gap is a fixed share of its dash (3d : 12d = 0.25 by hand, 0.5 for AutoCAD HIDDEN); pieces whose gap is below this share of the dash are one line cut by crossings.",
+      "sources": [
+        "GB/T 4457.4-2002 表1 02.1",
+        "DC-G1-045 recognition: 画长约为间隔的2~4倍"
+      ],
+      "basis": "standard_margin"
+    },
+    "chain_max_long_paper_mm": {
+      "value": 35.0,
+      "unit": "paper mm",
+      "statement": "The long dash of a chain line is about 24d (12-17 mm; drawn up to some 30 mm by hand); a longer piece is not one.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2: 长画 24d",
+        "DC-G1-044 components: 手工常用长画约15~20 mm"
+      ],
+      "basis": "standard_margin"
+    },
+    "chain_dot_max_paper_mm": {
+      "value": 1.7,
+      "unit": "paper mm",
+      "statement": "A dot is at most 0.5d; plotted dots come out at most about 1.5 mm. A short element up to this is a dot.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2: 点 ≤0.5d",
+        "DC-G1-044 variants"
+      ],
+      "basis": "standard_margin"
+    },
+    "chain_max_short_to_long": {
+      "value": 0.4,
+      "unit": "ratio",
+      "statement": "The short element of a chain line (dot or short dash) is much shorter than its long dash: short dash 6d against long dash 24d (0.25) for ISO 08, 0.2 for CAD CENTER, 0.17 for CENTER2.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2: 短画 6d, 长画 24d",
+        "DC-G1-019 dxf_forms"
+      ],
+      "basis": "standard_margin"
+    },
+    "chain_max_short_to_gap": {
+      "value": 2.5,
+      "unit": "ratio",
+      "statement": "A short dash replacing the dot is about as long as the gaps beside it (6d against 3d for ISO 08: 2; CAD CENTER: 1); alternating pieces whose short ones are much longer than the gaps are a line cut by crossings, not a chain line.",
+      "sources": [
+        "GB/T 17450-1998 3.2 表2",
+        "机械制图（第7版）p16: 用很短的短画代替点"
+      ],
+      "basis": "standard_margin"
+    },
+    "page_gap_tolerance": {
+      "value": 0.25,
+      "unit": "relative",
+      "statement": "Within one drawing the gaps of one line type are equal: a gap counts as that type's gap within this share of the page's calibrated gap.",
+      "sources": [
+        "机械制图（第7版）p17: 虚线、点画线及双点画线的短画、长画的长度和间隔应各自大小相等",
+        "GB/T 14665-2012 4.2.2.2: CAD 虚线间隔固定 3d"
+      ],
+      "basis": "development"
+    },
+    "two_dash_end_equal_tolerance": {
+      "value": 0.2,
+      "unit": "relative",
+      "statement": "A dashed line between one and two pattern repeats long is drawn as two end dashes of equal length with one gap (the 27d minimum of GB/T 14665; CAD adjusts both end dashes alike): the two pieces agree within this share.",
+      "sources": [
+        "GB/T 14665-2012 4.2.2.2: 虚线的最小长度 27d（2条画 12d，1个间隔3d）",
+        "controlled plot of S-DRAWING-TERRA-PARITY-R4 (rendering-r1.json): end dashes 54/55, 90/91, 120/121 px"
+      ],
+      "basis": "measured"
+    },
+    "two_dash_min_end_to_dash": {
+      "value": 0.35,
+      "unit": "ratio to the calibrated interior dash",
+      "statement": "Each end dash of a two-dash line is half to one interior dash ((length - gap) / 2 for lengths between one and two repeats); with ink spread, at least this share.",
+      "sources": [
+        "GB/T 14665-2012 4.2.2.2",
+        "controlled plot (rendering-r1.json)"
+      ],
+      "basis": "measured"
+    },
+    "two_dash_max_end_to_dash": {
+      "value": 1.2,
+      "unit": "ratio to the calibrated interior dash",
+      "statement": "Upper bound of an end dash of a two-dash line against the page's interior dash, with ink spread.",
+      "sources": [
+        "GB/T 14665-2012 4.2.2.2",
+        "controlled plot (rendering-r1.json)"
+      ],
+      "basis": "measured"
+    },
+    "closure_repeat_slack": {
+      "value": 0.1,
+      "unit": "relative",
+      "statement": "A hidden segment drawn as continuous ink is shorter than one pattern repeat (dash plus gap) of the page's dashed calibration; this share is allowed for ink spread.",
+      "sources": [
+        "controlled plot (rendering-r1.json): 11 of 11 segments shorter than one repeat drawn continuous, 39 of 39 longer ones with gaps"
+      ],
+      "basis": "measured"
+    },
+    "closure_join_paper_mm": {
+      "value": 0.7,
+      "unit": "paper mm",
+      "statement": "Two line ends meet (a corner of a hidden outline, a line ending on another) when they are within this distance on paper (about two line widths).",
+      "sources": [
+        "DC-G1-061: 虚线与虚线、虚线与实线相交应在画上",
+        "DC-G1-001 recognition: 端点与其他棱边或轮廓相接成折线"
+      ],
+      "basis": "development"
+    },
+    "text_glyph_max_paper_mm": {
+      "value": 5.0,
+      "unit": "paper mm",
+      "statement": "Ink of an observed text lying on a line is the text's, not the line's: a run no longer than a character (lettering of part drawings is at most 5 mm high) whose middle lies in an observed text box is a gap of the line. A dash passing under the text is longer and stays.",
+      "sources": [
+        "GB/T 14691-1993 3.2: 字体高度的公称尺寸系列为 1.8、2.5、3.5、5、7、10、14、20 mm"
+      ],
+      "basis": "standard"
+    },
+    "element_short_spread": {
+      "value": 1.8,
+      "unit": "ratio",
+      "statement": "An element of a run counts as short up to this factor of the shortest interior element, plus the ink slack: the short elements of one line are equal (textbook p17) and a plotted dot or short dash spreads with the ink.",
+      "sources": [
+        "机械制图（第7版）p17 图1-7 说明 1: 短画、长画的长度和间隔应各自大小相等",
+        "round-3 page-ink reading (refine.rs measure_pattern, S-DRAWING-TERRA-PARITY-R3)"
+      ],
+      "basis": "development"
+    },
+    "element_spread_slack_paper_mm": {
+      "value": 0.17,
+      "unit": "paper mm",
+      "statement": "Ink spread allowed on a short element (about 2 px at 300 dpi).",
+      "sources": [
+        "round-3 page-ink reading (2 px at 300 dpi)"
+      ],
+      "basis": "development"
+    },
+    "element_long_share": {
+      "value": 0.6,
+      "unit": "ratio",
+      "statement": "An element counts as a long dash from this share of the longest interior element: CAD adjusts the end dashes (GB/T 14665-2012 4.2.2.2, 4.2.3) and a crossing shortens a measured dash.",
+      "sources": [
+        "GB/T 14665-2012 4.2.2.2",
+        "round-3 page-ink reading"
+      ],
+      "basis": "development"
+    },
+    "element_group_share": {
+      "value": 0.75,
+      "unit": "ratio",
+      "statement": "At least this share of the interior elements falls in the short or the long group for a run to be read as a chain line.",
+      "sources": [
+        "round-3 page-ink reading"
+      ],
+      "basis": "development"
+    },
+    "dash_spread_cv": {
+      "value": 0.6,
+      "unit": "coefficient of variation",
+      "statement": "The interior dashes of one dashed line are equal (textbook p17): their coefficient of variation stays below this.",
+      "sources": [
+        "机械制图（第7版）p17 图1-7 说明 1",
+        "round-3 page-ink reading"
+      ],
+      "basis": "development"
+    },
+    "gap_spread_cv": {
+      "value": 0.8,
+      "unit": "coefficient of variation",
+      "statement": "The gaps of one dashed line are equal (textbook p17; GB/T 14665-2012 4.2.2.2: fixed gap): their coefficient of variation stays below this (crossings in gaps spread the measured gaps).",
+      "sources": [
+        "机械制图（第7版）p17 图1-7 说明 1",
+        "GB/T 14665-2012 4.2.2.2",
+        "round-3 page-ink reading"
+      ],
+      "basis": "development"
+    },
+    "piece_spread": {
+      "value": 2.0,
+      "unit": "ratio",
+      "statement": "The vectorized pieces of one dashed run lie within this factor of their median (end pieces may be cut short), and a gap leaving this factor of the stretch median gap (with 1 px slack) cuts the run.",
+      "sources": [
+        "机械制图（第7版）p17 图1-7 说明 1",
+        "round-3 vectorizer (pattern.rs dash_pattern, apply_runs)"
+      ],
+      "basis": "development"
+    },
+    "crossing_reach_paper_mm": {
+      "value": 0.5,
+      "unit": "paper mm",
+      "statement": "A short run of ink with ink this far beside the line is another line crossing or meeting it (CAD intersections may fall in gaps): it belongs to the gap.",
+      "sources": [
+        "DC-G1-061 recognition: 重组时应容忍交点落在间隔中"
+      ],
+      "basis": "development"
+    }
+  },
+  "statements": {
+    "equal_elements_in_one_drawing": {
+      "statement": "In one drawing the short dashes, long dashes and gaps of dashed, chain and double chain lines are each of one size: the page's elements are calibrated from its reliable runs and short runs are judged against them.",
+      "sources": [
+        "机械制图（第7版）p17 图线画法 1"
+      ]
+    },
+    "cad_dashed_construction": {
+      "statement": "CAD draws a dashed line with a whole number of dashes, dashes at both ends and a fixed gap; the minimum is two dashes and one gap (27d); a fixed dash may be used instead, leaving one end shorter or longer.",
+      "sources": [
+        "GB/T 14665-2012 4.2.2.2-4.2.2.3 (p6)"
+      ]
+    },
+    "meet_on_dashes": {
+      "statement": "Discontinuous lines meet other lines on their dashes; a hidden line continuing a thick line leaves a gap; hidden edges join end to end with other edges into polylines.",
+      "sources": [
+        "DC-G1-061",
+        "GB/T 17450-1998 5.2.1-5.2.2 (p6-7)",
+        "DC-G1-001 recognition"
+      ]
+    },
+    "cad_intersections_in_gaps": {
+      "statement": "In CAD output an intersection may fall in a gap, since CAD stores continuous geometry with a linetype: a line crossing a gap does not break the pattern, whereas lines ending at both edges of a gap (an outline broken by grooves) do.",
+      "sources": [
+        "DC-G1-061 recognition: 重组时应容忍交点落在间隔中"
+      ]
+    },
+    "cad_short_segment_continuous": {
+      "status": "confirmed",
+      "statement": "AutoCAD draws a segment shorter than one pattern repeat as continuous ink, and a longer one with dashes at both ends of equal length: on the controlled plot of this stage 11 of 11 segments shorter than one repeat are continuous and 39 of 39 longer ones show gaps. A hidden segment of a CAD plot shorter than one repeat therefore cannot be told by its own pattern.",
+      "sources": [
+        "controlled plot S-DRAWING-TERRA-PARITY-R4 cases-r1 (AutoCAD 2024, DWG To PDF, 1:1), rendering-r1.json"
+      ]
+    },
+    "views_only": {
+      "statement": "The line-type knowledge is read in the views of the drawing. The frame and the title block hold continuous lines and text, whose collinear strokes (the tops of a row of letters) can pose as dashes; there the round-3 reading is kept, and the page calibration counts runs in the views only.",
+      "sources": [
+        "DC-G1-085: 图框用粗实线画出 (GB/T 14689-2008 4.1)",
+        "DC-G9-023: 标题栏格式 (机械制图（第7版）图1-2 p13)"
+      ]
+    },
+    "erased_crossing_inked_gap": {
+      "statement": "A crossing erased before vectorizing cuts a dash; where the original page ink fills the whole gap the line runs on through it and the pieces are one element. A gap with blank stretches is a dash gap even when a crossing or a dot lies in it.",
+      "sources": [
+        "DC-G1-061 confusions: 间隙是线型的一部分，不是结构的断开",
+        "DC-G1-061 recognition: 重组时应容忍交点落在间隔中"
+      ]
+    },
+    "gap_between_walls": {
+      "statement": "Lines ending square to a line at both edges of one of its gaps, on one side (the walls of a groove, two strokes of letters), make that gap no dash gap. One line ending in a gap, or one crossing it, is a CAD intersection falling in a gap and leaves it a dash gap. The two-dash rule reads strictly: any line ending at its gap excludes the pair.",
+      "sources": [
+        "DC-G1-061 recognition: 重组时应容忍交点落在间隔中",
+        "GB/T 17450-1998 5.2.1-5.2.2 (p6-7)"
+      ]
+    },
+    "chain_ends_long": {
+      "statement": "A whole chain line starts and ends with long dashes; a line broken by a text or another line may start or end with a short element, which is left aside when the short elements between long dashes are counted (one for the chain line, two for the double chain line).",
+      "sources": [
+        "DC-G1-044 components: 首末两端为长画",
+        "机械制图（第7版）p17 图1-7 说明 2: 点画线和双点画线的首末两端应是长画而不是点"
+      ]
+    },
+    "rescued_pieces_candidates_only": {
+      "statement": "A dash or a short edge of a hidden line split by crossings into pieces below the minimum length is rejoined; the rejoined line is a candidate of the two-dash rule and the hidden closure only and is dropped when neither takes it.",
+      "sources": [
+        "DC-G1-061",
+        "DC-G1-001 recognition: 端点与其他棱边或轮廓相接成折线"
+      ]
+    },
+    "closure_junctions": {
+      "statement": "A continuous thin piece shorter than one repeat joins a hidden line at a corner (ends meeting as drawn), across an erased text on its own line, or by crossing two parallel hidden lines about square near their ink (the termination line of an invisible thread). It is not taken where its ink runs on past one repeat (part of a long line) or where it forms a corner with a long continuous line (a visible outline).",
+      "sources": [
+        "DC-G1-001 recognition",
+        "GB/T 4459.1: 不可见螺纹的所有图线用细虚线 (DC-G1-045 confusions)",
+        "cad_short_segment_continuous"
+      ]
+    },
+    "merge_confirmed_on_ink": {
+      "statement": "Collinear patterned pieces are one line only where the page ink along them shows a family; otherwise the pieces stay apart for the chains and the two-dash rule to read.",
+      "sources": [
+        "DC-G1-044 dxf_forms: rejoin by collinearity and period before classifying"
+      ]
+    },
+    "linetype_scales_as_modes": {
+      "statement": "A CAD drawing may hold several linetype scales (pattern x LTSCALE x entity scale), each repeated over its lines: the gaps of a family are grouped into modes; a run whose gap matches no mode backed by two runs is not of that family on the page.",
+      "sources": [
+        "DC-G1-044 dxf_forms: visible dash length = LTYPE pattern x $LTSCALE x entity linetype scale",
+        "机械制图（第7版）p17 图1-7 说明 1"
+      ]
+    }
+  },
+  "basis_values": {
+    "standard": "the value follows from the cited clause",
+    "standard_margin": "a cited nominal value with a margin for ink spread or CAD linetype scales",
+    "measured": "measured on the controlled plot of this stage (rendering-r1.json)",
+    "development": "set while developing on the three DWG-backed pages (rounds 3 and 4): not tested beyond them except on the controlled sheets of this stage"
+  }
+}

@@ -6,6 +6,7 @@ use std::f64::consts::TAU;
 
 use crate::Ink;
 use crate::geom::{P, add, dist, dot, median, mul, perp, sub, undirected_angle, unit, wrap_pi};
+use crate::linetypes::{bounds, steps};
 use crate::stroke::{Pattern, Primitive, Stroke, line_direction};
 
 /// Collinearity: directions within 3° and endpoints within 1.5 px of the reference line.
@@ -17,17 +18,8 @@ const GAP_FACTOR: f64 = 1.5;
 const GAP_FLOOR: f64 = 3.0;
 /// Runs whose median gap is below this are touching fragments of one continuous stroke.
 const TOUCH_GAP: f64 = 1.0;
-/// The gaps of a dashed or dash-dot line are short: 3d in GB/T 4457.4 (about 1.5–2 mm for d of 0.5–0.7 mm). Pieces
-/// further apart on paper than this are separate lines, never one run, however regular their spacing elsewhere on the
-/// same row is.
-pub(crate) const MAX_DASH_GAP_PAPER_MM: f64 = 6.0;
-/// A dash of a 虚线 is 12d (about 6–8.4 mm); a longer piece is not a dash of a hidden line.
-const MAX_DASH_PAPER_MM: f64 = 10.0;
-/// The long dash of a 点画线 is 24d (about 12–17 mm; drawn up to some 30 mm); a longer piece is not one.
-const MAX_LONG_DASH_PAPER_MM: f64 = 35.0;
-/// A gap is a dash gap only where the original page is blank: at most this share of its samples dark. A crossing
-/// stroke erased before vectorizing leaves an inked gap — the line runs on through it.
-const BLANK_GAP_MAX_DARK: f64 = 0.2;
+// The line-type bounds (dash, long dash, dot and gap lengths on paper; gap ratios; the blank-gap share) are knowledge:
+// `crate::linetypes::bounds()`, read from knowledge/line-types.json with their sources.
 
 /// What the pattern inference reads besides the strokes: the page resolution, for the paper lengths of the line
 /// types, and the original page ink, on which a gap between pieces must be blank to be a dash gap. Without the
@@ -36,15 +28,24 @@ const BLANK_GAP_MAX_DARK: f64 = 0.2;
 pub struct PatternContext<'a> {
     pub px_per_mm: f64,
     pub original: Option<&'a Ink>,
+    /// Whether a point lies in a view of the drawing (`None`: everywhere). The line-type knowledge of this round is read
+    /// in the views; the frame and the title block keep the round-3 reading.
+    pub in_view: Option<&'a dyn Fn(P) -> bool>,
 }
 
 impl Default for PatternContext<'_> {
     fn default() -> Self {
-        PatternContext { px_per_mm: 300.0 / 25.4, original: None }
+        PatternContext { px_per_mm: 300.0 / 25.4, original: None, in_view: None }
     }
 }
 
 impl PatternContext<'_> {
+    /// Whether the fourth round's reading of discontinuous lines applies to pieces at these points: at the evaluation
+    /// step that has it (scope item 3) and in a view.
+    fn round4(&self, mut points: impl Iterator<Item = P>) -> bool {
+        steps().chain_short_dash && self.in_view.is_none_or(|f| points.all(f))
+    }
+
     /// Whether the original ink is blank along the sample points of a gap.
     fn blank(&self, points: impl Iterator<Item = P>) -> bool {
         let Some(ink) = self.original else {
@@ -57,19 +58,27 @@ impl PatternContext<'_> {
                 dark += 1;
             }
         }
-        n == 0 || (dark as f64) <= BLANK_GAP_MAX_DARK * n as f64
+        n == 0 || (dark as f64) <= bounds().blank_gap_max_dark * n as f64
+    }
+
+    /// Whether the original ink fills a gap along all its sample points (but the blank share): the line ran on through
+    /// it and a crossing erased before vectorizing cut it there. A gap with blank stretches is a dash gap, even when a
+    /// crossing or a dot lies in it.
+    fn filled(&self, points: impl Iterator<Item = P>) -> bool {
+        let Some(ink) = self.original else {
+            return false;
+        };
+        let (mut n, mut dark) = (0usize, 0usize);
+        for p in points {
+            n += 1;
+            if ink.has_dark_within(p.0, p.1, 1.0) {
+                dark += 1;
+            }
+        }
+        n > 0 && (dark as f64) >= (1.0 - bounds().blank_gap_max_dark) * n as f64
     }
 }
 
-/// A dashed line's gaps are a fixed share of its dashes: GB/T 4457.4-2002 表 1 draws 虚线 as 画 12d、短间隔 3d
-/// (AutoCAD HIDDEN and DASHED use 1:2). Pieces of similar length whose median gap is below this share of the
-/// median piece are one continuous line cut where other strokes crossed it (erased centre, dimension and
-/// extension lines), not dashes: on the I1 page the solid contour circles came out as "dashed" this way,
-/// pieces of 9–27 mm between gaps of 1–2 mm.
-const DASH_GAP_RATIO: f64 = 0.12;
-/// The dot of a 细点画线 is ≤ 0.5d (画 24d、间隔 3d); plotted dots are at most about 1.5 mm. A "short piece"
-/// longer than this is a cut dash, not a dot (the bound `refine::measure_pattern` uses as well).
-const DOT_MAX_PX: f64 = 20.0;
 /// Co-circularity tolerances (absolute px or relative to the radius, whichever is larger).
 const CIRCLE_CENTRE_TOL: f64 = 2.0;
 const CIRCLE_RADIUS_TOL: f64 = 1.5;
@@ -120,6 +129,17 @@ fn gap_points_line(a: P, b: P) -> Vec<P> {
     }
     let n = ((to - from) / 2.0).ceil().max(1.0) as usize;
     (0..=n).map(|k| add(a, mul(d, from + (to - from) * k as f64 / n as f64))).collect()
+}
+
+/// Sample points along all of a straight gap, 1.5 px clear of its ends, every pixel.
+fn gap_points_full_line(a: P, b: P) -> Vec<P> {
+    let l = dist(a, b);
+    let Some(d) = unit(sub(b, a)) else { return Vec::new() };
+    if l <= 3.0 {
+        return Vec::new();
+    }
+    let n = (l - 3.0).ceil().max(1.0) as usize;
+    (0..=n).map(|k| add(a, mul(d, 1.5 + (l - 3.0) * k as f64 / n as f64))).collect()
 }
 
 fn assign_collinear(strokes: &mut [Stroke], ctx: &PatternContext) {
@@ -176,12 +196,60 @@ fn assign_collinear(strokes: &mut [Stroke], ctx: &PatternContext) {
             .map(|w| (w[1].0 - w[0].1).max(0.0))
             .collect();
         let at = |t: f64| add(c, mul(d, t));
+        // A gap at whose edges other lines end is where features break the line (an outline between grooves), not a
+        // dash gap: lines meet a dashed line on its dashes, and a CAD crossing may fall in a gap but runs on through it.
+        let edge = bounds().closure_join_paper_mm * ctx.px_per_mm;
         let blank: Vec<bool> = items
             .windows(2)
-            .map(|w| ctx.blank(gap_points_line(at(w[0].1), at(w[1].0)).into_iter()))
+            .map(|w| {
+                ctx.blank(gap_points_line(at(w[0].1), at(w[1].0)).into_iter())
+                    && !(ctx.round4([strokes[w[0].2].primitive.mid(), strokes[w[1].2].primitive.mid()].into_iter())
+                        && line_ends_in_gap(strokes, &|i| members.contains(&i), c, d, w[0].1, w[1].0, edge, true))
+            })
             .collect();
-        apply_runs(strokes, &order, &lengths, &gaps, &blank, ctx);
+        let filled: Vec<bool> = items.windows(2).map(|w| ctx.filled(gap_points_full_line(at(w[0].1), at(w[1].0)).into_iter())).collect();
+        apply_runs(strokes, &order, &lengths, &gaps, &blank, &filled, ctx);
     }
+}
+
+/// Whether other lines end at a gap of the line through `c` with direction `d` (between `t0` and `t1` along it, within
+/// `edge` of it, ends of strokes `skip` excepted): strokes at least `edge` long, not running along the line, with an end
+/// at the gap or in it — and not continued from that point on the line's other side by another stroke (a crossing line
+/// the skeleton split where it meets this one). With `both_edges`, ends at both edges of the gap on one side are needed
+/// (the walls of a groove breaking an outline, two strokes of letters): one line ending in a gap is a CAD intersection
+/// falling in a gap and leaves it a dash gap; without, any end at the gap or in it counts (the strict reading of the
+/// two-dash rule). A line meeting this one on a dash, or crossing it in a gap, never counts (DC-G1-061: lines meet a
+/// dashed line on its dashes; CAD crossings may fall in gaps).
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn line_ends_in_gap(strokes: &[Stroke], skip: &dyn Fn(usize) -> bool, c: P, d: P, t0: f64, t1: f64, edge: f64, both_edges: bool) -> bool {
+    let n = perp(d);
+    let side = |pt: P| dot(sub(pt, c), n);
+    let ends = |s: &Stroke| [(s.primitive.start(), s.primitive.end()), (s.primitive.end(), s.primitive.start())];
+    // Every end at the gap: its position along the line and the side its line leaves to.
+    let mut found: Vec<(f64, f64)> = Vec::new();
+    for (i, s) in strokes.iter().enumerate() {
+        if skip(i) || s.primitive.length() < edge || line_direction(&s.primitive).is_some_and(|di| undirected_angle(di, d) <= 0.35) {
+            continue;
+        }
+        for &(e, far) in &ends(s) {
+            let t = dot(sub(e, c), d);
+            if side(e).abs() > edge || t < t0 - 2.0 || t > t1 + 2.0 {
+                continue;
+            }
+            let continued = strokes.iter().enumerate().any(|(k, o)| {
+                k != i
+                    && !skip(k)
+                    && ends(o).iter().any(|&(e2, far2)| dist(e2, e) <= edge && side(far2) * side(far) < 0.0)
+            });
+            if !continued {
+                found.push((t, side(far).signum()));
+            }
+        }
+    }
+    if !both_edges {
+        return !found.is_empty();
+    }
+    found.iter().any(|&(ta, sa)| (ta - t0).abs() <= edge && found.iter().any(|&(tb, sb)| (tb - t1).abs() <= edge && sb == sa))
 }
 
 fn longest(strokes: &[Stroke], members: &[usize]) -> usize {
@@ -221,27 +289,49 @@ fn collinear_pair(a: &Primitive, b: &Primitive) -> bool {
     gap <= GAP_FACTOR * lr + GAP_FLOOR
 }
 
-/// Cut a sorted sequence of pieces into runs: first where a gap is longer than any dash gap on paper (the pieces
-/// on either side are separate lines), then, within each such stretch, where a gap leaves a factor two of the
-/// stretch's own median gap (1 px slack); classify every run of at least three pieces.
-fn apply_runs(strokes: &mut [Stroke], order: &[usize], lengths: &[f64], gaps: &[f64], blank: &[bool], ctx: &PatternContext) {
+/// Cut a sorted sequence of pieces into runs: pieces touching one another (gap of at most one pixel beyond the touch
+/// gap), or apart by a gap the original page ink fills (`filled`), are first one element — a dash the skeleton split
+/// where another line crosses it, or one a crossing erased before vectorizing cut (lines cross a dashed line on its
+/// dashes; the line runs on through a filled gap, which is no dash gap); then the elements are cut where a gap is longer than any dash gap on paper
+/// (the pieces on either side are separate lines) and, within each such stretch, where a gap leaves a factor two of the
+/// stretch's own median gap (1 px slack); every run of at least three elements is classified.
+#[allow(clippy::too_many_arguments)]
+fn apply_runs(strokes: &mut [Stroke], order: &[usize], lengths: &[f64], gaps: &[f64], blank: &[bool], filled: &[bool], ctx: &PatternContext) {
     if order.is_empty() {
         return;
     }
-    let max_gap = MAX_DASH_GAP_PAPER_MM * ctx.px_per_mm;
+    let mut elements: Vec<(Vec<usize>, f64)> = vec![(vec![order[0]], lengths[0])];
+    let (mut egaps, mut eblank): (Vec<f64>, Vec<bool>) = (Vec::new(), Vec::new());
+    // (The joining of pieces serves the chain line's dashes, scope item 3; the round-3 reading keeps every piece.)
+    for k in 0..gaps.len() {
+        let join = ctx.round4([strokes[order[k]].primitive.mid(), strokes[order[k + 1]].primitive.mid()].into_iter());
+        if join && (gaps[k] <= TOUCH_GAP + 1.0 || filled[k]) {
+            let last = elements.last_mut().expect("an element");
+            last.0.push(order[k + 1]);
+            last.1 += gaps[k] + lengths[k + 1];
+        } else {
+            elements.push((vec![order[k + 1]], lengths[k + 1]));
+            egaps.push(gaps[k]);
+            eblank.push(blank[k]);
+        }
+    }
+    let max_gap = bounds().max_dash_gap_paper_mm * ctx.px_per_mm;
     let mut start = 0usize;
-    for i in 0..=gaps.len() {
-        if i < gaps.len() && gaps[i] <= max_gap {
+    for i in 0..=egaps.len() {
+        if i < egaps.len() && egaps[i] <= max_gap {
             continue;
         }
-        // The stretch start..=i: pieces joined by gaps no longer than a dash gap.
-        let mut g = gaps[start..i].to_vec();
+        // The stretch start..=i: elements joined by gaps no longer than a dash gap.
+        let mut g = egaps[start..i].to_vec();
         let gm = median(&mut g).unwrap_or(0.0);
         let mut run_start = start;
         for j in start..=i {
-            let cut = j == i || gaps[j] > 2.0 * gm + 1.0 || gaps[j] < 0.5 * gm - 1.0;
+            let spread = bounds().piece_spread;
+            let cut = j == i || egaps[j] > spread * gm + 1.0 || egaps[j] < gm / spread - 1.0;
             if cut {
-                classify_run(strokes, &order[run_start..=j], &lengths[run_start..=j], &gaps[run_start..j], &blank[run_start..j], ctx);
+                let members: Vec<usize> = elements[run_start..=j].iter().flat_map(|e| e.0.iter().copied()).collect();
+                let lens: Vec<f64> = elements[run_start..=j].iter().map(|e| e.1).collect();
+                classify_run(strokes, &members, &lens, &egaps[run_start..j], &eblank[run_start..j], ctx);
                 run_start = j + 1;
             }
         }
@@ -249,8 +339,9 @@ fn apply_runs(strokes: &mut [Stroke], order: &[usize], lengths: &[f64], gaps: &[
     }
 }
 
+/// Classify one run: `members` are its strokes, `lengths` its elements (touching fragments joined), at least three.
 fn classify_run(strokes: &mut [Stroke], members: &[usize], lengths: &[f64], gaps: &[f64], blank: &[bool], ctx: &PatternContext) {
-    if members.len() < 3 {
+    if lengths.len() < 3 {
         return;
     }
     let mut g = gaps.to_vec();
@@ -263,7 +354,8 @@ fn classify_run(strokes: &mut [Stroke], members: &[usize], lengths: &[f64], gaps
     if blank.iter().filter(|b| **b).count() * 4 < gaps.len() * 3 {
         return;
     }
-    let pattern = dash_pattern(lengths, gm, ctx);
+    let round4 = ctx.round4(members.iter().map(|&i| strokes[i].primitive.mid()));
+    let pattern = dash_pattern(lengths, gm, ctx, round4);
     if pattern == Pattern::Continuous {
         return;
     }
@@ -272,21 +364,27 @@ fn classify_run(strokes: &mut [Stroke], members: &[usize], lengths: &[f64], gaps
     }
 }
 
-/// Dash statistics of one regular run with median gap `gap`: similar lengths (interior pieces within a
-/// factor two of the median, end pieces may be truncated) are `Dashed` when the gap is at least
-/// `DASH_GAP_RATIO` of the median piece, else `Continuous` (a line cut by crossings); strictly alternating
-/// long/short pieces whose short pieces are at most half the long ones are `DashDot` when the short ones
-/// are dots (at most `DOT_MAX_PX`), else `Continuous`; anything else is `Unknown`.
-fn dash_pattern(lengths: &[f64], gap: f64, ctx: &PatternContext) -> Pattern {
+/// Dash statistics of one regular run with median gap `gap` (bounds from the line-type knowledge): similar lengths
+/// (interior pieces within a factor two of the median, end pieces may be truncated) are `Dashed` when the gap is at least
+/// the dashed family's share of the median piece and the piece no longer than a dash on paper, else `Continuous` (a line
+/// cut by crossings). Long pieces alternating with short ones are a chain line (`DashDot`) when the short ones are dots
+/// or short dashes about as long as the gaps (textbook p16: a very short dash may replace the dot; CAD CENTER), the
+/// short ones much shorter than the long ones and the long ones no longer than a long dash on paper, else `Continuous`.
+/// Two short elements between long dashes (the double chain family, CAD PHANTOM) are marked `DashDot` as well, so that
+/// the run is merged; the measurement on the page ink records the family and does not class it as a centre line.
+/// Anything else is `Unknown`.
+fn dash_pattern(lengths: &[f64], gap: f64, ctx: &PatternContext, round4: bool) -> Pattern {
+    let b = bounds();
     let n = lengths.len();
     let mut sorted = lengths.to_vec();
     let lmed = median(&mut sorted).unwrap_or(0.0);
+    let spread = b.piece_spread;
     let interior_ok = lengths[1..n - 1]
         .iter()
-        .all(|&l| l >= 0.5 * lmed && l <= 2.0 * lmed);
-    let ends_ok = lengths[0] <= 2.0 * lmed && lengths[n - 1] <= 2.0 * lmed;
+        .all(|&l| l >= lmed / spread && l <= spread * lmed);
+    let ends_ok = lengths[0] <= spread * lmed && lengths[n - 1] <= spread * lmed;
     if interior_ok && ends_ok {
-        return if gap >= DASH_GAP_RATIO * lmed && lmed <= MAX_DASH_PAPER_MM * ctx.px_per_mm {
+        return if gap >= b.dashed_min_gap_to_dash * lmed && lmed <= b.dashed_max_dash_paper_mm * ctx.px_per_mm {
             Pattern::Dashed
         } else {
             Pattern::Continuous
@@ -296,33 +394,70 @@ fn dash_pattern(lengths: &[f64], gap: f64, ctx: &PatternContext) -> Pattern {
     let lmax = sorted[n - 1];
     let thr = 0.5 * (lmin + lmax);
     let long: Vec<bool> = lengths.iter().map(|&l| l > thr).collect();
+    if !round4 {
+        return dash_pattern_round3(lengths, &long, ctx);
+    }
+    let medians = || {
+        let mut longs: Vec<f64> = lengths.iter().zip(&long).filter(|&(_, &l)| l).map(|(&x, _)| x).collect();
+        let mut shorts: Vec<f64> = lengths.iter().zip(&long).filter(|&(_, &l)| !l).map(|(&x, _)| x).collect();
+        (median(&mut longs).unwrap_or(0.0), median(&mut shorts).unwrap_or(0.0))
+    };
+    // A chain line's short element: a dot, or a short dash about as long as the gaps beside it.
+    let chain_short = |lm: f64, sm: f64| {
+        sm <= b.chain_max_short_to_long * lm
+            && (sm <= b.chain_dot_max_paper_mm * ctx.px_per_mm || sm <= b.chain_max_short_to_gap * gap)
+            && lm <= b.chain_max_long_paper_mm * ctx.px_per_mm
+    };
+    if short_groups(&long) == Some(2) {
+        let (lm, sm) = medians();
+        if chain_short(lm, sm) {
+            return Pattern::DashDot;
+        }
+    }
     let alternating = long.windows(2).all(|w| w[0] != w[1]);
-    if alternating && long.iter().any(|&b| b) && long.iter().any(|&b| !b) {
-        let mut longs: Vec<f64> = lengths
-            .iter()
-            .zip(&long)
-            .filter(|&(_, &b)| b)
-            .map(|(&l, _)| l)
-            .collect();
-        let mut shorts: Vec<f64> = lengths
-            .iter()
-            .zip(&long)
-            .filter(|&(_, &b)| !b)
-            .map(|(&l, _)| l)
-            .collect();
-        let (lm, sm) = (
-            median(&mut longs).unwrap_or(0.0),
-            median(&mut shorts).unwrap_or(0.0),
-        );
-        if sm <= 0.5 * lm {
-            return if sm <= DOT_MAX_PX && lm <= MAX_LONG_DASH_PAPER_MM * ctx.px_per_mm {
-                Pattern::DashDot
-            } else {
-                Pattern::Continuous
-            };
+    if alternating && long.iter().any(|&l| l) && long.iter().any(|&l| !l) {
+        let (lm, sm) = medians();
+        if sm <= b.chain_max_short_to_long * lm {
+            return if chain_short(lm, sm) { Pattern::DashDot } else { Pattern::Continuous };
         }
     }
     Pattern::Unknown
+}
+
+/// The round-3 reading of alternating pieces, kept for evaluation step 0 with round 3's constants: strictly alternating
+/// long and short pieces whose short ones are at most half the long ones are a chain line (`DashDot`) when the short ones
+/// are dots of at most 20 px and the long ones no longer than a long dash on paper, else `Continuous`.
+fn dash_pattern_round3(lengths: &[f64], long: &[bool], ctx: &PatternContext) -> Pattern {
+    let alternating = long.windows(2).all(|w| w[0] != w[1]);
+    if alternating && long.iter().any(|&l| l) && long.iter().any(|&l| !l) {
+        let mut longs: Vec<f64> = lengths.iter().zip(long).filter(|&(_, &l)| l).map(|(&x, _)| x).collect();
+        let mut shorts: Vec<f64> = lengths.iter().zip(long).filter(|&(_, &l)| !l).map(|(&x, _)| x).collect();
+        let (lm, sm) = (median(&mut longs).unwrap_or(0.0), median(&mut shorts).unwrap_or(0.0));
+        if sm <= 0.5 * lm {
+            return if sm <= 20.0 && lm <= bounds().chain_max_long_paper_mm * ctx.px_per_mm { Pattern::DashDot } else { Pattern::Continuous };
+        }
+    }
+    Pattern::Unknown
+}
+
+/// The number of short elements between consecutive long ones when it is the same everywhere (the run starting and
+/// ending with long elements, at least one group): 1 for a chain line, 2 for a double chain line.
+pub(crate) fn short_groups(long: &[bool]) -> Option<usize> {
+    if long.len() < 3 || !long[0] || !long[long.len() - 1] {
+        return None;
+    }
+    let mut groups: Vec<usize> = Vec::new();
+    let mut count = 0usize;
+    for &l in &long[1..] {
+        if l {
+            groups.push(count);
+            count = 0;
+        } else {
+            count += 1;
+        }
+    }
+    let first = *groups.first()?;
+    (first > 0 && groups.iter().all(|&g| g == first)).then_some(first)
 }
 
 fn circle_of(s: &Stroke) -> (P, f64) {
@@ -448,7 +583,23 @@ fn assign_cocircular(strokes: &mut [Stroke], ctx: &PatternContext) {
                 }))
             })
             .collect();
-        apply_runs(strokes, &order, &lengths, &gaps, &blank, ctx);
+        // All of the gap along the circle, 1.5 px clear of its ends.
+        let filled: Vec<bool> = rotated[..m - 1]
+            .iter()
+            .map(|&k| {
+                let from = items[k].0 + items[k].1;
+                let span = cyc_gaps[k] / r;
+                let clear = 1.5 / r;
+                let (a, b) = (from + clear, from + span - clear);
+                let n = ((b - a) * r).ceil().max(1.0) as usize;
+                b > a
+                    && ctx.filled((0..=n).map(|j| {
+                        let t = a + (b - a) * j as f64 / n as f64;
+                        (c.0 + r * t.cos(), c.1 + r * t.sin())
+                    }))
+            })
+            .collect();
+        apply_runs(strokes, &order, &lengths, &gaps, &blank, &filled, ctx);
     }
 }
 
@@ -457,7 +608,7 @@ mod tests {
     use super::*;
 
     fn dash_pattern_at(lengths: &[f64], gap: f64) -> Pattern {
-        dash_pattern(lengths, gap, &PatternContext::default())
+        dash_pattern(lengths, gap, &PatternContext::default(), steps().chain_short_dash)
     }
 
     #[test]
@@ -530,7 +681,7 @@ mod tests {
         assign(&mut strokes, &PatternContext::default());
         assert!(strokes.iter().all(|s| s.pattern == Pattern::Dashed), "without the page every gap counts");
         let mut strokes = cut();
-        assign(&mut strokes, &PatternContext { px_per_mm: 300.0 / 25.4, original: Some(&page) });
+        assign(&mut strokes, &PatternContext { px_per_mm: 300.0 / 25.4, original: Some(&page), in_view: None });
         assert!(strokes.iter().all(|s| s.pattern == Pattern::Continuous), "{:?}", strokes.iter().map(|s| s.pattern).collect::<Vec<_>>());
     }
 
@@ -543,7 +694,7 @@ mod tests {
         assign(&mut strokes, &PatternContext::default());
         assert!(strokes.iter().all(|s| s.pattern != Pattern::Dashed));
         let mut strokes = run();
-        assign(&mut strokes, &PatternContext { px_per_mm: 600.0 / 25.4, original: None });
+        assign(&mut strokes, &PatternContext { px_per_mm: 600.0 / 25.4, original: None, in_view: None });
         assert!(strokes.iter().all(|s| s.pattern == Pattern::Dashed));
     }
 }

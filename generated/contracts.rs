@@ -5775,8 +5775,12 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingConceptGroup", "group", "G9"),
     ("MdDrawingCondition", "basis", "annotation_scale"),
     ("MdDrawingCondition", "basis", "none"),
+    ("MdDrawingCondition", "basis", "page_runs"),
     ("MdDrawingCondition", "basis", "stroke_widths"),
     ("MdDrawingCondition", "basis", "title_block_scale_text"),
+    ("MdDrawingCondition", "id", "line_patterns.chain"),
+    ("MdDrawingCondition", "id", "line_patterns.dashed"),
+    ("MdDrawingCondition", "id", "line_patterns.double_chain"),
     ("MdDrawingCondition", "id", "line_width_contrast"),
     ("MdDrawingCondition", "id", "sheet_scale"),
     ("MdDrawingCondition", "state", "absent"),
@@ -20833,15 +20837,15 @@ pub struct MdDrawingCondition {
     pub basis: String,
     /// Source handles, header variables or observation fields the value rests on
     pub evidence: Vec<String>,
-    /// Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit) or line_width_contrast (whether thick and thin lines can be told apart on the page)
+    /// Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit), line_width_contrast (whether thick and thin lines can be told apart on the page) or line_patterns.dashed / line_patterns.chain / line_patterns.double_chain (the elements of one family of discontinuous lines on the page, calibrated from its reliable runs; absent when the page draws no run of the family)
     pub id: String,
     /// One sentence for a reader; the typed fields are what programs read
     pub note: String,
-    /// known: measured or declared and consistent; absent: measured and not there (one line width only); unknown: no source; conflict: sources disagree, the value is the preferred source's
+    /// known: measured or declared and consistent; absent: measured and not there (one line width only; no run of a line family on the page); unknown: no source; conflict: sources disagree (for a line family: fewer than half of its runs agree on the gap), the value is the preferred source's
     pub state: String,
-    /// sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; absent when unknown
+    /// sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; line_patterns: the family's first element in page pixels (dashed: the gap; chain families: the long dash); absent when unknown
     pub value: Option<f64>,
-    /// Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels)
+    /// Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels; line patterns: the elements in page pixels, then in nominal paper millimetres when the sheet scale is known, in the order the evidence states)
     pub values: Vec<f64>,
 }
 impl MdDrawingCondition {
@@ -20853,8 +20857,8 @@ impl MdDrawingCondition {
         if self.note.trim().is_empty() { failures.push("MdDrawingCondition.note:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdDrawingCondition.state:required".into()); }
 
-        if !["annotation_scale","none","stroke_widths","title_block_scale_text",].contains(&self.basis.as_str()) { failures.push("MdDrawingCondition.basis:allowed_values".into()); }
-        if !["line_width_contrast","sheet_scale",].contains(&self.id.as_str()) { failures.push("MdDrawingCondition.id:allowed_values".into()); }
+        if !["annotation_scale","none","page_runs","stroke_widths","title_block_scale_text",].contains(&self.basis.as_str()) { failures.push("MdDrawingCondition.basis:allowed_values".into()); }
+        if !["line_patterns.chain","line_patterns.dashed","line_patterns.double_chain","line_width_contrast","sheet_scale",].contains(&self.id.as_str()) { failures.push("MdDrawingCondition.id:allowed_values".into()); }
         if !["absent","conflict","known","unknown",].contains(&self.state.as_str()) { failures.push("MdDrawingCondition.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -21094,7 +21098,7 @@ impl MdEngineeringExpression {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdEngineeringExpressionGraph {
-    /// Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast in pixel graphs
+    /// Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast and the line patterns in pixel graphs
     pub conditions: Vec<MdDrawingCondition>,
     /// All expressions
     pub expressions: Vec<MdEngineeringExpression>,

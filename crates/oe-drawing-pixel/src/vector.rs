@@ -55,6 +55,18 @@ pub fn vectorize(ink: &Ink, min_length_px: f64) -> Vec<Stroke> {
 /// be a remainder with strokes erased from it, and a gap between pieces counts as a dash gap only where the
 /// original page is blank.
 pub fn vectorize_in(ink: &Ink, min_length_px: f64, ctx: &pattern::PatternContext) -> Vec<Stroke> {
+    vectorize_pieces(ink, min_length_px, ctx, false).0
+}
+
+/// [`vectorize_in`] with the short pieces of crossed lines rejoined, returned apart: a line crossed by other lines is
+/// still one line, so short pieces (below the minimum) that touch one another on one line are joined, and a joined line
+/// that reaches the minimum is returned (pieces already long enough are left as they are). The caller uses them as
+/// candidates only (a dash or a short edge of a hidden line split by crossings) and drops the ones it does not take.
+pub fn vectorize_in_rescued(ink: &Ink, min_length_px: f64, ctx: &pattern::PatternContext) -> (Vec<Stroke>, Vec<Stroke>) {
+    vectorize_pieces(ink, min_length_px, ctx, true)
+}
+
+fn vectorize_pieces(ink: &Ink, min_length_px: f64, ctx: &pattern::PatternContext, rescue: bool) -> (Vec<Stroke>, Vec<Stroke>) {
     let grid = skeleton::thin(ink);
     let chains = skeleton::trace(&grid);
     let mut strokes = Vec::new();
@@ -89,11 +101,40 @@ pub fn vectorize_in(ink: &Ink, min_length_px: f64, ctx: &pattern::PatternContext
     } else {
         0.0
     };
+    let short: Vec<usize> = (0..strokes.len())
+        .filter(|&i| strokes[i].primitive.length() < min_len && !matches!(strokes[i].pattern, Pattern::Dashed | Pattern::DashDot))
+        .collect();
+    let mut rescued: Vec<Stroke> = Vec::new();
+    if rescue && short.len() >= 2 {
+        let mut dsu = pattern::Dsu::new(short.len());
+        for a in 0..short.len() {
+            for b in a + 1..short.len() {
+                if mergeable(&strokes[short[a]].primitive, &strokes[short[b]].primitive, RESCUE_ANGLE_RAD, RESCUE_OFFSET_PX, RESCUE_TOUCH_PX) {
+                    dsu.union(a, b);
+                }
+            }
+        }
+        let mut groups: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+        for (k, &i) in short.iter().enumerate() {
+            groups.entry(dsu.find(k)).or_default().push(i);
+        }
+        for members in groups.values().filter(|m| m.len() >= 2) {
+            let joined = merge_group(&strokes, members);
+            if joined.primitive.length() >= min_len {
+                rescued.push(joined);
+            }
+        }
+    }
     strokes.retain(|s| {
         s.primitive.length() >= min_len || matches!(s.pattern, Pattern::Dashed | Pattern::DashDot)
     });
-    strokes
+    (strokes, rescued)
 }
+
+/// Joining short pieces of one crossed line: directions within 3°, ends within 1.5 px of the line, touching (2 px).
+const RESCUE_ANGLE_RAD: f64 = 0.052_36;
+const RESCUE_OFFSET_PX: f64 = 1.5;
+const RESCUE_TOUCH_PX: f64 = 2.0;
 
 /// Fraction of 1-px samples along the primitive with ink within 1.5 px.
 fn primitive_support(ink: &Ink, prim: &Primitive) -> f64 {
@@ -351,6 +392,16 @@ pub fn merge_collinear(
     offset_tol_px: f64,
     gap_tol_px: f64,
 ) -> Vec<Stroke> {
+    merge_collinear_groups(strokes, angle_tol_rad, offset_tol_px, gap_tol_px).into_iter().map(|(s, _)| s).collect()
+}
+
+/// [`merge_collinear`] with the members of each output stroke (one member for a stroke left as it was).
+pub fn merge_collinear_groups(
+    strokes: Vec<Stroke>,
+    angle_tol_rad: f64,
+    offset_tol_px: f64,
+    gap_tol_px: f64,
+) -> Vec<(Stroke, Vec<Stroke>)> {
     let n = strokes.len();
     let lines: Vec<usize> = (0..n)
         .filter(|&i| line_direction(&strokes[i].primitive).is_some())
@@ -386,7 +437,7 @@ pub fn merge_collinear(
     for (i, stroke) in strokes.iter().enumerate() {
         let k = pos[i];
         if k == usize::MAX {
-            out.push(stroke.clone());
+            out.push((stroke.clone(), vec![stroke.clone()]));
             continue;
         }
         let r = root_of[k];
@@ -396,9 +447,9 @@ pub fn merge_collinear(
         emitted[r] = true;
         let members = &groups[&r];
         if members.len() == 1 {
-            out.push(stroke.clone());
+            out.push((stroke.clone(), vec![stroke.clone()]));
         } else {
-            out.push(merge_group(&strokes, members));
+            out.push((merge_group(&strokes, members), members.iter().map(|&j| strokes[j].clone()).collect()));
         }
     }
     out
@@ -485,5 +536,34 @@ fn merge_group(strokes: &[Stroke], members: &[usize]) -> Stroke {
             0.0
         },
         pixels,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn short_pieces_of_a_crossed_line_are_rejoined() {
+        // A line of 60 px crossed by two verticals: its three pieces are each below the 35 px minimum.
+        let (w, h) = (120usize, 80usize);
+        let mut m = vec![false; w * h];
+        for x in 30..=90 {
+            for y in 39..=41 {
+                m[y * w + x] = true;
+            }
+        }
+        for &cx in &[50usize, 70] {
+            for y in 10..=70 {
+                for x in cx - 1..=cx + 1 {
+                    m[y * w + x] = true;
+                }
+            }
+        }
+        let ink = Ink::from_mask(w, h, m);
+        let (_, rescued) = vectorize_in_rescued(&ink, 35.0, &pattern::PatternContext::default());
+        let joined = rescued.iter().any(|s| matches!(s.primitive, Primitive::Line { p, q } if (p.1 - 40.0).abs() < 2.0 && (q.1 - 40.0).abs() < 2.0 && (p.0 - q.0).abs() >= 50.0));
+        assert!(joined, "{rescued:?}");
+        assert!(vectorize(&ink, 35.0).iter().all(|s| s.primitive.length() >= 35.0 || !matches!(s.primitive, Primitive::Line { p, .. } if (p.1 - 40.0).abs() < 2.0)));
     }
 }

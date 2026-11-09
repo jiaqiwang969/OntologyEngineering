@@ -268,10 +268,42 @@ pub(crate) fn measure_width(ink: &Ink, p: P, q: P, band: f64) -> f64 {
     median(&mut counts).unwrap_or(0.0)
 }
 
-/// Line pattern along a segment from the ink runs on it: `Continuous` without gaps of 3 px or more,
-/// `DashDot` when the ink runs alternate between long dashes and short dots (longest ≥ 2.5 × shortest,
-/// shortest ≤ 20 px), `Dashed` when the runs and gaps are regular, `Unknown` otherwise.
+/// The family a run of ink belongs to, read from its elements on the page.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum LineFamily {
+    /// One ink run, no gap.
+    Continuous,
+    /// Regular dashes and gaps (细虚线).
+    Dashed,
+    /// Long dashes with one dot or short dash between them (细点画线, CAD CENTER).
+    Chain,
+    /// Long dashes with two short elements between them (细双点画线, CAD PHANTOM).
+    DoubleChain,
+    /// Gaps without a pattern of three or more dashes (two dashes are judged later against the page's calibration).
+    Undetermined,
+}
+
+/// The ink runs along a segment and what they make: dash and gap lengths in page pixels, the family and the pattern.
+#[derive(Clone, Debug, PartialEq)]
+pub struct InkRuns {
+    pub pattern: Pattern,
+    pub family: LineFamily,
+    pub ons: Vec<f64>,
+    pub offs: Vec<f64>,
+}
+
+/// Page pixels per paper millimetre the refinement parameters are stated in (300 dpi).
+pub const DEFAULT_PX_PER_MM: f64 = 300.0 / 25.4;
+
+/// Line pattern along a segment at 300 dpi (`measure_runs`; the round-3 reading at evaluation step 0).
 pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
+    if crate::linetypes::steps().chain_short_dash { measure_runs(ink, p, q, DEFAULT_PX_PER_MM).pattern } else { measure_pattern_round3(ink, p, q) }
+}
+
+/// The round-3 reading of the pattern along a segment on the page ink, kept for evaluation step 0 with round 3's
+/// constants: no crossing or text ink taken out, a dash-dot line only with dots of at most 20 px, dashes and gaps regular
+/// without paper bounds.
+pub(crate) fn measure_pattern_round3(ink: &Ink, p: P, q: P) -> Pattern {
     let len = dist(p, q);
     if !len.is_finite() || len < 4.0 {
         return Pattern::Continuous;
@@ -292,7 +324,6 @@ pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
     while runs.last().is_some_and(|r| !r.0) {
         runs.pop();
     }
-    // Merge tiny gaps (< 3 px) into the surrounding ink runs.
     let mut merged: Vec<(bool, usize)> = Vec::new();
     for (on, l) in runs {
         if !on && l < 3
@@ -314,8 +345,6 @@ pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
     if ons.len() < 3 {
         return Pattern::Unknown;
     }
-    // The first and last runs may be cut short where the line meets another (a hidden line ending on an outline):
-    // with enough runs the pattern is read from the interior ones.
     let ons: Vec<f64> = if ons.len() >= 5 { ons[1..ons.len() - 1].to_vec() } else { ons };
     let lo = ons.iter().copied().fold(f64::INFINITY, f64::min);
     let hi = ons.iter().copied().fold(0.0, f64::max);
@@ -329,10 +358,161 @@ pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
         let var = v.iter().map(|x| (x - m) * (x - m)).sum::<f64>() / v.len() as f64;
         if m > 0.0 { var.sqrt() / m } else { 0.0 }
     };
-    if cv(&ons) < 0.6 && cv(&offs) < 0.8 {
-        Pattern::Dashed
+    if cv(&ons) < 0.6 && cv(&offs) < 0.8 { Pattern::Dashed } else { Pattern::Unknown }
+}
+
+/// The pattern a stroke takes from the page ink at this process's evaluation step: the measured runs' pattern, or the
+/// round-3 reading at step 0.
+pub(crate) fn stroke_pattern(ink: &Ink, p: P, q: P, runs: &InkRuns) -> Pattern {
+    if crate::linetypes::steps().chain_short_dash { runs.pattern } else { measure_pattern_round3(ink, p, q) }
+}
+
+/// [`measure_runs_texts`] without observed texts.
+pub(crate) fn measure_runs(ink: &Ink, p: P, q: P, px_per_mm: f64) -> InkRuns {
+    measure_runs_texts(ink, p, q, px_per_mm, &[])
+}
+
+/// The ink runs along a segment and their family (bounds from the line-type knowledge): `Continuous` without gaps of
+/// 3 px or more; with three or more dashes, a short element between long dashes makes a chain line when the short ones
+/// are dots or short dashes about as long as the gaps (textbook p16; CAD CENTER) — two short elements between long dashes
+/// the double chain family, which is not a centre line (`Unknown` pattern) — and regular dashes and gaps within the dashed
+/// bounds are dashed; two dashes, or runs without a pattern, are `Undetermined` with an `Unknown` pattern. Ink of a line
+/// crossing this one, and ink no longer than a character in one of the observed `texts`, is not an element of this line.
+pub(crate) fn measure_runs_texts(ink: &Ink, p: P, q: P, px_per_mm: f64, texts: &[[f64; 4]]) -> InkRuns {
+    let len = dist(p, q);
+    let plain = |pattern: Pattern, family: LineFamily, ons: Vec<f64>, offs: Vec<f64>| InkRuns { pattern, family, ons, offs };
+    if !len.is_finite() || len < 4.0 {
+        return plain(Pattern::Continuous, LineFamily::Continuous, vec![len.max(0.0)], Vec::new());
+    }
+    let n = len.ceil() as usize + 1;
+    let mut runs: Vec<(bool, usize)> = Vec::new();
+    for i in 0..n {
+        let t = i as f64 / (n - 1) as f64;
+        let on = ink.has_dark_within(p.0 + (q.0 - p.0) * t, p.1 + (q.1 - p.1) * t, 1.5);
+        match runs.last_mut() {
+            Some((o, l)) if *o == on => *l += 1,
+            _ => runs.push((on, 1)),
+        }
+    }
+    while runs.first().is_some_and(|r| !r.0) {
+        runs.remove(0);
+    }
+    while runs.last().is_some_and(|r| !r.0) {
+        runs.pop();
+    }
+    // Ink that is not this line's belongs to its gaps, read on the raw runs before tiny gaps close (a crossing beside a
+    // dot or a short dash must not lengthen it): a short run with ink half a millimetre to its side is another line
+    // crossing or meeting this one in a gap (CAD intersections may fall in gaps); a run no longer than a character whose
+    // middle lies in an observed text is the text's ink (the bars of a "+" lying on an axis).
+    let b = crate::linetypes::bounds();
+    if let Some(dir) = unit(sub(q, p)) {
+        let side = perp(dir);
+        let short = (b.chain_dot_max_paper_mm * px_per_mm).max(4.0);
+        let glyph = b.text_glyph_max_paper_mm * px_per_mm;
+        let reach = b.crossing_reach_paper_mm * px_per_mm;
+        let mut t = 0usize;
+        let count = runs.len();
+        let foreign: Vec<bool> = runs
+            .iter()
+            .enumerate()
+            .map(|(k, &(on, l))| {
+                let mid = (t as f64 + 0.5 * l as f64) / (n - 1) as f64 * len;
+                t += l;
+                if !on || k == 0 || k + 1 == count {
+                    return false;
+                }
+                let c = add(p, mul(dir, mid));
+                let crossing = (l as f64) <= short
+                    && [1.0, -1.0].iter().any(|sgn| {
+                        let x = add(c, mul(side, sgn * reach));
+                        ink.has_dark_within(x.0, x.1, 1.0)
+                    });
+                let text = (l as f64) <= glyph && texts.iter().any(|bx| c.0 >= bx[0] && c.0 <= bx[2] && c.1 >= bx[1] && c.1 <= bx[3]);
+                crossing || text
+            })
+            .collect();
+        if foreign.iter().any(|&x| x) {
+            let mut again: Vec<(bool, usize)> = Vec::new();
+            for (&(on, l), &x) in runs.iter().zip(&foreign) {
+                let on = on && !x;
+                match again.last_mut() {
+                    Some((o, last)) if *o == on => *last += l,
+                    _ => again.push((on, l)),
+                }
+            }
+            runs = again;
+        }
+    }
+    // Merge tiny gaps (< 3 px) into the surrounding ink runs.
+    let mut merged: Vec<(bool, usize)> = Vec::new();
+    for (on, l) in runs {
+        if !on && l < 3
+            && let Some((true, last)) = merged.last_mut()
+        {
+            *last += l;
+            continue;
+        }
+        match merged.last_mut() {
+            Some((o, last)) if *o == on => *last += l,
+            _ => merged.push((on, l)),
+        }
+    }
+    let ons: Vec<f64> = merged.iter().filter(|r| r.0).map(|r| r.1 as f64).collect();
+    let offs: Vec<f64> = merged.iter().filter(|r| !r.0).map(|r| r.1 as f64).collect();
+    if offs.is_empty() {
+        return plain(Pattern::Continuous, LineFamily::Continuous, ons, offs);
+    }
+    if ons.len() < 3 {
+        return plain(Pattern::Unknown, LineFamily::Undetermined, ons, offs);
+    }
+    // The first and last runs may be cut short where the line meets another (a hidden line ending on an outline):
+    // with enough runs the pattern is read from the interior ones.
+    let interior: Vec<f64> = if ons.len() >= 5 { ons[1..ons.len() - 1].to_vec() } else { ons.clone() };
+    let lo = interior.iter().copied().fold(f64::INFINITY, f64::min);
+    let hi = interior.iter().copied().fold(0.0, f64::max);
+    let is_short = |l: f64| l <= lo * b.element_short_spread + b.element_spread_slack_paper_mm * px_per_mm;
+    let is_long = |l: f64| l >= hi * b.element_long_share;
+    let shorts = interior.iter().filter(|&&l| is_short(l)).count();
+    let longs = interior.iter().filter(|&&l| is_long(l)).count();
+    let mut gv = offs.clone();
+    let gm = median(&mut gv).unwrap_or(0.0);
+    let grouped = (interior.len() as f64 * b.element_group_share).floor() as usize;
+    if lo <= b.chain_max_short_to_long * hi && shorts >= 1 && longs >= 1 && shorts + longs >= grouped {
+        let mut sv: Vec<f64> = interior.iter().copied().filter(|&l| is_short(l)).collect();
+        let mut lv: Vec<f64> = interior.iter().copied().filter(|&l| is_long(l)).collect();
+        let (sm, lm) = (median(&mut sv).unwrap_or(0.0), median(&mut lv).unwrap_or(0.0));
+        let chain_short = sm <= b.chain_max_short_to_long * lm
+            && (sm <= b.chain_dot_max_paper_mm * px_per_mm || sm <= b.chain_max_short_to_gap * gm)
+            && lm <= b.chain_max_long_paper_mm * px_per_mm;
+        // A chain line shows short elements between long dashes: at least one short element (one or two of them for
+        // the double chain) with long dashes on both sides. A whole line starts and ends with long dashes (DC-G1-044:
+        // 首末两端为长画); a line broken by a text or another line may start or end with a short one, which is left aside.
+        let long: Vec<bool> = ons.iter().map(|&l| !is_short(l)).collect();
+        let groups = match (long.iter().position(|&l| l), long.iter().rposition(|&l| l)) {
+            (Some(a), Some(z)) if z > a => crate::pattern::short_groups(&long[a..=z]),
+            _ => None,
+        };
+        if chain_short {
+            match groups {
+                Some(2) => return plain(Pattern::Unknown, LineFamily::DoubleChain, ons, offs),
+                Some(1) => return plain(Pattern::DashDot, LineFamily::Chain, ons, offs),
+                _ => {}
+            }
+        }
+    }
+    let cv = |v: &[f64]| {
+        let m = v.iter().sum::<f64>() / v.len() as f64;
+        let var = v.iter().map(|x| (x - m) * (x - m)).sum::<f64>() / v.len() as f64;
+        if m > 0.0 { var.sqrt() / m } else { 0.0 }
+    };
+    // Regular dashes and gaps within the dashed family's paper bounds (dash, gap, gap share of the dash).
+    let mut di = interior.clone();
+    let dm = median(&mut di).unwrap_or(0.0);
+    let in_bounds = dm <= b.dashed_max_dash_paper_mm * px_per_mm && gm <= b.max_dash_gap_paper_mm * px_per_mm && gm >= b.dashed_min_gap_to_dash * dm;
+    if cv(&interior) < b.dash_spread_cv && cv(&offs) < b.gap_spread_cv && in_bounds {
+        plain(Pattern::Dashed, LineFamily::Dashed, ons, offs)
     } else {
-        Pattern::Unknown
+        plain(Pattern::Unknown, LineFamily::Undetermined, ons, offs)
     }
 }
 
@@ -1709,6 +1889,63 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
 mod tests {
     use super::*;
     use crate::observe::{ProposedMember, Provenance};
+
+    /// Ink of one horizontal pattern at y = 10 from x = 10 (3 px strokes): alternating ink and gap lengths, ink first.
+    fn row(elements: &[i64]) -> (Ink, P, P) {
+        let w = (elements.iter().sum::<i64>() + 20) as usize;
+        let mut m = vec![false; w * 21];
+        let mut x = 10i64;
+        for (k, &l) in elements.iter().enumerate() {
+            if k % 2 == 0 {
+                for xx in x..x + l {
+                    for y in 9..=11 {
+                        m[y * w + xx as usize] = true;
+                    }
+                }
+            }
+            x += l;
+        }
+        (Ink::from_mask(w, 21, m), (10.0, 10.0), ((x - 1) as f64, 10.0))
+    }
+
+    #[test]
+    fn chain_lines_are_read_from_short_elements_between_long_dashes() {
+        let k = DEFAULT_PX_PER_MM;
+        let (ink, p, q) = row(&[190, 35, 40, 35, 190, 35, 40, 35, 190]);
+        assert_eq!(measure_runs(&ink, p, q, k).family, LineFamily::Chain);
+        let (ink, p, q) = row(&[190, 35, 40, 35, 40, 35, 190]);
+        let r = measure_runs(&ink, p, q, k);
+        assert_eq!((r.family, r.pattern), (LineFamily::DoubleChain, Pattern::Unknown));
+        // Short pieces much longer than the gaps beside them are a line cut by crossings, not a chain line.
+        let (ink, p, q) = row(&[200, 14, 60, 14, 200, 14, 60, 14, 200]);
+        assert_ne!(measure_runs(&ink, p, q, k).family, LineFamily::Chain);
+        // A line broken by a text may start with a short dash; a cut end piece is no dot.
+        let (ink, p, q) = row(&[41, 35, 195, 35, 42, 35, 256]);
+        assert_eq!(measure_runs(&ink, p, q, k).family, LineFamily::Chain);
+        let (ink, p, q) = row(&[7, 33, 82, 33, 26]);
+        assert_ne!(measure_runs(&ink, p, q, k).family, LineFamily::Chain);
+    }
+
+    #[test]
+    fn glyph_ink_in_an_observed_text_and_crossing_lines_are_no_elements_of_the_line() {
+        let k = DEFAULT_PX_PER_MM;
+        // The bars of two "+" glyphs on an axis between two long dashes look like the short elements of a double chain.
+        let (ink, p, q) = row(&[190, 20, 23, 18, 23, 35, 190]);
+        assert_eq!(measure_runs(&ink, p, q, k).family, LineFamily::DoubleChain);
+        let text = [[218.0, 0.0, 285.0, 20.0]];
+        assert_ne!(measure_runs_texts(&ink, p, q, k, &text).family, LineFamily::DoubleChain);
+        // A vertical line crossing in a gap of a chain line does not split the gap.
+        let (ink, p, q) = row(&[190, 35, 40, 35, 190, 35, 40, 35, 190]);
+        let mut m = ink.mask().to_vec();
+        let w = ink.width;
+        for y in 0..21 {
+            for x in 215..=217 {
+                m[y * w + x] = true;
+            }
+        }
+        let crossed = Ink::from_mask(w, 21, m);
+        assert_eq!(measure_runs(&crossed, p, q, k).family, LineFamily::Chain);
+    }
 
     fn ink_with(w: usize, h: usize, f: impl Fn(usize, usize) -> bool) -> Ink {
         let mut m = vec![false; w * h];

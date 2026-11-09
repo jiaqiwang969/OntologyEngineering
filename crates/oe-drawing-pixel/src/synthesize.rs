@@ -133,6 +133,17 @@ fn verification_json(v: Option<&Verification>) -> Value {
     }
 }
 
+/// The family name used in evidence and conditions.
+fn family_name(f: crate::refine::LineFamily) -> &'static str {
+    match f {
+        crate::refine::LineFamily::Continuous => "continuous",
+        crate::refine::LineFamily::Dashed => "dashed",
+        crate::refine::LineFamily::Chain => "chain",
+        crate::refine::LineFamily::DoubleChain => "double_chain",
+        crate::refine::LineFamily::Undetermined => "undetermined",
+    }
+}
+
 fn pattern_name(p: Option<Pattern>) -> &'static str {
     match p {
         Some(Pattern::Continuous) => "continuous",
@@ -427,6 +438,10 @@ struct Builder<'a> {
     callout_counts: BTreeMap<String, usize>,
     shared_uses: BTreeMap<String, Vec<Value>>,
     width_contrast: Value,
+    /// The page's line patterns from the structure step (line-type knowledge).
+    line_patterns: Option<crate::structure::LinePatterns>,
+    /// Runs measured on the proposed centre lines, which calibrate the chain family with the structure step's runs.
+    centre_runs: Vec<crate::refine::InkRuns>,
     /// Tolerance around an L0 view box: one text height, at least 2 mm.
     view_margin_px: f64,
     unreadable_texts: usize,
@@ -532,6 +547,8 @@ impl<'a> Builder<'a> {
             callout_counts: BTreeMap::new(),
             shared_uses: BTreeMap::new(),
             width_contrast: Value::Null,
+            line_patterns: None,
+            centre_runs: Vec::new(),
             view_margin_px: 2.0 * cal.dpi / 25.4,
             unreadable_texts: 0,
             unread_members_omitted: 0,
@@ -1646,7 +1663,10 @@ impl<'a> Builder<'a> {
             }
             let (a, b) = (add(o, mul(d, tmin)), add(o, mul(d, tmax)));
             let width = members.iter().map(|x| x.m.width_px).fold(0.0, f64::max);
-            let pattern = measure_pattern(self.ink, a, b);
+            let texts: Vec<[f64; 4]> = self.text_boxes.iter().map(|(b, _)| *b).collect();
+            let runs = crate::refine::measure_runs_texts(self.ink, a, b, self.cal.dpi / 25.4, &texts);
+            let pattern = crate::refine::stroke_pattern(self.ink, a, b, &runs);
+            self.centre_runs.push(runs);
             let thick = self.thin_reference.is_some_and(|t| width >= 1.6 * t && width > 0.0);
             let lt = stroke_line_type(Some(pattern), thick);
             let (a, b) = crate::lines::snap_axis(a, b).map_or((a, b), |(s, _)| s);
@@ -1713,8 +1733,16 @@ impl<'a> Builder<'a> {
         let rest = remaining_ink(self.ink, &self.erase_segments, &self.erase_boxes,
             &self.hatch_polygons.iter().map(|(p, _)| p.clone()).collect::<Vec<_>>(), &self.arrows);
         let erased = erased_strokes(&self.erase_segments, &self.arrows);
-        let (classified, thin, remnants) =
-            vectorise_remainder(&rest, self.ink, &erased, self.thin_reference, &self.centre_segments, params);
+        let text_boxes: Vec<[f64; 4]> = self.text_boxes.iter().map(|(b, _)| *b).collect();
+        let (classified, thin, remnants, line_patterns) =
+            vectorise_remainder(&rest, self.ink, &erased, self.thin_reference, &self.centre_segments, &text_boxes, &self.centre_runs, &|p| self.view_of(p) != "view:sheet", params);
+        if line_patterns.dashed.state != "known" && line_patterns.two_dash_unjudged > 0 {
+            self.unknowns.push(format!(
+                "No dashed line type calibrated on this page ({}): {} pair(s) of equal collinear pieces with one blank gap were not judged as two-dash hidden lines, and the hidden closure was not applied",
+                line_patterns.dashed.state, line_patterns.two_dash_unjudged
+            ));
+        }
+        self.line_patterns = Some(line_patterns);
         let classified = crate::structure::merge_cocircular_axes(classified);
         self.thin_reference = Some(thin);
         self.stroke_counts.insert("remnants_of_erased_members".into(), remnants);
@@ -1749,7 +1777,10 @@ impl<'a> Builder<'a> {
         let mut groups: BTreeMap<(String, &'static str), String> = BTreeMap::new();
         let mut pieces: Vec<Piece> = Vec::new();
         let mut arc_pieces: Vec<ArcPiece> = Vec::new();
-        for (c, view) in classified.iter().zip(&views) {
+        // Entity of each placed stroke, and the closure members whose evidence names the hidden line they joined.
+        let mut stroke_entity: BTreeMap<usize, String> = BTreeMap::new();
+        let mut closures: Vec<(String, String, String)> = Vec::new();
+        for (ci, (c, view)) in classified.iter().zip(&views).enumerate() {
             if c.stroke.primitive.length() < min_remnant_px {
                 *self.stroke_counts.entry("shorter_than_2mm".into()).or_insert(0) += 1;
                 continue;
@@ -1810,18 +1841,36 @@ impl<'a> Builder<'a> {
                     id
                 }
             };
-            let lt = stroke_line_type(Some(c.stroke.pattern), c.thick);
-            let evidence = vec![
+            // A closure member's ink is continuous (shorter than one pattern repeat); its line type is the hidden line's,
+            // by the role rule, not by an observed pattern.
+            let closure = matches!(c.evidence, Some(crate::structure::LineEvidence::Closure { .. }));
+            let lt = if closure { if c.thick { "thick_dashed" } else { "thin_dashed" } } else { stroke_line_type(Some(c.stroke.pattern), c.thick) };
+            let basis = if closure { "role_rule" } else { "observed_pattern" };
+            let mut evidence = vec![
                 format!("support:{:.2}", c.stroke.support),
                 format!("width_px:{:.2}", c.stroke.width_px),
                 format!("skeleton_pixels:{}", c.stroke.pixels),
             ];
+            let line_evidence = match &c.evidence {
+                Some(crate::structure::LineEvidence::Pattern { family, dashes, gap_px }) => {
+                    evidence.push(format!("line_pattern:{}:dashes={dashes}:gap_px={gap_px:.1}", family_name(*family)));
+                    json!({"rule": "own_pattern", "family": family_name(*family), "dashes": dashes, "gap_px": fin(*gap_px)})
+                }
+                Some(crate::structure::LineEvidence::TwoDash { ends_px, gap_px }) => {
+                    evidence.push(format!("line_pattern:two_dash:ends_px={:.1},{:.1}:gap_px={gap_px:.1}", ends_px.0, ends_px.1));
+                    json!({"rule": "two_dash", "ends_px": [fin(ends_px.0), fin(ends_px.1)], "gap_px": fin(*gap_px)})
+                }
+                Some(crate::structure::LineEvidence::Closure { kind, to, length_px, repeat_px }) => {
+                    json!({"rule": "hidden_closure", "junction": kind, "joined_stroke": to, "length_px": fin(*length_px), "repeat_px": fin(*repeat_px)})
+                }
+                None => Value::Null,
+            };
             let (entity, prov) = match c.stroke.primitive {
                 Primitive::Line { p, q } => {
                     let (p, q) = crate::lines::snap_axis(p, q).map_or((p, q), |(s, _)| s);
                     let (a, b) = (self.to_drawing(p), self.to_drawing(q));
                     let id = self.add_entity("LINE", vec![a.0, a.1, b.0, b.1], "line", None, lt, None,
-                        ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()));
+                        (basis, pattern_name(Some(c.stroke.pattern)), evidence.clone()));
                     self.overlay.line(&self.frame, &id, overlay_class, a, b);
                     (id, json!({"type": "line", "p": [fin(p.0), fin(p.1)], "q": [fin(q.0), fin(q.1)]}))
                 }
@@ -1835,21 +1884,29 @@ impl<'a> Builder<'a> {
                     let (a0, w) = drawing_arc(start_rad, sweep_rad);
                     let id = if full {
                         self.add_entity("CIRCLE", vec![cu.0, cu.1, ru, 0.0, std::f64::consts::TAU], "circle", None, lt, None,
-                            ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()))
+                            (basis, pattern_name(Some(c.stroke.pattern)), evidence.clone()))
                     } else {
                         self.add_entity("ARC", vec![cu.0, cu.1, ru, a0, w], "arc", None, lt, None,
-                            ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()))
+                            (basis, pattern_name(Some(c.stroke.pattern)), evidence.clone()))
                     };
                     self.overlay.arc(&self.frame, &id, overlay_class, cu, ru, start, if full { 360.0 } else { sweep });
                     (id, json!({"type": "arc", "c": [fin(centre.0), fin(centre.1)], "r": fin(r), "start_rad": fin(start_rad), "sweep_rad": fin(sweep_rad)}))
                 }
             };
             let mid_id = self.add_member(&eid, &entity, role, lt, state, &view, evidence, vec![]);
-            self.provenance.insert(entity.clone(), json!({
+            let mut record = json!({
                 "source": "vectorize", "expression_id": eid, "member_id": mid_id, "role": role, "class": kind,
                 "stroke_px": prov, "width_px": fin(c.stroke.width_px), "pattern": pattern_name(Some(c.stroke.pattern)),
                 "support": fin(c.stroke.support), "skeleton_pixels": c.stroke.pixels, "thick": c.thick,
-            }));
+            });
+            if !line_evidence.is_null() {
+                record["line_evidence"] = line_evidence;
+            }
+            self.provenance.insert(entity.clone(), record);
+            stroke_entity.insert(ci, entity.clone());
+            if let Some(crate::structure::LineEvidence::Closure { kind, to, length_px, repeat_px }) = &c.evidence {
+                closures.push((mid_id.clone(), entity.clone(), format!("{kind}|{to}|{length_px:.1}|{repeat_px:.1}")));
+            }
             if kind == "visible_contour" || kind == "hidden_contour" {
                 let class: &'static str = if kind == "visible_contour" { "visible_outline" } else { "hidden_outline" };
                 match c.stroke.primitive {
@@ -1861,6 +1918,21 @@ impl<'a> Builder<'a> {
                         arc_pieces.push(ArcPiece { member: mid_id, view, class, c: centre, r, start_rad, sweep_rad });
                     }
                 }
+            }
+        }
+        // Closure members name the hidden line they joined, now that every stroke has its entity.
+        for (member_id, entity, packed) in closures {
+            let parts: Vec<&str> = packed.split('|').collect();
+            let to: usize = parts[1].parse().unwrap_or(usize::MAX);
+            let joined = stroke_entity.get(&to).cloned().unwrap_or_else(|| format!("stroke:{to}"));
+            let text = format!("hidden_closure:{}:{joined}:length_px={}:repeat_px={}", parts[0], parts[2], parts[3]);
+            if let Some(m) = self.members.iter_mut().find(|m| m["id"].as_str() == Some(member_id.as_str()))
+                && let Some(list) = m["evidence_ids"].as_array_mut()
+            {
+                list.push(Value::String(text));
+            }
+            if let Some(rec) = self.provenance.get_mut(&entity) {
+                rec["line_evidence"]["joined_entity"] = Value::String(joined);
             }
         }
         self.line_structural_lines(pieces, params);
@@ -2053,6 +2125,53 @@ impl<'a> Builder<'a> {
             None => json!({"id": "sheet_scale", "state": "unknown", "value": null, "values": [fin(page_mm)], "basis": "none", "evidence": evidence,
                 "note": format!("No title-block scale text read: rules stated in paper millimetres cannot apply; the page has {page_mm:.4} mm per drawing unit")}),
         }
+    }
+
+    /// The page's line patterns as the graph contract's conditions, one per family (`line_patterns.dashed`, `.chain`,
+    /// `.double_chain`): state, the calibrated elements in page pixels and, when the sheet scale is known, in nominal paper
+    /// millimetres, the runs they come from and what the two-dash rule and the hidden closure did or could not do.
+    fn line_pattern_conditions(&self) -> Vec<Value> {
+        let Some(lp) = &self.line_patterns else { return Vec::new() };
+        let scale = self.cal.scale_note.as_deref().and_then(crate::calibrate::parse_scale_note)
+            .filter(|_| matches!(self.cal.basis.as_str(), "dimensions" | "scale_note"));
+        let px_per_paper_mm = scale.map(|r| self.s / r);
+        [("dashed", &lp.dashed, "gap, interior dash"), ("chain", &lp.chain, "long dash, short element, gap"), ("double_chain", &lp.double_chain, "long dash, short element, gap")]
+            .into_iter()
+            .map(|(name, f, layout)| {
+                let mut values: Vec<f64> = f.elements_px.iter().map(|v| fin(*v)).collect();
+                let modes: Vec<String> = f.modes.iter().map(|(g, n)| format!("{g:.1}x{n}")).collect();
+                let mut evidence = vec![format!("runs:{}", f.runs), format!("consistent_runs:{}", f.consistent_runs), format!("values:{layout} in page px"),
+                    format!("gap_modes_px:{}", modes.join(","))];
+                if let Some(k) = px_per_paper_mm.filter(|_| !f.elements_px.is_empty()) {
+                    values.extend(f.elements_px.iter().map(|v| fin(v / k)));
+                    evidence[2] = format!("values:{layout} in page px, then in nominal paper mm ({k:.3} px per paper mm)");
+                }
+                if name == "chain" {
+                    evidence.push(format!("inconsistent_runs_all_families:{}", lp.inconsistent_runs));
+                }
+                let step = crate::linetypes::steps();
+                if step.label != "C" {
+                    evidence.push(format!("evaluation_steps:{}", step.label));
+                }
+                if name == "dashed" {
+                    if f.state == "known" {
+                        evidence.push(format!("two_dash_merged:{}", lp.two_dash_merged));
+                        evidence.push(format!("closure_accepted:{}", lp.closure_accepted));
+                        evidence.push(format!("closure_blocked:{}", lp.closure_blocked));
+                    } else {
+                        evidence.push(format!("two_dash_unjudged:{}", lp.two_dash_unjudged));
+                        evidence.push("two_dash_rule_and_hidden_closure:not_applied".to_owned());
+                    }
+                }
+                let note = match f.state {
+                    "known" => format!("{} {name} run(s) on the page agree on the elements ({layout}): {:?} px", f.consistent_runs, f.elements_px.iter().map(|v| (v * 10.0).round() / 10.0).collect::<Vec<_>>()),
+                    "conflict" => format!("Only {} of {} {name} run(s) agree on the gap: the family's elements are not one size on this page", f.consistent_runs, f.runs),
+                    _ => format!("No {name} run of three or more elements on the page: the rules that need this family do not apply"),
+                };
+                json!({"id": format!("line_patterns.{name}"), "state": f.state, "value": f.elements_px.first().map(|v| fin(*v)),
+                    "values": values, "basis": "page_runs", "evidence": evidence, "note": note})
+            })
+            .collect()
     }
 
     /// Line-width contrast as the graph contract's condition: whether thick and thin lines differ on this print.
@@ -2330,7 +2449,7 @@ impl<'a> Builder<'a> {
             "structure_ends": self.structure_ends,
             "unknowns": unknowns,
             "views": self.views_json(),
-            "conditions": [self.sheet_scale_condition(), self.width_contrast_condition()],
+            "conditions": ([vec![self.sheet_scale_condition(), self.width_contrast_condition()], self.line_pattern_conditions()].concat()),
         });
         let counts = json!({
             "unsupported_members": self.unsupported,

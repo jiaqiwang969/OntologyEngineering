@@ -126,6 +126,20 @@ pub enum DrawingCommand {
         #[arg(long)]
         page_name: Option<String>,
     },
+    /// Developer command of the pixel route: the structure step alone on one page image (no observations, nothing
+    /// erased) — vectorised strokes classified by the line-type knowledge, with their evidence, and the page's line
+    /// patterns — written as one new JSON file.
+    PixelLines {
+        /// Page image (PNG).
+        #[arg(long)]
+        page: PathBuf,
+        /// Resolution of the page image in dots per inch.
+        #[arg(long, default_value_t = 300.0)]
+        dpi: f64,
+        /// New JSON file for the result.
+        #[arg(long)]
+        output: PathBuf,
+    },
 }
 
 /// Read a directory's files with one of the given name prefixes and the `.json` or `.png` extension,
@@ -475,5 +489,14 @@ fn execute(root: &SkillRoot, command: DrawingCommand) -> Result<serde_json::Valu
             scale_note,
             page_name,
         ),
+        DrawingCommand::PixelLines { page, dpi, output } => {
+            let png = oe_core::read_regular_bytes(&page, 64 * 1024 * 1024)?;
+            let mut report = oe_drawing_pixel::structure::pixel_lines(&png, dpi, 128)?;
+            report["page"] = serde_json::json!({"path": text(&page), "sha256": oe_core::sha256(&png)});
+            let bytes = serde_json::to_vec_pretty(&report)?;
+            oe_core::write_new_bytes(&output, &bytes)?;
+            Ok(serde_json::json!({"schema": "oev2.pixel-lines-result/1", "output": {"path": text(&output), "bytes": bytes.len(), "sha256": oe_core::sha256(&bytes)},
+                "strokes": report["strokes"].as_array().map_or(0, Vec::len), "line_patterns": report["line_patterns"].clone()}))
+        }
     }
 }

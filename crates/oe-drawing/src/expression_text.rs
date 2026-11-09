@@ -210,7 +210,7 @@ fn callout_forms(entry: &'static str) -> &'static [String] {
 }
 
 /// Value of a Roman numeral written in Latin letters (I, IV, XII) or as one Unicode numeral
-/// (Ⅰ … Ⅻ); both writings of one number are the same numeral.
+/// (U+2160 … U+216B); both writings of one number are the same numeral.
 pub fn roman_value(s: &str) -> Option<u32> {
     let t = s.trim();
     if !callout_forms("roman_numeral").iter().any(|f| f == t) {

@@ -816,7 +816,7 @@ pub(super) fn section_letters(label: &str) -> Option<String> {
 
 /// A callout refers to the view its letter or numeral names, on its own sheet: `X向` and
 /// `X …` titles by the letter, section names `X—X` by the letter, detail titles by the value of
-/// the numeral (Ⅰ and I are one numeral).
+/// the numeral (Ⅲ and III are one numeral).
 pub(super) fn refs(
     b: &Builder,
     regions: &[Region],
@@ -1136,15 +1136,28 @@ pub(super) fn titles(cx: &Ctx, b: &mut Builder, titles: &mut Vec<ViewTitle>) -> 
     Ok(())
 }
 
+/// Boxes of the title blocks read as blocks: their texts are fields, never view names.
+fn title_block_boxes(cx: &Ctx, b: &Builder) -> Vec<[f64; 4]> {
+    (0..b.exprs.len())
+        .filter(|&i| b.exprs[i].kind == "title_block")
+        .filter_map(|i| block_member(b, i).and_then(|h| cx.bbox(h)))
+        .collect()
+}
+
 /// Two equal letters on one baseline with a short line at half their height (or a dash text)
 /// between them: the section name `X—X` (card view_callout, variant section_name_split).
 fn split_section_names(cx: &Ctx, b: &mut Builder, titles: &mut Vec<ViewTitle>) -> Result<()> {
     let gap_max = param("view_callout", "split_name_gap")?;
     let dashes = lexicon("view_callout", "separator");
+    let fields = title_block_boxes(cx, b);
     let free: Vec<TextFact> = cx
         .texts
         .values()
-        .filter(|t| !b.used(&t.id) && view_letter(&t.dec.text))
+        .filter(|t| {
+            !b.used(&t.id)
+                && view_letter(&t.dec.text)
+                && !fields.iter().any(|f| inside(t.center, *f, 0.))
+        })
         .cloned()
         .collect();
     for l in &free {
@@ -1242,7 +1255,7 @@ fn split_section_names(cx: &Ctx, b: &mut Builder, titles: &mut Vec<ViewTitle>) -
     Ok(())
 }
 
-/// The name part and the rotation word of a detail name (`Ⅰ`, `A`, `I 旋转`), with a scale when it
+/// The name part and the rotation word of a detail name (`Ⅲ`, `C`, `III 旋转`), with a scale when it
 /// is written on the same line.
 fn detail_name(
     text: &str,
@@ -1276,10 +1289,11 @@ fn detail_names(cx: &Ctx, b: &mut Builder, titles: &mut Vec<ViewTitle>) -> Resul
     let gmax = param("detail_view", "title_gap_max")?;
     let dxm = param("detail_view", "title_dx_max")?;
     let rotation = lexicon("detail_view", "rotation_word");
+    let fields = title_block_boxes(cx, b);
     let free: Vec<TextFact> = cx
         .texts
         .values()
-        .filter(|t| !b.used(&t.id))
+        .filter(|t| !b.used(&t.id) && !fields.iter().any(|f| inside(t.center, *f, 0.)))
         .cloned()
         .collect();
     for u in &free {
@@ -1782,18 +1796,17 @@ pub(super) fn cutting_paths(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 })
                 .min_by(|x, y| dist(x.1, at).total_cmp(&dist(y.1, at)));
             let Some((sid, _, far)) = next else { break };
-            b.member(
-                e,
-                &sid,
-                None,
-                [0., 1.],
-                "cutting_stroke",
-                cx.lt(&sid),
-                "candidate",
-                vec![],
-                vec!["cutting_path".into()],
-            );
-            added = true;
+            let letter_near = |b: &Builder, p: P| {
+                cx.texts
+                    .values()
+                    .filter(|t| {
+                        !b.used(&t.id)
+                            && t.dec.text.trim() == letter
+                            && dist(t.center, p) < letter_reach * t.height
+                    })
+                    .min_by(|x, y| dist(x.center, p).total_cmp(&dist(y.center, p)))
+                    .map(|t| t.id.clone())
+            };
             // a turn: another stroke leaves the far end at an angle
             let turn = cx
                 .lines
@@ -1808,30 +1821,25 @@ pub(super) fn cutting_paths(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     (dist(n, far) < tol && dot(unit(sub(f, n)), unit(sub(far, at))) < cos_max)
                         .then(|| (tid.clone(), f))
                 });
-            let letter_near = |b: &Builder, p: P| {
-                cx.texts
-                    .values()
-                    .filter(|t| {
-                        !b.used(&t.id)
-                            && t.dec.text.trim() == letter
-                            && dist(t.center, p) < letter_reach * t.height
-                    })
-                    .min_by(|x, y| dist(x.center, p).total_cmp(&dist(y.center, p)))
-                    .map(|t| t.id.clone())
-            };
             if let Some((tid, f)) = turn {
-                b.member(
-                    e,
-                    &tid,
-                    None,
-                    [0., 1.],
-                    "cutting_stroke",
-                    cx.lt(&tid),
-                    "candidate",
-                    vec![],
-                    vec!["cutting_path_turn".into()],
-                );
-                if let Some(t) = letter_near(b, far) {
+                let turn_letter = letter_near(b, far);
+                for (id, role, lt) in [
+                    (&sid, "cutting_stroke", cx.lt(&sid)),
+                    (&tid, "cutting_stroke", cx.lt(&tid)),
+                ] {
+                    b.member(
+                        e,
+                        id,
+                        None,
+                        [0., 1.],
+                        role,
+                        lt,
+                        "candidate",
+                        vec![],
+                        vec!["cutting_path_turn".into()],
+                    );
+                }
+                if let Some(t) = turn_letter {
                     b.member(
                         e,
                         &t,
@@ -1844,11 +1852,13 @@ pub(super) fn cutting_paths(cx: &Ctx, b: &mut Builder) -> Result<()> {
                         vec!["cutting_path_turn".into()],
                     );
                 }
+                added = true;
                 u = unit(sub(f, far));
                 at = f;
                 continue;
             }
-            // the end stroke: an arrow leaves its outer end at a right angle
+            // the end stroke: an arrow leaves its outer end at a right angle, or the letter is
+            // written there; a stroke with neither is not taken
             let v = unit(sub(far, at));
             let arrow = cx
                 .arrows
@@ -1872,6 +1882,22 @@ pub(super) fn cutting_paths(cx: &Ctx, b: &mut Builder) -> Result<()> {
                                 .then(|| (aid.clone(), lid.clone()))
                         })
                 });
+            let end_letter = letter_near(b, far);
+            if arrow.is_none() && end_letter.is_none() {
+                break;
+            }
+            b.member(
+                e,
+                &sid,
+                None,
+                [0., 1.],
+                "cutting_stroke",
+                cx.lt(&sid),
+                "candidate",
+                vec![],
+                vec!["cutting_path_end".into()],
+            );
+            added = true;
             if let Some((aid, lid)) = arrow {
                 b.member(
                     e,
@@ -1896,7 +1922,7 @@ pub(super) fn cutting_paths(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     vec!["cutting_path_end".into()],
                 );
             }
-            if let Some(t) = letter_near(b, far) {
+            if let Some(t) = end_letter {
                 b.member(
                     e,
                     &t,

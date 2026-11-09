@@ -604,6 +604,60 @@ kinds = ["view_callout"]
 kind = ""
 ids = ["DC-G2-072"]
 
+[[rules]]
+rule = "card:view_callout/arrow_and_letter_apart"
+function = "view_layout::arrows_and_letters"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-072"]
+
+[[rules]]
+rule = "card:view_callout/section_name_split"
+function = "view_layout::titles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-065"]
+
+[[rules]]
+rule = "card:view_callout/strokes_without_arrows"
+function = "view_layout::cutting_paths"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-043"]
+
+[[rules]]
+rule = "card:detail_view/title_forms"
+function = "view_layout::titles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "card:detail_view/boundary_arc"
+function = "view_layout::detail_boundaries"
+piece = false
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "card:detail_view/boundary_circle"
+function = "view_layout::detail_boundaries"
+piece = false
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -757,8 +811,8 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G1-085"
 level = "partial"
-by = ["binding_margin_registration_table", "sheet_size_rectangular_border"]
-missing = "只识别整块的图框图块（矩形边框或装订边登记栏）；散线画的图框、纸边界线与对中符号未区分"
+by = ["binding_margin_registration_table", "card:drawing_sheet", "sheet_size_rectangular_border"]
+missing = "只识别整块的图框图块（矩形边框或装订边登记栏）；一个模型空间中带标题栏的几个图框分为几张图纸；散线画的图框、纸边界线与对中符号未区分；图框须占全图范围的四分之一以上，并排四张以上的图纸会漏读"
 
 [[concepts]]
 id = "DC-G1-096"
@@ -778,8 +832,9 @@ by = ["card:title_block_field"]
 
 [[concepts]]
 id = "DC-G1-115"
-level = "full"
+level = "partial"
 by = ["card:view_callout"]
+missing = "散线写的视图名称与比例（名称下方或右侧、半角或全角冒号、罗马数字含 Unicode 写法、字母编号）已识别；写在图块（CAXA 局部放大图名称）或叠写 MTEXT 中的名称与比例未识别"
 
 [[concepts]]
 id = "DC-G2-019"
@@ -796,8 +851,14 @@ missing = "只通过包围剖面线的波浪线发现局部剖，局部剖视图
 [[concepts]]
 id = "DC-G2-043"
 level = "partial"
-by = ["card:view_callout"]
-missing = "阶梯剖、旋转剖转折处的短画及无箭头的短画未识别"
+by = ["card:view_callout", "card:view_callout/strokes_without_arrows"]
+missing = "短画加箭头加字母（散线）、箭头为图块时箭尾的短画、整条剖切路径（转折处的短画与字母、终点短画与箭头）、无箭头的成对短画已识别；作为一个图块（CAXA 剖切符号）的剖切符号与剖切面之间的细点画线剖切线未识别"
+
+[[concepts]]
+id = "DC-G2-048"
+level = "partial"
+by = ["card:detail_view"]
+missing = "旧版写在视图名称后的“旋转”二字已识别为旋转配置；半圆弧加箭头的旋转符号与旋转角度未识别"
 
 [[concepts]]
 id = "DC-G2-061"
@@ -807,7 +868,7 @@ by = ["card:section_line_region", "uniform_parallel_thin_oblique_lines"]
 [[concepts]]
 id = "DC-G2-065"
 level = "full"
-by = ["card:view_callout", "card:view_callout/section_name"]
+by = ["card:view_callout", "card:view_callout/section_name", "card:view_callout/section_name_split"]
 
 [[concepts]]
 id = "DC-G2-066"
@@ -817,19 +878,33 @@ missing = "识别轮廓处无字母的投射箭头；整个剖切标注省略的
 
 [[concepts]]
 id = "DC-G2-068"
-level = "full"
+level = "partial"
 by = ["card:view_callout"]
+missing = "散线写的视图名称与比例组合（罗马数字或字母在上、比例在下或在同一行）已识别；图块中的名称与比例（CAXA）未识别；名称比例与放大倍数不核对"
 
 [[concepts]]
 id = "DC-G2-072"
 level = "partial"
-by = ["card:view_callout", "card:view_callout/arrow_block", "view_letter_with_direction_suffix", "viewing_direction_arrow_and_letter"]
-missing = "箭头加字母（散线或图块）和“X向”名称已识别；现行标准只写字母的向视图名称（不带“向”字）未识别为视图名称"
+by = ["card:view_callout", "card:view_callout/arrow_and_letter_apart", "card:view_callout/arrow_block", "view_letter_with_direction_suffix", "viewing_direction_arrow_and_letter"]
+missing = "箭头加字母（散线、图块，或箭头与字母一个画成图块一个散画）和“X向”名称已识别；现行标准只写字母的向视图名称（不带“向”字）未识别为视图名称"
+
+[[concepts]]
+id = "DC-G2-073"
+level = "partial"
+by = ["card:view_arrangement"]
+missing = "无名称视图按第一角配置读出主视图与左、右、俯、仰、后视图（行或列两侧对齐、行列都对齐、只有两视图对齐）；没有任何对齐时退回最大的无名称视图；视图内容与方位的矛盾（可能为第三角）不检查"
 
 [[concepts]]
 id = "DC-G2-075"
-level = "full"
-by = ["card:detail_circle_interruption", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale"]
+level = "partial"
+by = ["card:detail_circle_interruption", "card:detail_view", "card:detail_view/boundary_arc", "card:detail_view/boundary_circle", "card:detail_view/title_forms", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale"]
+missing = "散线写的放大部位圈、编号与名称（罗马数字含 Unicode 写法、大写字母编号、“旋转”字样、全角冒号）和细实线圆或圆弧加波浪线的边界已识别；整块作为一个图块的放大视图及图块中的名称（CAXA）未识别；放大倍数与名称比例的核对未做"
+
+[[concepts]]
+id = "DC-G2-084"
+level = "partial"
+by = ["card:view_arrangement"]
+missing = "按第一角画法读出主视图与各基本视图的方位；第一角或第三角投影识别符号未读，第三角配置的图纸会被按第一角命名"
 
 [[concepts]]
 id = "DC-G3-001"
@@ -1343,5 +1418,5 @@ by = ["card:title_block_field"]
 [[concepts]]
 id = "DC-G9-028"
 level = "partial"
-by = ["card:title_block_field", "table_grid_with_title_vocabulary"]
+by = ["card:drawing_sheet", "card:title_block_field", "table_grid_with_title_vocabulary"]
 missing = "作为图块插入的标题栏已识别；用散线画（不是图块）的标题栏未识别"

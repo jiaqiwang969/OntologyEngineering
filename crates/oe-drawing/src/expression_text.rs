@@ -182,23 +182,104 @@ fn starts_number(s: &str) -> bool {
     s.chars().next().is_some_and(|c| c.is_ascii_digit())
 }
 
-pub fn is_roman(s: &str) -> bool {
-    matches!(
-        s.trim(),
-        "I" | "II" | "III" | "IV" | "V" | "VI" | "VII" | "VIII" | "IX" | "X"
-    )
+/// Forms of a lexicon entry of card `view_callout` (Roman numerals of detail views written in
+/// Latin letters or as Unicode numerals; the scale separators `:`, `：`, `∶`), read once.
+fn callout_forms(entry: &'static str) -> &'static [String] {
+    use std::sync::OnceLock;
+    static ROMAN: OnceLock<Vec<String>> = OnceLock::new();
+    static SEPARATOR: OnceLock<Vec<String>> = OnceLock::new();
+    let cell = if entry == "roman_numeral" {
+        &ROMAN
+    } else {
+        &SEPARATOR
+    };
+    cell.get_or_init(|| {
+        crate::engineering_expression::representation_knowledge()
+            .ok()
+            .and_then(|k| k.cards.iter().find(|c| c.id == "view_callout"))
+            .map(|c| {
+                c.lexicon
+                    .iter()
+                    .flatten()
+                    .filter(|l| l.entry == entry)
+                    .flat_map(|l| l.values.iter().cloned())
+                    .collect()
+            })
+            .unwrap_or_default()
+    })
 }
 
+/// Value of a Roman numeral written in Latin letters (I, IV, XII) or as one Unicode numeral
+/// (U+2160 … U+216B); both writings of one number are the same numeral.
+pub fn roman_value(s: &str) -> Option<u32> {
+    let t = s.trim();
+    if !callout_forms("roman_numeral").iter().any(|f| f == t) {
+        return None;
+    }
+    let latin: String = t
+        .chars()
+        .map(|c| match c as u32 {
+            u @ 0x2160..=0x216B => [
+                "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
+            ][(u - 0x2160) as usize]
+                .to_string(),
+            _ => c.to_string(),
+        })
+        .collect();
+    let digit = |c: char| match c {
+        'I' => Some(1),
+        'V' => Some(5),
+        'X' => Some(10),
+        _ => None,
+    };
+    let v: Vec<u32> = latin.chars().map(digit).collect::<Option<_>>()?;
+    let mut total = 0;
+    for (i, d) in v.iter().enumerate() {
+        if v.get(i + 1).is_some_and(|n| n > d) {
+            total -= *d as i64;
+        } else {
+            total += *d as i64;
+        }
+    }
+    u32::try_from(total).ok().filter(|x| *x > 0)
+}
+
+pub fn is_roman(s: &str) -> bool {
+    roman_value(s).is_some()
+}
+
+/// A scale ratio `a:b`, the colon written in ASCII, full width or as the ratio sign.
 pub fn is_scale(s: &str) -> bool {
     let t = s.trim();
-    let mut parts = t.split(':');
-    let (Some(a), Some(b), None) = (parts.next(), parts.next(), parts.next()) else {
+    let seps = callout_forms("scale_separator");
+    if t.matches(|c: char| seps.iter().any(|x| x.starts_with(c)))
+        .count()
+        != 1
+    {
+        return false;
+    }
+    let Some((a, b)) = t.split_once(|c: char| seps.iter().any(|x| x.starts_with(c))) else {
         return false;
     };
     !a.is_empty()
         && !b.is_empty()
         && a.chars().all(|c| c.is_ascii_digit() || c == '.')
         && b.chars().all(|c| c.is_ascii_digit() || c == '.')
+}
+
+/// A scale ratio written with the ASCII colon.
+pub fn scale_text(s: &str) -> String {
+    let seps = callout_forms("scale_separator");
+    s.trim()
+        .chars()
+        .map(|c| {
+            if seps.iter().any(|x| x.starts_with(c)) {
+                ':'
+            } else {
+                c
+            }
+        })
+        .collect()
 }
 
 /// Thread designation: metric M.., unified ..UNC/UNF/UNEF, pipe G/Rc, trapezoid Tr.

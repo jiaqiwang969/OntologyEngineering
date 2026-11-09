@@ -333,6 +333,161 @@ pub(crate) fn measure_pattern(ink: &Ink, p: P, q: P) -> Pattern {
     }
 }
 
+/// A filled arrowhead on the ink near `approx`, on the axis through it with direction `axis` (either
+/// sense): walking the axis, the ink's perpendicular extent rises from the line to at least
+/// `ARROW_MIN_WIDTH_PX` over the head and falls back on both sides — abruptly at the base (a flat
+/// edge, within a few pixels) and gradually at the tip (the taper, over the head's length). That tells
+/// the tip from the base, hence the direction the arrow points whatever sense `axis` has, and a line
+/// running on through the tip (a diameter line to a text outside the circle, a leader) does not move
+/// the tip. Samples wider than `ARROW_CROSSING_PX` are a crossing stroke and are skipped; the base of a
+/// large head is wider than that and so lies among skipped samples, which does not break the head's
+/// run. The wide runs within `window_px` (plus the thin apex stretch) of `approx` are tried nearest
+/// first — a crossing stroke at the tip leaves a short wide run that fails the head's proportions — and
+/// for each the axis is re-centred once on its ink, since a proposal a pixel or two off the axis would
+/// cut the taper short. The apex is no wider than the line over its last stretch (a 20° head on a 3 px
+/// line for some 8 px) and a stroke crossing at the tip hides it, so the tip is where the taper, fitted
+/// over the head's samples, comes down to one pixel — taken when it falls beyond the last wide sample,
+/// and past the fall to the line by at most the head's measured length. `None` without a head.
+/// Returns (tip, base, direction, length).
+pub(crate) fn arrow_head(ink: &Ink, approx: P, axis: P, line_width: f64, window_px: f64) -> Option<(P, P, P, f64)> {
+    let a = unit(axis)?;
+    let n = perp(a);
+    let floor = (line_width + 1.5).max(2.5);
+    let reach = 2.0 * ARROW_SEARCH_PX;
+    let steps = (2.0 * reach / 0.5) as i64;
+    // Extent at every half pixel of the axis through `c`, crossings as `None`.
+    let profile = |c: P| -> Vec<(f64, Option<f64>)> {
+        (0..=steps)
+            .map(|k| {
+                let t = -reach + k as f64 * 0.5;
+                let e = perp_extent(ink, add(c, mul(a, t)), n);
+                (t, (e <= ARROW_CROSSING_PX).then_some(e))
+            })
+            .collect()
+    };
+    let is_wide = |s: &(f64, Option<f64>)| s.1.is_some_and(|e| e >= ARROW_MIN_WIDTH_PX);
+    // The runs of head-wide samples (crossings inside a run do not end it) reaching within the
+    // window of `approx`, as (first, peak, last) sample indices, nearest first.
+    let runs = |prof: &[(f64, Option<f64>)]| -> Vec<(usize, usize, usize)> {
+        let mut out: Vec<(f64, (usize, usize, usize))> = Vec::new();
+        let mut i = 0;
+        while i < prof.len() {
+            if !is_wide(&prof[i]) {
+                i += 1;
+                continue;
+            }
+            let (start, mut end, mut peak) = (i, i, i);
+            let mut j = i + 1;
+            while j < prof.len() {
+                match prof[j].1 {
+                    Some(e) if e >= ARROW_MIN_WIDTH_PX => {
+                        end = j;
+                        if e > prof[peak].1.unwrap_or(0.0) {
+                            peak = j;
+                        }
+                    }
+                    None => {}
+                    Some(_) => break,
+                }
+                j += 1;
+            }
+            let near = if prof[start].0 > 0.0 {
+                prof[start].0
+            } else if prof[end].0 < 0.0 {
+                -prof[end].0
+            } else {
+                0.0
+            };
+            if near <= window_px + ARROW_CROSSING_PX {
+                out.push((near, (start, peak, end)));
+            }
+            i = j.max(i + 1);
+        }
+        out.sort_by(|x, y| x.0.total_cmp(&y.0).then(x.1.0.cmp(&y.1.0)));
+        out.into_iter().map(|(_, r)| r).collect()
+    };
+    // Tip, base and sense of one run: (t_tip, t_base, tip_side, length), `None` when it is not a head.
+    let evaluate = |prof: &[(f64, Option<f64>)], (_, peak, _): (usize, usize, usize)| -> Option<(f64, f64, i64, f64)> {
+        let peak_e = prof[peak].1?;
+        let base_level = floor.max(0.5 * peak_e);
+        // From the peak outwards on each side: where the extent falls to a level.
+        let fall = |dir: i64, level: f64| -> Option<usize> {
+            let mut k = peak as i64;
+            loop {
+                k += dir;
+                if k < 0 || k as usize >= prof.len() {
+                    return None;
+                }
+                if let Some(e) = prof[k as usize].1
+                    && e <= level
+                {
+                    return Some(k as usize);
+                }
+            }
+        };
+        let plus = fall(1, base_level)?;
+        let minus = fall(-1, base_level)?;
+        let (d_plus, d_minus) = (prof[plus].0 - prof[peak].0, prof[peak].0 - prof[minus].0);
+        // The taper is the longer descent.
+        let tip_side: i64 = if d_plus >= d_minus { 1 } else { -1 };
+        let tip_k = fall(tip_side, floor)?;
+        let base_k = if tip_side > 0 { minus } else { plus };
+        let dir = tip_side as f64;
+        let t_base = prof[base_k].0 + 0.5 * dir;
+        let t_floor = prof[tip_k].0 - 0.5 * dir;
+        let taper: Vec<(f64, f64)> = ((base_k.min(tip_k) + 1)..tip_k.max(base_k))
+            .filter_map(|k| prof[k].1.filter(|e| *e > floor).map(|e| (prof[k].0, e)))
+            .collect();
+        let mut t_tip = t_floor;
+        if taper.len() >= 4 {
+            let count = taper.len() as f64;
+            let (mt, me) = (taper.iter().map(|s| s.0).sum::<f64>() / count, taper.iter().map(|s| s.1).sum::<f64>() / count);
+            let (sxy, sxx) = taper
+                .iter()
+                .fold((0.0, 0.0), |acc, (t, e)| (acc.0 + (t - mt) * (e - me), acc.1 + (t - mt) * (t - mt)));
+            if sxx > 0.0 {
+                let slope = sxy / sxx;
+                if slope * dir < -1e-6 {
+                    let at_one = mt + (1.0 - me) / slope;
+                    let last_wide = taper.last().map_or(t_floor, |s| s.0);
+                    let past_wide = (at_one - last_wide) * dir;
+                    let past_floor = (at_one - t_floor) * dir;
+                    if past_wide > 0.0 {
+                        t_tip = if past_floor <= 0.0 { at_one } else { t_floor + dir * past_floor.min((t_floor - t_base).abs()) };
+                    }
+                }
+            }
+        }
+        let len = (t_tip - t_base).abs();
+        // A head is longer than it is wide.
+        (len >= ARROW_MIN_WIDTH_PX && len >= 1.5 * peak_e && len <= reach).then_some((t_tip, t_base, tip_side, len))
+    };
+    let first = profile(approx);
+    for run in runs(&first) {
+        let t_peak = first[run.1].0;
+        let at = add(approx, mul(a, t_peak));
+        let shift = 0.5 * (probe(ink, at, n, 32.0) - probe(ink, at, (-n.0, -n.1), 32.0));
+        let (c, prof) = if shift.abs() >= 0.5 {
+            let c = add(approx, mul(n, shift));
+            (c, profile(c))
+        } else {
+            (approx, first.clone())
+        };
+        // The same run on the re-centred profile: the one whose peak lies nearest.
+        let Some(found) = runs(&prof)
+            .into_iter()
+            .min_by(|x, y| (prof[x.1].0 - t_peak).abs().total_cmp(&(prof[y.1].0 - t_peak).abs()))
+        else {
+            continue;
+        };
+        if let Some((t_tip, t_base, tip_side, len)) = evaluate(&prof, found) {
+            let along = if tip_side > 0 { a } else { (-a.0, -a.1) };
+            return Some((add(c, mul(a, t_tip)), add(c, mul(a, t_base)), along, len));
+        }
+    }
+    None
+}
+
 /// Base of a filled arrowhead with its tip at `tip`, pointing along `along`: walking back from the
 /// tip the ink widens over the head and narrows again to the line behind it; the base is where the
 /// width falls back to the line (`line_width` + 1.5 px, or half the head's width). Samples wider
@@ -941,6 +1096,20 @@ fn refine_tip(ink: &Ink, role: &str, approx: P, along: P, dimension: Option<(P, 
     let shape = Shape::Tip { approx, along };
     let mut out = blank(role, None, &shape);
     out.support_before = f64::from(u8::from(ink.has_dark_within(approx.0, approx.1, 1.5)));
+    // The head itself on the ink decides tip, base and the sense of the direction: the observer's
+    // direction is only the axis (it comes from the midpoint of a line that may run on to the text).
+    if along != (0.0, 0.0)
+        && let Some((tip, base, dir, len)) = arrow_head(ink, approx, along, line_width, params.arrow_window_px)
+    {
+        out.refined = Shape::Tip { approx: tip, along: dir };
+        out.moved_px = dist(tip, approx);
+        out.support_after = 1.0;
+        out.supported = true;
+        out.arrow_base = Some(base);
+        out.arrow_length_px = Some(len);
+        out.adjustments.push(if dot(dir, along) < 0.0 { "arrow_head_from_ink:reversed" } else { "arrow_head_from_ink" }.into());
+        return out;
+    }
     let found = if along == (0.0, 0.0) {
         snap_point(ink, approx, params.arrow_window_px)
     } else {
@@ -1624,6 +1793,33 @@ mod tests {
         // With a proposal reaching y = 140 the walk meets the outline at 150 and stops there.
         let (_, q) = restrain_overrun(&ink, ((100.0, 25.0), (100.0, 140.0)), (100.0, 20.0), (100.0, 156.0));
         assert!(q.1 >= 146.0 && q.1 <= 150.5, "{q:?}");
+    }
+
+    #[test]
+    fn arrowhead_is_read_from_its_taper_whatever_the_proposed_sense_and_through_a_continuing_line() {
+        // A horizontal line y = 100 from x = 20 to 260 running on through the tip of a filled head
+        // (tip at x = 200, 30 px long, 12 px wide at the base) and a vertical line crossing at the tip.
+        let ink = ink_with(300, 200, |x, y| {
+            let (xf, yf) = (x as f64, y as f64);
+            let line = (99..=101).contains(&y) && (20..=260).contains(&x);
+            let head = (170.0..=200.0).contains(&xf) && (yf - 100.0).abs() <= (200.0 - xf) * 0.2;
+            let ext = (199..=201).contains(&x) && (60..=140).contains(&y);
+            line || head || ext
+        });
+        for (approx, axis) in [((198.0, 101.0), (1.0, 0.0)), ((198.0, 101.0), (-1.0, 0.0)), ((215.0, 102.0), (1.0, 0.0)), ((180.0, 99.0), (-1.0, 0.0))] {
+            let (tip, base, along, len) = arrow_head(&ink, approx, axis, 3.0, 20.0).unwrap_or_else(|| panic!("{approx:?} {axis:?}"));
+            assert!((tip.0 - 200.0).abs() <= 2.0 && (tip.1 - 100.0).abs() <= 1.0, "{approx:?} {axis:?} tip {tip:?}");
+            assert!((base.0 - 170.0).abs() <= 2.0, "{approx:?} {axis:?} base {base:?}");
+            assert_eq!(along, (1.0, 0.0), "{approx:?} {axis:?}");
+            assert!((len - 30.0).abs() <= 3.0, "{len}");
+        }
+        // A bare line has no head; a proposal far from the head finds none either.
+        assert!(arrow_head(&ink, (60.0, 100.0), (1.0, 0.0), 3.0, 20.0).is_none());
+        // The proposal through refine_tip: the reversed observer direction is corrected on the ink.
+        let m = refine_tip(&ink, "arrowhead", (198.0, 101.0), (-1.0, 0.0), None, 3.0, &RefineParams::default());
+        let Shape::Tip { approx, along } = m.refined else { panic!() };
+        assert!((approx.0 - 200.0).abs() <= 2.0 && along == (1.0, 0.0) && m.arrow_length_px.is_some_and(|l| (l - 30.0).abs() <= 3.0));
+        assert!(m.adjustments.iter().any(|a| a == "arrow_head_from_ink:reversed"), "{:?}", m.adjustments);
     }
 
     #[test]

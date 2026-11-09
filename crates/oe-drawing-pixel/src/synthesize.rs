@@ -358,6 +358,10 @@ struct Builder<'a> {
     erase_boxes: Vec<(f64, f64, f64, f64)>,
     hatch_polygons: Vec<(Vec<P>, String)>,
     arrows: Vec<(P, P)>,
+    /// Length given to an arrowhead whose base the ink did not yield: the page's own measured
+    /// arrowheads (median), else about 6d of a 0.7 mm line (GB/T 4458.4) at the page's dpi. Paper
+    /// pixels, never drawing units: a unit is 2.5 mm on one page and 0.65 mm on another.
+    arrow_default_px: f64,
     text_boxes: Vec<([f64; 4], String)>,
     centre_segments: Vec<(P, P)>,
     thin_widths: Vec<f64>,
@@ -466,6 +470,7 @@ impl<'a> Builder<'a> {
             erase_boxes: Vec::new(),
             hatch_polygons: Vec::new(),
             arrows: Vec::new(),
+            arrow_default_px: 4.0 / 25.4 * cal.dpi,
             text_boxes: Vec::new(),
             centre_segments: Vec::new(),
             thin_widths: Vec::new(),
@@ -732,12 +737,12 @@ impl<'a> Builder<'a> {
                 (id, lt.to_owned(), [0.0, 1.0])
             }
             Shape::Tip { approx, along } => {
-                // Tip and base: the base measured on the ink, else six drawing units behind the tip.
+                // Tip and base: the base measured on the ink, else the page's arrowhead length behind the tip.
                 let t = self.to_drawing(*approx);
                 let a = unit(*along).unwrap_or((0.0, 0.0));
                 let (base_px, length_units, measured) = match (m.arrow_base, m.arrow_length_px) {
                     (Some(b), Some(l)) => (b, l / self.s, true),
-                    _ => (sub(*approx, mul(a, 6.0 * self.s)), 6.0, false),
+                    _ => (sub(*approx, mul(a, self.arrow_default_px)), self.arrow_default_px / self.s, false),
                 };
                 let b = self.to_drawing(base_px);
                 let id = self.add_entity(
@@ -1812,17 +1817,20 @@ impl<'a> Builder<'a> {
         let cu = self.to_drawing(centre);
         let ru = r / self.s;
         let full = sweep_rad.abs() >= std::f64::consts::TAU - 1e-6;
-        let start = (-start_rad).to_degrees().rem_euclid(360.0);
-        let sweep = -sweep_rad.to_degrees();
+        // A structural arc is written as the DWG route writes it, which the review page and the checker read:
+        // [cx, cy, r, start, sweep] in radians, counter-clockwise with y up and a positive sweep; a circle is
+        // [cx, cy, r, start, TAU] with its start point. Image angles turn the other way once y points up.
+        let (start, sweep) = match (-start_rad, -sweep_rad) {
+            (s, w) if w < 0. => ((s + w).rem_euclid(std::f64::consts::TAU), -w),
+            (s, w) => (s.rem_euclid(std::f64::consts::TAU), w),
+        };
         let id = format!("line:{}", self.structural_lines.len());
         let line_type = if kind == "visible_contour" { "thick_continuous" } else { "thin_dashed" };
+        let at = |a: f64| (cu.0 + ru * a.cos(), cu.1 + ru * a.sin());
         let (geometry, points, arc) = if full {
-            ("circle", vec![cu.0, cu.1], vec![cu.0, cu.1, ru, 0.0, 360.0])
+            let p = at(start);
+            ("circle", vec![p.0, p.1], vec![cu.0, cu.1, ru, start, std::f64::consts::TAU])
         } else {
-            let at = |deg: f64| {
-                let a = deg.to_radians();
-                (cu.0 + ru * a.cos(), cu.1 + ru * a.sin())
-            };
             let (a, b) = (at(start), at(start + sweep));
             ("arc", vec![a.0, a.1, b.0, b.1], vec![cu.0, cu.1, ru, start, sweep])
         };
@@ -2245,6 +2253,15 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
         .or_else(|| obs.layout.as_ref().and_then(|l| l.scale_note.clone()));
     let cal = calibrate(&kept, note.as_deref(), index.dpi);
     let mut b = Builder::new(&ink, &cal, tiles.page_px, obs.layout.as_ref());
+    let mut measured_arrows: Vec<f64> = kept
+        .iter()
+        .flat_map(|rp| rp.members.iter())
+        .filter(|m| m.supported && m.role == "arrowhead")
+        .filter_map(|m| m.arrow_length_px)
+        .collect();
+    if let Some(l) = crate::geom::median(&mut measured_arrows) {
+        b.arrow_default_px = l;
+    }
     b.annotations(&kept);
     b.callouts(&kept);
     b.centre_axes(&kept);
@@ -2416,6 +2433,39 @@ mod tests {
         assert_eq!(kept[0].members[0].text.as_deref(), Some("3. ABC;"));
         assert_eq!(kept[0].proposal.text, "3. ABC;");
         assert_eq!(kept[1].members[0].text.as_deref(), Some("?C;"), "the partial read keeps its '?'");
+    }
+
+    #[test]
+    fn a_structural_arc_is_written_in_radians_counter_clockwise_as_the_dwg_route_writes_it() {
+        use std::f64::consts::{FRAC_PI_2, TAU};
+        let ink = Ink::from_mask(300, 100, vec![false; 30000]);
+        let cal = calibration();
+        let mut b = Builder::new(&ink, &cal, (300, 100), None);
+        // A quarter arc on the image (y down) from (60, 50) up to (50, 40), traced either way, and a full circle.
+        b.arc_structural_line("PX-ARC-0000", "expression:0:m0", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, 0.0, -FRAC_PI_2);
+        b.arc_structural_line("PX-ARC-0001", "expression:0:m1", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, -FRAC_PI_2, FRAC_PI_2);
+        b.arc_structural_line("PX-CIRCLE-0000", "expression:0:m2", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, 0.0, TAU);
+        let close = |v: &Value, want: &[f64]| {
+            let got: Vec<f64> = v.as_array().expect("numbers").iter().map(|x| x.as_f64().expect("number")).collect();
+            assert!(got.len() == want.len() && got.iter().zip(want).all(|(g, w)| (g - w).abs() < 1e-9), "{got:?} vs {want:?}");
+        };
+        // With y up the quarter runs counter-clockwise from 0 to 90°: start and sweep in radians, the sweep positive.
+        for line in &b.structural_lines[..2] {
+            assert_eq!(line["geometry"], "arc");
+            close(&line["arc"], &[50.0, 50.0, 10.0, 0.0, FRAC_PI_2]);
+            close(&line["points"], &[60.0, 50.0, 50.0, 60.0]);
+        }
+        let circle = &b.structural_lines[2];
+        assert_eq!(circle["geometry"], "circle");
+        close(&circle["arc"], &[50.0, 50.0, 10.0, 0.0, TAU]);
+        close(&circle["points"], &[60.0, 50.0]);
+        // A start away from zero: the image quarter from (50, 60) round to (40, 50) is, with y up, the
+        // counter-clockwise arc from 180° sweeping 90° to 270° — a reader taking the fifth number as
+        // an end angle would sample a different arc.
+        b.arc_structural_line("PX-ARC-0002", "expression:0:m3", "view:0", "visible_outline", "visible_contour", (50.0, 50.0), 10.0, FRAC_PI_2, FRAC_PI_2);
+        let quarter = &b.structural_lines[3];
+        close(&quarter["arc"], &[50.0, 50.0, 10.0, 2.0 * FRAC_PI_2, FRAC_PI_2]);
+        close(&quarter["points"], &[40.0, 50.0, 50.0, 40.0]);
     }
 
     #[test]

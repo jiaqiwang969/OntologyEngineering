@@ -16,6 +16,15 @@ const GAP_FACTOR: f64 = 1.5;
 const GAP_FLOOR: f64 = 3.0;
 /// Runs whose median gap is below this are touching fragments of one continuous stroke.
 const TOUCH_GAP: f64 = 1.0;
+/// A dashed line's gaps are a fixed share of its dashes: GB/T 4457.4-2002 表 1 draws 虚线 as 画 12d、短间隔 3d
+/// (AutoCAD HIDDEN and DASHED use 1:2). Pieces of similar length whose median gap is below this share of the
+/// median piece are one continuous line cut where other strokes crossed it (erased centre, dimension and
+/// extension lines), not dashes: on the I1 page the solid contour circles came out as "dashed" this way,
+/// pieces of 9–27 mm between gaps of 1–2 mm.
+const DASH_GAP_RATIO: f64 = 0.12;
+/// The dot of a 细点画线 is ≤ 0.5d (画 24d、间隔 3d); plotted dots are at most about 1.5 mm. A "short piece"
+/// longer than this is a cut dash, not a dot (the bound `refine::measure_pattern` uses as well).
+const DOT_MAX_PX: f64 = 20.0;
 /// Co-circularity tolerances (absolute px or relative to the radius, whichever is larger).
 const CIRCLE_CENTRE_TOL: f64 = 2.0;
 const CIRCLE_RADIUS_TOL: f64 = 1.5;
@@ -180,16 +189,21 @@ fn classify_run(strokes: &mut [Stroke], members: &[usize], lengths: &[f64], gaps
     if gm < TOUCH_GAP {
         return;
     }
-    let pattern = dash_pattern(lengths);
+    let pattern = dash_pattern(lengths, gm);
+    if pattern == Pattern::Continuous {
+        return;
+    }
     for &i in members {
         strokes[i].pattern = pattern;
     }
 }
 
-/// Dash statistics of one regular run: similar lengths (interior pieces within a factor two of the
-/// median, end pieces may be truncated) are `Dashed`; strictly alternating long/short pieces whose
-/// short pieces are at most half the long ones are `DashDot`; anything else is `Unknown`.
-fn dash_pattern(lengths: &[f64]) -> Pattern {
+/// Dash statistics of one regular run with median gap `gap`: similar lengths (interior pieces within a
+/// factor two of the median, end pieces may be truncated) are `Dashed` when the gap is at least
+/// `DASH_GAP_RATIO` of the median piece, else `Continuous` (a line cut by crossings); strictly alternating
+/// long/short pieces whose short pieces are at most half the long ones are `DashDot` when the short ones
+/// are dots (at most `DOT_MAX_PX`), else `Continuous`; anything else is `Unknown`.
+fn dash_pattern(lengths: &[f64], gap: f64) -> Pattern {
     let n = lengths.len();
     let mut sorted = lengths.to_vec();
     let lmed = median(&mut sorted).unwrap_or(0.0);
@@ -198,7 +212,11 @@ fn dash_pattern(lengths: &[f64]) -> Pattern {
         .all(|&l| l >= 0.5 * lmed && l <= 2.0 * lmed);
     let ends_ok = lengths[0] <= 2.0 * lmed && lengths[n - 1] <= 2.0 * lmed;
     if interior_ok && ends_ok {
-        return Pattern::Dashed;
+        return if gap >= DASH_GAP_RATIO * lmed {
+            Pattern::Dashed
+        } else {
+            Pattern::Continuous
+        };
     }
     let lmin = sorted[0];
     let lmax = sorted[n - 1];
@@ -223,7 +241,11 @@ fn dash_pattern(lengths: &[f64]) -> Pattern {
             median(&mut shorts).unwrap_or(0.0),
         );
         if sm <= 0.5 * lm {
-            return Pattern::DashDot;
+            return if sm <= DOT_MAX_PX {
+                Pattern::DashDot
+            } else {
+                Pattern::Continuous
+            };
         }
     }
     Pattern::Unknown
@@ -346,18 +368,40 @@ mod tests {
 
     #[test]
     fn dash_statistics() {
-        assert_eq!(dash_pattern(&[20.0, 20.0, 20.0, 20.0]), Pattern::Dashed);
+        assert_eq!(dash_pattern(&[20.0, 20.0, 20.0, 20.0], 5.0), Pattern::Dashed);
         assert_eq!(
-            dash_pattern(&[12.0, 20.0, 20.0, 20.0, 9.0]),
+            dash_pattern(&[12.0, 20.0, 20.0, 20.0, 9.0], 5.0),
             Pattern::Dashed
         );
         assert_eq!(
-            dash_pattern(&[30.0, 3.0, 30.0, 3.0, 30.0]),
+            dash_pattern(&[30.0, 3.0, 30.0, 3.0, 30.0], 5.0),
             Pattern::DashDot
         );
         assert_eq!(
-            dash_pattern(&[30.0, 3.0, 3.0, 30.0, 30.0]),
+            dash_pattern(&[30.0, 3.0, 3.0, 30.0, 30.0], 5.0),
             Pattern::Unknown
+        );
+    }
+
+    #[test]
+    fn a_line_cut_by_crossings_is_not_dashed() {
+        // The I1 contour circle (r = 291 px) between its erased centre and dimension lines: pieces of
+        // 113–310 px with gaps of 13–21 px, which also alternate long/short.
+        assert_eq!(
+            dash_pattern(&[267.0, 113.0, 310.0, 167.0], 14.0),
+            Pattern::Continuous
+        );
+        // A real hidden line of the 085 page: dashes of 78 px with gaps of about 20 px (12d : 3d).
+        assert_eq!(dash_pattern(&[78.0, 78.0, 78.0, 78.0], 20.0), Pattern::Dashed);
+        // Alternating pieces whose short ones are not dots are a cut line, not a centre line.
+        assert_eq!(
+            dash_pattern(&[200.0, 60.0, 200.0, 60.0, 200.0], 14.0),
+            Pattern::Continuous
+        );
+        // Dots of a 细点画线: 24d long dashes, dots within the bound, gaps 3d.
+        assert_eq!(
+            dash_pattern(&[96.0, 6.0, 96.0, 6.0, 96.0], 12.0),
+            Pattern::DashDot
         );
     }
 }

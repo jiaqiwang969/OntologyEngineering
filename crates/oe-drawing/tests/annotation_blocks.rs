@@ -1278,3 +1278,33 @@ fn datum_block_aligned_with_a_dimension_line_takes_its_view() {
         .expect("left view");
     assert_eq!(e[0].view_id.as_deref(), Some(left.id.as_str()));
 }
+
+// ---------------------------------------------------------------- viewing-direction arrows
+
+#[test]
+fn view_arrow_block_with_a_filled_hatch_head() {
+    let block = vec![
+        line("W1", "08", [0., 0.], [0., 12.]),
+        head("W2", "08", [0., 0.], [0., 4.], 0.8),
+        mtext("W3", "08", "Q", [4., 8.], 5., 5),
+    ];
+    let mut ents = outline("PV", -20., -40., 20., -5.);
+    ents.push(insert("WA", "08", "*W1", [0., -5.], 1.));
+    let g = run(&[("*W1", block)], &ents);
+    let e = exprs(&g, "WA");
+    assert_eq!(e.len(), 1);
+    assert_eq!(
+        (e[0].kind.as_str(), e[0].label.as_str(), e[0].rule.as_str()),
+        ("view_callout", "Q", "card:view_callout/arrow_block")
+    );
+    assert!(e[0].qualifiers.contains(&"view_direction".to_string()));
+    assert!(
+        e[0].concept_ids.contains(&"DC-G2-072".to_string()),
+        "{:?}",
+        e[0].concept_ids
+    );
+    assert!(
+        by_rule(&g, "card:view_callout/cutting_plane_group").is_empty(),
+        "no strokes, no cutting plane"
+    );
+}

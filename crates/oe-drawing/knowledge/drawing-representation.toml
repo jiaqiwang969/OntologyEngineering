@@ -2133,9 +2133,9 @@ meaning = "剖视名称中两字母之间的横线"
 [[cards.variants]]
 id = "arrow_block"
 title = "视向箭头做成一个图块"
-distinguishing = "图块中一条箭杆、一个实心（闭合）箭头、旁边一个大写字母（可在子图块中）"
+distinguishing = "图块中一条箭杆、一个实心（闭合）箭头、旁边一个大写字母（可在子图块中）；实心箭头可以是 SOLID，也可以是实心填充（HATCH）的三角形"
 encodings = ["block"]
-tests = ["view_arrow_drawn_as_one_block"]
+tests = ["view_arrow_drawn_as_one_block", "view_arrow_block_with_a_filled_hatch_head"]
 
 [[cards.counter_examples]]
 statement = "图块中只有箭杆和箭头而没有字母，不作为视向箭头"

@@ -1310,6 +1310,34 @@ fn detail_indicator(bl: &Block) -> Result<Option<Indicator>> {
     Ok(None)
 }
 
+/// A viewing-direction arrow drawn as one block whose head is a filled triangle of any encoding
+/// (a solid-filled HATCH as well as a SOLID): one shaft ending at the head, one capital letter
+/// beside it (card view_callout, variant arrow_block). Returns the letter, shaft and head.
+fn view_arrow(bl: &Block) -> Result<Option<(usize, usize, usize)>> {
+    let c = card("view_callout")?;
+    let reach = param(c, "letter_reach")?;
+    let join = param(c, "join")?;
+    let (texts, lines, heads) = (bl.texts(), bl.lines(), bl.heads());
+    let ([(ti, t, _)], [(li, a, z)], [(hi, hd)]) =
+        (texts.as_slice(), lines.as_slice(), heads.as_slice())
+    else {
+        return Ok(None);
+    };
+    if bl.parts.len() != 3 || !is_label(t) || compact(&t.dec.text).chars().count() != 1 {
+        return Ok(None);
+    }
+    let (tip, dir, len) = head_axis(hd);
+    let base = sub(tip, mul(dir, len));
+    let tol = join * t.height + 0.25 * len;
+    let along = dot(unit(sub(*z, *a)), dir).abs() > 0.99;
+    let joined = [*a, *z]
+        .iter()
+        .any(|q| dist(*q, base) <= tol || dist(*q, tip) <= tol);
+    let near = project(t.center, *a, *z).1 < reach * t.height
+        || dist(t.center, mid(*a, *z)) < reach * t.height + 0.5 * dist(*a, *z);
+    Ok((along && joined && near).then_some((*ti, *li, *hi)))
+}
+
 fn view_title(bl: &Block) -> Result<Option<Title>> {
     let c = card("view_callout")?;
     let (gmin, gmax) = (param(c, "title_gap_min")?, param(c, "title_gap_max")?);
@@ -2035,6 +2063,31 @@ pub(super) fn read(
             frames.push((bl, f));
         } else if let Some(cut) = cutting_plane(bl)? {
             emit_cutting(b, bl, &cut);
+        } else if let Some((letter, shaft, head)) = view_arrow(bl)? {
+            let e = b.expr(
+                "view_callout",
+                &text_of(bl, letter),
+                "card:view_callout/arrow_block",
+                "candidate",
+                vec!["view_direction".into()],
+                [
+                    tagged("view_callout", "arrow_block", &bl.root),
+                    vec!["concept:DC-G2-072".into()],
+                ]
+                .concat(),
+                vec![],
+            );
+            member(
+                b,
+                e,
+                bl,
+                shaft,
+                "view_arrow",
+                part_type(&bl.parts[shaft], "view_arrow", Some(false)),
+                vec![],
+            );
+            member(b, e, bl, head, "arrowhead", "fill", vec![]);
+            member(b, e, bl, letter, "view_letter", "text", vec![]);
         } else if let Some(t) = view_title(bl)? {
             let (e, vt) = emit_title(b, bl, &t);
             title_exprs.push((e, vt.label.clone()));

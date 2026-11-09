@@ -461,7 +461,16 @@ pub(super) fn outline_candidates(
 /// A layer whose content is never plotted (DC-G1-101): AutoCAD's definition-point layer, or a
 /// layer whose plot flag (group 290) is off. Its lines are no evidence of what the sheet shows.
 pub(super) fn not_plotted(cx: &Ctx, layer: &str) -> bool {
-    layer.eq_ignore_ascii_case("defpoints")
+    let named = representation::card_ref("line_width_evidence")
+        .ok()
+        .and_then(|c| c.lexicon.as_ref())
+        .is_some_and(|l| {
+            l.iter()
+                .filter(|x| x.entry == "not_plotted_layer")
+                .flat_map(|x| x.values.iter())
+                .any(|v| v.eq_ignore_ascii_case(layer))
+        });
+    named
         || cx.d.records.iter().any(|r| {
             r.kind == "LAYER"
                 && r.get(2) == Some(layer)

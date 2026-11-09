@@ -373,6 +373,23 @@ fn thin_colour_outline_joined_at_both_ends_is_outline() {
 }
 
 #[test]
+fn thin_colour_arc_on_a_layer_never_plotted_is_no_evidence() {
+    // the same slot closed by an arc on AutoCAD's definition-point layer, which never plots
+    let g = run(&[
+        line("LA", "01", [0., 0.], [30., 0.]),
+        line("LB", "01", [0., 10.], [30., 10.]),
+        line("LC", "01", [0., 0.], [0., 10.]),
+        arc_c("LR", "Defpoints", 3, [30., 5.], 5., 270., 90.),
+        line("LX", "05", [-5., 5.], [40., 5.]),
+    ]);
+    assert!(
+        !kinds(&g, "LR").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "LR")
+    );
+}
+
+#[test]
 fn thin_colour_extension_line_stays_annotation() {
     // the thin-coloured line on the thick layer runs from the outline corner past the
     // dimension line of a dimension drawn with loose terminators: an extension line
@@ -380,22 +397,22 @@ fn thin_colour_extension_line_stays_annotation() {
         line("OA", "01", [0., 0.], [30., 0.]),
         line("OB", "01", [30., 0.], [30., 20.]),
         line("OC", "01", [0., 0.], [0., 20.]),
-        line_c("EA", "01", 3, [0., 20.], [0., 34.]),
-        line_c("EB", "01", 3, [30., 20.], [30., 34.]),
+        line_c("EZA", "01", 3, [0., 20.], [0., 34.]),
+        line_c("EZB", "01", 3, [30., 20.], [30., 34.]),
         solid("T1", "08", [0., 31.], [3., 31.]),
         solid("T2", "08", [30., 31.], [27., 31.]),
         line("DL", "08", [3., 31.], [27., 31.]),
         text("DV", "11", "30", [12., 32.], 3.5),
     ]);
     assert!(
-        !kinds(&g, "EA").contains("visible_contour"),
+        !kinds(&g, "EZA").contains("visible_contour"),
         "{:?}",
-        kinds(&g, "EA")
+        kinds(&g, "EZA")
     );
     assert!(
-        !kinds(&g, "EB").contains("visible_contour"),
+        !kinds(&g, "EZB").contains("visible_contour"),
         "{:?}",
-        kinds(&g, "EB")
+        kinds(&g, "EZB")
     );
 }
 
@@ -565,11 +582,11 @@ fn short_stroke_inside_a_hatch_along_its_pattern_joins_it() {
 fn corner_line_inside_a_hatch_is_a_chamfer_edge() {
     // the outline is chamfered at the top right corner; the hatch boundary was taken square
     let g = run(&[
-        line("CA", "01", [0., 0.], [40., 0.]),
-        line("CB", "01", [40., 0.], [40., 37.]),
+        line("CQA", "01", [0., 0.], [40., 0.]),
+        line("CQB", "01", [40., 0.], [40., 37.]),
         line("CK", "01", [40., 37.], [37., 40.]),
-        line("CC", "01", [37., 40.], [0., 40.]),
-        line("CD", "01", [0., 40.], [0., 0.]),
+        line("CQC", "01", [37., 40.], [0., 40.]),
+        line("CQD", "01", [0., 40.], [0., 0.]),
         hatch_edges(
             "CH",
             "10",
@@ -592,11 +609,11 @@ fn corner_line_inside_a_hatch_is_a_chamfer_edge() {
 fn dimension_along(layer: &str) -> MdEngineeringExpressionGraph {
     let (x, y) = (100., 50.);
     let children = [
-        line("D1", "0", [x, y + 10.], [x + 30., y + 10.]),
-        line("D2", "0", [x, y], [x, y + 12.]),
-        line("D3", "0", [x + 30., y], [x + 30., y + 12.]),
-        solid("D4", "0", [x, y + 10.], [x + 2., y + 10.]),
-        solid("D5", "0", [x + 30., y + 10.], [x + 28., y + 10.]),
+        line("QD1", "0", [x, y + 10.], [x + 30., y + 10.]),
+        line("QD2", "0", [x, y], [x, y + 12.]),
+        line("QD3", "0", [x + 30., y], [x + 30., y + 12.]),
+        solid("QD4", "0", [x, y + 10.], [x + 2., y + 10.]),
+        solid("QD5", "0", [x + 30., y + 10.], [x + 28., y + 10.]),
     ];
     let blk = format!(
         "0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n2\n*D9\n10\n0\n20\n0\n{}0\nENDBLK\n0\nENDSEC\n",
@@ -652,11 +669,11 @@ fn continuous_extension_line_on_an_axis_is_not_a_centre_line() {
 
 // ---------------------------------------------------------------- hole_pattern
 
-/// Four equal circles of radius `r` evenly spaced on a pitch circle of radius 50 about `c`.
-fn four_holes(prefix: &str, c: [f64; 2], r: f64) -> Vec<String> {
-    (0..4)
+/// Six equal circles of radius `r` evenly spaced on a pitch circle of radius 50 about `c`.
+fn six_holes(prefix: &str, c: [f64; 2], r: f64) -> Vec<String> {
+    (0..6)
         .map(|i| {
-            let a = (45. + 90. * i as f64).to_radians();
+            let a = (30. + 60. * i as f64).to_radians();
             circle(
                 &format!("{prefix}{i}"),
                 "09",
@@ -683,14 +700,14 @@ fn callout(c: [f64; 2], r: f64, value: &str) -> Vec<String> {
 #[test]
 fn circles_named_by_a_count_diameter_callout_are_holes() {
     let first = [
-        50. * 45f64.to_radians().cos(),
-        50. * 45f64.to_radians().sin(),
+        50. * 30f64.to_radians().cos(),
+        50. * 30f64.to_radians().sin(),
     ];
-    let mut ents = four_holes("A", [0., 0.], 4.5);
-    ents.extend(four_holes("B", [300., 0.], 4.5));
-    ents.extend(callout(first, 4.5, "4-%%c9"));
+    let mut ents = six_holes("AH", [0., 0.], 3.25);
+    ents.extend(six_holes("BH", [300., 0.], 3.25));
+    ents.extend(callout(first, 3.25, "6-%%c6.5"));
     let g = run(&ents);
-    for h in ["A0", "A1", "A2", "A3"] {
+    for h in ["AH0", "AH1", "AH2", "AH3", "AH4", "AH5"] {
         let e = expr_with(&g, h, "visible_contour")
             .unwrap_or_else(|| panic!("{h}: {:?}", kinds(&g, h)));
         assert!(
@@ -699,7 +716,7 @@ fn circles_named_by_a_count_diameter_callout_are_holes() {
             e.evidence_ids
         );
     }
-    for h in ["B0", "B1", "B2", "B3"] {
+    for h in ["BH0", "BH1", "BH2", "BH3", "BH4", "BH5"] {
         let e = expr_with(&g, h, "visible_contour")
             .unwrap_or_else(|| panic!("{h}: {:?}", kinds(&g, h)));
         assert!(
@@ -713,17 +730,17 @@ fn circles_named_by_a_count_diameter_callout_are_holes() {
 #[test]
 fn circle_of_another_diameter_is_not_a_named_hole() {
     let first = [
-        50. * 45f64.to_radians().cos(),
-        50. * 45f64.to_radians().sin(),
+        50. * 30f64.to_radians().cos(),
+        50. * 30f64.to_radians().sin(),
     ];
-    let mut ents = four_holes("A", [0., 0.], 4.5);
-    ents.extend(four_holes("B", [300., 0.], 3.5));
-    ents.extend(callout(first, 4.5, "4-%%c9"));
+    let mut ents = six_holes("AH", [0., 0.], 3.25);
+    ents.extend(six_holes("BH", [300., 0.], 2.75));
+    ents.extend(callout(first, 3.25, "6-%%c6.5"));
     let g = run(&ents);
     assert!(
-        !kinds(&g, "B0").contains("visible_contour"),
+        !kinds(&g, "BH0").contains("visible_contour"),
         "{:?}",
-        kinds(&g, "B0")
+        kinds(&g, "BH0")
     );
 }
 
@@ -732,32 +749,32 @@ fn circle_of_another_diameter_is_not_a_named_hole() {
 #[test]
 fn thread_end_view_drawn_with_a_small_minor_circle() {
     let g = run(&[
-        arc("EA", "02", [0., 0.], 6., 90., 0.),
-        circle("EC", "0", [0., 0.], 3.9),
+        arc("EZA", "02", [0., 0.], 6., 90., 0.),
+        circle("EZC", "0", [0., 0.], 3.9),
     ]);
-    let e =
-        expr_with(&g, "EA", "thread_convention").unwrap_or_else(|| panic!("{:?}", kinds(&g, "EA")));
+    let e = expr_with(&g, "EZA", "thread_convention")
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "EZA")));
     assert!(
         names(e, "thread_representation", "end_view_wide_ratio"),
         "{:?}",
         e.evidence_ids
     );
-    let c = expr_with(&g, "EC", "thread_convention").unwrap();
-    assert_eq!(line_type(&g, c, "EC"), "thick_continuous");
+    let c = expr_with(&g, "EZC", "thread_convention").unwrap();
+    assert_eq!(line_type(&g, c, "EZC"), "thick_continuous");
 }
 
 #[test]
 fn end_view_with_a_plain_diameter_across_it_is_not_a_thread() {
     let mut ents = vec![
-        arc("EA", "02", [0., 0.], 6., 90., 0.),
-        circle("EC", "0", [0., 0.], 3.9),
+        arc("EZA", "02", [0., 0.], 6., 90., 0.),
+        circle("EZC", "0", [0., 0.], 3.9),
     ];
-    ents.extend(callout([0., 0.], 6., "%%c12"));
+    ents.extend(callout([0., 0.], 6., "%%c13.5"));
     let g = run(&ents);
     assert!(
-        !kinds(&g, "EA").contains("thread_convention"),
+        !kinds(&g, "EZA").contains("thread_convention"),
         "{:?}",
-        kinds(&g, "EA")
+        kinds(&g, "EZA")
     );
 }
 
@@ -765,8 +782,8 @@ fn end_view_with_a_plain_diameter_across_it_is_not_a_thread() {
 /// `thread`, thick pair at ±`minor`/2 to x = `drill`; the axis on y = 0.
 fn tapped_section(thin_layer: &str, extra: Vec<String>) -> Vec<String> {
     let mut v = vec![
-        line("FA", "01", [0., -20.], [0., 20.]),
-        line("FB", "01", [16., -20.], [16., 20.]),
+        line("FW", "01", [0., -20.], [0., 20.]),
+        line("FZ", "01", [16., -20.], [16., 20.]),
         line("M1", thin_layer, [0., 5.], [16., 5.]),
         line("M2", thin_layer, [0., -5.], [16., -5.]),
         line("N1", "01", [0., 4.2], [16., 4.2]),
@@ -809,13 +826,13 @@ fn blind_tapped_hole_in_section_with_drill_point() {
     // dash at the drawing's linetype scale); drill to x = 14 with a 120° point
     let header = "9\n$LTSCALE\n40\n2.0\n";
     let ents = vec![
-        line("FA", "01", [0., -20.], [0., 20.]),
+        line("FW", "01", [0., -20.], [0., 20.]),
         line("M1", "02", [0., 4.], [10., 4.]),
         line("M2", "02", [0., -4.], [10., -4.]),
         line("N1", "01", [0., 3.], [14., 3.]),
         line("N2", "01", [0., -3.], [14., -3.]),
         line("TE", "05", [10., -4.], [10., 4.]),
-        line("DB", "01", [14., -3.], [14., 3.]),
+        line("DQB", "01", [14., -3.], [14., 3.]),
         line("P1", "01", [14., 3.], [15.732050807568877, 0.]),
         line("P2", "01", [14., -3.], [15.732050807568877, 0.]),
         line("AX", "05", [-3., 0.], [18., 0.]),
@@ -828,7 +845,7 @@ fn blind_tapped_hole_in_section_with_drill_point() {
         "{:?}",
         e.evidence_ids
     );
-    for h in ["TE", "DB", "P1", "P2"] {
+    for h in ["TE", "DQB", "P1", "P2"] {
         assert!(
             role(&g, e, h).contains("contour_segment"),
             "{h}: {:?}",
@@ -894,11 +911,11 @@ fn gap_without_annotation_is_not_bridged() {
 fn split_extension(gap: f64) -> MdEngineeringExpressionGraph {
     let (x, y) = (100., 50.);
     let children = [
-        line("D1", "0", [x, y + 10.], [x + 30., y + 10.]),
-        line("D2", "0", [x, y], [x, y + 12.]),
-        line("D3", "0", [x + 30., y], [x + 30., y + 12.]),
-        solid("D4", "0", [x, y + 10.], [x + 2., y + 10.]),
-        solid("D5", "0", [x + 30., y + 10.], [x + 28., y + 10.]),
+        line("QD1", "0", [x, y + 10.], [x + 30., y + 10.]),
+        line("QD2", "0", [x, y], [x, y + 12.]),
+        line("QD3", "0", [x + 30., y], [x + 30., y + 12.]),
+        solid("QD4", "0", [x, y + 10.], [x + 2., y + 10.]),
+        solid("QD5", "0", [x + 30., y + 10.], [x + 28., y + 10.]),
     ];
     let blk = format!(
         "0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n2\n*D8\n10\n0\n20\n0\n{}0\nENDBLK\n0\nENDSEC\n",
@@ -923,8 +940,8 @@ fn split_extension(gap: f64) -> MdEngineeringExpressionGraph {
         &blk,
         &[
             dim,
-            line("E1", "02", [x, y], [x, y + 12.]),
-            line("E2", "02", [x, 30.], [x, y - gap]),
+            line("EX1", "02", [x, y], [x, y + 12.]),
+            line("EX2", "02", [x, 30.], [x, y - gap]),
             line("BX", "01", [x - 10., 30.], [x + 40., 30.]),
         ],
     )
@@ -933,14 +950,14 @@ fn split_extension(gap: f64) -> MdEngineeringExpressionGraph {
 #[test]
 fn extension_line_split_for_a_symbol_is_one_extension_line() {
     let g = split_extension(7.);
-    let e = exprs_of(&g, "E1")
+    let e = exprs_of(&g, "EX1")
         .into_iter()
         .find(|e| e.kind.starts_with("dimension_"))
-        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "E1")));
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "EX1")));
     assert!(
-        role(&g, e, "E2").contains("extension_line"),
+        role(&g, e, "EX2").contains("extension_line"),
         "{:?}",
-        kinds(&g, "E2")
+        kinds(&g, "EX2")
     );
     assert!(
         names(e, "dimension_line_parts", "split_extension_line"),
@@ -953,9 +970,9 @@ fn extension_line_split_for_a_symbol_is_one_extension_line() {
 fn collinear_line_far_from_an_extension_line_is_not_absorbed() {
     let g = split_extension(16.);
     assert!(
-        !kinds(&g, "E2").iter().any(|k| k.starts_with("dimension_")),
+        !kinds(&g, "EX2").iter().any(|k| k.starts_with("dimension_")),
         "{:?}",
-        kinds(&g, "E2")
+        kinds(&g, "EX2")
     );
 }
 
@@ -963,22 +980,22 @@ fn collinear_line_far_from_an_extension_line_is_not_absorbed() {
 fn dimension_parts_drawn_twice_join_the_dimension() {
     // a hole diameter drawn with loose parts; its terminator and dimension line drawn again
     let ents = vec![
-        solid("A1", "08", [0., 0.], [3., 0.]),
-        solid("A2", "08", [40., 0.], [37., 0.]),
+        solid("AW1", "08", [0., 0.], [3., 0.]),
+        solid("AW2", "08", [40., 0.], [37., 0.]),
         line("DL", "08", [3., 0.], [37., 0.]),
         line("LD", "08", [40., 0.], [50., 0.]),
         line("SH", "08", [50., 0.], [64., 0.]),
         text("VT", "11", "%%c47", [52., 1.2], 3.5),
-        solid("A3", "08", [0., 0.01], [3., 0.01]),
+        solid("AW3", "08", [0., 0.01], [3., 0.01]),
         line("DR", "08", [5., 0.], [30., 0.]),
     ];
     let g = run(&ents);
     let e = expr_with(&g, "VT", "dimension_diameter")
         .unwrap_or_else(|| panic!("{:?}", kinds(&g, "VT")));
     assert!(
-        role(&g, e, "A3").contains("arrowhead"),
+        role(&g, e, "AW3").contains("arrowhead"),
         "{:?}",
-        kinds(&g, "A3")
+        kinds(&g, "AW3")
     );
     assert!(
         role(&g, e, "DR").contains("dimension_line"),
@@ -1008,7 +1025,7 @@ fn chain_section(hatched: bool) -> MdEngineeringExpressionGraph {
     let mut ents = vec![
         line("BT", "01", [0., 40.], [60., 40.]),
         line("BR", "01", [60., 40.], [60., 0.]),
-        line("BB", "01", [60., 0.], [0., 0.]),
+        line("BQ", "01", [60., 0.], [0., 0.]),
         line("BL", "01", [0., 0.], [0., 40.]),
     ];
     for (i, w) in pts.windows(2).enumerate() {

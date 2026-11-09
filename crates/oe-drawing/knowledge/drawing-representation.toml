@@ -672,10 +672,20 @@ test = "outline_colour_line_on_a_thin_layer_with_a_free_end_is_not_outline"
 statement = "全图线宽只有一档时，线宽不作粗细证据"
 test = "one_lineweight_class_does_not_decide"
 
+[[cards.counter_examples]]
+statement = "永不打印的层上的线不属于图面表达，即使两端接在轮廓上也不按细线颜色的轮廓读出"
+test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
+
 [[cards.parameters]]
 name = "weight_ratio_min"
 value = 1.5
 meaning = "粗档线宽 ≥ 该值 × 细档线宽（标准粗细比 2:1，旧图约 3:1）"
+
+[[cards.lexicon]]
+concept = "DC-G1-101"
+entry = "not_plotted_layer"
+values = ["Defpoints"]
+meaning = "永不打印的层（AutoCAD 定义点层；另有图层表中打印开关关闭的层）：其上的线不属于图面表达，不作粗细证据"
 
 [[cards]]
 id = "outline_joins"

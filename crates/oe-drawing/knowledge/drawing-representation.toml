@@ -493,7 +493,7 @@ id = "loose_lines_by_own_spacing"
 title = "一根根画出的剖面线，按自身间距成组"
 distinguishing = "同一方向的细斜线，横向偏移按同一间距递进（一根剖面线可被孔或空腔截成几段），至少三档，相邻两根沿线方向互相重叠；间距与长度取自这组线本身，不按字高（放大图里间距随之放大）"
 encodings = ["loose"]
-tests = ["section_lines_with_enlarged_spacing_are_one_hatch"]
+tests = ["section_lines_with_enlarged_spacing_are_one_hatch", "section_lines_on_one_lattice_across_a_void_are_one_hatch"]
 
 [[cards.variants]]
 id = "remnant_stroke"
@@ -529,6 +529,11 @@ meaning = "按间距成组的剖面线最少档数"
 name = "remnant_length_max"
 value = 0.5
 meaning = "剖面区域内残段长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "lattice_gap_max"
+value = 10.0
+meaning = "同一零件被孔或空腔隔开的几组散画剖面线，在同一间距网格上、彼此相距不超过该值 × 间距时合为一处剖面线"
 
 [[cards]]
 id = "detail_circle_interruption"

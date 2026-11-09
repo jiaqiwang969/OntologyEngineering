@@ -5189,6 +5189,20 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 vec![],
                 vec![format!("concentric:{h}")],
             );
+            // the same circle drawn again is the same thread diameter
+            for d in line_evidence::same_circles(cx, &p) {
+                b.member(
+                    e2,
+                    &d,
+                    None,
+                    [0., 1.],
+                    "contour_segment",
+                    "thick_continuous",
+                    "candidate",
+                    vec![],
+                    vec![format!("duplicate_of:{p}")],
+                );
+            }
         }
     }
 }

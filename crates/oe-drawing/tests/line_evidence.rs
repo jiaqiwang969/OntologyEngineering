@@ -510,6 +510,18 @@ fn section_lines_with_enlarged_spacing_are_one_hatch() {
 }
 
 #[test]
+fn section_lines_on_one_lattice_across_a_void_are_one_hatch() {
+    // three lines, a void two spacings wide, three more lines on the same lattice
+    let g = square_with_lines(&[2., 9.071, 16.142, 37.355, 44.426, 51.497]);
+    let e = expr_with(&g, "H0", "section_hatch").unwrap_or_else(|| panic!("{:?}", kinds(&g, "H0")));
+    assert!(
+        role(&g, e, "H5").contains("hatch_fill"),
+        "{:?}",
+        kinds(&g, "H5")
+    );
+}
+
+#[test]
 fn parallel_lines_with_uneven_spacing_are_not_section_lines() {
     let g = square_with_lines(&[5., 19.142, 43.284, 47.426]);
     assert!(

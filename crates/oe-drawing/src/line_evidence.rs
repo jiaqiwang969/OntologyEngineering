@@ -604,6 +604,7 @@ pub(super) fn section_lines_by_spacing(cx: &Ctx, b: &mut Builder) -> Result<()> 
     let par = representation::param(c, "parallel_deg")?;
     let step_tol = representation::param(c, "spacing_tolerance")?;
     let min_lines = representation::param(c, "min_lines")? as usize;
+    let lattice_steps = representation::param(c, "lattice_gap_max")?;
     let w = Widths::of(cx);
     let mut thin: Vec<(String, P, P, f64)> = cx
         .lines
@@ -661,6 +662,7 @@ pub(super) fn section_lines_by_spacing(cx: &Ctx, b: &mut Builder) -> Result<()> 
             })
         };
         // runs of lanes stepping by one spacing
+        let mut runs: Vec<(Vec<usize>, f64)> = Vec::new();
         let mut k = 0;
         while k + 1 < lanes.len() {
             let s = lanes[k + 1].0 - lanes[k].0;
@@ -677,67 +679,90 @@ pub(super) fn section_lines_by_spacing(cx: &Ctx, b: &mut Builder) -> Result<()> 
                 end += 1;
             }
             if end - k + 1 >= min_lines {
-                let members: Vec<&String> = lanes[k..=end]
-                    .iter()
-                    .flat_map(|l| l.1.iter().map(|&x| rows[x].3))
-                    .collect();
-                // a zero-length piece on one of the run's lines, inside its extent, joins it
-                let (lo, hi) = (
-                    lanes[k..=end]
-                        .iter()
-                        .flat_map(|l| l.1.iter().map(|&x| rows[x].1))
-                        .fold(f64::INFINITY, f64::min),
-                    lanes[k..=end]
-                        .iter()
-                        .flat_map(|l| l.1.iter().map(|&x| rows[x].2))
-                        .fold(f64::NEG_INFINITY, f64::max),
-                );
-                let points: Vec<String> = cx
-                    .lines
-                    .iter()
-                    .filter(|(h, (a, z))| {
-                        dist(*a, *z) <= 1e-6
-                            && !b.used(h)
-                            && !taken.contains(*h)
-                            && lanes[k..=end]
-                                .iter()
-                                .any(|l| (cross(u, *a) - l.0).abs() <= 1e-3)
-                            && (lo..=hi).contains(&dot(*a, u))
-                    })
-                    .map(|(h, _)| h.clone())
-                    .collect();
-                let e = b.expr(
-                    "section_hatch",
-                    &format!("{ang:.0}°"),
-                    "uniform_parallel_thin_oblique_lines",
-                    "candidate",
-                    vec![],
-                    vec![
-                        format!("lines:{}", members.len()),
-                        format!("spacing:{s:.3}"),
-                        "card:section_line_region".into(),
-                        "variant:loose_lines_by_own_spacing".into(),
-                    ],
-                    vec!["Sectioned material region boundary not resolved".into()],
-                );
-                for h in members.into_iter().cloned().chain(points) {
-                    if taken.insert(h.clone()) {
-                        b.member(
-                            e,
-                            &h,
-                            None,
-                            [0., 1.],
-                            "hatch_fill",
-                            member_line_type(cx.lt(&h), "hatch_fill"),
-                            "candidate",
-                            vec![],
-                            vec![],
-                        );
-                    }
-                }
+                runs.push(((k..=end).collect(), s));
                 k = end + 1;
             } else {
                 k += 1;
+            }
+        }
+        // runs of one hatch interrupted by a hole, a void or the part's other wall: same spacing,
+        // on one lattice of that spacing, within a few spacings of each other (one part keeps one
+        // hatch in a view, GB/T 4457.5)
+        let mut merged: Vec<(Vec<usize>, f64)> = Vec::new();
+        for (ls, s) in runs {
+            if let Some(last) = merged.last_mut() {
+                let gap = lanes[ls[0]].0 - lanes[*last.0.last().unwrap()].0;
+                let steps = (gap / s).round();
+                let all_last: Vec<usize> =
+                    last.0.iter().flat_map(|l| lanes[*l].1.clone()).collect();
+                let all_new: Vec<usize> = ls.iter().flat_map(|l| lanes[*l].1.clone()).collect();
+                if (last.1 - s).abs() <= step_tol * s
+                    && (1. ..=lattice_steps).contains(&steps)
+                    && (gap - steps * s).abs() <= step_tol * s
+                    && overlap(&all_last, &all_new, lattice_steps * s)
+                {
+                    last.0.extend(ls);
+                    continue;
+                }
+            }
+            merged.push((ls, s));
+        }
+        for (ls, s) in merged {
+            let members: Vec<&String> = ls
+                .iter()
+                .flat_map(|l| lanes[*l].1.iter().map(|&x| rows[x].3))
+                .collect();
+            // a zero-length piece on one of the run's lines, inside its extent, joins it
+            let (lo, hi) = (
+                ls.iter()
+                    .flat_map(|l| lanes[*l].1.iter().map(|&x| rows[x].1))
+                    .fold(f64::INFINITY, f64::min),
+                ls.iter()
+                    .flat_map(|l| lanes[*l].1.iter().map(|&x| rows[x].2))
+                    .fold(f64::NEG_INFINITY, f64::max),
+            );
+            let points: Vec<String> = cx
+                .lines
+                .iter()
+                .filter(|(h, (a, z))| {
+                    dist(*a, *z) <= 1e-6
+                        && !b.used(h)
+                        && !taken.contains(*h)
+                        && ls
+                            .iter()
+                            .any(|l| (cross(u, *a) - lanes[*l].0).abs() <= 1e-3)
+                        && (lo..=hi).contains(&dot(*a, u))
+                })
+                .map(|(h, _)| h.clone())
+                .collect();
+            let e = b.expr(
+                "section_hatch",
+                &format!("{ang:.0}°"),
+                "uniform_parallel_thin_oblique_lines",
+                "candidate",
+                vec![],
+                vec![
+                    format!("lines:{}", members.len()),
+                    format!("spacing:{s:.3}"),
+                    "card:section_line_region".into(),
+                    "variant:loose_lines_by_own_spacing".into(),
+                ],
+                vec!["Sectioned material region boundary not resolved".into()],
+            );
+            for h in members.into_iter().cloned().chain(points) {
+                if taken.insert(h.clone()) {
+                    b.member(
+                        e,
+                        &h,
+                        None,
+                        [0., 1.],
+                        "hatch_fill",
+                        member_line_type(cx.lt(&h), "hatch_fill"),
+                        "candidate",
+                        vec![],
+                        vec![],
+                    );
+                }
             }
         }
     }
@@ -1141,6 +1166,24 @@ pub(super) fn annotation_symbols(cx: &Ctx, b: &Builder) -> Vec<topology::Symbol>
         }
     }
     out
+}
+
+/// Other full circles drawn on the same centre with the same radius as `p` (the same circle drawn
+/// twice; GB/T 14665-2012 4.3: coincident lines are one line).
+pub(super) fn same_circles(cx: &Ctx, p: &str) -> Vec<String> {
+    let Some((c, r, _, _, true)) = cx.arc(p) else {
+        return vec![];
+    };
+    cx.rec
+        .keys()
+        .filter(|k| k.as_str() != p && cx.kind(k) == "CIRCLE")
+        .filter(|k| {
+            cx.arc(k).is_some_and(|(c2, r2, ..)| {
+                dist(c2, c) <= 1e-6 * r.max(1.) && (r2 - r).abs() <= 1e-6 * r.max(1.)
+            })
+        })
+        .cloned()
+        .collect()
 }
 
 // ---------------------------------------------------------------- internal thread in a section

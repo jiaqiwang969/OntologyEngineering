@@ -1347,7 +1347,7 @@ pub(super) fn redrawn_copies(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 lt,
                 "candidate",
                 vec![],
-                vec![format!("duplicate_of:{h}"), "card:coincident_redraw".into()],
+                vec![format!("coincident_with:{h}"), "card:coincident_redraw".into()],
             );
         }
         let ex = &mut b.exprs[e];

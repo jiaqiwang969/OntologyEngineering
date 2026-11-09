@@ -1613,7 +1613,8 @@ pub(super) fn dimension_pieces(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     *iv,
                     role,
                     "drawn_twice",
-                    format!("duplicate_of:{k}"),
+                    // a dimension part drawn twice coincides with it; duplicate_of is kept for contours
+                    format!("coincident_with:{k}"),
                 ));
             }
         }
@@ -1670,7 +1671,7 @@ pub(super) fn dimension_pieces(cx: &Ctx, b: &mut Builder) -> Result<()> {
             .iter()
             .find(|(_, k, x)| k != h && dist(x.tip, a.tip) <= tol && dot(x.dir, a.dir) > 0.99)
         {
-            let mut ev = format!("duplicate_of:{k}");
+            let mut ev = format!("coincident_with:{k}");
             if not_plotted(cx, &cx.style[k].layer) {
                 ev = format!("printed_copy_of:{k}");
             }

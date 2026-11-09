@@ -120,7 +120,8 @@ function subtract(rr,cc){let out=rr.map(r=>[...r]);for(const [a,b] of cc){const 
 // In the complete structure a source span carried by a drawn structural line is drawn by that line only.
 const carriedBy=m=>{const l=memberLine.get(m.id);return !!l&&shownLines.has(l.id)};
 function rangesFor(e){const ms=bySource.get(e.id);if($('original').checked)return {ranges:[[0,1]],chosen:ms};if($('shared').checked&&new Set(ms.map(m=>m.expression_id)).size<2)return {ranges:[],chosen:[]};let chosen=ms.filter(m=>passes(m)&&!hiddenDuplicate(m));if(completeOn()){const carried=union(ms.filter(carriedBy).map(m=>m.interval));chosen=chosen.filter(m=>!carriedBy(m));return {ranges:subtract(union(chosen.map(m=>m.interval)),carried),chosen}}return {ranges:union(chosen.map(m=>m.interval)),chosen}}
-const lineShown=l=>lineMembers.get(l.id).some(m=>passes(m)&&(!$('shared').checked||multiExpr(m.source_handle)));
+// A line inferred whole (only implied spans, no source piece) follows its own class, line type and view.
+const lineShown=l=>{const ms=lineMembers.get(l.id)||[];if(!ms.length)return !$('shared').checked&&enabled.kind.has(l.line_class==='hidden_outline'?'hidden_contour':'visible_contour')&&enabled.line.has(l.line_type)&&enabled.view.has(l.view_id||'none');return ms.some(m=>passes(m)&&(!$('shared').checked||multiExpr(m.source_handle)))};
 function lineInk(l){if(mode==='line')return (LINE[l.line_type]||['','#73848e'])[1];if(mode==='view')return viewColor.get(l.view_id||'none');if(mode==='prim'){const m=lineMembers.get(l.id)[0];return (PRIM[entities.get(m.source_handle).kind]||['','#73848e'])[1]}return KIND[l.line_class==='hidden_outline'?'hidden_contour':'visible_contour'][1]}
 // One element per structural line; the line type follows the structure: thick solid for the visible outline, thin dashed for the hidden outline.
 function lineElement(l,ink){const X=x=>x-originX,Y=y=>topY-y,p=l.points,lt=l.line_type;let n;

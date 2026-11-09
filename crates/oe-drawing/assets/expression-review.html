@@ -86,7 +86,10 @@ const LINES=G.structural_lines||[],lineById=new Map(LINES.map(l=>[l.id,l])),memb
 for(const l of LINES){const ms=[];for(const p of [...l.pieces,...l.coincident])if(p.startsWith('member:')){const m=memberById.get(p.slice(7));memberLine.set(m.id,l);ms.push(m)}lineMembers.set(l.id,ms)}
 const GEOM={line:'直线',arc:'圆弧',circle:'整圆',polyline:'多段线'},CLASS={visible_outline:'可见轮廓',hidden_outline:'不可见轮廓'};
 const pieces=new Map(),visible=new Map();
-for(const group of svg.querySelectorAll('[data-entity]')){const id=group.dataset.entity;if(!pieces.has(id))pieces.set(id,[]);pieces.get(id).push(group);for(const n of group.querySelectorAll('[stroke],[fill]')){for(const attr of ['stroke','fill']){const c=n.getAttribute(attr);if(c&&c!=='none')n.setAttribute(attr,'currentColor')}}}
+// Masks (a wipeout's, the background behind a dimension's text) keep the paper's colour: recoloured, they would hide the text
+// drawn over them. CADCraft marks them data-mask; renderings without the mark fill them with the paper's white.
+const MARKED=svg.querySelector('[data-mask]')!==null,isMask=n=>MARKED?n.hasAttribute('data-mask'):/^(#fff|#ffffff|white)$/i.test(n.getAttribute('fill')||'');
+for(const group of svg.querySelectorAll('[data-entity]')){const id=group.dataset.entity;if(!pieces.has(id))pieces.set(id,[]);pieces.get(id).push(group);for(const n of group.querySelectorAll('[stroke],[fill]')){if(isMask(n))continue;for(const attr of ['stroke','fill']){const c=n.getAttribute(attr);if(c&&c!=='none')n.setAttribute(attr,'currentColor')}}}
 const overlay=document.createElementNS(NS,'g'),structural=document.createElementNS(NS,'g'),highlight=document.createElementNS(NS,'g'),markers=document.createElementNS(NS,'g');svg.append(overlay,structural,highlight,markers);highlight.style.pointerEvents='none';markers.style.pointerEvents='none';
 const presentKinds=Object.keys(KIND).filter(k=>G.expressions.some(e=>e.kind===k)),presentLines=Object.keys(LINE).filter(l=>G.members.some(m=>m.line_type===l)),presentPrims=[...new Set(G.entities.map(e=>e.kind))].sort(),presentViews=[...G.views.map(v=>v.id),...(G.expressions.some(e=>!e.view_id)?['none']:[])];
 const enabled={kind:new Set(presentKinds),line:new Set(presentLines),prim:new Set(presentPrims),view:new Set(presentViews)};

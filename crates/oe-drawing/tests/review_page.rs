@@ -109,3 +109,19 @@ fn the_review_page_keeps_source_identities_and_refuses_active_svg() {
         );
     }
 }
+
+/// Masks (a wipeout's, the background behind a dimension's text) are not recoloured with the
+/// expression colours: a recoloured mask hides the text drawn over it in the same colour. The
+/// browser check of every page mode (`review-page-checks.js`) verifies the computed colours.
+#[test]
+fn the_review_page_keeps_masks_in_the_paper_colour() {
+    let dxf = example("source.dxf");
+    let graph =
+        serde_json::to_vec(&oe_drawing::engineering_expression::discover(&dxf).unwrap()).unwrap();
+    let svg = String::from_utf8(example("source.svg")).unwrap();
+    let (text, _) = oe_drawing::page::page(&graph, &svg, &request()).unwrap();
+    let recolour = text.find("n.setAttribute(attr,'currentColor')").unwrap();
+    let skip = text.find("if(isMask(n))continue;").unwrap();
+    assert!(skip < recolour, "masks are skipped before recolouring");
+    assert!(text.contains("MARKED?n.hasAttribute('data-mask')"));
+}

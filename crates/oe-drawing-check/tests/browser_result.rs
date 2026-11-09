@@ -59,6 +59,9 @@ fn the_harness_carries_the_mode_focus_and_region_without_answers() {
         assert!(
             !text.contains("__MODE__") && !text.contains("__FOCUS__") && !text.contains("__BOX__")
         );
+        // Every mode checks that masks keep the paper colour and the drawing over them its own.
+        assert!(text.contains("'Masks keep the paper colour'"), "{mode}");
+        assert!(text.contains("'Drawing over masks keeps its own colour'"), "{mode}");
     }
     let plain = harness("file:///p.html", "kind", None, None).unwrap();
     assert!(plain.contains("const fl=\"\"") && plain.contains("const box=null"));

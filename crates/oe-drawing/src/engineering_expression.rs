@@ -1162,7 +1162,10 @@ fn measurement(r: &Record, dtype: i32, brecs: &[&Record]) -> Option<String> {
 type Affine = [f64; 6];
 
 fn apply(m: &Affine, p: P) -> P {
-    [m[0] * p[0] + m[1] * p[1] + m[2], m[3] * p[0] + m[4] * p[1] + m[5]]
+    [
+        m[0] * p[0] + m[1] * p[1] + m[2],
+        m[3] * p[0] + m[4] * p[1] + m[5],
+    ]
 }
 
 fn num_or(r: &Record, code: i32, default: f64) -> f64 {
@@ -1172,9 +1175,17 @@ fn num_or(r: &Record, code: i32, default: f64) -> f64 {
         .unwrap_or(default)
 }
 
-/// Text pieces of the block a reference names, placed by `m` (the parent's frame): position,
-/// reading direction and raw text. References nested deeper are followed up to 4 levels.
-fn nested_pieces(cx: &Ctx, ins: &Record, m: &Affine, depth: usize, out: &mut Vec<(P, P, String)>) {
+/// A text piece a dimension block draws through a nested reference, in the block's frame.
+struct Piece {
+    at: P,
+    dir: P,
+    height: f64,
+    raw: String,
+}
+
+/// Text pieces of the block a reference names, placed by `m` (the parent's frame). References
+/// nested deeper are followed up to 4 levels.
+fn nested_pieces(cx: &Ctx, ins: &Record, m: &Affine, depth: usize, out: &mut Vec<Piece>) {
     let Some(name) = ins.get(2).filter(|_| depth < 4) else {
         return;
     };
@@ -1208,15 +1219,25 @@ fn nested_pieces(cx: &Ctx, ins: &Record, m: &Affine, depth: usize, out: &mut Vec
         m[3] * local[1] + m[4] * local[4],
         m[3] * local[2] + m[4] * local[5] + m[5],
     ];
+    let scale = (next[0] * next[4] - next[1] * next[3]).abs().sqrt();
     for x in &recs {
         match x.kind.as_str() {
             "TEXT" | "MTEXT" => {
                 let Ok(p) = x.xy(10) else { continue };
-                // TEXT gives its rotation in degrees, MTEXT in radians (DXF Reference).
-                let t = num_or(x, 50, 0.);
-                let t = if x.kind == "TEXT" { t.to_radians() } else { t };
-                let d = [next[0] * t.cos() + next[1] * t.sin(), next[3] * t.cos() + next[4] * t.sin()];
-                out.push((apply(&next, p), d, dd::raw_text(x)));
+                // As the text facts read it: an MTEXT's direction vector, else the angle in degrees.
+                let t = match (x.kind.as_str(), x.number(11), x.number(21)) {
+                    ("MTEXT", Ok(dx), Ok(dy)) if dx.hypot(dy) > 1e-12 => dy.atan2(dx),
+                    _ => num_or(x, 50, 0.).to_radians(),
+                };
+                out.push(Piece {
+                    at: apply(&next, p),
+                    dir: [
+                        next[0] * t.cos() + next[1] * t.sin(),
+                        next[3] * t.cos() + next[4] * t.sin(),
+                    ],
+                    height: num_or(x, 40, 0.).abs() * scale,
+                    raw: dd::raw_text(x),
+                });
             }
             "INSERT" => nested_pieces(cx, x, &next, depth + 1, out),
             _ => {}
@@ -1225,31 +1246,51 @@ fn nested_pieces(cx: &Ctx, ins: &Record, m: &Affine, depth: usize, out: &mut Vec
 }
 
 /// The text a dimension block draws only through nested block references (CAXA nests a
-/// toleranced value: "%%C55(", the deviations "+0.03" over "0", ")"), in drawn order: pieces
-/// along the reading direction, and two pieces at one place along it written as a stacked
-/// tolerance (upper ^ lower), as MTEXT stacks one. Empty when the block draws none.
+/// toleranced value: "%%C55(", the deviations "+0.03" above and "0" below the line, ")"), in
+/// drawn order along the reading direction. Two neighbouring pieces, one above and one below the
+/// line the other pieces sit on, are written as a stacked tolerance (upper ^ lower), as MTEXT
+/// stacks one. Empty when the block draws none.
 fn nested_dimension_text(cx: &Ctx, brecs: &[&Record]) -> String {
     let mut pieces = Vec::new();
     let identity: Affine = [1., 0., 0., 0., 1., 0.];
     for ins in brecs.iter().filter(|x| x.kind == "INSERT") {
         nested_pieces(cx, ins, &identity, 0, &mut pieces);
     }
-    let Some(&(_, d, _)) = pieces.first() else {
+    let Some(first) = pieces.first() else {
         return String::new();
     };
-    let n = (d[0] * d[0] + d[1] * d[1]).sqrt();
-    let dir = if n > 1e-12 { [d[0] / n, d[1] / n] } else { [1., 0.] };
+    let n = first.dir[0].hypot(first.dir[1]);
+    let dir = if n > 1e-12 {
+        [first.dir[0] / n, first.dir[1] / n]
+    } else {
+        [1., 0.]
+    };
     let up = [-dir[1], dir[0]];
-    let mut order: Vec<(f64, f64, String)> = pieces
-        .into_iter()
-        .map(|(p, _, t)| (dot(p, dir), dot(p, up), t))
+    let mut order: Vec<(f64, f64, &str)> = pieces
+        .iter()
+        .map(|p| (dot(p.at, dir), dot(p.at, up), p.raw.as_str()))
         .collect();
     order.sort_by(|a, b| a.0.total_cmp(&b.0).then(b.1.total_cmp(&a.1)));
+    // The text line: the middle of the pieces across the reading direction; a piece more than
+    // 0.15 of the text height off it is above (1) or below (-1).
+    let line = median(order.iter().map(|o| o.1).collect()).unwrap_or(0.);
+    let tol = 0.15 * median(pieces.iter().map(|p| p.height).collect()).unwrap_or(0.);
+    let side = |across: f64| {
+        if across - line > tol {
+            1
+        } else if line - across > tol {
+            -1
+        } else {
+            0
+        }
+    };
     let mut out = String::new();
     let mut i = 0;
-    while let Some((along, _, upper)) = order.get(i) {
+    while let Some(&(_, across, raw)) = order.get(i) {
+        let s = side(across);
         match order.get(i + 1) {
-            Some((next, _, lower)) if (next - along).abs() < 1e-6 => {
+            Some(&(_, other, raw2)) if s != 0 && side(other) == -s => {
+                let (upper, lower) = if s > 0 { (raw, raw2) } else { (raw2, raw) };
                 out.push_str(&format!(
                     "{{\\S{}^{};}}",
                     dd::plain(upper).trim(),
@@ -1258,7 +1299,7 @@ fn nested_dimension_text(cx: &Ctx, brecs: &[&Record]) -> String {
                 i += 2;
             }
             _ => {
-                out.push_str(upper);
+                out.push_str(raw);
                 i += 1;
             }
         }

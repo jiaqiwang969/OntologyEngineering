@@ -927,8 +927,8 @@ fn leader_note_block_with_plain_words() {
 
 #[test]
 fn chamfer_note_block_without_terminator() {
-    // the leader continues the 20° chamfer edge from its outer end; no terminator
-    let (c, s) = (20f64.to_radians().cos(), 20f64.to_radians().sin());
+    // the leader continues the 25° chamfer edge from its outer end; no terminator
+    let (c, s) = (25f64.to_radians().cos(), 25f64.to_radians().sin());
     let end = [12., 10. + 2. * s / c];
     let far = [end[0] + 8. * c, end[1] + 8. * s];
     let block = vec![
@@ -942,7 +942,7 @@ fn chamfer_note_block_without_terminator() {
         mtext(
             "L3",
             "08",
-            "\\T1.1;2×20%%D",
+            "\\T1.1;2×25%%D",
             [far[0] - end[0] + 7.5, far[1] - end[1] + 1.],
             3.5,
             8,
@@ -958,7 +958,7 @@ fn chamfer_note_block_without_terminator() {
     let e = exprs(&g, "LB");
     assert_eq!(
         (e[0].kind.as_str(), e[0].label.as_str()),
-        ("dimension_chamfer", "2×20°")
+        ("dimension_chamfer", "2×25°")
     );
     assert!(
         ev(e[0], "leader_end_on:EX1") && ev(e[0], "terminator:none"),

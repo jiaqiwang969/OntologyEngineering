@@ -58,6 +58,9 @@ kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_pa
 [[rules.concepts]]
 kind = ""
 ids = ["DC-G5-090"]
+[[rules.concepts]]
+kind = "gps_runout"
+ids = ["DC-G5-057"]
 
 [[rules]]
 rule = "binding_margin_registration_table"
@@ -110,6 +113,9 @@ kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_pa
 [[rules.concepts]]
 kind = ""
 ids = ["DC-G5-090"]
+[[rules.concepts]]
+kind = "gps_runout"
+ids = ["DC-G5-057"]
 
 [[rules]]
 rule = "opposed_terminators_dimension_line_and_text"
@@ -753,6 +759,9 @@ kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_pa
 [[rules.concepts]]
 kind = ""
 ids = ["DC-G5-090"]
+[[rules.concepts]]
+kind = "gps_runout"
+ids = ["DC-G5-057"]
 
 [[rules]]
 rule = "card:item_number/underline"
@@ -1388,7 +1397,7 @@ by = ["card:gdt_characteristic"]
 [[concepts]]
 id = "DC-G5-057"
 level = "full"
-by = ["card:gdt_characteristic"]
+by = ["card:gdt_characteristic", "card:gdt_frame_symbol/line_grid_font_glyph", "exploded_tolerance_frame_glyph_cells_fields", "tolerance_frame_block_glyph_and_fields"]
 
 [[concepts]]
 id = "DC-G5-058"
@@ -1446,7 +1455,7 @@ by = ["card:gdt_frame_content"]
 id = "DC-G5-090"
 level = "partial"
 by = ["card:gdt_frame_content", "card:gdt_frame_symbol", "card:gdt_frame_symbol/line_grid_font_glyph", "exploded_tolerance_frame_glyph_cells_fields", "tolerance_frame_block_glyph_and_fields"]
-missing = "整块框格（多段线格或直线格、笔画或 GD&T 字体符号、叠放行、多条指引线）与散线框格已识别；外框加分隔线的手画框格与手画箭头的指引线未完全识别，TOLERANCE 原生对象未读"
+missing = "整块框格（多段线格或直线格、笔画或 GD&T 字体符号、叠放行、多条指引线）与散线框格（外框四线或多段加分隔线、三条直线或实心三角形画的箭头、搭接或略有缝隙的指引线、框格上下的附注）已识别；外框倾斜的手画框格未识别，TOLERANCE 原生对象未读"
 
 [[concepts]]
 id = "DC-G5-091"

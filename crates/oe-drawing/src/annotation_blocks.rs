@@ -58,6 +58,8 @@ pub(super) struct Block {
     pub nested: Vec<String>,
     /// Position of the root in the drawing (records written earlier come first).
     pub index: usize,
+    /// Texts that draw nothing (an empty cell of a table): path and insertion point.
+    pub blank: Vec<(String, P)>,
 }
 
 /// The parts of every block reference of model space, by root.
@@ -342,6 +344,12 @@ impl Reader<'_> {
                         .map(|q| apply(&next, q))
                         .collect();
                     (pts.len() >= 2).then(|| Geom::Path(pts, int(r, 70) & 1 != 0))
+                }
+                "TEXT" | "MTEXT" | "ATTRIB" if text_fact(r).is_none() => {
+                    if let Ok(q) = r.xy(10) {
+                        out.blank.push((p.clone(), apply(&next, q)));
+                    }
+                    None
                 }
                 "TEXT" | "MTEXT" | "ATTRIB" => text_fact(r).map(|t| {
                     let style = r.get(7).unwrap_or("STANDARD").to_lowercase();
@@ -2347,6 +2355,28 @@ fn emit_parts_list(b: &mut Builder, bl: &Block, p: &PartsList) -> usize {
                 "table_text",
                 "text",
                 vec![format!("row:{}", r.item.as_deref().unwrap_or(""))],
+            );
+        }
+    }
+    // texts that draw nothing inside the grid are its empty cells
+    let grid = bbox_of(
+        &p.lines
+            .iter()
+            .flat_map(|i| part_points(&bl.parts[*i].geom))
+            .collect::<Vec<_>>(),
+    );
+    for (path, q) in &bl.blank {
+        if grid.is_some_and(|g| inside(*q, g, 0.)) {
+            b.member(
+                e,
+                &bl.root,
+                Some(path.clone()),
+                [0., 1.],
+                "table_text",
+                "text",
+                "candidate",
+                vec![],
+                vec!["empty_cell".into()],
             );
         }
     }

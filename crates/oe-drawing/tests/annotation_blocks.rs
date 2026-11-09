@@ -1060,6 +1060,8 @@ fn parts_list_block(code4: &str, first: [&str; 4]) -> Vec<String> {
         v.push(mtext(&format!("MC{r}"), "02", row[1], [49., y], 3.5, 4));
         v.push(mtext(&format!("MD{r}"), "02", "1", [93., y], 3.5, 4));
     }
+    // an empty remark cell, written as a text that draws nothing
+    v.push(mtext("MEX", "02", "\\T1.1;", [101., 13.5], 3.5, 4));
     v
 }
 
@@ -1119,6 +1121,12 @@ fn parts_list_block_rows_match_item_numbers() {
         4
     );
     assert!(ev(list[0], "header_below_rows"));
+    assert!(
+        g.members.iter().any(|m| m.expression_id == list[0].id
+            && m.native_member_id.as_deref() == Some("ML/MEX")
+            && m.evidence_ids.iter().any(|x| x == "empty_cell")),
+        "the empty cell belongs to the list"
+    );
     for n in ["NX1", "NX2", "NX4"] {
         let e = exprs(&g, n);
         assert_eq!(e[0].kind, "item_number");

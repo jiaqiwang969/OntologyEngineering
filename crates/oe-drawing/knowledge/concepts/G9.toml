@@ -38,7 +38,7 @@ kind = "note"
 meaning = "图样上以“技术要求”为标题的文字块，用简要文字分条说明不能或不便用符号、代号表达的制造、检验和装配要求，如热处理与硬度、去毛刺锐边、未注倒角圆角和公差、铸锻件质量、时效、表面处理、试验等；零件图、装配图和弹簧等图上都有。"
 components = ["标题“技术要求”，在条目块上方居中或左对齐，字高通常比条目大一号左右。", "条目按“1.”“2.”…逐条编号书写，每条一句或一段；只有一条时可不编号。", "位置：一般在标题栏上方或左侧的空白处，靠近图纸右下角，在视图之外。", "广义的技术要求还包括图上的尺寸公差、几何公差、表面结构等符号；本概念指文字块。"]
 variants = ["零件图技术要求", "装配图技术要求", "弹簧图技术要求"]
-dxf_forms = ["MTEXT with a '技术要求' heading and \\P paragraph breaks, or separate TEXT entities one per line (layer 11)", "heading TEXT height about 1.4× the item height (e.g. 7 vs 5, or 5 vs 3.5)", "items may contain %%c, %%p, %%d codes and standard numbers such as 'GB/T 1804-m'"]
+dxf_forms = ["MTEXT with a '技术要求' heading and \\P paragraph breaks, or separate TEXT entities one per line (layer 11)", "heading TEXT height about 1.4× the item height (e.g. 7 vs 5, or 5 vs 3.5)", "items may contain %%c, %%p, %%d codes and standard numbers such as 'GB/T 1804-m'", "one INSERT holding the whole technical requirements (CAXA 技术要求库): the heading MTEXT, one MTEXT per numbered item ('1.…' written inline), and possibly a nested texture-symbol block with 其余 for the remaining surfaces"]
 recognition = "以内容等于“技术要求”（允许字间有空格，如“技 术 要 求”）的文字为锚点；从其下方约0.5~2倍字高处开始，取若干行左对齐文字，行首匹配“^\\d+\\s*[.、．]”的为条目，直到行距明显变大或遇到表格线为止。文字块通常在标题栏上方或左方、视图之外。与标题栏（有格线）、明细栏备注（在表格内）、局部注释（有指引线）区分。"
 confusions = ["标题栏：表格格线内的字段。", "明细栏备注列：单元格内的短语。", "指引线注释：直接指向某表面的单条说明。", "表格图或齿轮的参数表：表格形式。"]
 related = ["DC-G8-011", "DC-G9-003", "DC-G9-004", "DC-G9-005", "DC-G9-009", "DC-G9-010", "DC-G9-011", "DC-G9-014", "DC-G7-025", "DC-G4-070", "DC-G5-025"]
@@ -46,7 +46,7 @@ priority = "high"
 text_forms = ["技术要求", "1. 调质处理220~250HBW。", "2. 去毛刺、锐边。", "1. 表面高频淬火50~55HRC。", "未注尺寸公差按GB/T 1804-m"]
 knowledge_units = ["K14", "K61", "K21", "K40"]
 recognition_cards = ["technical_note"]
-recognizer = "card"
+recognizer = "partial"
 seen_on_drawing = []
 expert_checked = false
 [[concepts.sources]]

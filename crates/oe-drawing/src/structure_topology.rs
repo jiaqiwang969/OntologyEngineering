@@ -138,6 +138,8 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
         .members
         .iter()
         .filter(|m| kind_of.get(m.expression_id.as_str()) == Some(&"section_hatch"))
+        // parts of a block reference are placed through the block, not by their root
+        .filter(|m| m.native_member_id.is_none())
         .filter_map(|m| {
             cx.bbox(&m.source_handle)
                 .map(|bb| (bb, m.source_handle.clone()))
@@ -176,6 +178,7 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
             .members
             .iter()
             .filter(|m| matches!(m.member_role.as_str(), "break_curve" | "detail_circle"))
+            .filter(|m| m.native_member_id.is_none())
             .filter(|m| {
                 cx.bbox(&m.source_handle)
                     .is_some_and(|x| near(&x, &bb, 0.5 * s))

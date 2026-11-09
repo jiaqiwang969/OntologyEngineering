@@ -721,7 +721,7 @@ fn cell_rect(pts: &[P]) -> Option<[f64; 4]> {
 fn family(kind: &str) -> &'static str {
     match kind {
         "visible_contour" | "hidden_contour" | "center_axis" | "phantom_line"
-        | "thread_convention" | "break_line" | "section_hatch" => "geometry",
+        | "thread_convention" | "break_line" | "section_hatch" | "standard_part" => "geometry",
         "thread_note" | "leader" | "center_hole" | "series_table" => "dimension",
         k if k.starts_with("dimension_") => "dimension",
         "geometric_tolerance" | "datum_symbol" => "tolerance",
@@ -731,8 +731,9 @@ fn family(kind: &str) -> &'static str {
         "technical_general"
         | "material_heat"
         | "process_requirement"
-        | "protection_requirement" => "note",
-        "sheet_frame" | "title_block" => "sheet",
+        | "protection_requirement"
+        | "leader_note" => "note",
+        "sheet_frame" | "title_block" | "parts_list" | "item_number" => "sheet",
         "construction_reference" => "construction",
         _ => "unresolved",
     }
@@ -768,6 +769,9 @@ fn knowledge(kind: &str) -> Vec<String> {
         "title_block" => &["K01", "K61"],
         "construction_reference" => &["K51", "K55"],
         "leader" => &["K55"],
+        "leader_note" => &["K14", "K55"],
+        "parts_list" | "item_number" => &["K01", "K61"],
+        "standard_part" => &["K34", "K13"],
         _ => &["K14"],
     };
     ids.iter().map(|s| s.to_string()).collect()

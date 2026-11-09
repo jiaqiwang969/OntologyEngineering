@@ -5678,14 +5678,18 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "kind", "gps_symmetry"),
     ("MdEngineeringExpression", "kind", "gps_total_runout"),
     ("MdEngineeringExpression", "kind", "hidden_contour"),
+    ("MdEngineeringExpression", "kind", "item_number"),
     ("MdEngineeringExpression", "kind", "leader"),
+    ("MdEngineeringExpression", "kind", "leader_note"),
     ("MdEngineeringExpression", "kind", "material_heat"),
+    ("MdEngineeringExpression", "kind", "parts_list"),
     ("MdEngineeringExpression", "kind", "phantom_line"),
     ("MdEngineeringExpression", "kind", "process_requirement"),
     ("MdEngineeringExpression", "kind", "protection_requirement"),
     ("MdEngineeringExpression", "kind", "section_hatch"),
     ("MdEngineeringExpression", "kind", "series_table"),
     ("MdEngineeringExpression", "kind", "sheet_frame"),
+    ("MdEngineeringExpression", "kind", "standard_part"),
     ("MdEngineeringExpression", "kind", "surface_roughness"),
     ("MdEngineeringExpression", "kind", "technical_general"),
     ("MdEngineeringExpression", "kind", "thread_convention"),
@@ -20627,7 +20631,7 @@ impl MdEngineeringExpression {
         if self.state.trim().is_empty() { failures.push("MdEngineeringExpression.state:required".into()); }
 
         if !["construction","dimension","geometry","note","sheet","surface","tolerance","unresolved","view",].contains(&self.family.as_str()) { failures.push("MdEngineeringExpression.family:allowed_values".into()); }
-        if !["break_line","center_axis","center_hole","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_angularity","gps_circularity","gps_coaxiality","gps_cylindricity","gps_direction","gps_flatness","gps_line_profile","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_straightness","gps_surface_profile","gps_symmetry","gps_total_runout","hidden_contour","leader","material_heat","phantom_line","process_requirement","protection_requirement","section_hatch","series_table","sheet_frame","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
+        if !["break_line","center_axis","center_hole","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_angularity","gps_circularity","gps_coaxiality","gps_cylindricity","gps_direction","gps_flatness","gps_line_profile","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_straightness","gps_surface_profile","gps_symmetry","gps_total_runout","hidden_contour","item_number","leader","leader_note","material_heat","parts_list","phantom_line","process_requirement","protection_requirement","section_hatch","series_table","sheet_frame","standard_part","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdEngineeringExpression.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }

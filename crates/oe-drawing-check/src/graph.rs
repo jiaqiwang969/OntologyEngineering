@@ -160,7 +160,7 @@ fn family(kind: &str) -> Option<&'static str> {
     }
     Some(match kind {
         "visible_contour" | "hidden_contour" | "center_axis" | "phantom_line"
-        | "thread_convention" | "break_line" | "section_hatch" => "geometry",
+        | "thread_convention" | "break_line" | "section_hatch" | "standard_part" => "geometry",
         "thread_note" | "leader" | "center_hole" | "series_table" => "dimension",
         "geometric_tolerance" | "datum_symbol" => "tolerance",
         "surface_roughness" => "surface",
@@ -168,8 +168,9 @@ fn family(kind: &str) -> Option<&'static str> {
         "technical_general"
         | "material_heat"
         | "process_requirement"
-        | "protection_requirement" => "note",
-        "sheet_frame" | "title_block" => "sheet",
+        | "protection_requirement"
+        | "leader_note" => "note",
+        "sheet_frame" | "title_block" | "parts_list" | "item_number" => "sheet",
         "construction_reference" => "construction",
         "unresolved" => "unresolved",
         _ => return None,

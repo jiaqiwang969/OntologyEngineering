@@ -26,7 +26,7 @@ pub const REQUEST_SCHEMA: &str = "oev2.drawing-route-request/1";
 pub const RECEIPT_SCHEMA: &str = "oev2.drawing-route-receipt/1";
 pub const RUNTIME_SCHEMA: &str = "oev2.cadcraft-runtime/1";
 pub const LOCK_SCHEMA: &str = "oev2.cadcraft-source-lock/1";
-pub const STEPS: [&str; 16] = [
+pub const STEPS: [&str; 17] = [
     "verify-runtime",
     "read-source",
     "probe-sandbox",
@@ -42,6 +42,7 @@ pub const STEPS: [&str; 16] = [
     "check-corrected",
     "page",
     "check-page",
+    "check-rules",
     "verify-source",
 ];
 pub const MODES: [&str; 7] = [
@@ -323,6 +324,7 @@ impl Run<'_> {
             "check-corrected" => self.check_corrected(s),
             "page" => self.page(s),
             "check-page" => self.check_page(s),
+            "check-rules" => self.check_rules(s),
             "verify-source" => self.verify_source(s),
             other => Err(anyhow!("drawing_route_step_unknown:{other}")),
         }
@@ -869,6 +871,38 @@ impl Run<'_> {
             s.outputs.push(report.screenshot);
         }
         s.facts["runs"] = Value::Object(runs);
+        Ok("passed")
+    }
+
+    /// The drafting rules of the ontology on the frozen graph and the source bytes: findings to review, never a
+    /// failure of the route.
+    fn check_rules(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
+        let output = self.out.join("drafting-rules.json");
+        let q = MdDraftingRuleRequest {
+            schema: oe_drawing_check::drafting::REQUEST_SCHEMA.into(),
+            discovery_request: self
+                .root
+                .portable_data_path(&self.out.join("request.json"))?,
+            output: self.root.portable_data_path(&output)?,
+        };
+        for f in ["classified/graph.json", "source.dxf"] {
+            s.inputs.push(self.file(&self.out.join(f))?);
+        }
+        let report = oe_drawing_check::drafting::check_rules(self.root, &q)?;
+        s.facts["rules"] = json!(report.rule_count);
+        s.facts["findings"] = json!(report.findings.len());
+        s.facts["by_layer"] = json!(
+            report
+                .layers
+                .iter()
+                .map(|l| (l.layer.clone(), json!(l.finding_count)))
+                .collect::<serde_json::Map<_, _>>()
+        );
+        s.outputs.push(self.file(&output)?);
+        for layer in &report.layers {
+            s.outputs
+                .push(self.file(&self.root.data_expand(Path::new(&layer.facts_file))?)?);
+        }
         Ok("passed")
     }
 

@@ -303,8 +303,21 @@ fn the_route_on_the_public_drawing_writes_graph_check_and_page() {
             ("check-graph", "passed"),
             ("page", "passed"),
             ("check-page", "skipped"),
+            ("check-rules", "passed"),
             ("verify-source", "passed"),
         ]
+    );
+    let rules = read(&home.path.join("route/drafting-rules.json"));
+    assert_eq!(rules["status"], "checked");
+    assert!(rules["rule_count"].as_u64().unwrap() >= 12, "{rules:#}");
+    assert_eq!(
+        rules["layers"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|l| l["layer"].as_str().unwrap())
+            .collect::<Vec<_>>(),
+        ["source", "recognition", "presentation"]
     );
     let graph = read(&home.path.join("route/classified/graph.json"));
     assert_eq!(graph["schema"], "oev2.drawing-expression-graph/1");
@@ -574,6 +587,7 @@ fn the_route_receipts_discharge_the_drawing_obligations() {
         ("ob_drawing_no_invented_target", "absent"),
         ("ob_drawing_partial_intervals_on_lines", "held"),
         ("ob_drawing_recorded_run", "held"),
+        ("ob_drawing_rules_from_ontology", "held"),
         ("ob_drawing_source_conservation", "held"),
         ("ob_drawing_source_only_worker", "held"),
         ("ob_drawing_structural_lines", "absent"),

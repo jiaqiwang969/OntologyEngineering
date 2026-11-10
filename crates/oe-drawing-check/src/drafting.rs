@@ -234,11 +234,14 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
             triples.iter().find(|(k, _)| k == p).map(|(_, o)| text(o))
         };
         let values = |p: &str| -> Vec<String> {
-            triples
+            let mut values: Vec<String> = triples
                 .iter()
                 .filter(|(k, _)| k == p)
                 .map(|(_, o)| text(o))
-                .collect()
+                .collect();
+            // RDF properties are unordered; report metadata uses lexical order, not store iteration order.
+            values.sort();
+            values
         };
         let property_shapes: Vec<String> = triples
             .iter()
@@ -285,6 +288,8 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
         let severity = value(&format!("{SH}severity"))
             .and_then(|s| s.strip_prefix(SH).map(str::to_lowercase))
             .unwrap_or_else(|| "violation".into());
+        // Preserve every authored clause (including repeats), fixing only their presentation order.
+        messages.sort();
         rules.push(Rule {
             shape: subject.clone(),
             id: value(&format!("{NS}ruleId")).unwrap_or_default(),
@@ -2403,6 +2408,17 @@ fn related_facts(objects: &[Object], relations: &[Relation]) -> HashMap<String, 
     out
 }
 
+/// Keep every distinct reason for one finding, ordered by the authored shape ID. Equal messages from
+/// different shapes occur once, at their earliest shape; message text breaks ties within one shape.
+fn merge_finding_messages(mut messages: Vec<(String, String)>) -> String {
+    messages.sort();
+    let mut seen = BTreeSet::new();
+    messages.into_iter()
+        .filter_map(|(_, message)| seen.insert(message.clone()).then_some(message))
+        .collect::<Vec<_>>()
+        .join("；")
+}
+
 fn evaluate(
     layer: &str,
     facts: &str,
@@ -2422,8 +2438,7 @@ fn evaluate(
             by_shape.insert(p.as_str(), r);
         }
     }
-    let mut findings = Vec::new();
-    let mut seen = BTreeSet::new();
+    let mut grouped = BTreeMap::new();
     for f in report["findings"].as_array().map(Vec::as_slice).unwrap_or_default() {
         let shape = f["source_shape"].as_str().unwrap_or("");
         let rule = by_shape
@@ -2449,27 +2464,31 @@ fn evaluate(
                     )
                 })
             });
-        if !seen.insert((rule.id.clone(), object.id.clone(), value.clone())) {
-            continue;
-        }
         let message = f["message"]
             .as_str()
             .filter(|m| !m.is_empty())
             .map(str::to_owned)
             .or_else(|| rule.messages.first().cloned())
             .unwrap_or_else(|| rule.label.clone());
-        findings.push(MdDraftingFinding {
-            layer: layer.into(),
-            rule_id: rule.id.clone(),
-            focus: object.id.clone(),
-            focus_classes: object.classes.iter().map(|c| (*c).to_owned()).collect(),
-            source_handles: object.source_handles.clone(),
-            expression_ids: object.expression_id.iter().cloned().collect(),
-            value,
-            message,
-            severity: rule.severity.clone(),
-        });
+        let (_, messages) = grouped.entry((rule.id.clone(), object.id.clone(), value.clone()))
+            .or_insert_with(|| (MdDraftingFinding {
+                layer: layer.into(),
+                rule_id: rule.id.clone(),
+                focus: object.id.clone(),
+                focus_classes: object.classes.iter().map(|c| (*c).to_owned()).collect(),
+                source_handles: object.source_handles.clone(),
+                expression_ids: object.expression_id.iter().cloned().collect(),
+                value,
+                message: String::new(),
+                severity: rule.severity.clone(),
+            }, Vec::new()));
+        messages.push((shape.to_owned(), message));
     }
+    // The original deduplication key also fixes the order of each layer's exported findings.
+    let findings = grouped.into_values().map(|(mut finding, messages)| {
+        finding.message = merge_finding_messages(messages);
+        finding
+    }).collect();
     Ok((findings, focus_count))
 }
 
@@ -2583,6 +2602,17 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn finding_messages_keep_all_reasons_in_shape_order_without_duplicates() {
+        let messages: Vec<(String, String)> = [
+            ("shape:z", "later reason"), ("shape:b", "shared reason"),
+            ("shape:a", "first reason"), ("shape:c", "shared reason"),
+            ("shape:a", "first reason"),
+        ].into_iter().map(|(shape, message)| (shape.into(), message.into())).collect();
+        assert_eq!(merge_finding_messages(messages.clone()), "first reason；shared reason；later reason");
+        assert_eq!(merge_finding_messages(messages.into_iter().rev().collect()), "first reason；shared reason；later reason");
+        assert_eq!(merge_finding_messages(vec![("shape:a".into(), "one；authored message".into())]), "one；authored message");
+    }
     #[test]
     fn a_chord_through_a_rotated_box_is_measured() {
         let tb = TextBox {

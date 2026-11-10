@@ -592,3 +592,77 @@ fn the_same_shapes_are_evaluated_on_the_three_layers() {
         assert_eq!(f[layer][0].layer, layer);
     }
 }
+
+#[test]
+fn repeated_rule_reports_are_byte_identical() {
+    use oe_core::{SkillRoot, sha256, write_new_bytes};
+    use std::path::Path;
+
+    let mut d = Drawing::default();
+    let line = d.line([17.0, 29.0], [39.0, 29.0]);
+    d.member(&line, "dimension_line", "thick_continuous", "dimension_linear", "22");
+    let text = d.text("47", [61.0, 53.0], 2.6, 17.0);
+    d.member(&text, "dimension_text", "text", "dimension_angle", "47");
+    // Both property shapes of one rule fail on the same leader: deduplication must also be repeatable.
+    for (a, b) in [([85.0, 73.0], [105.0, 93.0]), ([85.0, 93.0], [105.0, 73.0])] {
+        let leader = d.line(a, b);
+        d.member(&leader, "leader_line", "thin_continuous", "technical_note", "");
+    }
+    let note = d.text("SYNTHETIC", [91.0, 80.0], 5.0, 0.0);
+    d.member(&note, "note_text", "text", "technical_note", "SYNTHETIC");
+    let single_leader = d.line([145.0, 73.0], [165.0, 93.0]);
+    d.member(&single_leader, "leader_line", "thin_continuous", "technical_note", "");
+    let single_note = d.text("SINGLE", [151.0, 80.0], 5.0, 0.0);
+    d.member(&single_note, "note_text", "text", "technical_note", "SINGLE");
+    let raw = d.dxf();
+    let mut graph = d.graph();
+    graph["source_sha256"] = json!(sha256(&raw));
+    let graph = serde_json::to_vec_pretty(&graph).unwrap();
+    let software = SkillRoot::new(Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap().parent().unwrap()).unwrap();
+    let mut outputs = Vec::new();
+    for _ in 0..2 {
+        // Separate stores keep identical portable report paths, without overwriting the first run.
+        // Retain these synthetic artifacts under the checkout's private test directory for inspection.
+        let home = software.unique_private_dir(Path::new("var/tests"), "drafting-repeat").unwrap();
+        let root = software.clone().with_project_data_root(&home).unwrap();
+        std::fs::create_dir(home.join("classified")).unwrap();
+        write_new_bytes(&home.join("source.dxf"), &raw).unwrap();
+        write_new_bytes(&home.join("classified/graph.json"), &graph).unwrap();
+        let request = json!({"schema":"oev2.drawing-discovery-request/1",
+            "source":{"path":"source.dxf","sha256":sha256(&raw)},"output_directory":"classified"});
+        write_new_bytes(&home.join("request.json"), &serde_json::to_vec(&request).unwrap()).unwrap();
+        let report = drafting::check_rules(&root, &oe_contracts::MdDraftingRuleRequest {
+            schema: drafting::REQUEST_SCHEMA.into(),
+            discovery_request: "request.json".into(),
+            output: "report.json".into(),
+        }).unwrap();
+        assert!(report.layers.iter().all(|layer| layer.finding_count > 1));
+        let leaders: Vec<_> = report.findings.iter()
+            .filter(|f| f.rule_id == "G1-028-leader-not-crossing-text-or-leader").collect();
+        assert_eq!(leaders.len(), 9, "three leaders on each of the three layers");
+        let mut single_count = 0;
+        for finding in leaders {
+            if finding.source_handles == [single_leader.clone()] {
+                single_count += 1;
+                assert_eq!(finding.message, "指引线穿过了注写文字");
+            } else {
+                // p1 sorts before p2 even though their message text sorts in the opposite order.
+                assert_eq!(finding.message, "指引线穿过了注写文字；指引线与另一条指引线相穿");
+            }
+        }
+        assert_eq!(single_count, 3);
+        let angles: Vec<_> = report.findings.iter()
+            .filter(|f| f.rule_id == "G4-032-angle-text-horizontal").collect();
+        assert_eq!(angles.len(), 3);
+        assert!(angles.iter().all(|f| f.message == "角度尺寸的数字不是水平书写"));
+        let mut bytes = vec![std::fs::read(home.join("report.json")).unwrap()];
+        for layer in &report.layers {
+            bytes.push(std::fs::read(home.join(&layer.facts_file)).unwrap());
+        }
+        outputs.push(bytes);
+    }
+    for (index, (first, second)) in outputs[0].iter().zip(&outputs[1]).enumerate() {
+        assert_eq!(sha256(first), sha256(second), "report/facts artifact {index} differs between identical runs");
+        assert!(first == second);
+    }
+}

@@ -732,6 +732,8 @@ struct Cutting {
     heads: Vec<usize>,
     letters: Vec<usize>,
     turns: Vec<f64>,
+    /// The strokes were told by geometry, the block giving no weight classes.
+    by_geometry: bool,
 }
 
 struct Indicator {
@@ -1158,15 +1160,25 @@ fn cutting_plane(bl: &Block) -> Result<Option<Cutting>> {
     let h = texts.iter().map(|t| t.1.height).fold(0., f64::max);
     let tol = join * h;
     let lines = bl.lines();
-    let Some((thin, _)) = bl.weight_classes(thick) else {
-        return Ok(None);
+    // the strokes are the thick lines; when the drawing gives the block no weight classes they are
+    // told by geometry (variant cutting_plane_group_without_widths): the short lines no arrow
+    // head ends on (GB/T 17452-1998 8.1, 8.2: the stroke's thickness only corroborates)
+    let classes = bl.weight_classes(thick);
+    let heads_at = |p: P| {
+        bl.heads().iter().any(|(_, hd)| {
+            let (tip, dir, len) = head_axis(hd);
+            dist(tip, p) <= 0.25 * len + tol || dist(sub(tip, mul(dir, len)), p) <= 0.25 * len + tol
+        })
     };
     let strokes: Vec<(usize, P, P)> = lines
         .iter()
         .copied()
         .filter(|(i, a, b)| {
-            f64::from(bl.parts[*i].weight) >= thick * f64::from(thin)
-                && (smin * h..=smax * h).contains(&dist(*a, *b))
+            let heavy = match classes {
+                Some((thin, _)) => f64::from(bl.parts[*i].weight) >= thick * f64::from(thin),
+                None => !heads_at(*a) && !heads_at(*b),
+            };
+            heavy && (smin * h..=smax * h).contains(&dist(*a, *b))
         })
         .collect();
     if strokes.len() < 2 {
@@ -1250,6 +1262,10 @@ fn cutting_plane(bl: &Block) -> Result<Option<Cutting>> {
     if used.len() != bl.parts.len() {
         return Ok(None);
     }
+    // without weights the arrows must be there: two arrows at the outer ends of the path
+    if classes.is_none() && used_heads.len() < 2 {
+        return Ok(None);
+    }
     Ok(Some(Cutting {
         letter,
         strokes: stroke_ids.into_iter().collect(),
@@ -1257,6 +1273,7 @@ fn cutting_plane(bl: &Block) -> Result<Option<Cutting>> {
         heads: used_heads.into_iter().collect(),
         letters: texts.iter().map(|t| t.0).collect(),
         turns,
+        by_geometry: classes.is_none(),
     }))
 }
 
@@ -2387,6 +2404,9 @@ fn emit_cutting(b: &mut Builder, bl: &Block, c: &Cutting) {
     let mut ev = tagged("view_callout", "cutting_plane_group", &bl.root);
     ev.push("concept:DC-G2-043".into());
     ev.push("concept:DC-G1-007".into());
+    if c.by_geometry {
+        ev.push("variant:cutting_plane_group_without_widths".into());
+    }
     // a turn of the cutting path: at a right angle parallel planes, at another angle intersecting planes
     if c.turns.iter().any(|cos| *cos < 0.1) {
         ev.push("parallel_cutting_planes".into());

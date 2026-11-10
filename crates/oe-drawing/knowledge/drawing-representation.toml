@@ -2751,6 +2751,17 @@ value = 5.0
 meaning = "剖切路径上下一段短画与当前方向的夹角上限（度）"
 
 [[cards.variants]]
+id = "cutting_plane_group_without_widths"
+title = "图上没有线宽时按几何认出整块的剖切符号"
+distinguishing = "剖切符号由剖切面起、迄（和转折）处的短画、外端垂直的箭头与相同字母组成（GB/T 17452-1998 8.1、8.2）：图块的线不分粗细时，没有箭头连着的短线是短画，连着实心箭头的是箭杆；须有两支箭头，其余条件与整块的剖切符号相同；线宽只是旁证"
+encodings = ["block"]
+tests = ["cutting_plane_block_without_widths_is_read_by_geometry"]
+
+[[cards.counter_examples]]
+statement = "没有线宽的图块中只有短线与字母、没有两支箭头时，不按剖切符号读"
+test = "block_without_widths_and_arrows_is_not_a_cutting_plane"
+
+[[cards.variants]]
 id = "cutting_symbol_names_its_view"
 title = "剖切符号的字母指向同名的“X—X”视图，不论该视图在配置中的位置"
 distinguishing = "剖视图上方注“X—X”，相应视图上的剖切符号注同一字母（GB/T 4458.6-2002 6.1）：剖切符号指向本张图纸上名称为“X—X”的视图，即使它放在主视图位置；没有“X—X”而有同字母的“X向”视图时指向它（按向视图写法命名的剖视）；同字母的局部放大图名称（“X 比例”）不是它所指的视图"

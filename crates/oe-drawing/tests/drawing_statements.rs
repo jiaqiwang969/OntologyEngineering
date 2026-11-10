@@ -1885,3 +1885,61 @@ fn bush_hatched_apart_without_widths_is_not_a_thread() {
         exprs(&g, "M1").iter().map(|x| &x.kind).collect::<Vec<_>>()
     );
 }
+
+// ---------------------------------------------------------------- view_callout: a cutting symbol block without widths
+
+#[test]
+fn cutting_plane_block_without_widths_is_read_by_geometry() {
+    let block = vec![
+        line("K1", "08", [0., 80.], [0., 72.]),
+        line("K2", "08", [0., 8.], [0., 0.]),
+        line("K3", "08", [0., 80.], [-12., 80.]),
+        line("K4", "08", [0., 0.], [-12., 0.]),
+        head("K5", "08", [-12., 80.], [-6., 80.], 0.75),
+        head("K6", "08", [-12., 0.], [-6., 0.], 0.75),
+        mtext("K7", "08", "D", [-6., 85.], 5., 5),
+        mtext("K8", "08", "D", [-6., -5.], 5., 5),
+    ];
+    let mut ents = disc_views("D-D");
+    ents.push(insert("KP", "08", "*K1", [40., 0.]));
+    let g = run(&[("*K1", block)], &ents);
+    let k = expr_with(&g, "KP", "view_callout");
+    assert_eq!(k.rule, "card:view_callout/cutting_plane_group");
+    assert!(
+        ev(k, "variant:cutting_plane_group_without_widths"),
+        "{:?}",
+        k.evidence_ids
+    );
+    assert_eq!(referenced(k), vec!["view:principal"]);
+    let strokes: Vec<&str> = g
+        .members
+        .iter()
+        .filter(|m| m.expression_id == k.id && m.member_role == "cutting_stroke")
+        .filter_map(|m| m.native_member_id.as_deref())
+        .collect();
+    assert_eq!(strokes, vec!["KP/K1", "KP/K2"]);
+}
+
+#[test]
+fn block_without_widths_and_arrows_is_not_a_cutting_plane() {
+    // two short lines with a letter at each, no arrows, drawn as one block
+    let block = vec![
+        line("K1", "08", [0., 80.], [0., 72.]),
+        line("K2", "08", [0., 8.], [0., 0.]),
+        mtext("K7", "08", "D", [-4., 82.], 5., 5),
+        mtext("K8", "08", "D", [-4., -2.], 5., 5),
+    ];
+    let mut ents = disc_views("D-D");
+    ents.push(insert("KP", "08", "*K1", [40., 0.]));
+    let g = run(&[("*K1", block)], &ents);
+    assert!(
+        !g.expressions
+            .iter()
+            .any(|e| e.rule == "card:view_callout/cutting_plane_group"),
+        "{:?}",
+        exprs(&g, "KP")
+            .iter()
+            .map(|e| (&e.kind, &e.rule))
+            .collect::<Vec<_>>()
+    );
+}

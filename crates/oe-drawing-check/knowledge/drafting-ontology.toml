@@ -30,6 +30,8 @@ md:concept a owl:AnnotationProperty ; rdfs:label "概念目录编号"@zh .
 md:ruleId  a owl:AnnotationProperty ; rdfs:label "规定编号"@zh .
 md:clause  a owl:AnnotationProperty ; rdfs:label "标准条款"@zh .
 md:group   a owl:AnnotationProperty ; rdfs:label "概念组"@zh .
+md:confidence a owl:AnnotationProperty ; rdfs:label "把握程度：certain 确定 / likely 很可能 / needs_expert 要问专家"@zh .
+md:proposedCorrection a owl:AnnotationProperty ; rdfs:label "建议改法"@zh .
 
 # ---- 图线
 md:Line a owl:Class ; rdfs:label "图线"@zh ; rdfs:comment "线段、圆弧、圆、多段线或样条构成的一条图线。"@zh .
@@ -130,6 +132,8 @@ md:hatchSpacingDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ;
 md:chainedWith a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:DimensionLine ;
     rdfs:label "与相邻尺寸的尺寸线成链"@zh ;
     rdfs:comment "两条不同尺寸的尺寸线共线，且有一条尺寸界线同时与两者相交。"@zh .
+md:CuttingLetterSite a owl:Class ; rdfs:label "已有明确命名剖切路径的端点或转折标记位置"@zh .
+md:cutLetterCount a owl:DatatypeProperty ; rdfs:label "该位置附近同名剖切字母数"@zh .
 '''
 
 [shapes]
@@ -568,4 +572,35 @@ rule:G6-073-roughness-value-in-series-p1 a sh:PropertyShape ;
     sh:path md:text ; sh:minCount 1 ;
     sh:pattern "^\\s*(Ra|Rz)?\\s*(0\\.012|0\\.025|0\\.05|0\\.1|0\\.2|0\\.4|0\\.8|1\\.6|3\\.2|6\\.3|12\\.5|25|50|100|200|400|800|1600)\\s*$" ;
     sh:message "粗糙度数值不在 Ra／Rz 的第一系列中"@zh .
+
+# GB/T 4458.6 §6.2 only exempts arrows; §§6.3–6.4 allow a whole marking to be omitted in defined cases.
+# Only an existing explicitly named path creates a CuttingLetterSite; an absent path is not guessed.
+rule:G2-043-cutting-letter-required a sh:NodeShape ;
+    sh:targetClass md:CuttingLetterSite ;
+    md:ruleId "G2-043-cutting-letter-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043 ;
+    md:clause "GB/T 4458.6-2002 6.1；6.2–6.4 的省略条件；GB/T 17452-1998 8.2" ;
+    md:confidence "certain" ;
+    md:proposedCorrection "按同一剖切路径另一端字母的内容、字高、文字样式和方向，在该端或转折的外侧空白处补同名字母；找不到不碰线位置时保留待处理"@zh ;
+    rdfs:label "已有明确命名的剖切路径各端和转折标记具有同名字母"@zh ;
+    sh:property rule:G2-043-cutting-letter-required-p1 .
+rule:G2-043-cutting-letter-required-p1 a sh:PropertyShape ;
+    sh:path md:cutLetterCount ; sh:minCount 1 ; sh:minInclusive 1 ;
+    sh:message "此明确命名剖切路径的端点或转折标记附近缺少同名字母；邻近投影配置省略箭头不等于省略字母"@zh .
 '''
+
+[cutting_identifiers]
+concepts = ["DC-G2-043"]
+source = "GB/T 4458.6-2002 6.1–6.4; GB/T 17452-1998 8.2"
+composition = ["existing named cutting path", "end strokes and turn strokes", "same-letter TEXT near each position"]
+variants = ["missing start", "missing end", "missing turn", "arrows omitted but letters required"]
+counterexamples = ["complete marking", "no explicit path (symmetry/local omissions)", "conflicting letter"]
+tests = ["cutting_letter_sites_cover_start_end_turn_and_complete", "cutting_letter_sites_do_not_invent_omitted_paths_or_resolve_conflicts"]
+parameter_basis = "Ratios below are geometric association and placement tolerances relative to the source letter height, not numeric requirements of the standard. Loose planar strokes/TEXT only; nested occurrences and ambiguous names remain outside this automatic profile."
+[cutting_identifiers.parameters]
+join_height_ratio = 0.15
+letter_reach_height_ratio = 3.0
+turn_sine_min = 0.1
+outside_height_ratio = 1.5
+placement_step_height_ratio = 0.5
+clearance_height_ratio = 0.35

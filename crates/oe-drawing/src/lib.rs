@@ -14,5 +14,6 @@ pub mod page;
 pub mod review;
 pub mod revisions;
 pub mod correction;
+pub mod drafting_issues;
 pub mod route;
 pub mod usage_discovery;

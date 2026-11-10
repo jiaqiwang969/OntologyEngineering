@@ -2,40 +2,73 @@
 use super::*;
 
 impl Run<'_> {
-    pub(super) fn write_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
-        let Some(path) = &self.correction_plan else {
-            s.facts["reason"] =
-                json!("no correction plan; no source deviation inferred by the writer");
-            return Ok("not_applicable");
+    pub(super) fn issues(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
+        let report: MdDraftingRuleReport = serde_json::from_slice(&read_regular_bytes(&self.out.join("drafting-rules.json"),64*1024*1024)?)?;
+        let graph: Value = serde_json::from_slice(&read_regular_bytes(&self.out.join("classified/graph.json"),64*1024*1024)?)?;
+        let source = read_regular_bytes(self.dxf.as_ref().context("drawing_route_dxf_missing")?,64*1024*1024)?;
+        let issues = crate::drafting_issues::collect(&report,&graph,&source)?;
+        oe_core::write_new(&self.out.join("drafting-issues.json"),&serde_json::to_value(&issues)?)?;
+        oe_core::write_new_bytes(&self.out.join("drafting-issues.txt"),crate::drafting_issues::text(&issues).as_bytes())?;
+        for name in ["drafting-rules.json","classified/graph.json"] { s.inputs.push(self.file(&self.out.join(name))?); }
+        for name in ["drafting-issues.json","drafting-issues.txt"] { s.outputs.push(self.file(&self.out.join(name))?); }
+        s.facts = json!({"findings":report.findings.len(),"issues":issues.len(),"source_candidates":issues.iter().filter(|i|i.classification=="source_deviation_candidate").count(),"recognition_deviations":issues.iter().filter(|i|i.classification=="recognition_deviation").count()});
+        Ok("passed")
+    }
+    pub(super) fn plan_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
+        let source = read_regular_bytes(self.dxf.as_ref().context("drawing_route_dxf_missing")?,64*1024*1024)?;
+        let plan = if let Some(path) = &self.correction_plan {
+            s.inputs.push(self.file(path)?);
+            self.given.push((path.clone(),self.file(path)?.sha256));
+            serde_json::from_slice::<MdDrawingCorrectionPlan>(&read_regular_bytes(path,64*1024*1024)?)?
+        } else {
+            let path = self.out.join("drafting-issues.json");
+            s.inputs.push(self.file(&path)?);
+            crate::drafting_issues::plan(&source,serde_json::from_slice(&read_regular_bytes(&path,64*1024*1024)?)?)?
         };
-        let path = PathBuf::from(path);
-        let plan_file = self.file(&path)?;
-        let plan: MdDrawingCorrectionPlan =
-            serde_json::from_slice(&read_regular_bytes(&path, 16 * 1024 * 1024)?)?;
-        self.given.push((path, plan_file.sha256.clone()));
-        s.inputs.push(plan_file);
+        ensure!(plan.source_sha256==sha256(&source),"plan_source_binding");
+        let path=self.out.join("correction-plan.json");
+        oe_core::write_new(&path,&serde_json::to_value(&plan)?)?;
+        s.outputs.push(self.file(&path)?);
+        s.facts=json!({"operations":plan.operations.len(),"certain_source_items":plan.issues.iter().filter(|i|i.confidence=="certain"&&i.classification=="source_deviation_candidate").count()});
+        self.correction_plan=Some(path);
+        Ok("passed")
+    }
+    fn no_correction(&self,s:&mut MdDrawingRouteStep)->Result<bool> {
+        let (plan,receipt)=self.correction.as_ref().context("correction_receipt_missing")?;
+        if plan.operations.is_empty() {
+            ensure!(receipt.status=="not_needed"&&receipt.corrected_sha256.is_none()&&!self.out.join("corrected.dxf").exists(),"unexpected_corrected_artifact");
+            let certain=plan.issues.iter().filter(|i|i.confidence=="certain"&&i.classification=="source_deviation_candidate").count();
+            s.facts=json!({"status":"not_needed","certain_source_items":certain,"reason":if certain==0{"无确定条目、未写改正件"}else{"确定条目无可执行的安全操作、未写改正件"},"remaining_issue_ids":receipt.remaining_issue_ids});
+            return Ok(true);
+        }
+        Ok(false)
+    }
+
+    pub(super) fn write_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
+        let path = self.correction_plan.clone().context("automatic_correction_plan_missing")?;
+        let plan: MdDrawingCorrectionPlan = serde_json::from_slice(&read_regular_bytes(&path, 16 * 1024 * 1024)?)?;
+        s.inputs.push(self.file(&path)?);
         let dxf = self.dxf.as_ref().context("drawing_route_dxf_missing")?;
         s.inputs.push(self.file(dxf)?);
-        // Rendering is mandatory for an applied plan; don't create an incomplete corrected drawing.
-        ensure!(
-            self.program.is_some(),
-            "corrected_render_requires_verified_cadcraft"
-        );
-        let receipt = crate::correction::write_new(dxf, &self.out.join("corrected.dxf"), &plan)?;
-        oe_core::write_new(
-            &self.out.join("correction-plan.json"),
-            &serde_json::to_value(&plan)?,
-        )?;
-        oe_core::write_new(
-            &self.out.join("correction-receipt.json"),
-            &serde_json::to_value(&receipt)?,
-        )?;
+        let mut receipt = if plan.operations.is_empty() {
+            let (_, mut receipt) = crate::correction::rewrite(&read_regular_bytes(dxf, 64*1024*1024)?, &plan)?;
+            receipt.corrected_sha256 = None;
+            receipt.status = "not_needed".into();
+            receipt.checks = vec!["no_certain_applicable_operation_no_corrected_file".into()];
+            receipt
+        } else {
+            ensure!(self.program.is_some(), "corrected_render_requires_verified_cadcraft");
+            crate::correction::write_new(dxf, &self.out.join("corrected.dxf"), &plan)?
+        };
+        receipt.source_path = Some(self.rel(dxf));
+        if !plan.operations.is_empty() { receipt.corrected_path = Some(self.rel(&self.out.join("corrected.dxf"))); }
+        oe_core::write_new(&self.out.join("correction-receipt.json"), &serde_json::to_value(&receipt)?)?;
         for name in [
             "corrected.dxf",
             "correction-plan.json",
             "correction-receipt.json",
         ] {
-            s.outputs.push(self.file(&self.out.join(name))?);
+            if self.out.join(name).is_file() { s.outputs.push(self.file(&self.out.join(name))?); }
         }
         s.facts["applied"] = json!(receipt.applied.len());
         self.correction = Some((plan, receipt));
@@ -43,9 +76,7 @@ impl Run<'_> {
     }
 
     pub(super) fn read_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
-        if self.correction.is_none() {
-            return Ok("not_applicable");
-        }
+        if self.no_correction(s)? { return Ok("passed"); }
         let dxf = self.out.join("corrected.dxf");
         s.inputs.push(self.file(&dxf)?);
         let args = vec![
@@ -81,9 +112,7 @@ impl Run<'_> {
     }
 
     pub(super) fn render_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
-        if self.correction.is_none() {
-            return Ok("not_applicable");
-        }
+        if self.no_correction(s)? { return Ok("passed"); }
         let program = self.program.clone().context("corrected_renderer_missing")?;
         let dxf = self.out.join("corrected.dxf");
         let svg = self.out.join("corrected.svg");
@@ -125,9 +154,12 @@ impl Run<'_> {
     }
 
     pub(super) fn check_corrected(&mut self, s: &mut MdDrawingRouteStep) -> Result<&'static str> {
-        let Some((plan, receipt)) = &self.correction else {
-            return Ok("not_applicable");
-        };
+        if self.no_correction(s)? {
+            oe_core::write_new(&self.out.join("correction-check.json"), &s.facts)?;
+            s.outputs.push(self.file(&self.out.join("correction-check.json"))?);
+            return Ok("passed");
+        }
+        let (plan, receipt) = self.correction.as_ref().context("correction_receipt_missing")?;
         let source = self.dxf.as_ref().context("drawing_route_dxf_missing")?;
         let corrected = self.out.join("corrected.dxf");
         crate::correction::verify(
@@ -168,6 +200,14 @@ impl Run<'_> {
                 "corrected_added_text_not_rendered"
             );
         }
+        for operation in &plan.operations {
+            let issue=plan.issues.iter().find(|i|i.id==operation.issue_id).context("corrected_issue_missing")?;
+            if issue.rule != crate::drafting_issues::CUTTING_RULE {continue;}
+            let applied=receipt.applied.iter().find(|a|a.operation_id==operation.id).context("corrected_operation_missing")?;
+            let members=graph["members"].as_array().context("corrected_members_missing")?;
+            let strokes=issue.details["cutting_site"]["source_handles"].as_array().context("corrected_cutting_site_missing")?;
+            ensure!(applied.result_handles.iter().all(|h|members.iter().any(|m|m["source_handle"]==h.as_str()&&m["member_role"]=="view_letter"&&strokes.iter().all(|stroke|members.iter().any(|s|s["source_handle"]==*stroke&&s["member_role"]=="cutting_stroke"&&s["expression_id"]==m["expression_id"])))),"corrected_letter_not_in_endpoint_callout");
+        }
         for name in [
             "corrected.dxf",
             "corrected-graph.json",
@@ -178,7 +218,7 @@ impl Run<'_> {
             s.inputs.push(self.file(&self.out.join(name))?);
         }
         let report = json!({"status":"passed","source_sha256":receipt.source_sha256,"corrected_sha256":receipt.corrected_sha256,
-            "checks":["recorded byte changes reconstruct saved drawing", "untargeted source records unchanged", "new handles unique", "operation postconditions", "bytes-only readback", "rendered roots belong to corrected source"],
+            "checks":["recorded byte changes reconstruct saved drawing", "untargeted source records unchanged", "new handles unique", "operation postconditions", "bytes-only readback", "rendered roots belong to corrected source", "added cutting letters belong to their endpoint symbols"],
             "scope":"correction execution and source preservation, not engineering acceptance"});
         oe_core::write_new(&self.out.join("correction-check.json"), &report)?;
         s.outputs
@@ -222,7 +262,7 @@ mod correction_tests {
         let bytes = fixture::fixture();
         let source = home.join("source.dxf");
         oe_core::write_new_bytes(&source, &bytes).unwrap();
-        let plan = json!({"source_sha256":sha256(&bytes),"issues":[{"id":"fixture-letter","location":"synthetic annotation","source_occurrences":[],"observed":["synthetic execution fixture"],"rule":"synthetic_fixture","clause":"execution only; no drafting verdict asserted","concept_ids":["DC-G9-023"],"confidence":"certain","alternatives":[],"proposed_correction":"add test letter"}],"operations":[{"id":"add-letter","issue_id":"fixture-letter","kind":"add_text","occurrence":[],"expected_record_sha256":null,"text":{"value":"R","position":[34.,18.],"height":3.,"rotation":90.,"layer":"0"},"style":[],"translation":[]}]});
+        let plan = json!({"source_sha256":sha256(&bytes),"issues":[{"id":"fixture-letter","location":"synthetic annotation","source_occurrences":[],"observed":["synthetic execution fixture"],"rule":"synthetic_fixture","clause":"execution only; no drafting verdict asserted","concept_ids":["DC-G9-023"],"confidence":"certain","classification":"source_deviation_candidate","layers":["source"],"details":{},"alternatives":[],"proposed_correction":"add test letter"}],"operations":[{"id":"add-letter","issue_id":"fixture-letter","kind":"add_text","occurrence":[],"expected_record_sha256":null,"text":{"value":"R","position":[34.,18.],"height":3.,"rotation":90.,"layer":"0"},"style":[],"translation":[]}]});
         let plan_path = home.join("plan.json");
         oe_core::write_new(&plan_path, &plan).unwrap();
         let q = MdDrawingRouteRequest {
@@ -264,6 +304,7 @@ mod correction_tests {
         let mut steps = Vec::new();
         for id in [
             "verify-runtime",
+            "plan-corrected",
             "write-corrected",
             "read-corrected",
             "render-corrected",

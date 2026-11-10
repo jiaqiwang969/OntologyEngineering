@@ -20,6 +20,12 @@ use std::f64::consts::PI;
 use std::fmt::Write as _;
 use std::path::Path;
 
+#[path = "drafting_cutting.rs"]
+mod cutting;
+
+/// Source-bound named cutting positions, shared by the rule facts and correction planner.
+pub fn cutting_sites(bytes: &[u8], graph: &Value) -> Result<Vec<Value>> { cutting::values(bytes, graph) }
+
 pub const SCHEMA: &str = "oev2.drawing-drafting-rules/1";
 pub const REQUEST_SCHEMA: &str = "oev2.drawing-drafting-rules-request/1";
 pub const KNOWLEDGE_SCHEMA: &str = "oev2.drafting-ontology/1";
@@ -36,7 +42,7 @@ const QUAD_BUDGET: usize = 100_000;
 const SCOPE: &str = "Drafting rules of the ontology evaluated on facts exported from the source bytes and the frozen graph; a finding is a deviation to review, not a correction and not engineering acceptance.";
 
 /// Every class of the fact vocabulary; the ontology and the spec declare the same set (tested).
-pub const CLASSES: [&str; 38] = [
+pub const CLASSES: [&str; 39] = [
     "Line",
     "VisibleOutline",
     "HiddenOutline",
@@ -75,9 +81,10 @@ pub const CLASSES: [&str; 38] = [
     "DatumIdentifierLetter",
     "SymbolText",
     "Construction",
+    "CuttingLetterSite",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 30] = [
+pub const PREDICATES: [&str; 31] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -108,6 +115,7 @@ pub const PREDICATES: [&str; 30] = [
     "hatchDirectionDiffersFrom",
     "hatchSpacingDiffersFrom",
     "chainedWith",
+    "cutLetterCount",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -196,6 +204,8 @@ pub struct Rule {
     pub concept_ids: Vec<String>,
     pub clause: String,
     pub label: String,
+    pub confidence: String,
+    pub proposed_correction: String,
     pub messages: Vec<String>,
     pub severity: String,
     pub target_classes: Vec<String>,
@@ -303,6 +313,8 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
                 .collect(),
             clause: value(&format!("{NS}clause")).unwrap_or_default(),
             label: value(&format!("{RDFS}label")).unwrap_or_default(),
+            confidence: value(&format!("{NS}confidence")).unwrap_or_else(|| "needs_expert".into()),
+            proposed_correction: value(&format!("{NS}proposedCorrection")).unwrap_or_else(|| "请专家确认".into()),
             messages,
             severity,
             target_classes,
@@ -2520,8 +2532,9 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
     let mut layers = Vec::new();
     let mut findings = Vec::new();
     for layer in LAYERS {
-        let objs = objects(layer, &g, &d)?;
-        let rels = relations(&objs);
+        let mut objs = objects(layer, &g, &d)?;
+        let mut rels = relations(&objs);
+        cutting::append(layer, &g, &d, &mut objs, &mut rels)?;
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2559,6 +2572,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
                 concept_ids: r.concept_ids.clone(),
                 clause: r.clause.clone(),
                 label: r.label.clone(),
+                confidence: r.confidence.clone(),
+                proposed_correction: r.proposed_correction.clone(),
                 message: r.messages.join("；"),
                 severity: r.severity.clone(),
                 target_classes: r.target_classes.clone(),
@@ -2588,8 +2603,9 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
     let d = Dxf::new(&records)?;
     let mut out = BTreeMap::new();
     for layer in LAYERS {
-        let objs = objects(layer, graph, &d)?;
-        let rels = relations(&objs);
+        let mut objs = objects(layer, graph, &d)?;
+        let mut rels = relations(&objs);
+        cutting::append(layer, graph, &d, &mut objs, &mut rels)?;
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);

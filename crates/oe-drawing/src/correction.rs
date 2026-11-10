@@ -626,6 +626,14 @@ pub fn record_sha256(bytes: &[u8], occurrence: &[String]) -> Result<String> {
     Ok(sha256(&bytes[r.start..r.end]))
 }
 
+const TEXT_STYLE_CODES: &[i32] = &[7, 41, 51, 71];
+fn text_template(raw: &Raw<'_>, text: &MdCorrectionText) -> Result<Vec<u8>> {
+    let Some(handle) = &text.template_handle else { return Ok(vec![]); };
+    let r = &raw.records[raw.entity(handle, "ENTITIES", "")?];
+    ensure!(r.kind == "TEXT", "correction_template_not_text");
+    Ok(r.tags.iter().filter(|t| TEXT_STYLE_CODES.contains(&t.code)).flat_map(|t| t.pair.clone()).collect())
+}
+
 /// Produce bytes and a receipt in memory. Failure produces neither a partial drawing nor a success receipt.
 pub fn rewrite(
     source: &[u8],
@@ -689,7 +697,7 @@ pub fn rewrite(
             .get(op.issue_id.as_str())
             .context("correction_issue_missing")?;
         ensure!(
-            issue.confidence == "certain",
+            issue.confidence == "certain" && issue.classification == "source_deviation_candidate",
             "correction_uncertain_issue_refused"
         );
         if op.kind == "add_text" {
@@ -746,11 +754,14 @@ pub fn rewrite(
             );
             let value = dxf_text(&t.value)?;
             let n = editor.raw.newline;
+            let style = text_template(&editor.raw, t)?;
             let text = format!(
-                "0{n}TEXT{n}5{n}{h}{n}330{n}{owner}{n}100{n}AcDbEntity{n}8{n}{}{n}100{n}AcDbText{n}10{n}{}{n}20{n}{}{n}30{n}0{n}40{n}{}{n}1{n}{value}{n}50{n}{}{n}100{n}AcDbText{n}",
+                "0{n}TEXT{n}5{n}{h}{n}330{n}{owner}{n}100{n}AcDbEntity{n}8{n}{}{n}100{n}AcDbText{n}10{n}{}{n}20{n}{}{n}30{n}0{n}40{n}{}{n}1{n}{value}{n}50{n}{}{n}",
                 t.layer, t.position[0], t.position[1], t.height, t.rotation
             );
             additions.extend(text.as_bytes());
+            additions.extend(style);
+            additions.extend(format!("100{n}AcDbText{n}").as_bytes());
             editor.applied.push(MdCorrectionApplied {
                 operation_id: op.id.clone(),
                 issue_id: op.issue_id.clone(),
@@ -871,7 +882,8 @@ pub fn rewrite(
     let changed: BTreeSet<_> = editor.applied.iter().map(|a| a.issue_id.as_str()).collect();
     let receipt = MdDrawingCorrectionReceipt {
         source_sha256: sha256(source),
-        corrected_sha256: sha256(&corrected),
+        corrected_sha256: Some(sha256(&corrected)),
+        status: "prepared".into(),
         source_path: None,
         corrected_path: None,
         remaining_issue_ids: plan
@@ -1050,7 +1062,7 @@ pub fn verify(
     ensure!(
         sha256(source) == r.source_sha256
             && r.source_sha256 == plan.source_sha256
-            && sha256(corrected) == r.corrected_sha256,
+            && Some(sha256(corrected)) == r.corrected_sha256,
         "correction_receipt_digest"
     );
     let a = Raw::parse(source)?;
@@ -1070,7 +1082,7 @@ pub fn verify(
         ensure!(
             issues
                 .get(op.issue_id.as_str())
-                .is_some_and(|i| i.confidence == "certain"),
+                .is_some_and(|i| i.confidence == "certain" && i.classification == "source_deviation_candidate"),
             "correction_audit_uncertain_issue"
         );
         if !op.occurrence.is_empty() {
@@ -1342,6 +1354,8 @@ pub fn verify(
                         && after.get(8) == Some(t.layer.as_str()),
                     "correction_text_postcondition"
                 );
+                let style: Vec<u8> = after.tags.iter().filter(|t| TEXT_STYLE_CODES.contains(&t.code)).flat_map(|t|t.pair.clone()).collect();
+                ensure!(style == text_template(&a, t)?, "correction_text_template_changed");
             }
             "set_style" => {
                 for t in &op.style {
@@ -1400,7 +1414,7 @@ pub fn write_new(
     let temporary = parent.join(format!(
         ".correction-{}-{}.tmp",
         std::process::id(),
-        receipt.corrected_sha256
+        receipt.corrected_sha256.as_deref().context("correction_digest_missing")?
     ));
     let mut f = std::fs::OpenOptions::new()
         .write(true)
@@ -1424,8 +1438,7 @@ pub fn write_new(
     cleanup?;
     let saved = oe_core::read_regular_bytes(destination, 64 * 1024 * 1024)?;
     verify(&before, &saved, plan, &receipt)?;
-    receipt.source_path = Some(source.to_string_lossy().into_owned());
-    receipt.corrected_path = Some(destination.to_string_lossy().into_owned());
+    receipt.status = "written".into();
     receipt.checks = vec![
         "source_bytes_unchanged".into(),
         "saved_bytes_match_receipt".into(),

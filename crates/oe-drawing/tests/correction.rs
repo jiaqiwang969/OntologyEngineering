@@ -9,6 +9,9 @@ use input::fixture;
 
 fn issue(id: &str, confidence: &str) -> MdDraftingIssue {
     MdDraftingIssue {
+        classification: "source_deviation_candidate".into(),
+        layers: vec!["source".into()],
+        details: serde_json::json!({}),
         id: id.into(),
         location: "synthetic source".into(),
         source_occurrences: vec![],
@@ -46,6 +49,7 @@ fn plan(bytes: &[u8], operations: Vec<MdDrawingCorrectionOperation>) -> MdDrawin
 fn text_op(bytes: &[u8]) -> MdDrawingCorrectionOperation {
     let mut o = op(bytes, "label", "add_text", &[]);
     o.text = Some(MdCorrectionText {
+        template_handle: None,
         value: "R".into(),
         position: vec![32., 17.],
         height: 3.,
@@ -175,7 +179,7 @@ fn correction_file_is_new_and_source_survives_publication_failure() {
     let p = plan(&b, vec![text_op(&b)]);
     let r = write_new(&src, &dst, &p).unwrap();
     assert_eq!(std::fs::read(&src).unwrap(), b);
-    assert_eq!(sha256(std::fs::read(&dst).unwrap()), r.corrected_sha256);
+    assert_eq!(Some(sha256(std::fs::read(&dst).unwrap())), r.corrected_sha256);
     let saved = std::fs::read(&dst).unwrap();
     assert!(write_new(&src, &dst, &p).is_err());
     assert_eq!(std::fs::read(&dst).unwrap(), saved);
@@ -197,7 +201,7 @@ fn correction_audit_rejects_consistently_rehashed_changes_outside_the_plan() {
         .unwrap()
         .replace("  3.000 ", "  8.000 ")
         .into_bytes();
-    r.corrected_sha256 = sha256(&altered);
+    r.corrected_sha256 = Some(sha256(&altered));
     let hx = |s: &str| s.bytes().map(|b| format!("{b:02x}")).collect::<String>();
     for c in &mut r.changes {
         c.replacement_hex = c.replacement_hex.replace(&hx("  3.000 "), &hx("  8.000 "));
@@ -211,7 +215,7 @@ fn correction_audit_rejects_consistently_rehashed_changes_outside_the_plan() {
     let p = plan(&b, vec![op(&b, "delete", "delete", &["31"])]);
     let (_, mut r) = rewrite(&b, &p).unwrap();
     r.changes.clear();
-    r.corrected_sha256 = sha256(&b);
+    r.corrected_sha256 = Some(sha256(&b));
     assert!(verify(&b, &b, &p, &r).is_err());
 }
 
@@ -229,7 +233,7 @@ fn correction_clone_audit_preserves_unselected_sibling_and_rejects_extra_geometr
     let at = text.rfind("40\r\n2\r\n").unwrap();
     let mut altered = text.into_bytes();
     altered[at + 4] = b'6';
-    r.corrected_sha256 = sha256(&altered);
+    r.corrected_sha256 = Some(sha256(&altered));
     let hx = |s: &str| s.bytes().map(|b| format!("{b:02x}")).collect::<String>();
     for c in &mut r.changes {
         c.replacement_hex = c
@@ -277,7 +281,7 @@ fn correction_audit_detects_unplanned_whitespace_even_when_all_digests_match() {
         .unwrap()
         .replace("  3.000 ", " 3.000  ")
         .into_bytes();
-    r.corrected_sha256 = sha256(&altered);
+    r.corrected_sha256 = Some(sha256(&altered));
     let hx = |s: &str| s.bytes().map(|b| format!("{b:02x}")).collect::<String>();
     for c in &mut r.changes {
         c.replacement_hex = c.replacement_hex.replace(&hx("  3.000 "), &hx(" 3.000  "));

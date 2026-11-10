@@ -1,6 +1,12 @@
 {"obligations": [
   {
     "constraint": "md_drawing_route",
+    "obligation": "ob_drawing_automatic_correction",
+    "requirement": "req_md_drawing_route",
+    "statement": "The public route always collects source-bound issues and plans corrections from certain source deviations, records explicit absence when no operation is applicable, and re-reads and audits each written corrected drawing before presentation"
+  },
+  {
+    "constraint": "md_drawing_route",
     "obligation": "ob_drawing_converter_identity",
     "requirement": "req_md_drawing_route",
     "statement": "Only the locked converter runs: its repository, commit and digest match the compiled lock and its local record and its reported version matches the lock before it runs, and the conversion runs without fonts"
@@ -55,6 +61,13 @@
   }
 ],
  "executors": [
+  {
+    "entry": "oev2 drawing route, automatic issue and correction steps without a plan argument",
+    "executor": "00",
+    "kind": "rust_check",
+    "module": "drawing_understanding",
+    "obligation": "ob_drawing_automatic_correction"
+  },
   {
     "entry": "oev2 drawing route, step verify-runtime",
     "executor": "00",
@@ -213,6 +226,11 @@
  "symbols": [
   {
     "executor": "00",
+    "obligation": "ob_drawing_automatic_correction",
+    "symbol": "check_corrected"
+  },
+  {
+    "executor": "00",
     "obligation": "ob_drawing_converter_identity",
     "symbol": "verify_cadcraft"
   },
@@ -315,6 +333,11 @@
  "paths": [
   {
     "executor": "00",
+    "obligation": "ob_drawing_automatic_correction",
+    "rustPath": "crates/oe-drawing/src/route_correction.rs"
+  },
+  {
+    "executor": "00",
     "obligation": "ob_drawing_converter_identity",
     "rustPath": "crates/oe-drawing/src/route.rs"
   },
@@ -411,6 +434,138 @@
     "evidence": "00",
     "executor": "00",
     "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/10/id",
+    "valueJson": "\"issues\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "01",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/10/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "02",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/11/id",
+    "valueJson": "\"plan-corrected\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "03",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/11/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "04",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/12/id",
+    "valueJson": "\"write-corrected\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "05",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/12/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "06",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/13/id",
+    "valueJson": "\"read-corrected\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "07",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/13/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "08",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/14/id",
+    "valueJson": "\"render-corrected\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "09",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/14/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "10",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/15/id",
+    "valueJson": "\"check-corrected\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "11",
+    "executor": "00",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_automatic_correction",
+    "op": "equals",
+    "pointer": "/steps/15/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "00",
+    "executor": "00",
+    "minDocuments": "1",
     "obligation": "ob_drawing_converter_identity",
     "op": "equals",
     "pointer": "/steps/0/id",
@@ -446,7 +601,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_faithful_page",
     "op": "equals",
-    "pointer": "/steps/9/id",
+    "pointer": "/steps/16/id",
     "valueJson": "\"page\""
   },
   {
@@ -457,7 +612,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_faithful_page",
     "op": "equals",
-    "pointer": "/steps/9/status",
+    "pointer": "/steps/16/status",
     "valueJson": "\"passed\""
   },
   {
@@ -534,7 +689,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_partial_intervals_on_lines",
     "op": "equals",
-    "pointer": "/steps/9/id",
+    "pointer": "/steps/16/id",
     "valueJson": "\"page\""
   },
   {
@@ -545,7 +700,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_partial_intervals_on_lines",
     "op": "equals",
-    "pointer": "/steps/9/status",
+    "pointer": "/steps/16/status",
     "valueJson": "\"passed\""
   },
   {
@@ -589,7 +744,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_recorded_run",
     "op": "equals",
-    "pointer": "/steps/12/id",
+    "pointer": "/steps/18/id",
     "valueJson": "\"verify-source\""
   },
   {
@@ -600,7 +755,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_recorded_run",
     "op": "equals",
-    "pointer": "/steps/12/status",
+    "pointer": "/steps/18/status",
     "valueJson": "\"passed\""
   },
   {
@@ -666,7 +821,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_rules_from_ontology",
     "op": "equals",
-    "pointer": "/steps/11/id",
+    "pointer": "/steps/9/id",
     "valueJson": "\"check-rules\""
   },
   {
@@ -677,7 +832,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_rules_from_ontology",
     "op": "equals",
-    "pointer": "/steps/11/status",
+    "pointer": "/steps/9/status",
     "valueJson": "\"passed\""
   },
   {
@@ -869,6 +1024,10 @@
   }
 ],
  "gaps": [
+  {
+    "gap": "Engineering acceptance and exception decisions remain outside automatic execution; unsupported certain corrections stay in the remaining list",
+    "obligation": "ob_drawing_automatic_correction"
+  },
   {
     "gap": "Conversion fidelity, that the DXF keeps everything the later steps read, is established by qualification on development drawings, not by one run",
     "obligation": "ob_drawing_converter_identity"

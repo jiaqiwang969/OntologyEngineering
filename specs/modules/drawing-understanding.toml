@@ -3344,7 +3344,7 @@ precision = "Exact bytes, identities and counts; seconds as measured"
 write = "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence"
 applicability = "One drawing per run through the pinned converter and the current oev2 executable; no reference answers, regions, feedback or paired models as input"
 acceptance = "Route execution, source conservation and output-contract checks only; not engineering acceptance of the classification"
-allowed_values = ["verify-runtime", "read-source", "probe-sandbox", "convert", "render", "context", "request", "classify", "check-graph", "write-corrected", "read-corrected", "render-corrected", "check-corrected", "page", "check-page", "verify-source"]
+allowed_values = ["verify-runtime", "read-source", "probe-sandbox", "convert", "render", "context", "request", "classify", "check-graph", "check-rules", "issues", "plan-corrected", "write-corrected", "read-corrected", "render-corrected", "check-corrected", "page", "check-page", "verify-source"]
 
 [[types.fields]]
 name = "status"
@@ -4629,14 +4629,14 @@ entry = "oev2 drawing page; oev2 drawing route, step page"
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/9/id"
+pointer = "/steps/16/id"
 op = "equals"
 value = "page"
 
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/9/status"
+pointer = "/steps/16/status"
 op = "equals"
 value = "passed"
 
@@ -4787,14 +4787,14 @@ entry = "oev2 drawing page; oev2 drawing route, step page"
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/9/id"
+pointer = "/steps/16/id"
 op = "equals"
 value = "page"
 
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/9/status"
+pointer = "/steps/16/status"
 op = "equals"
 value = "passed"
 
@@ -4857,14 +4857,14 @@ value = "passed"
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/12/id"
+pointer = "/steps/18/id"
 op = "equals"
 value = "verify-source"
 
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/12/status"
+pointer = "/steps/18/status"
 op = "equals"
 value = "passed"
 
@@ -5663,6 +5663,43 @@ write="Locked ggen contract; Rust source-only revision comparison and explicit c
 applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
 acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
 
+[[types.fields]]
+name="classification"
+rust_type="String"
+required=true
+format="typed"
+meaning="Source deviation candidates, recognition deviations and revision differences are separate"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+allowed_values = ["source_deviation_candidate", "recognition_deviation", "revision_difference"]
+
+[[types.fields]]
+name="layers"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="All finding layers merged at the same rule and source location"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+
+[[types.fields]]
+name="details"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="Stable source locations, contributing findings and source-derived correction prerequisites"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+
 [[types]]
 name="MdDrawingCorrectionPlan"
 contract_group="engineering"
@@ -5874,6 +5911,18 @@ write="Locked ggen contract; Rust source-only revision comparison and explicit c
 applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
 acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
 
+[[types.fields]]
+name="template_handle"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Optional source TEXT providing identical font, width, oblique and generation style; placement remains explicit"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+
 [[types]]
 name="MdDxfStyleEdit"
 contract_group="engineering"
@@ -6032,8 +6081,8 @@ acceptance="Source conservation, complete correspondence, certain-issue precondi
 
 [[types.fields]]
 name="corrected_sha256"
-rust_type="String"
-required=true
+rust_type="Option<String>"
+required=false
 format="typed"
 meaning="corrected sha256"
 unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
@@ -6128,6 +6177,19 @@ acceptance="Source conservation, complete correspondence, certain-issue precondi
 
 # ---------------------------------------------------------------- drafting rules of the ontology
 
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="Prepared bytes, published new artifact, or no supported correction operation"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+allowed_values = ["prepared", "written", "not_needed"]
+
 [[sources]]
 id = "drafting_ontology"
 identity = "crates/oe-drawing-check/knowledge/drafting-ontology.toml (ontology and SHACL shapes of the first and second batches of drafting rules); GB/T 14665-2012 4.3 overlapping-line precedence; GB/T 4458.4-2003 4.1.1, 4.1.3, 4.1.5, 4.2.1, 4.2.2, 4.2.3, 4.2.5, 4.3.2, 4.3.4 and 图1, 图12, 图15, 图18, 图19, 图24 dimensioning; GB/T 4457.4-2002 表1 line types 01.1.2, 01.1.3, 01.1.5, 01.1.21, 04.1.2; GB/T 4458.6-2002 5.6, 6.1 and GB/T 17452-1998 6.3, 8.2 local sections and section names; GB/T 17453-1998 4.6 hatching broken at text; GB/T 4457.5-2013 4.7 and GB/T 17453-2005 5 hatching of one part; GB/T 18229-2000 4.2, 4.5 CAD scale and hatching; GB/T 4457.2-2003 3.1 leaders; GB/T 14690-1993 4.1, 4.2, 5.2 scales; GB/T 14692-2008 5.2.1.5 and GB/T 4458.1-2002 5.7.2 view names; GB/T 1182-2018 8.2.2 tolerance zone shape; GB/T 17851-2022 7.2.1 datum letters; GB/T 1031-2009 表1, 表2 roughness series"
@@ -6218,7 +6280,7 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction"]
+allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction", "CuttingLetterSite"]
 
 [[types.fields]]
 name = "classes"
@@ -6346,7 +6408,7 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith"]
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith", "cutLetterCount"]
 
 [[types.fields]]
 name = "object"
@@ -6566,6 +6628,31 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name="confidence"
+rust_type="String"
+required=true
+format="typed"
+meaning="Authored md:confidence, legacy default needs_expert"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
+allowed_values = ["certain", "likely", "needs_expert"]
+
+[[types.fields]]
+name="proposed_correction"
+rust_type="String"
+required=true
+format="typed"
+meaning="Authored md:proposedCorrection; legacy default asks expert"
+unit="Source identities and stable drawing-domain observations; no time or host paths"
+precision="Exact source binding and deterministic serialization"
+write="Locked ggen; Rust drafting facts, ontology metadata and correction route"
+applicability="Source-bound issue and correction candidate; not engineering adoption"
+acceptance="Layer provenance, certainty, unchanged originals, typed facts and repeatable byte outputs"
 
 [[types]]
 name = "MdDraftingFinding"
@@ -6942,13 +7029,110 @@ entry = "oev2 drawing route, step check-rules"
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/11/id"
+pointer = "/steps/9/id"
 op = "equals"
 value = "check-rules"
 
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/9/status"
+op = "equals"
+value = "passed"
+
+
+[[obligations]]
+id = "ob_drawing_automatic_correction"
+constraint = "md_drawing_route"
+statement = "The public route always collects source-bound issues and plans corrections from certain source deviations, records explicit absence when no operation is applicable, and re-reads and audits each written corrected drawing before presentation"
+gaps = ["Engineering acceptance and exception decisions remain outside automatic execution; unsupported certain corrections stay in the remaining list"]
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/route_correction.rs"
+symbol = "check_corrected"
+entry = "oev2 drawing route, automatic issue and correction steps without a plan argument"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/10/id"
+op = "equals"
+value = "issues"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/10/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/11/id"
+op = "equals"
+value = "plan-corrected"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
 pointer = "/steps/11/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/12/id"
+op = "equals"
+value = "write-corrected"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/12/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/13/id"
+op = "equals"
+value = "read-corrected"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/13/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/14/id"
+op = "equals"
+value = "render-corrected"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/14/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/15/id"
+op = "equals"
+value = "check-corrected"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/15/status"
 op = "equals"
 value = "passed"

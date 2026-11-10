@@ -2763,6 +2763,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdCorrectionText", "layer", "String"),
     ("MdCorrectionText", "position", "Vec<f64>"),
     ("MdCorrectionText", "rotation", "f64"),
+    ("MdCorrectionText", "template_handle", "Option<String>"),
     ("MdCorrectionText", "value", "String"),
     ("MdCoverageConcept", "by", "Vec<String>"),
     ("MdCoverageConcept", "id", "String"),
@@ -2797,10 +2798,13 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDraftingFinding", "source_handles", "Vec<String>"),
     ("MdDraftingFinding", "value", "Option<String>"),
     ("MdDraftingIssue", "alternatives", "Vec<String>"),
+    ("MdDraftingIssue", "classification", "String"),
     ("MdDraftingIssue", "clause", "String"),
     ("MdDraftingIssue", "concept_ids", "Vec<String>"),
     ("MdDraftingIssue", "confidence", "String"),
+    ("MdDraftingIssue", "details", "serde_json::Value"),
     ("MdDraftingIssue", "id", "String"),
+    ("MdDraftingIssue", "layers", "Vec<String>"),
     ("MdDraftingIssue", "location", "String"),
     ("MdDraftingIssue", "observed", "Vec<String>"),
     ("MdDraftingIssue", "proposed_correction", "String"),
@@ -2830,10 +2834,12 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "subject", "String"),
     ("MdDraftingRule", "clause", "String"),
     ("MdDraftingRule", "concept_ids", "Vec<String>"),
+    ("MdDraftingRule", "confidence", "String"),
     ("MdDraftingRule", "group", "String"),
     ("MdDraftingRule", "id", "String"),
     ("MdDraftingRule", "label", "String"),
     ("MdDraftingRule", "message", "String"),
+    ("MdDraftingRule", "proposed_correction", "String"),
     ("MdDraftingRule", "severity", "String"),
     ("MdDraftingRule", "target_classes", "Vec<String>"),
     ("MdDraftingRuleReport", "by_rule", "std::collections::BTreeMap<String, u64>"),
@@ -2890,11 +2896,12 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDrawingCorrectionReceipt", "changes", "Vec<MdDxfByteChange>"),
     ("MdDrawingCorrectionReceipt", "checks", "Vec<String>"),
     ("MdDrawingCorrectionReceipt", "corrected_path", "Option<String>"),
-    ("MdDrawingCorrectionReceipt", "corrected_sha256", "String"),
+    ("MdDrawingCorrectionReceipt", "corrected_sha256", "Option<String>"),
     ("MdDrawingCorrectionReceipt", "new_handles", "Vec<String>"),
     ("MdDrawingCorrectionReceipt", "remaining_issue_ids", "Vec<String>"),
     ("MdDrawingCorrectionReceipt", "source_path", "Option<String>"),
     ("MdDrawingCorrectionReceipt", "source_sha256", "String"),
+    ("MdDrawingCorrectionReceipt", "status", "String"),
     ("MdDrawingIdentity", "id", "String"),
     ("MdDrawingIdentity", "name", "String"),
     ("MdDrawingIdentity", "number", "String"),
@@ -5715,6 +5722,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingFinding", "severity", "info"),
     ("MdDraftingFinding", "severity", "violation"),
     ("MdDraftingFinding", "severity", "warning"),
+    ("MdDraftingIssue", "classification", "recognition_deviation"),
+    ("MdDraftingIssue", "classification", "revision_difference"),
+    ("MdDraftingIssue", "classification", "source_deviation_candidate"),
     ("MdDraftingIssue", "confidence", "certain"),
     ("MdDraftingIssue", "confidence", "likely"),
     ("MdDraftingIssue", "confidence", "needs_expert"),
@@ -5727,6 +5737,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingObject", "class", "CalloutLetter"),
     ("MdDraftingObject", "class", "CentreLine"),
     ("MdDraftingObject", "class", "Construction"),
+    ("MdDraftingObject", "class", "CuttingLetterSite"),
     ("MdDraftingObject", "class", "DatumIdentifierLetter"),
     ("MdDraftingObject", "class", "DatumLetter"),
     ("MdDraftingObject", "class", "DetailCircle"),
@@ -5775,6 +5786,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "coincidentWith"),
     ("MdDraftingRelation", "predicate", "colourIndex"),
     ("MdDraftingRelation", "predicate", "crossedBy"),
+    ("MdDraftingRelation", "predicate", "cutLetterCount"),
     ("MdDraftingRelation", "predicate", "dxfLayer"),
     ("MdDraftingRelation", "predicate", "endOnOutline"),
     ("MdDraftingRelation", "predicate", "expressionId"),
@@ -5798,6 +5810,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "spacingUnits"),
     ("MdDraftingRelation", "predicate", "text"),
     ("MdDraftingRelation", "predicate", "view"),
+    ("MdDraftingRule", "confidence", "certain"),
+    ("MdDraftingRule", "confidence", "likely"),
+    ("MdDraftingRule", "confidence", "needs_expert"),
     ("MdDraftingRule", "severity", "info"),
     ("MdDraftingRule", "severity", "violation"),
     ("MdDraftingRule", "severity", "warning"),
@@ -5832,6 +5847,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingCorrectionOperation", "kind", "delete"),
     ("MdDrawingCorrectionOperation", "kind", "move"),
     ("MdDrawingCorrectionOperation", "kind", "set_style"),
+    ("MdDrawingCorrectionReceipt", "status", "not_needed"),
+    ("MdDrawingCorrectionReceipt", "status", "prepared"),
+    ("MdDrawingCorrectionReceipt", "status", "written"),
     ("MdDrawingRevision", "status", "current_candidate"),
     ("MdDrawingRevision", "status", "historical_candidate"),
     ("MdDrawingRouteReceipt", "status", "failed"),
@@ -5840,10 +5858,13 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingRouteStep", "id", "check-corrected"),
     ("MdDrawingRouteStep", "id", "check-graph"),
     ("MdDrawingRouteStep", "id", "check-page"),
+    ("MdDrawingRouteStep", "id", "check-rules"),
     ("MdDrawingRouteStep", "id", "classify"),
     ("MdDrawingRouteStep", "id", "context"),
     ("MdDrawingRouteStep", "id", "convert"),
+    ("MdDrawingRouteStep", "id", "issues"),
     ("MdDrawingRouteStep", "id", "page"),
+    ("MdDrawingRouteStep", "id", "plan-corrected"),
     ("MdDrawingRouteStep", "id", "probe-sandbox"),
     ("MdDrawingRouteStep", "id", "read-corrected"),
     ("MdDrawingRouteStep", "id", "read-source"),
@@ -20450,6 +20471,8 @@ pub struct MdCorrectionText {
     pub position: Vec<f64>,
     /// rotation
     pub rotation: f64,
+    /// Optional source TEXT providing identical font, width, oblique and generation style; placement remains explicit
+    pub template_handle: Option<String>,
     /// value
     pub value: String,
 }
@@ -20643,14 +20666,21 @@ impl MdDraftingFinding {
 pub struct MdDraftingIssue {
     /// alternatives
     pub alternatives: Vec<String>,
+    /// Source deviation candidates, recognition deviations and revision differences are separate
+    pub classification: String,
     /// clause
     pub clause: String,
     /// concept ids
     pub concept_ids: Vec<String>,
     /// confidence
     pub confidence: String,
+    /// Stable source locations, contributing findings and source-derived correction prerequisites
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub details: serde_json::Value,
     /// id
     pub id: String,
+    /// All finding layers merged at the same rule and source location
+    pub layers: Vec<String>,
     /// location
     pub location: String,
     /// observed
@@ -20666,6 +20696,7 @@ impl MdDraftingIssue {
     pub fn validate(&self) -> Result<(), Vec<String>> {
         #[allow(unused_mut)]
         let mut failures = Vec::new();
+        if self.classification.trim().is_empty() { failures.push("MdDraftingIssue.classification:required".into()); }
         if self.clause.trim().is_empty() { failures.push("MdDraftingIssue.clause:required".into()); }
         if self.confidence.trim().is_empty() { failures.push("MdDraftingIssue.confidence:required".into()); }
         if self.id.trim().is_empty() { failures.push("MdDraftingIssue.id:required".into()); }
@@ -20673,6 +20704,7 @@ impl MdDraftingIssue {
         if self.proposed_correction.trim().is_empty() { failures.push("MdDraftingIssue.proposed_correction:required".into()); }
         if self.rule.trim().is_empty() { failures.push("MdDraftingIssue.rule:required".into()); }
 
+        if !["recognition_deviation","revision_difference","source_deviation_candidate",].contains(&self.classification.as_str()) { failures.push("MdDraftingIssue.classification:allowed_values".into()); }
         if !["certain","likely","needs_expert",].contains(&self.confidence.as_str()) { failures.push("MdDraftingIssue.confidence:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20742,7 +20774,7 @@ impl MdDraftingObject {
         if self.id.trim().is_empty() { failures.push("MdDraftingObject.id:required".into()); }
         if self.layer.trim().is_empty() { failures.push("MdDraftingObject.layer:required".into()); }
 
-        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
+        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","CuttingLetterSite","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingObject.layer:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20775,7 +20807,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","cutLetterCount","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -20788,6 +20820,8 @@ pub struct MdDraftingRule {
     pub clause: String,
     /// Concept ids of the catalogue the rule formalizes
     pub concept_ids: Vec<String>,
+    /// Authored md:confidence, legacy default needs_expert
+    pub confidence: String,
     /// Concept group of the rule
     pub group: String,
     /// Rule id as written in the shape
@@ -20796,6 +20830,8 @@ pub struct MdDraftingRule {
     pub label: String,
     /// Message of a finding
     pub message: String,
+    /// Authored md:proposedCorrection; legacy default asks expert
+    pub proposed_correction: String,
     /// Severity of the shape
     pub severity: String,
     /// Classes the rule targets
@@ -20806,12 +20842,15 @@ impl MdDraftingRule {
         #[allow(unused_mut)]
         let mut failures = Vec::new();
         if self.clause.trim().is_empty() { failures.push("MdDraftingRule.clause:required".into()); }
+        if self.confidence.trim().is_empty() { failures.push("MdDraftingRule.confidence:required".into()); }
         if self.group.trim().is_empty() { failures.push("MdDraftingRule.group:required".into()); }
         if self.id.trim().is_empty() { failures.push("MdDraftingRule.id:required".into()); }
         if self.label.trim().is_empty() { failures.push("MdDraftingRule.label:required".into()); }
         if self.message.trim().is_empty() { failures.push("MdDraftingRule.message:required".into()); }
+        if self.proposed_correction.trim().is_empty() { failures.push("MdDraftingRule.proposed_correction:required".into()); }
         if self.severity.trim().is_empty() { failures.push("MdDraftingRule.severity:required".into()); }
 
+        if !["certain","likely","needs_expert",].contains(&self.confidence.as_str()) { failures.push("MdDraftingRule.confidence:allowed_values".into()); }
         if !["info","violation","warning",].contains(&self.severity.as_str()) { failures.push("MdDraftingRule.severity:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -21044,7 +21083,7 @@ pub struct MdDrawingCorrectionReceipt {
     /// corrected path
     pub corrected_path: Option<String>,
     /// corrected sha256
-    pub corrected_sha256: String,
+    pub corrected_sha256: Option<String>,
     /// new handles
     pub new_handles: Vec<String>,
     /// remaining issue ids
@@ -21053,14 +21092,17 @@ pub struct MdDrawingCorrectionReceipt {
     pub source_path: Option<String>,
     /// source sha256
     pub source_sha256: String,
+    /// Prepared bytes, published new artifact, or no supported correction operation
+    pub status: String,
 }
 impl MdDrawingCorrectionReceipt {
     pub fn validate(&self) -> Result<(), Vec<String>> {
         #[allow(unused_mut)]
         let mut failures = Vec::new();
-        if self.corrected_sha256.trim().is_empty() { failures.push("MdDrawingCorrectionReceipt.corrected_sha256:required".into()); }
         if self.source_sha256.trim().is_empty() { failures.push("MdDrawingCorrectionReceipt.source_sha256:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdDrawingCorrectionReceipt.status:required".into()); }
 
+        if !["not_needed","prepared","written",].contains(&self.status.as_str()) { failures.push("MdDrawingCorrectionReceipt.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21274,7 +21316,7 @@ impl MdDrawingRouteStep {
         if !self.seconds.is_finite() { failures.push("MdDrawingRouteStep.seconds:finite".into()); }
         if self.status.trim().is_empty() { failures.push("MdDrawingRouteStep.status:required".into()); }
 
-        if !["check-corrected","check-graph","check-page","classify","context","convert","page","probe-sandbox","read-corrected","read-source","render","render-corrected","request","verify-runtime","verify-source","write-corrected",].contains(&self.id.as_str()) { failures.push("MdDrawingRouteStep.id:allowed_values".into()); }
+        if !["check-corrected","check-graph","check-page","check-rules","classify","context","convert","issues","page","plan-corrected","probe-sandbox","read-corrected","read-source","render","render-corrected","request","verify-runtime","verify-source","write-corrected",].contains(&self.id.as_str()) { failures.push("MdDrawingRouteStep.id:allowed_values".into()); }
         if !["failed","not_applicable","not_run","passed","skipped",].contains(&self.status.as_str()) { failures.push("MdDrawingRouteStep.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }

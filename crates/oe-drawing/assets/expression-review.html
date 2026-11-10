@@ -30,6 +30,7 @@ details{font-size:12px;margin-top:10px}summary{cursor:pointer;color:#46677e}deta
 <header><div><h1>完整工程表达：学科类别、几何线型与源图元分开检查</h1><p id="subtitle">DXF · 每个表达保留全部成员与源区间</p></div><span class="tag">待人工复核 · 未知保持未知</span></header>
 <div class="layout"><aside>
 <section id="revisionPanel" hidden><h3>图样与版本候选</h3><p id="revisionIdentity" class="muted"></p><label class="option">选择版本 <select id="revisionSelector" aria-label="选择版本"></select></label><p class="muted">现行候选据相同图号、名称、较晚日期及修改说明推断，尚未经签审确认。</p><details><summary>版本依据</summary><div id="revisionEvidence" class="hash"></div></details><details><summary>逐图元差别 <span id="revisionDiffCount"></span></summary><div id="revisionDiff"></div></details></section>
+<section id="draftingPanel" hidden><h3>制图不一致清单</h3><p class="muted">原图偏离候选、识别偏离和版本差别分别列出，判断与建议供复核。</p><div class="actions"><button id="showSourceDrawing">原图</button><button id="showCorrectedDrawing">改正后</button><button id="exportDraftingIssues">导出清单</button><a id="downloadCorrected" href="corrected.dxf" download>下载改正 DXF</a></div><p id="correctionStatus" class="notice"></p><div id="draftingIssues"></div></section>
 <div class="tabs" role="tablist"><button id="tab-kind" aria-pressed="true">学科类别</button><button id="tab-line" aria-pressed="false">几何线型</button><button id="tab-prim" aria-pressed="false">源图元</button><button id="tab-view" aria-pressed="false">视图</button></div>
 <div id="panel-kind"><div class="actions"><button id="kindAll">全选</button><button id="kindNone">全不选</button><button id="kindGeometry">结构几何</button><button id="kindAnnot">尺寸与公差</button><button id="kindNotes">视图与说明</button><button id="kindUnknown">仅未解释</button></div><div id="kinds"></div></div>
 <div id="panel-line" hidden><div class="actions"><button id="lineAll">线型全选</button><button id="lineNone">线型全不选</button></div><div id="lines"></div><p class="muted">线型按成员计：同一来源的不同区间可以有不同线型。观察到的虚线、点画线节奏不会被角色改写。</p></div>
@@ -48,7 +49,7 @@ details{font-size:12px;margin-top:10px}summary{cursor:pointer;color:#46677e}deta
 <details><summary>本轮如何得到</summary><p>只有源 DXF 字节进入隔离 Rust worker<span id="sourceNote"></span>。类别由显示文字、原生尺寸构造、终端/尺寸线/界线/文字组合、实际 LTYPE 划段、经一致性核验的 GB/T 14665 表 6 图层、结构连接和有限区间推导；没有读取旧分类、人工修复区间、ROI 或配对模型。</p><p id="refNote">本页没有嵌入独立参照；分类只来自源 DXF 字节，对照与评价另做。</p><p id="evalSummary"></p><p id="provenance" class="hash"></p></details>
 </aside><main class="workspace">
 <div class="toolbar"><div class="actions"><button id="fit">整图</button><button id="zoomIn" aria-label="放大">＋</button><button id="zoomOut" aria-label="缩小">－</button><button id="focus">放大选中</button><button id="clear">取消选择</button></div><div id="status" class="status"></div></div>
-<div class="canvas" id="canvas">@@SVG@@<div class="empty" id="empty" hidden>当前筛选下没有可见成员<br><small id="emptyHint">可重新勾选左侧类别</small></div><div class="legend" id="colorLegend"></div></div>
+<div class="canvas" id="canvas"><iframe id="correctedDrawing" title="改正后 DXF 的独立重读与渲染" hidden style="position:absolute;inset:0;width:100%;height:100%;border:0;background:white;z-index:10"></iframe>@@SVG@@<div class="empty" id="empty" hidden>当前筛选下没有可见成员<br><small id="emptyHint">可重新勾选左侧类别</small></div><div class="legend" id="colorLegend"></div></div>
 <div class="bottom"><section class="card"><h2>来源与完整表达</h2><div id="details"></div></section><section class="card"><h2 id="compareTitle">独立参照</h2><div id="compare" class="muted">本页没有嵌入独立参照（新图默认如此）；类别只来自源 DXF 字节，须由人工或独立评价核对。</div></section><section class="card"><h2>记录本次检查</h2><div class="muted">意见绑定当前选中的来源或表达，只记录，不修改图纸和分类。</div><select id="issue" aria-label="问题类型"><option>学科类别不符</option><option>线型不符</option><option>视图归属不符</option><option>成员缺失或多余</option><option>区间不符</option><option>显示问题</option><option>确认当前结果</option></select><textarea id="note" placeholder="写下看到的问题和依据；不选对象则记为全图意见。"></textarea><div class="actions"><button id="saveNote">保存意见</button><button id="exportNotes">导出意见</button></div><div id="noteStatus" class="feedback-status"></div></section></div>
 </main></div>
 <script type="application/json" id="payload">@@DATA@@</script>
@@ -288,7 +289,34 @@ if(REV?.identities.length){$('revisionPanel').hidden=false;$('revisionIdentity')
  if(latest)$('revisionEvidence').textContent=latest.evidence_ids.join('\n')+'\n源图元：'+latest.source_handles.join(', ');
 }
 // Read-only observability for browser checks; no semantic input or overrides.
-window.expressionReview={graph:G,visible,entities,exprs,bySource,exprMembers,enabled,presentKinds,presentLines,presentPrims,presentViews,union,passes,setView,lines:LINES,shownLines,memberLine,chooseLine,widths,masks:maskFacts,identity:{roots:IDENTIFIED.size,groups:identifiedGroups},get mode(){return mode},get selection(){return selected?{...selected}:null},get view(){return [...view]},exportContent,get noteCount(){return notes.length}};
+
+const REVIEW=DATA.drafting_review;
+let correctionReady=null;
+function correctedDrawing(on){
+ const frame=$('correctedDrawing');
+ if(on&&!REVIEW?.corrected_page)return Promise.resolve(false);
+ frame.hidden=!on;
+ $('showCorrectedDrawing').setAttribute('aria-pressed',String(on));$('showSourceDrawing').setAttribute('aria-pressed',String(!on));
+ if(on&&!correctionReady){correctionReady=new Promise(resolve=>{frame.onload=()=>resolve(true)});frame.srcdoc=REVIEW.corrected_page}
+ return on?correctionReady:Promise.resolve(true);
+}
+async function showDraftingIssue(id,corrected=false){
+ const item=REVIEW?.issues.find(i=>i.id===id);if(!item)return false;
+ if(corrected){await correctedDrawing(true);const applied=REVIEW.receipt.applied.find(a=>a.issue_id===id),child=$('correctedDrawing').contentWindow.expressionReview;if(!applied||!child)return false;child.chooseSource(applied.result_handles[0]);child.focus();return true}
+ await correctedDrawing(false);const hs=item.details.findings?.flatMap(f=>f.source_handles)||item.details.newer_handles||item.source_occurrences.map(h=>h.split('/')[0]);if(!hs.length)return false;$('original').checked=true;chooseSource(hs[0]);render();focus();return true;
+}
+if(REVIEW){
+ $('draftingPanel').hidden=false;$('original').checked=true;$('showSourceDrawing').onclick=()=>{correctedDrawing(false);$('original').checked=true;render()};$('showCorrectedDrawing').onclick=()=>correctedDrawing(true);
+ $('showCorrectedDrawing').disabled=!REVIEW.corrected_page;$('downloadCorrected').hidden=!REVIEW.corrected_page;
+ $('correctionStatus').textContent=REVIEW.receipt.status==='written'?`已写出 ${REVIEW.receipt.applied.length} 处改正，${REVIEW.receipt.remaining_issue_ids.length} 条保留待核。`:(REVIEW.issues.some(i=>i.confidence==='certain'&&i.classification==='source_deviation_candidate')?'确定条目无可执行的安全操作、未写改正件。':'无确定条目、未写改正件。');
+ for(const [kind,name] of [['source_deviation_candidate','原图偏离候选'],['recognition_deviation','识别偏离'],['revision_difference','版本差别']]){
+  const items=REVIEW.issues.filter(i=>i.classification===kind),group=document.createElement('details');group.dataset.issueClass=kind;group.open=kind==='source_deviation_candidate';const title=document.createElement('summary');title.textContent=name+' '+items.length+' 条';group.append(title);
+  for(const i of items){const row=document.createElement('details');row.dataset.issueId=i.id;const title=document.createElement('summary');title.textContent=({'certain':'确定','likely':'很可能','needs_expert':'要问专家'}[i.confidence]||i.confidence)+' · '+i.rule+' · '+i.location;row.append(title);const description=document.createElement('p');description.textContent=i.id+'；命中层：'+i.layers.join('、')+'；事实：'+i.observed.join('；')+'；条款：'+i.clause+'；建议：'+i.proposed_correction;row.append(description);const b=document.createElement('button');b.textContent='查看原图位置';b.onclick=()=>showDraftingIssue(i.id);row.append(b);if(REVIEW.receipt.applied.some(a=>a.issue_id===i.id)){const c=document.createElement('button');c.textContent='查看改正位置';c.onclick=()=>showDraftingIssue(i.id,true);row.append(c)}group.append(row)}$('draftingIssues').append(group)
+ }
+ $('exportDraftingIssues').onclick=()=>{const u=URL.createObjectURL(new Blob([REVIEW.text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='drafting-issues.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),0)};
+}
+
+window.expressionReview={drafting:REVIEW,correctedDrawing,showDraftingIssue,chooseSource,focus,graph:G,visible,entities,exprs,bySource,exprMembers,enabled,presentKinds,presentLines,presentPrims,presentViews,union,passes,setView,lines:LINES,shownLines,memberLine,chooseLine,widths,masks:maskFacts,identity:{roots:IDENTIFIED.size,groups:identifiedGroups},get mode(){return mode},get selection(){return selected?{...selected}:null},get view(){return [...view]},exportContent,get noteCount(){return notes.length}};
 $('sourceNote').textContent=DATA.source_note?'（'+DATA.source_note+'）':'';
 $('identityNote').textContent=identifiedGroups?`本图源矢量带成员身份：${IDENTIFIED.size} 个块或原生尺寸的 ${identifiedGroups} 个图组按成员显示。`:'本图源矢量不带成员身份：块与原生尺寸整块显示。';
 document.title='DXF 完整工程表达分类 · '+(DATA.version||'候选');setFloor();new ResizeObserver(setFloor).observe(svg);setMode('kind');noteStatus();if(REV?.identities.length)showRevision($('revisionSelector').value);

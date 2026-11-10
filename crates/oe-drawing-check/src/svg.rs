@@ -1,27 +1,40 @@
-//! Element names, attribute names and data-entity identities of an SVG document.
+//! The data-entity identities of an SVG document and its data-member identities with their roots.
 use anyhow::{Context, Result};
 use quick_xml::events::Event;
 use std::collections::BTreeSet;
 
 pub struct Inventory {
     pub entities: BTreeSet<String>,
+    /// (data-entity, data-member) of every element that names a native member; the root is empty when the
+    /// element carries no data-entity.
+    pub members: BTreeSet<(String, String)>,
 }
 
 pub fn inventory(bytes: &[u8]) -> Result<Inventory> {
     let mut reader = quick_xml::Reader::from_reader(bytes);
     let mut entities = BTreeSet::new();
+    let mut members = BTreeSet::new();
     let mut buffer = Vec::new();
     loop {
         match reader.read_event_into(&mut buffer).context("svg_parse")? {
             Event::Start(e) | Event::Empty(e) => {
+                let (mut root, mut member) = (String::new(), None);
                 for attribute in e.attributes() {
                     let attribute = attribute.context("svg_attribute")?;
                     if attribute.key.as_ref() == b"data-entity" {
                         let value = attribute.unescape_value().context("svg_attribute_value")?;
                         if !value.is_empty() {
+                            root = value.to_string();
                             entities.insert(value.into_owned());
                         }
                     }
+                    if attribute.key.as_ref() == b"data-member" {
+                        let value = attribute.unescape_value().context("svg_attribute_value")?;
+                        member = Some(value.into_owned());
+                    }
+                }
+                if let Some(member) = member {
+                    members.insert((root, member));
                 }
             }
             Event::Eof => break,
@@ -29,5 +42,5 @@ pub fn inventory(bytes: &[u8]) -> Result<Inventory> {
         }
         buffer.clear();
     }
-    Ok(Inventory { entities })
+    Ok(Inventory { entities, members })
 }

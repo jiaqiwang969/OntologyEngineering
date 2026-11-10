@@ -4,7 +4,7 @@
 //! type, layer and owner; native members distinct and present; line patterns from the LTYPE elements; exact
 //! LINE end points; member intervals covering each source domain; expression families, member lists, views
 //! and the absence of invented part targets; structure ends, inferred spans and structural lines; the
-//! rendered SVG identities. Also checks that the worker named in review.json is the expected executable under
+//! rendered SVG identities (roots, and the native member each nested group names). Also checks that the worker named in review.json is the expected executable under
 //! the deny-default sandbox profile derived from its own path, and that every pinned file is unchanged.
 //! Source conservation and output-contract consistency only; no classification or geometry is produced.
 use crate::{dxf, svg};
@@ -261,6 +261,9 @@ pub fn check(
         !native.is_empty() && native_ids.len() == native.len(),
         "All native members retained with distinct occurrence paths",
     )?;
+    // Root of every native member nested in a block reference or a native dimension, for the member
+    // identities of the rendering.
+    let mut nested_root: HashMap<&str, &str> = HashMap::new();
     for m in native {
         let id = text(m, "id")?;
         let path = texts(m, "block_path")?;
@@ -269,6 +272,9 @@ pub fn check(
                 && path.first().is_some_and(|p| roots.contains_key(*p)),
             format!("Native member source exists: {id}"),
         )?;
+        if let (Some(root), true) = (path.first(), path.len() > 1) {
+            nested_root.insert(id, root);
+        }
     }
     let mut layers: HashMap<&str, &dxf::Record> = HashMap::new();
     for r in records.iter().filter(|r| r.kind == "LAYER") {
@@ -815,6 +821,13 @@ pub fn check(
     c.ok(
         rendered.entities.iter().all(|h| roots.contains_key(h)),
         "Presentation SVG identities agree with source roots",
+    )?;
+    c.ok(
+        rendered
+            .members
+            .iter()
+            .all(|(root, member)| nested_root.get(member.as_str()) == Some(&root.as_str())),
+        "Presentation SVG member identities name native members nested in their roots",
     )?;
     // Identity of what ran: the worker named in review.json under the profile derived from its own path.
     let review = read_json(&root.private_path(&Path::new(output_directory).join("review.json"))?)?;

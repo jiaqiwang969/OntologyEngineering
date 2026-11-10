@@ -1713,3 +1713,45 @@ fn texture_symbol_without_value_is_named_by_its_form() {
         "variant:symbol_only_named_by_form"
     ));
 }
+
+// ---------------------------------------------------------------- technical_note: topics of heat treatment and blasting
+
+#[test]
+fn annealing_ageing_and_blasting_items_take_their_topics() {
+    // GB/T 24745-2009 table 5: ageing and stress relief are heat treatment, shot or sand blasting a
+    // process; an item naming both is a heat-treatment requirement (the topic checked first)
+    let block = vec![
+        mtext("QH", "08", "\\T1.1;技术要求", [40., 0.], 5., 2),
+        mtext("Q1", "08", "1.锻件经正火处理。", [0., -10.], 3.5, 1),
+        mtext(
+            "Q2",
+            "08",
+            "2.粗加工后人工时效以去应力。",
+            [0., -16.],
+            3.5,
+            1,
+        ),
+        mtext("Q3", "08", "3.表面喷丸。", [0., -22.], 3.5, 1),
+        mtext("Q4", "08", "4.焊后喷砂并退火。", [0., -28.], 3.5, 1),
+        mtext("Q5", "08", "5.未注圆角R2。", [0., -34.], 3.5, 1),
+    ];
+    let g = run(&[("*Q1", block)], &[insert("QB", "08", "*Q1", [0., 0.])]);
+    let kind_of = |path: &str| {
+        let m = g
+            .members
+            .iter()
+            .find(|m| m.native_member_id.as_deref() == Some(path))
+            .unwrap_or_else(|| panic!("{path}"));
+        g.expressions
+            .iter()
+            .find(|e| e.id == m.expression_id)
+            .unwrap()
+            .kind
+            .clone()
+    };
+    assert_eq!(kind_of("QB/Q1"), "material_heat");
+    assert_eq!(kind_of("QB/Q2"), "material_heat");
+    assert_eq!(kind_of("QB/Q3"), "process_requirement");
+    assert_eq!(kind_of("QB/Q4"), "material_heat");
+    assert_eq!(kind_of("QB/Q5"), "technical_general");
+}

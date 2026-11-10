@@ -2891,6 +2891,32 @@ tests = ["dimension_parts_drawn_twice_join_the_dimension"]
 statement = "与界线共线但隔得较远的细线不并入界线"
 test = "collinear_line_far_from_an_extension_line_is_not_absorbed"
 
+[[cards.variants]]
+id = "own_origin_and_overshoot"
+title = "每条界线从自己的起点画到尺寸线外一点"
+distinguishing = "界线从各自的起点引到尺寸线并超出 2～3 mm；超出的方向按这条界线自己的起点定。尺寸线夹在两个起点之间时两条界线方向相反，各在自己一侧超出，不伸到尺寸线另一侧去"
+encodings = ["native"]
+tests = ["extension_lines_from_opposite_sides_each_stop_past_the_dimension_line"]
+
+[[cards.variants]]
+id = "outline_as_extension_line"
+title = "轮廓线兼作尺寸界线；界线所接的被测轮廓"
+distinguishing = "尺寸终端直接落在轮廓线上（原生尺寸不画界线）、原生界线画在轮廓线上，或界线在起点处接着同向的轮廓线：这条线是轮廓（粗线或已读为轮廓），尺寸只是借用或量到它；它在尺寸里是“界线所依轮廓”（共享），线型仍是它自己的，轮廓身份不变，每个尺寸里只记一次"
+encodings = ["loose", "native"]
+tests = ["outline_under_a_native_extension_line_is_lent_to_the_dimension", "outline_continuing_an_extension_line_is_the_measured_feature", "outline_the_terminators_stand_on_is_lent_to_the_dimension"]
+
+[[cards.counter_examples]]
+statement = "界线延长方向上隔着一段轮廓的另一段线不属于这个尺寸：共线的归并到第一段轮廓为止"
+test = "collinear_growth_stops_at_the_first_outline_piece"
+[[cards.counter_examples]]
+statement = "细线画的界线即使画过了定义点（起头画进轮廓或定义点取在半途）仍是界线，不因此改成轮廓"
+test = "thin_extension_line_drawn_past_its_origin_stays_an_extension_line"
+
+[[cards.parameters]]
+name = "overshoot_max"
+value = 2.0
+meaning = "界线超出尺寸线的长度上限 = 该值 × 箭头长（标准 2～3 mm，箭头长约 3～4 mm；按 2 倍箭头长留余量）"
+
 [[cards.parameters]]
 name = "split_gap_max"
 value = 3.0

@@ -54,6 +54,8 @@ mod loose_annotations;
 mod line_evidence;
 #[path = "not_plotted.rs"]
 mod not_plotted;
+#[path = "extension_lines.rs"]
+mod extension_lines;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -1593,13 +1595,10 @@ fn native_dimensions(
             .src
             .uses
             .iter()
-            .filter(|u| u.consumer_id == *h && u.rule.starts_with("linear_"))
+            // (root lines under the extension lines: module `extension_lines`)
+            .filter(|u| u.consumer_id == *h && u.rule == "linear_dimension_line_support")
         {
-            let role = if us.rule == "linear_dimension_line_support" {
-                "dimension_line"
-            } else {
-                "extension_line"
-            };
+            let role = "dimension_line";
             b.member(
                 e,
                 &us.occurrence_id,
@@ -1659,47 +1658,8 @@ fn native_dimensions(
         // through the dimension line with its overshoot) and their collinear pieces.
         if let (Some(u), Ok(p10)) = (u, r.xy(10)) {
             let alen = tips.iter().map(|t| t.len).fold(0.6 * cx.scale, f64::max);
-            let v = [-u[1], u[0]];
-            let origins: Vec<(P, P, f64)> = [13, 14]
-                .iter()
-                .filter_map(|oc| r.xy(*oc).ok())
-                .map(|o| {
-                    let t = add(p10, mul(u, dot(sub(o, p10), u)));
-                    (o, t, dot(sub(o, t), v))
-                })
-                .collect();
-            // Side of the features relative to the dimension line (from either origin).
-            let side = origins
-                .iter()
-                .map(|x| x.2)
-                .find(|so| so.abs() > tol)
-                .map(f64::signum);
-            for (_, t, so) in &origins {
-                let iv = [so.min(0.) - 2. * alen, so.max(0.) + 2. * alen];
-                // Each extension line ends a short overshoot past its own dimension
-                // line; pieces of stacked dimensions beyond it are not members.
-                let far = side.map(|sg| mul(v, -sg));
-                for lid in collinear_chain(cx, b, *t, v, iv, tol, &BTreeSet::new(), &[], false) {
-                    let (a, c) = cx.lines[&lid];
-                    let clipped = match far {
-                        Some(f) => clip_along(a, c, *t, f, 2. * alen, tol),
-                        None => Some([0., 1.]),
-                    };
-                    if let Some(civ) = clipped {
-                        b.member(
-                            e,
-                            &lid,
-                            None,
-                            civ,
-                            "extension_line",
-                            member_line_type(cx.lt(&lid), "extension_line"),
-                            "candidate",
-                            vec![],
-                            vec![format!("on_native_extension_line:{h}")],
-                        );
-                    }
-                }
-            }
+            let origins: Vec<P> = [13, 14].iter().filter_map(|oc| r.xy(*oc).ok()).collect();
+            extension_lines::native(cx, b, e, h, u, p10, &origins, alen, tol);
         }
     }
 }
@@ -1873,16 +1833,17 @@ fn extension_at(
     let limit = dot(sub(near, tip), f).max(2.5 * alen);
     let mut low = dot(sub(far_end, tip), f);
     let mut origin = far_end;
-    for cid in collinear_chain(
+    // collinear pieces up to the first outline piece (module `extension_lines`)
+    let widths = line_evidence::Widths::of(cx);
+    for cid in extension_lines::chain(
         cx,
         b,
+        &widths,
         a,
         unit(sub(c, a)),
         [0., dist(a, c)],
         tol,
         &skip,
-        &[],
-        false,
     ) {
         let (p, q) = cx.lines[&cid];
         let Some(iv) = clip_along(p, q, tip, f, limit, tol) else {
@@ -6885,6 +6846,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
+    extension_lines::lend_outline(&cx, &mut b)?;
     not_plotted::construction(&cx, &mut b)?;
     let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;

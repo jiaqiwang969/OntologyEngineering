@@ -441,7 +441,11 @@ pub(super) fn outline_candidates(
             .filter(|h| {
                 let (mut ts, _) = joins(h, &set);
                 let at = |t: f64| ts.iter().any(|x| (x - t).abs() < 1e-6);
-                if cx.lines.contains_key(h.as_str()) && !b.used(h) {
+                // (a line a dimension only starts from, or one running on past where an
+                // extension line ends, is not decided by that use)
+                if cx.lines.contains_key(h.as_str())
+                    && !extension_lines::drawn_as_extension_line(b, h)
+                {
                     ts.sort_by(f64::total_cmp);
                     ts.dedup_by(|x, y| (*x - *y).abs() < 1e-6);
                     // two junctions, or an outline drawn in the outline colour continued from a

@@ -1,8 +1,10 @@
 //! Independent checks of a drawing-understanding result. Nothing here calls the classifier: the graph check
 //! re-derives every expectation from the bytes of the source DXF with its own reader, and the page check
-//! computes its expectations in the browser from the graph embedded in the page. Passing says the source is
-//! conserved and the outputs keep their contracts; it is not engineering correctness.
+//! computes its expectations in the browser from the graph embedded in the page. The drafting-rule check
+//! evaluates the shapes of the drafting ontology over facts exported from the bytes and the graph. Passing says
+//! the source is conserved and the outputs keep their contracts; it is not engineering correctness.
 pub mod browser;
+pub mod drafting;
 mod dxf;
 pub mod graph;
 mod svg;

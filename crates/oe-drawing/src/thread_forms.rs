@@ -262,8 +262,7 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
         regions
             .iter()
             .find(|r| Some(&r.id) == view)
-            .map_or("未定视图", |r| r.label.as_str())
-            .to_string()
+            .map_or("未定视图".to_string(), view_layout::shown_label)
     };
     for i in 0..b.exprs.len() {
         if b.exprs[i].kind != "thread_convention" {

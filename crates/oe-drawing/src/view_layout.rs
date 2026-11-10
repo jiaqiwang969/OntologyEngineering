@@ -152,6 +152,37 @@ pub(super) fn sheet_view(sheets: &[Sheet], pts: &[P]) -> String {
     }
 }
 
+/// The name a view is shown with: on a file of several sheets every view inside a sheet names
+/// its sheet first (`图纸 2 · A-A`), so the same view name on two sheets reads apart; the sheets
+/// themselves are named as they are (card `drawing_sheet`, variant `sheet_in_view_names`).
+pub(super) fn shown_label(r: &Region) -> String {
+    let sheet = r
+        .id
+        .strip_prefix("view:sheet-")
+        .and_then(|rest| rest.split_once(':'))
+        .map(|(n, _)| n);
+    match sheet {
+        Some(n) if r.kind != "sheet" => format!("图纸 {n} · {}", r.label),
+        _ => r.label.clone(),
+    }
+}
+
+/// Unknowns of a sheet view: a supersession read from dates and a revision note is a candidate,
+/// the drawing does not mark the earlier sheet void.
+pub(super) fn sheet_unknowns(r: &Region) -> Vec<String> {
+    r.evidence
+        .iter()
+        .filter_map(|x| {
+            x.strip_prefix("supersedes:")
+                .map(|v| format!("Supersession of {v} is a candidate: read from the later title-block date and a revision note of that date; the drawing marks no sheet void"))
+                .or_else(|| {
+                    x.strip_prefix("superseded_by:")
+                        .map(|v| format!("Superseded by {v} as a candidate: the later edition of the same drawing number with a revision note of its date"))
+                })
+        })
+        .collect()
+}
+
 fn prefix(sheets: &[Sheet], s: Option<usize>) -> String {
     match s {
         Some(i) if sheets.len() > 1 => format!("sheet-{}:", i + 1),
@@ -297,11 +328,14 @@ pub(super) fn sheet_regions(cx: &Ctx, b: &Builder, sheets: &[Sheet]) -> Vec<Regi
                     if let Some(n) = note(date) {
                         evidence.push("variant:later_revision".into());
                         evidence.push(format!("revision_note:{n}"));
+                        evidence.push(format!("earlier_title_block_date:{c}"));
                         evidence.push(format!("supersedes:view:sheet-{}", j + 1));
+                        evidence.push("supersession:candidate".into());
                     }
                 }
                 (Some(a), Some(c)) if a < c && note(od).is_some() => {
                     evidence.push(format!("superseded_by:view:sheet-{}", j + 1));
+                    evidence.push("supersession:candidate".into());
                 }
                 _ => {}
             }

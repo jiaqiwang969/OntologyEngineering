@@ -6464,9 +6464,9 @@ fn finalize(
     regions: &[Region],
     refs: &BTreeMap<usize, String>,
 ) -> Builder {
-    let label_of: BTreeMap<&str, &str> = regions
+    let label_of: BTreeMap<&str, String> = regions
         .iter()
-        .map(|r| (r.id.as_str(), r.label.as_str()))
+        .map(|r| (r.id.as_str(), view_layout::shown_label(r)))
         .collect();
     let mut nb = Builder::default();
     let mut groups: BTreeMap<(String, String), usize> = BTreeMap::new();
@@ -6488,8 +6488,7 @@ fn finalize(
                     "{} · {}",
                     label_of
                         .get(view.as_deref().unwrap_or(""))
-                        .copied()
-                        .unwrap_or("未定视图"),
+                        .map_or("未定视图", String::as_str),
                     thread_forms::group_name(&form).unwrap_or(kind_cn(&e.kind))
                 );
                 nb.expr(
@@ -6925,14 +6924,14 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         .map(|r| MdDrawingView {
             id: r.id.clone(),
             kind: r.kind.into(),
-            label: r.label.clone(),
+            label: view_layout::shown_label(r),
             scale_text: r.scale.clone(),
             bbox: r.bbox.to_vec(),
             label_source_ids: r.label_sources.clone(),
             state: r.state.into(),
             evidence_ids: r.evidence.clone(),
             unknowns: if r.kind == "sheet" {
-                vec![]
+                view_layout::sheet_unknowns(r)
             } else {
                 vec!["Projection relation to the principal view remains a candidate".into()]
             },

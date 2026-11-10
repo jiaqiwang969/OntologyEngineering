@@ -301,7 +301,7 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
         let view = regions
             .iter()
             .find(|r| Some(&r.id) == h.view.as_ref())
-            .map_or("未定视图", |r| r.label.as_str());
+            .map_or("未定视图".to_string(), view_layout::shown_label);
         let e = &mut b.exprs[h.expr];
         // a name another rule gave (the hatch of a detail view) is kept; a pattern name is not
         let base = if e.label.ends_with(" · 剖面线") {

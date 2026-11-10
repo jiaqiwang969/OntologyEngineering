@@ -3154,8 +3154,15 @@ distinguishing = "标题栏日期较晚，图框外有同一日期的更改说�
 encodings = ["block", "text"]
 tests = ["later_dated_sheet_with_a_revision_note_supersedes_the_earlier"]
 
+[[cards.variants]]
+id = "sheet_in_view_names"
+title = "几张图纸时视图名称带图纸"
+distinguishing = "一个模型空间有两张以上图纸时，每张图纸里的视图名称前写所在图纸（“图纸 2 · A-A”），两张图纸上同名的视图因此分得开；视图上的表达名称同样带图纸；图纸本身仍叫“图纸 n”。较晚版本取代较早版本记为候选，依据是标题栏日期和同日期的更改说明，图样上没有作废标记"
+encodings = ["inferred"]
+tests = ["views_on_two_sheets_name_their_sheet"]
+
 [[cards.counter_examples]]
-statement = "只有一张图纸时视图编号不加图纸前缀"
+statement = "只有一张图纸时视图编号与名称都不加图纸前缀"
 test = "one_sheet_keeps_plain_view_ids"
 
 [[cards.counter_examples]]

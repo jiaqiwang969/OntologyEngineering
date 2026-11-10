@@ -483,6 +483,54 @@ fn one_sheet_keeps_plain_view_ids() {
         "{ids:?}"
     );
     assert!(!ids.iter().any(|i| i.contains("sheet-")), "{ids:?}");
+    // and the names stay plain
+    assert!(
+        !g.views.iter().any(|v| v.label.starts_with("图纸 ")),
+        "{:?}",
+        labels(&g)
+    );
+}
+
+#[test]
+fn views_on_two_sheets_name_their_sheet() {
+    let mut ents = sheet(1, 0., true, "20240315");
+    ents.extend(sheet(2, 500., true, "20250620"));
+    ents.push(text("RN", "11", "改 20250620", [700., -30.], 3.5));
+    let g = run(&sheet_blocks(), &ents);
+    let label = |id: &str| {
+        g.views
+            .iter()
+            .find(|v| v.id == id)
+            .map(|v| v.label.clone())
+            .unwrap_or_else(|| panic!("{id}: {:?}", labels(&g)))
+    };
+    assert_eq!(label("view:sheet-1:principal"), "图纸 1 · 主视图");
+    assert_eq!(label("view:sheet-2:principal"), "图纸 2 · 主视图");
+    assert_eq!(label("view:sheet-2"), "图纸 2");
+    // expressions grouped by view name the sheet too
+    let e = exprs_of(&g, "V21")
+        .into_iter()
+        .find(|e| e.kind == "visible_contour")
+        .unwrap();
+    assert!(e.label.starts_with("图纸 2 · 主视图"), "{}", e.label);
+    // the later edition supersedes the earlier as a candidate, with its evidence
+    let s2 = g.views.iter().find(|v| v.id == "view:sheet-2").unwrap();
+    for x in [
+        "supersedes:view:sheet-1",
+        "supersession:candidate",
+        "title_block_date:20250620",
+        "earlier_title_block_date:20240315",
+        "revision_note:RN",
+    ] {
+        assert!(s2.evidence_ids.iter().any(|y| y == x), "{x}: {:?}", s2.evidence_ids);
+    }
+    assert!(
+        s2.unknowns.iter().any(|u| u.contains("candidate")),
+        "{:?}",
+        s2.unknowns
+    );
+    let s1 = g.views.iter().find(|v| v.id == "view:sheet-1").unwrap();
+    assert!(s1.unknowns.iter().any(|u| u.contains("candidate")), "{:?}", s1.unknowns);
 }
 
 #[test]

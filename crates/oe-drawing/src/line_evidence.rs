@@ -213,7 +213,7 @@ pub(super) fn outline_candidates(
             continue;
         }
         let st = &cx.style[h];
-        if st.pattern != Pattern::Continuous || st.byblock || not_plotted(cx, &st.layer) {
+        if st.pattern != Pattern::Continuous || st.byblock || not_plotted::source(cx, h) {
             continue;
         }
         let roles_ok = b.by_source.get(h).is_none_or(|ms| {
@@ -245,10 +245,18 @@ pub(super) fn outline_candidates(
     let mut corner: BTreeSet<(&str, i64)> = BTreeSet::new();
     let mut open: BTreeSet<(&str, i64)> = BTreeSet::new();
     let end_key = |t: f64| (t * 1e6).round() as i64;
+    // an end that meets only curves that are not plotted is free on the sheet
+    let unplotted_ends = not_plotted::free_ends(cx);
+    for (h, at_one) in &unplotted_ends {
+        if let Some((k, _)) = pool.get_key_value(h) {
+            open.insert((k.as_str(), end_key(if *at_one { 1. } else { 0. })));
+        }
+    }
     let axis = |id: &str| {
         cx.style
             .get(id)
             .is_some_and(|s| s.pattern == Pattern::DashDot)
+            && !not_plotted::source(cx, id)
     };
     #[allow(clippy::manual_range_contains)]
     let at_end = |t: Option<f64>| t.is_some_and(|x| x < 1e-6 || x > 1. - 1e-6);
@@ -456,26 +464,6 @@ pub(super) fn outline_candidates(
         out.admitted.insert(h.clone(), pool[h]);
     }
     out
-}
-
-/// A layer whose content is never plotted (DC-G1-101): AutoCAD's definition-point layer, or a
-/// layer whose plot flag (group 290) is off. Its lines are no evidence of what the sheet shows.
-pub(super) fn not_plotted(cx: &Ctx, layer: &str) -> bool {
-    let named = representation::card_ref("line_width_evidence")
-        .ok()
-        .and_then(|c| c.lexicon.as_ref())
-        .is_some_and(|l| {
-            l.iter()
-                .filter(|x| x.entry == "not_plotted_layer")
-                .flat_map(|x| x.values.iter())
-                .any(|v| v.eq_ignore_ascii_case(layer))
-        });
-    named
-        || cx.d.records.iter().any(|r| {
-            r.kind == "LAYER"
-                && r.get(2) == Some(layer)
-                && r.get(290).is_some_and(|v| v.trim() == "0")
-        })
 }
 
 /// A straight line whose two ends are corners of the outline (each meets another structural line
@@ -1672,7 +1660,7 @@ pub(super) fn dimension_pieces(cx: &Ctx, b: &mut Builder) -> Result<()> {
             .find(|(_, k, x)| k != h && dist(x.tip, a.tip) <= tol && dot(x.dir, a.dir) > 0.99)
         {
             let mut ev = format!("coincident_with:{k}");
-            if not_plotted(cx, &cx.style[k].layer) {
+            if not_plotted::source(cx, k) {
                 ev = format!("printed_copy_of:{k}");
             }
             add.push((

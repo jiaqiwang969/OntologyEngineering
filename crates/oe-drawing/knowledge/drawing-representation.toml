@@ -723,12 +723,6 @@ name = "weight_ratio_min"
 value = 1.5
 meaning = "粗档线宽 ≥ 该值 × 细档线宽（标准粗细比 2:1，旧图约 3:1）"
 
-[[cards.lexicon]]
-concept = "DC-G1-101"
-entry = "not_plotted_layer"
-values = ["Defpoints"]
-meaning = "永不打印的层（AutoCAD 定义点层；另有图层表中打印开关关闭的层）：其上的线不属于图面表达，不作粗细证据"
-
 [[cards]]
 id = "outline_joins"
 expression_kind = "visible_contour"
@@ -3810,3 +3804,77 @@ entry = "pronoun"
 values = ["此直径", "此尺寸", "此处"]
 meaning = "说明句用以指代所写的尺寸，句子是以该尺寸为界的要求"
 
+
+[[cards]]
+id = "not_plotted_content"
+expression_kind = "construction_reference"
+title = "不打印层上的内容"
+meaning = "CAD 用图层组织图线并控制显示与出图。有的层从不出图：定义点层（尺寸的定义点所在的层，任何情况下都不打印）、图层表里打印开关关闭的层、冻结或关闭的层。这些层上的内容在文件里有、图纸上没有：它不是图面表达的一部分，不能当作轮廓、不可见轮廓或中心线，也不能给打印出来的图线提供连接。读图时照样读出并标明“不打印”：没有被注写使用的图线是作图用的构造线；属于某个尺寸或注写的部分（数值、终端、界线）仍是该尺寸的组成部分，同时说明这一部分图纸上看不到。"
+sources = [
+  "GB/T 14665-2012 机械工程 CAD 制图规则 8、表 6：图层（按图线类型分层的标识）",
+  "GB/T 18229-2000 CAD 工程制图规则 9.1、表 13：图层",
+  "GB/T 15751-1995 技术产品文件 计算机辅助设计与制图 词汇：层（组织实体并控制其可见性的属性）",
+]
+knowledge_units = ["K03", "K52", "K55"]
+recognition = "先读图层表：层名为定义点层（不分大小写）、打印开关为关、冻结或关闭的层是不打印层。来源实体在这种层上（或块内成员自己的层是这种层）的成员都记“不打印”。这种层上的曲线不进入轮廓、虚线轮廓、中心线的候选，不作结点对象；打印的图线若某一端只接在这种曲线上，这一端在图面上是自由端。没有注写使用的这种曲线读作构造线。成员全部不打印的表达记“不打印”；只有一部分不打印的，在未知项里写明是哪一部分。"
+markers = []
+concepts = ["DC-G1-101"]
+parameters = []
+
+[[cards.components]]
+role = "native_member"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "POLYLINE", "SPLINE", "ELLIPSE"]
+requirement = "不打印层上、未被注写使用的曲线：构造线"
+
+[[cards.components]]
+role = "definition_point"
+primitives = ["POINT"]
+requirement = "定义点层上的点"
+
+[[cards.variants]]
+id = "definition_point_layer"
+title = "定义点层上的内容"
+distinguishing = "层名为 CAD 的定义点层（不分大小写）；该层从不打印"
+encodings = ["loose"]
+tests = ["outline_drawn_on_the_definition_point_layer_is_construction", "definition_point_is_marked_not_plotted"]
+
+[[cards.variants]]
+id = "plot_switch_off"
+title = "打印开关关闭的层上的内容"
+distinguishing = "图层表中该层的打印开关为关"
+encodings = ["loose"]
+tests = ["line_on_a_layer_with_the_plot_switch_off_is_construction"]
+
+[[cards.variants]]
+id = "layer_off_or_frozen"
+title = "冻结或关闭的层上的内容"
+distinguishing = "图层表中该层被冻结，或颜色号为负（层关闭）"
+encodings = ["loose"]
+tests = ["line_on_a_switched_off_layer_is_construction", "hidden_line_on_a_frozen_layer_is_no_hidden_outline"]
+
+[[cards.variants]]
+id = "part_of_an_annotation"
+title = "尺寸或注写的一部分在不打印层上"
+distinguishing = "尺寸的数值、终端或界线在不打印层上，其余部分正常打印：仍是这个尺寸，未知项写明哪一部分图纸上没有"
+encodings = ["loose", "native"]
+tests = ["dimension_with_a_terminator_on_a_never_plotted_layer_stays_a_dimension"]
+
+[[cards.variants]]
+id = "free_end_at_unplotted_curve"
+title = "打印的轮廓只接在不打印的线上"
+distinguishing = "轮廓线的一端只与不打印层上的曲线相接：图面上这一端是自由端，不算结点"
+encodings = ["loose"]
+tests = ["outline_joined_only_through_a_never_plotted_line_is_not_admitted"]
+
+[[cards.counter_examples]]
+statement = "层名里只是含有定义点层名字样、本身可打印的层，其上的图线照常读出"
+test = "layer_whose_name_only_contains_the_definition_point_name_plots"
+[[cards.counter_examples]]
+statement = "不打印层上的线不因两端接在轮廓上而成为轮廓（原有反例，见 line_width_evidence）"
+test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
+
+[[cards.lexicon]]
+concept = "DC-G1-101"
+entry = "definition_point_layer"
+values = ["Defpoints"]
+meaning = "CAD 的定义点层：尺寸定义点所在的层，任何情况下都不打印；层名不分大小写"

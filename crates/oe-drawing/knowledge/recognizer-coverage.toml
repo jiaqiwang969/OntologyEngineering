@@ -853,6 +853,33 @@ kinds = ["title_block"]
 kind = ""
 ids = ["DC-G9-023"]
 
+[[rules]]
+rule = "card:not_plotted_content/definition_point_layer"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
+[[rules]]
+rule = "card:not_plotted_content/plot_switch_off"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
+[[rules]]
+rule = "card:not_plotted_content/layer_off_or_frozen"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -1025,7 +1052,7 @@ missing = "实心三角终端在单箭头尺寸与指引线、框格指引线、
 [[concepts]]
 id = "DC-G1-101"
 level = "full"
-by = ["convention:layer_convention_table6"]
+by = ["card:not_plotted_content", "card:not_plotted_content/definition_point_layer", "card:not_plotted_content/layer_off_or_frozen", "card:not_plotted_content/plot_switch_off", "convention:layer_convention_table6"]
 
 [[concepts]]
 id = "DC-G1-114"

@@ -52,6 +52,8 @@ mod lines;
 mod loose_annotations;
 #[path = "line_evidence.rs"]
 mod line_evidence;
+#[path = "not_plotted.rs"]
+mod not_plotted;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -980,6 +982,8 @@ struct Ctx<'a> {
     scale: f64,
     thin_colors: BTreeSet<i32>,
     extent: [f64; 4],
+    /// Layers that never plot (upper-cased name) with the card variant (module `not_plotted`).
+    unplotted: BTreeMap<String, &'static str>,
 }
 impl Ctx<'_> {
     fn lt(&self, id: &str) -> &'static str {
@@ -1109,6 +1113,7 @@ impl Ctx<'_> {
         };
         st.pattern == Pattern::Continuous
             && !st.byblock
+            && !not_plotted::source(self, id)
             && !st
                 .explicit_color
                 .is_some_and(|c| self.thin_colors.contains(&c))
@@ -5126,7 +5131,7 @@ fn line_kinds(cx: &Ctx, b: &mut Builder) {
         // A centre line lent to a dimension as its extension line is still the centre line
         // (card dimension_line_parts, variant axis_as_extension_line).
         let lent = line_evidence::lent_to_dimension(b, h);
-        if !is_curve_kind(&r.kind) || b.used(h) && !lent {
+        if !is_curve_kind(&r.kind) || b.used(h) && !lent || not_plotted::source(cx, h) {
             continue;
         }
         let st = &cx.style[h];
@@ -5685,7 +5690,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
     let breaks: BTreeSet<String> = b
         .members
         .iter()
-        .filter(|m| m.member_role == "break_curve")
+        .filter(|m| m.member_role == "break_curve" && !not_plotted::source(cx, &m.source_handle))
         .map(|m| m.source_handle.clone())
         .collect();
     // Thick and thin from the drawing's own evidence (card line_width_evidence).
@@ -5695,6 +5700,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         .members
         .iter()
         .filter(|m| m.member_role == "thread_line" && cx.arc(&m.source_handle).is_some())
+        .filter(|m| !not_plotted::source(cx, &m.source_handle))
         .map(|m| m.source_handle.clone())
         .collect();
     let partner = |id: &str| cand.contains_key(id) || breaks.contains(id) || threads.contains(id);
@@ -5703,7 +5709,10 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         cx.style
             .get(id)
             .is_some_and(|s| s.pattern == Pattern::DashDot)
+            && !not_plotted::source(cx, id)
     };
+    // An end that meets only curves that are not plotted is free on the sheet.
+    let unplotted_ends = not_plotted::free_ends(cx);
     let mut junctions: BTreeMap<String, Vec<(f64, String)>> = BTreeMap::new();
     // Parameters where a source meets a partner's end with its own end (a corner,
     // not a T-junction).
@@ -5973,11 +5982,12 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             ts.sort_by(f64::total_cmp);
             ts.dedup_by(|x, y| (*x - *y).abs() < 1e-6);
             let open = |t: f64| {
-                cx.src.relations.iter().any(|r| {
-                    r.kind == "open_endpoint"
-                        && r.from_id == *h
-                        && r.from_parameter.is_some_and(|x| (x - t).abs() < 1e-9)
-                })
+                unplotted_ends.contains(&(h.clone(), t > 0.5))
+                    || cx.src.relations.iter().any(|r| {
+                        r.kind == "open_endpoint"
+                            && r.from_id == *h
+                            && r.from_parameter.is_some_and(|x| (x - t).abs() < 1e-9)
+                    })
             };
             let mut spans: Vec<[f64; 2]> = if ts.len() >= 2 {
                 vec![[ts[0], ts[ts.len() - 1]]]
@@ -6769,6 +6779,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         scale,
         thin_colors,
         extent,
+        unplotted: not_plotted::layers(&d)?,
     };
     // The knowledge read below must parse and validate before any rule runs.
     representation::representation_knowledge()?;
@@ -6852,11 +6863,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
+    not_plotted::construction(&cx, &mut b)?;
     let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
+    not_plotted::mark(&cx, &mut nb);
     let view_of: BTreeMap<String, Option<String>> = nb
         .exprs
         .iter()

@@ -1498,3 +1498,25 @@ fn two_items_in_one_signature_do_not_spread() {
         third.evidence_ids
     );
 }
+
+// ---------------------------------------------------------------- names are never handles
+
+#[test]
+fn no_expression_is_named_by_a_source_handle() {
+    // a thin-coloured edge between two outline corners, read as an outline edge, and the other
+    // fixtures of this file: no label is a handle or handles joined
+    let mut ents = outline("P", 0., 0., 60., 30.);
+    ents.push(hatch("HA", "10", "QQPAT", &rect_pts(0., 0., 60., 30.), &[(45., 3.)]));
+    ents.extend(tapped("T", 0., 15., 9., 7.2, 12., 12.));
+    let g = run(&[], &ents);
+    let handles: BTreeSet<&str> = g.source.entities.iter().map(|e| e.id.as_str()).collect();
+    for e in &g.expressions {
+        assert!(
+            !e.label.split('+').all(|p| handles.contains(p.trim())),
+            "{} {} is named by handles: {}",
+            e.id,
+            e.kind,
+            e.label
+        );
+    }
+}

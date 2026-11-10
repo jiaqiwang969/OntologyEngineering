@@ -1659,13 +1659,13 @@ missing = "只把遮罩对象（WIPEOUT）并入其注写对象；剖面线与�
 id = "DC-G2-015"
 level = "partial"
 by = ["card:view_callout"]
-missing = "只从整块剖切符号的直角转折识别；阶梯剖视图本身未分类"
+missing = "整块或散画的剖切符号在转折处成直角时记为平行剖切面，所指视图记 section_type:parallel_planes；阶梯剖视图中各段剖切面后的结构未分类"
 
 [[concepts]]
 id = "DC-G2-016"
 level = "partial"
-by = ["card:view_callout"]
-missing = "只从整块剖切符号在视图中心的斜角转折识别；旋转剖视图本身（转到剖切面上的结构）未分类"
+by = ["card:section_view_type", "card:view_callout"]
+missing = "整块或散画的剖切符号在转折处成斜角时，符号记为相交剖切面，所指的“X—X”视图记 section_type:intersecting_planes（转折点在回转视图中心时记为依据）；转到剖切面上的结构本身、展开画法未分类"
 
 [[concepts]]
 id = "DC-G3-060"
@@ -1738,3 +1738,8 @@ level = "partial"
 by = ["card:title_block_field"]
 missing = "只识别图框外注写中带质量词的文字；标题栏内质量栏的填写值未单独定栏"
 
+[[concepts]]
+id = "DC-G2-020"
+level = "partial"
+by = ["card:section_view_type"]
+missing = "剖面线全在贯穿视图的对称中心线一侧、两侧轮廓不成镜像、中心线上没有粗实线时记为半剖；半标注的直径尺寸未作旁证，局部被波浪线围住的剖面线不参与判断"

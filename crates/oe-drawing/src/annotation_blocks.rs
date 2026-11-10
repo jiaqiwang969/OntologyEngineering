@@ -3181,8 +3181,9 @@ pub(super) fn masks(cx: &Ctx, b: &mut Builder) -> Result<()> {
     Ok(())
 }
 
-/// A cutting-plane symbol refers to the section view named by its letter (`X—X`); a detail
-/// indicator refers to the detail view titled with its label.
+/// A cutting-plane symbol refers to the view named by its letter (`X—X`), whatever the role of
+/// that view in the arrangement (`view_types::cutting_references` settles it within the symbol's
+/// sheet); a detail indicator refers to the detail view titled with its label.
 pub(super) fn references(
     b: &Builder,
     regions: &[Region],
@@ -3207,7 +3208,7 @@ pub(super) fn references(
         let target = match e.rule.as_str() {
             "card:view_callout/cutting_plane_group" => regions
                 .iter()
-                .find(|r| r.kind == "section_view" && section(&r.label).as_deref() == Some(key)),
+                .find(|r| r.kind != "sheet" && section(&r.label).as_deref() == Some(key)),
             "card:view_callout/detail_indicator" => regions.iter().find(|r| {
                 r.kind == "detail_view" && r.label.split_whitespace().next() == Some(key)
             }),

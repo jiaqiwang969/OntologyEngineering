@@ -65,6 +65,8 @@ mod annotation_blocks;
 mod section_hatching;
 #[path = "thread_forms.rs"]
 mod thread_forms;
+#[path = "view_types.rs"]
+mod view_types;
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
@@ -6869,9 +6871,11 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
-    let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
+    let (mut regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;
+    view_types::cutting_references(&b, &regions, &vmap, &mut refs);
     let mut nb = finalize(&b, &vmap, &regions, &refs);
+    view_types::state(&cx, &mut nb, &mut regions)?;
     section_hatching::state(&cx, &mut nb, &regions)?;
     thread_forms::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);

@@ -140,7 +140,7 @@ impl Widths {
         let Some(st) = cx.style.get(id) else {
             return false;
         };
-        if st.pattern != Pattern::Continuous || st.byblock {
+        if st.pattern != Pattern::Continuous || st.byblock && !st.colour_byblock() {
             return false;
         }
         if let Some(w) = self.weight(id) {
@@ -149,7 +149,7 @@ impl Widths {
         let thin_explicit = st
             .explicit_color
             .is_some_and(|c| cx.thin_colors.contains(&c.abs()));
-        cx.structural_style(id) || !thin_explicit && self.thick_colour == Some(st.color)
+        cx.structural_style(id) || !thin_explicit && self.thick_colour == Some(st.plot_colour())
     }
 }
 
@@ -195,6 +195,20 @@ pub(super) fn outline_candidates(
             cand.remove(&h);
             out.thin_by_weight.insert(h);
         }
+        // BYBLOCK is not a colour: a root curve that carries it is decided by its lineweight
+        for (h, st) in &cx.style {
+            if st.pattern == Pattern::Continuous
+                && st.colour_byblock()
+                && w.weight(h) == Some(Width::Thick)
+                && !cand.contains_key(h)
+                && !exclusive(b, h)
+                && !not_plotted::source(cx, h)
+                && cx.rec.get(h).is_some_and(|r| is_curve_kind(&r.kind))
+            {
+                cand.insert(h.clone(), 2);
+                out.thick_by_weight.insert(h.clone());
+            }
+        }
     }
     let Some(thick) = w.thick_colour else {
         return out;
@@ -213,7 +227,10 @@ pub(super) fn outline_candidates(
             continue;
         }
         let st = &cx.style[h];
-        if st.pattern != Pattern::Continuous || st.byblock || not_plotted::source(cx, h) {
+        if st.pattern != Pattern::Continuous
+            || st.byblock && !st.colour_byblock()
+            || not_plotted::source(cx, h)
+        {
             continue;
         }
         let roles_ok = b.by_source.get(h).is_none_or(|ms| {
@@ -227,7 +244,12 @@ pub(super) fn outline_candidates(
         let thin_explicit = st
             .explicit_color
             .is_some_and(|c| cx.thin_colors.contains(&c.abs()));
-        if thin_layer && !thin_explicit && st.color == thick {
+        if st.colour_byblock() {
+            // weighed as the default colour, whatever its layer
+            if st.plot_colour() == thick {
+                pool.insert(h.clone(), "default_colour_at_sheet_level");
+            }
+        } else if thin_layer && !thin_explicit && st.color == thick {
             pool.insert(h.clone(), "outline_colour_on_thin_layer");
         } else if thin_explicit
             && !thin_layer
@@ -313,7 +335,12 @@ pub(super) fn outline_candidates(
     }
     // Only lines in the outline colour are continued across such a gap: a thin-coloured line
     // facing another one across a symbol is an extension line broken for it.
-    let outline_coloured = |h: &str| pool.get(h) == Some(&"outline_colour_on_thin_layer");
+    let outline_coloured = |h: &str| {
+        matches!(
+            pool.get(h),
+            Some(&"outline_colour_on_thin_layer") | Some(&"default_colour_at_sheet_level")
+        )
+    };
     let partners: Vec<topology::Partner> = cand
         .keys()
         .chain(pool.keys().filter(|h| outline_coloured(h)))
@@ -423,7 +450,7 @@ pub(super) fn outline_candidates(
                     // extension line (card visible_edge_line, counter-example)
                     ts.len() >= 2
                         || ts.len() == 1
-                            && pool[h.as_str()] == "outline_colour_on_thin_layer"
+                            && outline_coloured(h)
                             && [(0., 1.), (1., 0.)].iter().any(|(j, f)| {
                                 (ts[0] - j).abs() < 1e-6
                                     && corner.contains(&(h.as_str(), end_key(*j)))

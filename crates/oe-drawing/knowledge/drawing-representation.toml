@@ -704,6 +704,20 @@ distinguishing = "按约定或线宽为细实线、未被注写使用、两端�
 encodings = ["loose"]
 tests = ["thin_layer_line_between_outline_ends_is_a_thin_structural_line"]
 
+[[cards.variants]]
+id = "default_colour_at_sheet_level"
+title = "颜色为“随块”的根图线按默认颜色看待"
+distinguishing = "图线不在任何图块内而颜色属性为“随块”（线型是它自己的）：没有块可随，“随块”不是一种颜色，按默认颜色显示和出图；默认颜色与粗线颜色相同时，按细线层上粗线颜色的线同样的连接条件确认是否为轮廓。全图按线宽分档时由它的线宽决定"
+encodings = ["loose"]
+tests = ["byblock_colour_line_joined_at_both_ends_is_outline"]
+
+[[cards.counter_examples]]
+statement = "颜色随块的线只有一端接在轮廓上、另一端越过尺寸线伸出（尺寸界线），不是轮廓"
+test = "byblock_colour_extension_line_stays_annotation"
+[[cards.counter_examples]]
+statement = "线型也是随块、颜色显式改成细线颜色的散线（炸开的标注件）仍是注写，不进入轮廓候选"
+test = "exploded_piece_with_byblock_linetype_is_not_outline"
+
 [[cards.counter_examples]]
 statement = "粗线层上改成细线颜色的尺寸界线：一端在轮廓上，另一端越过尺寸线伸出，不是轮廓"
 test = "thin_colour_extension_line_stays_annotation"

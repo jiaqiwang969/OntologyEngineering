@@ -19,6 +19,18 @@ fn line(id: &str, layer: &str, a: [f64; 2], b: [f64; 2]) -> String {
         &format!("10\n{}\n20\n{}\n11\n{}\n21\n{}\n", a[0], a[1], b[0], b[1]),
     )
 }
+/// A line with further entity tags (colour 62, linetype 6) written as DXF pairs.
+fn line_with(id: &str, layer: &str, more: &str, a: [f64; 2], b: [f64; 2]) -> String {
+    ent(
+        "LINE",
+        id,
+        layer,
+        &format!(
+            "{more}10\n{}\n20\n{}\n11\n{}\n21\n{}\n",
+            a[0], a[1], b[0], b[1]
+        ),
+    )
+}
 fn text(id: &str, layer: &str, s: &str, p: [f64; 2], h: f64) -> String {
     ent(
         "TEXT",
@@ -127,6 +139,24 @@ fn members<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> Vec<&'a MdExpr
         .iter()
         .filter(|m| m.source_handle == src)
         .collect()
+}
+fn expr_with<'a>(
+    g: &'a MdEngineeringExpressionGraph,
+    src: &str,
+    kind: &str,
+) -> Option<&'a MdEngineeringExpression> {
+    exprs_of(g, src).into_iter().find(|e| e.kind == kind)
+}
+fn line_type(g: &MdEngineeringExpressionGraph, e: &MdEngineeringExpression, src: &str) -> String {
+    g.members
+        .iter()
+        .find(|m| m.expression_id == e.id && m.source_handle == src)
+        .map(|m| m.line_type.clone())
+        .unwrap_or_default()
+}
+fn names(e: &MdEngineeringExpression, card: &str, variant: &str) -> bool {
+    (e.rule.contains(&format!("card:{card}")) || e.evidence_ids.contains(&format!("card:{card}")))
+        && (e.rule.ends_with(variant) || e.evidence_ids.contains(&format!("variant:{variant}")))
 }
 fn marked(m: &MdExpressionMember) -> bool {
     m.evidence_ids.iter().any(|e| e == "not_plotted")
@@ -318,4 +348,72 @@ fn outline_joined_only_through_a_never_plotted_line_is_not_admitted() {
         kinds(&g, "UM")
     );
     is_unplotted_construction(&g, "UT", "definition_point_layer");
+}
+
+// ---------------------------------------------------------------- line_width_evidence: BYBLOCK is not a colour
+
+#[test]
+fn byblock_colour_line_joined_at_both_ends_is_outline() {
+    // the right side of the box carries the colour BYBLOCK (group 62 = 0) outside any block; a
+    // step stands on it
+    let g = run(&[
+        line("BA", "01", [0., 0.], [40., 0.]),
+        line("BT", "01", [0., 20.], [40., 20.]),
+        line("BL", "01", [0., 0.], [0., 20.]),
+        line_with("BR", "0", "62\n0\n", [40., 0.], [40., 20.]),
+        line("S1", "0", [40., 5.], [48., 5.]),
+        line("S2", "01", [48., 5.], [48., 15.]),
+        line("S3", "0", [48., 15.], [40., 15.]),
+        line("BX", "05", [-5., 10.], [55., 10.]),
+    ]);
+    let e =
+        expr_with(&g, "BR", "visible_contour").unwrap_or_else(|| panic!("{:?}", kinds(&g, "BR")));
+    assert!(
+        names(e, "line_width_evidence", "default_colour_at_sheet_level"),
+        "{:?}",
+        e.evidence_ids
+    );
+    assert_eq!(line_type(&g, e, "BR"), "thick_continuous");
+    for h in ["S1", "S3"] {
+        assert!(kinds(&g, h).contains("visible_contour"), "{h} {:?}", kinds(&g, h));
+    }
+}
+
+#[test]
+fn byblock_colour_extension_line_stays_annotation() {
+    // lines in the colour BYBLOCK run from the outline corners past the dimension line of a
+    // dimension drawn with loose terminators: extension lines
+    let g = run(&[
+        line("OA", "01", [0., 0.], [30., 0.]),
+        line("OB", "01", [30., 0.], [30., 20.]),
+        line("OC", "01", [0., 0.], [0., 20.]),
+        line_with("EZA", "0", "62\n0\n", [0., 20.], [0., 34.]),
+        line_with("EZB", "0", "62\n0\n", [30., 20.], [30., 34.]),
+        solid("T1", "08", [0., 31.], [3., 31.]),
+        solid("T2", "08", [30., 31.], [27., 31.]),
+        line("DL", "08", [3., 31.], [27., 31.]),
+        text("DV", "11", "30", [12., 32.], 3.5),
+    ]);
+    for h in ["EZA", "EZB"] {
+        assert!(!kinds(&g, h).contains("visible_contour"), "{h} {:?}", kinds(&g, h));
+        assert!(kinds(&g, h).contains("dimension_linear"), "{h} {:?}", kinds(&g, h));
+    }
+}
+
+#[test]
+fn exploded_piece_with_byblock_linetype_is_not_outline() {
+    // a piece of an exploded annotation keeps the line type BYBLOCK and a thin colour; lying
+    // between two outline corners does not make it outline
+    let g = run(&[
+        line("XA", "01", [0., 0.], [40., 0.]),
+        line("XT", "01", [0., 20.], [40., 20.]),
+        line("XL", "01", [0., 0.], [0., 20.]),
+        line_with("XR", "0", "6\nBYBLOCK\n62\n3\n", [40., 0.], [40., 20.]),
+        line("XX", "05", [-5., 10.], [45., 10.]),
+    ]);
+    assert!(
+        !kinds(&g, "XR").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "XR")
+    );
 }

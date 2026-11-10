@@ -340,6 +340,26 @@ struct Style {
     explicit_color: Option<i32>,
     byblock: bool,
 }
+impl Style {
+    /// The colour attribute is BYBLOCK on a line with a line type of its own. Outside a block
+    /// there is no block to take the colour from: BYBLOCK is not a colour, and such a root
+    /// entity is shown and plotted in the default colour (card `line_width_evidence`, variant
+    /// `default_colour_at_sheet_level`).
+    fn colour_byblock(&self) -> bool {
+        self.explicit_color == Some(0) && self.pattern != Pattern::ByBlock
+    }
+    /// The colour the entity plots in: its own or its layer's, the default colour for BYBLOCK.
+    fn plot_colour(&self) -> i32 {
+        if self.explicit_color == Some(0) {
+            DEFAULT_COLOUR
+        } else {
+            self.color.abs()
+        }
+    }
+}
+/// The colour index CAD systems give an entity that names none (white on a dark screen, black on
+/// paper); a layer missing from the table gets the same.
+const DEFAULT_COLOUR: i32 = 7;
 
 fn style_of(
     r: &Record,
@@ -1112,7 +1132,9 @@ impl Ctx<'_> {
             return false;
         };
         st.pattern == Pattern::Continuous
-            && !st.byblock
+            // BYBLOCK colour at sheet level: by its joins under a checked convention (module
+            // `line_evidence`), like any other continuous line where no convention decides
+            && !(st.byblock && self.conv.qualified)
             && !not_plotted::source(self, id)
             && !st
                 .explicit_color

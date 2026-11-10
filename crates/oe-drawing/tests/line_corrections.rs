@@ -709,6 +709,38 @@ fn thin_extension_line_drawn_past_its_origin_stays_an_extension_line() {
     extension_lines_are_thin_and_off_the_outline(&g);
 }
 
+#[test]
+fn outline_behind_the_origin_or_beyond_the_dimension_line_is_not_lent() {
+    // the width dimensioned above the plate; on the right carrier the outline stops short of the
+    // origin (a step), and on the left one another edge starts just beyond the dimension line
+    let mut children = dimension_line("NB", [100., 62.], [130., 62.]);
+    children.push(line("NB4", "0", [100., 50.], [100., 64.]));
+    children.push(line("NB5", "0", [130., 50.], [130., 64.]));
+    let (blk, dim) = native_linear("DB", "*D1", 0., [130., 62.], [100., 50.], [130., 50.], &children);
+    // drawn by lineweight, without a layer convention
+    let g = run_full(
+        WEIGHTS,
+        &blk,
+        &[
+            line("BB", "P", [100., 20.], [130., 20.]),
+            line("BT", "P", [100., 50.], [126., 50.]),
+            line("BL", "P", [100., 20.], [100., 50.]),
+            line("BS", "P", [126., 50.], [126., 46.]),
+            line("BU", "P", [126., 46.], [130., 46.]),
+            line("BR", "P", [130., 20.], [130., 46.]),
+            line("BQ", "P", [100., 66.], [100., 90.]),
+            line("BX", "R", [115., 15.], [115., 55.]),
+            dim,
+        ],
+    );
+    is_lent(&g, "BL");
+    for h in ["BR", "BQ"] {
+        assert!(in_dimension(&g, h).is_empty(), "{h}: {:?}", in_dimension(&g, h));
+        assert!(kinds(&g, h).contains("visible_contour"), "{h}");
+    }
+    extension_lines_are_thin_and_off_the_outline(&g);
+}
+
 // ---------------------------------------------------------------- line_width_evidence: the width each line is plotted with
 
 fn run_with_header(

@@ -200,6 +200,16 @@ pub(super) fn native(
         let iv = [so.min(0.) - over, so.max(0.) + over];
         for lid in chain(cx, b, &w, *t, v, iv, tol, &BTreeSet::new()) {
             let (a, c) = cx.lines[&lid];
+            // an outline piece serves this extension line only where it reaches the span from the
+            // origin to the dimension line: the measured feature reaches the origin, the outline
+            // the extension line is drawn over or the terminator stands on lies in the span; an
+            // outline only behind the origin or beyond the dimension line is another feature
+            let (ta, tc) = (dot(sub(a, *t), v), dot(sub(c, *t), v));
+            if w.thick(cx, &lid)
+                && (ta.max(tc) < so.min(0.) - tol || ta.min(tc) > so.max(0.) + tol)
+            {
+                continue;
+            }
             let clipped = match far[k] {
                 Some(f) => clip_along(a, c, *t, f, over, tol),
                 None => Some([0., 1.]),

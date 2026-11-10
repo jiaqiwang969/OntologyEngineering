@@ -14,6 +14,23 @@ const expect=(pred,showDup)=>{const m=new Map();for(const x of G.members){if(!pr
 const partials=m=>[...m.values()].reduce((n,r)=>n+(full(r)?0:r.length),0);
 const verify=(m,label)=>{ok(count()===m.size,label+' root coverage');for(const [id,r] of m)ok(same(a.visible.get(id),r),label+' ranges '+id);ok(overlays()===partials(m),label+' partial overlays drawn once each');ok(sourceNodes()===baseNodes,label+' source inventory unchanged');const s=shownGroups(label);checks.push(label+' groups shown by their claiming members, empty notice only when nothing is drawn');return s};
 const baseNodes=sourceNodes(),N=G.entities.length;
+// Check first paint before any test changes the mode or the viewport.
+const categoryPaint=(root,graph,label)=>{
+ const viewport=root.getBoundingClientRect(),colors=new Set();let contour=0,painted=0;
+ for(const n of root.querySelectorAll('[stroke],[fill]')){
+  const group=n.closest('[data-entity]');if(group?.style.display==='none')continue;
+  const b=n.getBoundingClientRect();if((!b.width&&!b.height)||b.right<viewport.left||b.left>viewport.right||b.bottom<viewport.top||b.top>viewport.bottom)continue;
+  const style=w.getComputedStyle(n);for(const color of [style.stroke,style.fill]){
+   if(['none','rgb(255, 255, 255)','rgb(39, 52, 61)'].includes(color))continue;
+   colors.add(color);painted++;if(color==='rgb(31, 78, 133)')contour++;
+  }
+ }
+ ok(painted>0,label+' actually draws category colours in the viewport');
+ if(graph.expressions.some(e=>e.kind==='visible_contour'))ok(contour>0,label+' actually draws visible-contour category colour');
+ return {colors:[...colors].sort(),painted,visible_contour:contour};
+};
+ok($('complete').checked&&!$('original').checked&&a.mode==='kind','Default is complete structure with category colours and original comparison off');
+facts.initial_classified=categoryPaint(d.querySelector('#canvas>svg'),G,'Initial drawing');
 if(a.drafting?.receipt.status==='written'){
  ok(a.drawingMode==='compare','A corrected drawing initially opens in comparison mode');
  ok(!d.querySelector('iframe')&&d.querySelectorAll('header').length===1&&d.querySelectorAll('aside').length===1,'One viewer without a nested page');
@@ -23,17 +40,47 @@ if(a.drafting?.receipt.status==='written'){
  const changed=new Set(a.drafting.receipt.applied.flatMap(x=>x.result_handles));
  const groupKey=g=>JSON.stringify([g.dataset.entity,g.dataset.member||'']);
  const paint=g=>[...g.querySelectorAll('[stroke],[fill]')].map(n=>{const s=w.getComputedStyle(n);return [n.tagName,s.stroke,s.fill,s.strokeWidth]});
- const originalPaint=new Map();for(const g of d.querySelectorAll('#canvas>svg>g[data-entity]')){const k=groupKey(g);if(!originalPaint.has(k))originalPaint.set(k,[]);originalPaint.get(k).push(paint(g))}
- const checkPaint=label=>{const seen=new Map();let matched=0,strokes=0,mismatch=null,wrongHighlight=null;for(const g of d.querySelectorAll('#correctedSvg>g[data-entity]')){
+ const readOriginalPaint=()=>{const originalPaint=new Map();for(const g of d.querySelectorAll('#canvas>svg>g[data-entity]')){const k=groupKey(g);if(!originalPaint.has(k))originalPaint.set(k,[]);originalPaint.get(k).push(paint(g))}return originalPaint};
+ const checkPaint=label=>{const originalPaint=readOriginalPaint();const seen=new Map();let matched=0,strokes=0,mismatch=null,wrongHighlight=null;for(const g of d.querySelectorAll('#correctedSvg>g[data-entity]')){
   if(g.classList.contains('changed')!==changed.has(g.dataset.entity))wrongHighlight=groupKey(g);
   if(changed.has(g.dataset.entity))continue;const k=groupKey(g),i=seen.get(k)||0;seen.set(k,i+1);const expected=originalPaint.get(k)?.[i];if(!expected)continue;
   const actual=paint(g);if(!same(actual,expected)&&!mismatch)mismatch={source:k,occurrence:i,expected,actual};matched++;strokes+=actual.filter(x=>x[1]!=='none').length;
  }ok(!wrongHighlight,label+' only corrected handles receive change highlighting '+(wrongHighlight||''));ok(!mismatch,label+' unchanged object stroke, fill and width match the original '+(mismatch?JSON.stringify(mismatch):''));ok(matched>0&&strokes>0,label+' checks actual unchanged stroked objects');return {unchanged_groups:matched,stroke_primitives:strokes}};
+ facts.corrected_initial_classified=categoryPaint($('correctedSvg'),a.drafting.corrected.graph,'Initial corrected drawing');
+ const rightRoot=$('correctedSvg'),cg=a.drafting.corrected.graph;
+ const cgExpressions=new Map(cg.expressions.map(e=>[e.id,e])),cgMembers=new Map(cg.members.map(m=>[m.id,m]));
+ const expectedLines=(cg.structural_lines||[]).filter(l=>{const ms=[...l.pieces,...l.coincident].filter(x=>x.startsWith('member:')).map(x=>cgMembers.get(x.slice(7)));return !ms.length||ms.some(m=>!m.evidence_ids.some(x=>x.startsWith('section_profile:')))}).map(l=>l.id).sort();
+ ok(same([...rightRoot.querySelectorAll('[data-line]')].map(n=>n.dataset.line).sort(),expectedLines),'Corrected complete structure draws the lines of its own re-read graph');
+ for(const h of changed){const gs=[...rightRoot.querySelectorAll(':scope>g[data-entity]')].filter(g=>g.dataset.entity===h);ok(gs.length>0&&gs.some(g=>g.style.display!=='none'&&g.classList.contains('changed')&&w.getComputedStyle(g).filter!=='none'),'Default corrected drawing highlights the written change '+h)}
+ facts.corrected_initial_structure={lines:expectedLines.length,highlighted_sources:changed.size};
  facts.comparison_paint=checkPaint('Comparison');a.setDrawingMode('corrected');
- facts.corrected_only_paint=checkPaint('Corrected-only');a.setDrawingMode('compare');
- facts.initial_comparison=true;a.setDrawingMode('source');
+ facts.corrected_only_paint=checkPaint('Corrected-only');
+ const frame=document.getElementById('f'),oldWidth=frame.style.width;frame.style.width=Math.max(700,frame.getBoundingClientRect().width*.8)+'px';
+ await new Promise(resolve=>setTimeout(resolve,100));
+ const only=$('correctedSvg').getBoundingClientRect(),vb=$('correctedSvg').getAttribute('viewBox').split(/\s+/).map(Number),widths=a.correctedView.widths,expectedFloor=Math.max(1,1.6/(widths.d*Math.min(only.width/vb[2],only.height/vb[3])));
+ ok(Math.abs(widths.floor-expectedFloor)<1e-5*Math.max(1,expectedFloor),'Corrected-only resize updates the same on-screen line-width floor');
+ frame.style.width=oldWidth;await new Promise(resolve=>setTimeout(resolve,100));
+ a.setDrawingMode('compare');
+ facts.initial_comparison=true;
+ $('original').click();ok(d.querySelector('#canvas>svg').classList.contains('as-converted')&&$('correctedSvg').classList.contains('as-converted'),'Original comparison switch makes both panes monochrome');
+ facts.comparison_original_paint=checkPaint('Monochrome comparison');
+ for(const root of [d.querySelector('#canvas>svg'),$('correctedSvg')])ok([...root.querySelectorAll(':scope>g[data-entity]')].every(g=>g.style.display!=='none'),'Monochrome comparison shows every converted group in each pane');
+ $('original').click();ok(!$('correctedSvg').classList.contains('as-converted'),'Leaving original comparison restores classified corrected drawing');
+ // The right pane must obey the shared controls, including intervals and its added members.
+ ok(!$('sourceFilters').hidden,'One set of category and structure controls stays available in comparison');
+ const roots=[d.querySelector('#canvas>svg'),rightRoot],drawn=root=>[...root.querySelectorAll(':scope>g[data-entity]')].filter(g=>g.style.display!=='none').length+root.querySelectorAll('[data-line],line[data-interval]').length;
+ for(const [none,all] of [['kindNone','kindAll'],['lineNone','lineAll'],['primNone','primAll'],['viewNone','viewAll']]){$(none).click();ok(roots.every(root=>drawn(root)===0),'Shared '+none+' hides both drawings');$(all).click();ok(roots.every(root=>drawn(root)>0),'Shared '+all+' restores both drawings')}
+ $('complete').click();ok(roots.every(root=>!root.querySelector('[data-line]')),'Turning off complete structure removes structural overlays in both panes');
+ $('kindUnknown').click();const expectedUnknown=new Map();for(const m of cg.members)if(cgExpressions.get(m.expression_id).kind==='unresolved'){if(!expectedUnknown.has(m.source_handle))expectedUnknown.set(m.source_handle,[]);expectedUnknown.get(m.source_handle).push(m.interval)}
+ for(const [h,rr] of a.correctedView.visible)if(!same(rr,a.union(expectedUnknown.get(h)||[])))throw Error('Corrected unexplained-only filter differs from its re-read member intervals '+h);ok(true,'Corrected unexplained-only filter follows every re-read member interval');
+ const unknownBySource=new Map();for(const m of cg.members)if(cgExpressions.get(m.expression_id).kind==='unresolved'){if(!unknownBySource.has(m.source_handle))unknownBySource.set(m.source_handle,[]);unknownBySource.get(m.source_handle).push(m)}
+ let checkedGroups=0;for(const g of rightRoot.querySelectorAll(':scope>g[data-entity]')){const rr=a.correctedView.visible.get(g.dataset.entity),D=g.dataset.member,claimed=(unknownBySource.get(g.dataset.entity)||[]).some(m=>!D||!m.native_member_id||D===m.native_member_id||D.startsWith(m.native_member_id+'/'));if((g.style.display!=='none')!==(full(rr)&&claimed))throw Error('Corrected unexplained-only drawing differs from native member claims '+g.dataset.entity);checkedGroups++}
+ ok(true,'Every corrected unexplained-only group follows its native member claims');
+ facts.corrected_shared_filters={axes:4,unexplained_sources:expectedUnknown.size,checked_sources:a.correctedView.visible.size,checked_native_groups:checkedGroups};
+ $('kindAll').click();$('complete').click();
+ a.setDrawingMode('source');
 }else if(a.drafting)ok(a.drawingMode==='source'&&$('correctedPane').hidden,'Without corrections the default remains the original drawing');
-if($('original').checked){ok(!!a.drafting,'Only the issue review initially selects the original drawing');ok(count()===N&&[...a.visible.values()].every(full),'Initial original view keeps every source range');ok([...d.querySelectorAll('#canvas>svg>g[data-entity]')].every(g=>g.style.display!=='none'),'Initial original view shows every converted group');facts.initial_original=true;$('original').click()}
+
 ok(G.schema==='oev2.drawing-expression-graph/1','Typed expression graph loaded');
 if(G.revisions?.identities.length){const revs=G.revisions.identities.flatMap(i=>i.revisions),diffs=G.revisions.comparisons.flatMap(c=>c.differences);ok(!$('revisionPanel').hidden,'Revision identity panel visible');ok($('revisionSelector').options.length===revs.length,'Every revision selectable');ok(revs.some(r=>r.status==='current_candidate'&&r.id===$('revisionSelector').value),'Default revision is explicitly a current candidate');ok(d.querySelectorAll('[data-difference]').length===diffs.length,'Every entity difference expandable');const buttons=[...d.querySelectorAll('#revisionDiff button[data-source]')];ok(buttons.length===diffs.reduce((n,v)=>n+v.older_handles.length+v.newer_handles.length,0)&&buttons.every(b=>G.entities.some(e=>e.id===b.dataset.source)),'Every difference links to original source entities');const initial=$('revisionSelector').value,view=a.view;for(const r of revs){$('revisionSelector').value=r.id;$('revisionSelector').dispatchEvent(new w.Event('change'));const sheet=G.views.find(v=>v.id===r.sheet_id);const evidence=$('revisionEvidence').textContent,shown=a.view,canvas=d.querySelector('#canvas>svg'),ox=Number(canvas.dataset.drawingOriginX),ty=Number(canvas.dataset.drawingTopY),b=sheet?.bbox||[],width=b[2]-b[0],height=b[3]-b[1];ok(!!sheet&&r.source_handles.every(h=>evidence.includes(h))&&evidence.includes('title_date:'+r.date),'Revision selector reads source evidence '+r.id);ok(Math.abs(shown[0]+shown[2]/2-((b[0]+b[2])/2-ox))<1e-6*Math.max(1,width)&&Math.abs(shown[1]+shown[3]/2-(ty-(b[1]+b[3])/2))<1e-6*Math.max(1,height)&&shown[2]>=width&&shown[2]<=width*1.2&&shown[3]>=height&&shown[3]<=height*1.2,'Revision selector frames its sheet '+r.id)}for(const button of [buttons[0],buttons.at(-1)].filter(Boolean)){button.click();ok(a.selection?.type==='source'&&a.selection?.id===button.dataset.source,'Difference source button selects its source '+button.dataset.source)}$('clear').click();$('revisionSelector').value=initial;$('revisionSelector').dispatchEvent(new w.Event('change'));a.setView(view);facts.revisions={identities:G.revisions.identities.length,revisions:revs.length,differences:diffs.length};}else if($('revisionPanel'))ok($('revisionPanel').hidden,'No revision relation invented for single drawings');
 
@@ -71,7 +118,7 @@ if(a.drafting){
   }
   a.setDrawingMode('source');
  }else{ok(receipt.corrected_sha256===null&&$('showCorrectedDrawing').disabled&&$('showComparison').disabled&&$('downloadCorrected').hidden,'No corrected artifact is claimed without operations')}
- const first=items.find(i=>i.classification==='source_deviation_candidate');if(first){ok(await a.showDraftingIssue(first.id),'Issue button locates original source');ok($('original').checked,'Issue location shows original converter rendering')}
+ const first=items.find(i=>i.classification==='source_deviation_candidate');if(first){ok(await a.showDraftingIssue(first.id),'Issue button locates original source');ok(!$('original').checked&&a.mode==='kind','Issue location preserves classified drawing and complete structure')}
  a.setDrawingMode('source');$('clear').click();if($('original').checked!==raw)$('original').click();a.setView(view);
  facts.drafting={issues:items.length,applied:receipt.applied.length,status:receipt.status};
 }

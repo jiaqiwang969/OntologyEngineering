@@ -593,6 +593,7 @@ fn the_route_receipts_discharge_the_drawing_obligations() {
         })
         .collect();
     let expected: std::collections::BTreeMap<String, String> = [
+        ("ob_drawing_automatic_correction", "held"),
         ("ob_drawing_converter_identity", "held"),
         ("ob_drawing_faithful_page", "absent"),
         ("ob_drawing_no_invented_target", "absent"),

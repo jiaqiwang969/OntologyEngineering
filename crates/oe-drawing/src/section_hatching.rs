@@ -123,10 +123,7 @@ pub(super) fn line_family(lines: &[(P, P)], parallel_deg: f64) -> Option<Family>
     // pieces of one section line (cut by a hole) share an offset
     let mut lanes: Vec<f64> = Vec::new();
     for o in offs {
-        if lanes
-            .last()
-            .is_none_or(|l| o - l > 1e-6 * (1. + o.abs()))
-        {
+        if lanes.last().is_none_or(|l| o - l > 1e-6 * (1. + o.abs())) {
             lanes.push(o);
         }
     }
@@ -182,9 +179,7 @@ pub(super) fn hatches(cx: &Ctx, b: &Builder) -> Result<Vec<Hatch>> {
             // section lines drawn one by one: loose lines, or the lines of a block view
             let lines: Vec<(P, P)> = ms
                 .iter()
-                .filter(|m| {
-                    m.native_member_id.is_some() || cx.lines.contains_key(&m.source_handle)
-                })
+                .filter(|m| m.native_member_id.is_some() || cx.lines.contains_key(&m.source_handle))
                 .map(|m| member_points(cx, m))
                 .filter(|p| p.len() == 2)
                 .map(|p| (p[0], p[1]))
@@ -247,10 +242,7 @@ pub(super) fn shared_length(a: &[(P, P)], b: &[(P, P)], tol: f64) -> f64 {
 
 /// Smallest spacing of a hatch (none for a solid fill or an unread pattern).
 pub(super) fn spacing_of(h: &Hatch) -> Option<f64> {
-    h.families
-        .iter()
-        .map(|f| f.spacing)
-        .min_by(f64::total_cmp)
+    h.families.iter().map(|f| f.spacing).min_by(f64::total_cmp)
 }
 
 /// Pairs of hatches of one view whose native regions share a boundary line (indexes into `hs`).
@@ -338,7 +330,10 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
         push(e, "variant:pattern_signature".into());
     }
     for (i, j) in pairs {
-        let (a, c) = (b.exprs[hs[i].expr].id.clone(), b.exprs[hs[j].expr].id.clone());
+        let (a, c) = (
+            b.exprs[hs[i].expr].id.clone(),
+            b.exprs[hs[j].expr].id.clone(),
+        );
         for (own, other) in [(hs[i].expr, &c), (hs[j].expr, &a)] {
             let e = &mut b.exprs[own];
             push(e, format!("adjacent:{other}"));

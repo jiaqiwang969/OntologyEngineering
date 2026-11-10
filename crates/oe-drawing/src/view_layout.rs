@@ -156,11 +156,10 @@ pub(super) fn sheet_view(sheets: &[Sheet], pts: &[P]) -> String {
 /// its sheet first (`图纸 2 · A-A`), so the same view name on two sheets reads apart; the sheets
 /// themselves are named as they are (card `drawing_sheet`, variant `sheet_in_view_names`).
 pub(super) fn shown_label(r: &Region) -> String {
-    let sheet = r
-        .id
-        .strip_prefix("view:sheet-")
-        .and_then(|rest| rest.split_once(':'))
-        .map(|(n, _)| n);
+    let sheet =
+        r.id.strip_prefix("view:sheet-")
+            .and_then(|rest| rest.split_once(':'))
+            .map(|(n, _)| n);
     match sheet {
         Some(n) if r.kind != "sheet" => format!("图纸 {n} · {}", r.label),
         _ => r.label.clone(),

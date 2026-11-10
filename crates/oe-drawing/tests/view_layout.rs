@@ -522,7 +522,11 @@ fn views_on_two_sheets_name_their_sheet() {
         "earlier_title_block_date:20240315",
         "revision_note:RN",
     ] {
-        assert!(s2.evidence_ids.iter().any(|y| y == x), "{x}: {:?}", s2.evidence_ids);
+        assert!(
+            s2.evidence_ids.iter().any(|y| y == x),
+            "{x}: {:?}",
+            s2.evidence_ids
+        );
     }
     assert!(
         s2.unknowns.iter().any(|u| u.contains("candidate")),
@@ -530,7 +534,11 @@ fn views_on_two_sheets_name_their_sheet() {
         s2.unknowns
     );
     let s1 = g.views.iter().find(|v| v.id == "view:sheet-1").unwrap();
-    assert!(s1.unknowns.iter().any(|u| u.contains("candidate")), "{:?}", s1.unknowns);
+    assert!(
+        s1.unknowns.iter().any(|u| u.contains("candidate")),
+        "{:?}",
+        s1.unknowns
+    );
 }
 
 #[test]

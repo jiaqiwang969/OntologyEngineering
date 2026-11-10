@@ -433,8 +433,10 @@ fn section_views(cx: &Ctx, b: &mut Builder, regions: &mut [Region], named: &Name
         // a section by its name `X—X`, or named in direction-view form by a cutting symbol while
         // it holds section lines
         let letters = view_layout::section_letters(&r.label);
-        let direction_form =
-            letters.is_none() && !symbols.is_empty() && r.label.ends_with('向') && !c.hatches.is_empty();
+        let direction_form = letters.is_none()
+            && !symbols.is_empty()
+            && r.label.ends_with('向')
+            && !c.hatches.is_empty();
         let section = letters.is_some() || direction_form;
         if let Some(l) = &letters {
             push(&mut r.evidence, "view_type:section");

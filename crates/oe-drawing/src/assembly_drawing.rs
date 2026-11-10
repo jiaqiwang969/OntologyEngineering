@@ -75,7 +75,10 @@ pub(super) fn fit_designation(text: &str) -> bool {
         };
         let l2 = count(i + 1, 1, char::is_ascii_lowercase);
         let d2 = count(i + 1 + l2, 1, char::is_ascii_digit);
-        (1..=2).contains(&d1) && (1..=2).contains(&l1) && (1..=2).contains(&l2) && (1..=2).contains(&d2)
+        (1..=2).contains(&d1)
+            && (1..=2).contains(&l1)
+            && (1..=2).contains(&l2)
+            && (1..=2).contains(&d2)
     })
 }
 
@@ -161,12 +164,7 @@ fn parts(b: &mut Builder, hs: &[Hatch], its: &[Item], dir_min: f64, spacing_min:
                 .map(|x| (x.to_string(), e.id.clone()))
                 .collect::<Vec<_>>()
         })
-        .filter_map(|(item, part)| {
-            b.exprs
-                .iter()
-                .position(|e| e.id == item)
-                .map(|i| (i, part))
-        })
+        .filter_map(|(item, part)| b.exprs.iter().position(|e| e.id == item).map(|i| (i, part)))
         .collect();
     for (i, part) in named {
         let ev = &mut b.exprs[i].evidence_ids;
@@ -255,10 +253,17 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &mut [Region]) -> Result
             .filter(|(_, e)| e.kind == "parts_list" && on(e))
             .map(|(i, e)| List {
                 expr: i,
-                rows: e.evidence_ids.iter().filter(|x| x.starts_with("row:")).count(),
+                rows: e
+                    .evidence_ids
+                    .iter()
+                    .filter(|x| x.starts_with("row:"))
+                    .count(),
             })
             .collect();
-        let mine: Vec<&Item> = its.iter().filter(|it| sheet_of(it.view.as_ref()) == key).collect();
+        let mine: Vec<&Item> = its
+            .iter()
+            .filter(|it| sheet_of(it.view.as_ref()) == key)
+            .collect();
         // E2: item numbers that name rows of the list, and none that names no row
         let agree = lists.first().and_then(|l| {
             let lid = &b.exprs[l.expr].id;
@@ -278,9 +283,7 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &mut [Region]) -> Result
                     .iter()
                     .any(|x| x.starts_with("parts_list_row:"))
             });
-            (!stray
-                && named.len() >= items_min
-                && named.len() as f64 >= rows_min * l.rows as f64)
+            (!stray && named.len() >= items_min && named.len() as f64 >= rows_min * l.rows as f64)
                 .then_some((l.expr, named.len()))
         });
         let parts_apart: Vec<&(String, String, String)> =
@@ -360,7 +363,10 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &mut [Region]) -> Result
 
 /// Unknowns of a sheet that may be an assembly drawing.
 pub(super) fn unknowns(r: &Region) -> Vec<String> {
-    if r.evidence.iter().any(|x| x == "drawing_type_candidate:assembly") {
+    if r.evidence
+        .iter()
+        .any(|x| x == "drawing_type_candidate:assembly")
+    {
         vec!["Assembly drawing is a candidate: no parts list on the sheet agrees with item numbers; it rests on the other evidence items named".into()]
     } else {
         vec![]

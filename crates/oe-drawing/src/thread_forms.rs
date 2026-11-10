@@ -179,8 +179,11 @@ fn end_view_arcs(cx: &Ctx, b: &Builder) -> Vec<Arc> {
         .collect()
 }
 
-/// Cutting symbols: expression id, the view they stand in, the view they name and their strokes.
-fn cutting_lines(cx: &Ctx, b: &Builder) -> Vec<(String, Option<String>, String, Vec<(P, P)>)> {
+/// A cutting symbol: expression id, the view it stands in, the view it names and its strokes.
+type CuttingLine = (String, Option<String>, String, Vec<(P, P)>);
+
+/// The cutting symbols that name a view.
+fn cutting_lines(cx: &Ctx, b: &Builder) -> Vec<CuttingLine> {
     b.exprs
         .iter()
         .filter(|e| e.kind == "view_callout")
@@ -197,14 +200,8 @@ fn cutting_lines(cx: &Ctx, b: &Builder) -> Vec<(String, Option<String>, String, 
                 .filter(|p| p.len() == 2 && dist(p[0], p[1]) > 1e-9)
                 .map(|p| (p[0], p[1]))
                 .collect();
-            (!strokes.is_empty()).then(|| {
-                (
-                    e.id.clone(),
-                    e.view_id.clone(),
-                    target.to_string(),
-                    strokes,
-                )
-            })
+            (!strokes.is_empty())
+                .then(|| (e.id.clone(), e.view_id.clone(), target.to_string(), strokes))
         })
         .collect()
 }
@@ -246,7 +243,11 @@ fn link(cx: &Ctx, b: &mut Builder) -> Result<()> {
             push(e, format!("same_thread_as:{sid}"));
             push(e, "variant:same_thread_in_two_views".into());
             let m = &mut b.members[a.member];
-            if !m.evidence_ids.iter().any(|x| x == &format!("same_thread_as:{sid}")) {
+            if !m
+                .evidence_ids
+                .iter()
+                .any(|x| x == &format!("same_thread_as:{sid}"))
+            {
                 m.evidence_ids.push(format!("same_thread_as:{sid}"));
             }
         }
@@ -269,10 +270,7 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
             continue;
         }
         let view = label_of(b.exprs[i].view_id.as_ref());
-        if b.exprs[i]
-            .rule
-            .starts_with("card:thread_representation/")
-        {
+        if b.exprs[i].rule.starts_with("card:thread_representation/") {
             let ev = &b.exprs[i].evidence_ids;
             let mut label = format!("{view} · 内螺纹（剖视）");
             if let (Some(d), Some(d1)) = (number(ev, "major:"), number(ev, "minor:")) {
@@ -298,7 +296,10 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
         let size = |m: &MdExpressionMember, key: &str| number(&m.evidence_ids, key);
         let (mut majors, mut minors, mut holes) = (Vec::new(), Vec::new(), 0);
         for m in b.members.iter().filter(|m| m.expression_id == id) {
-            if m.evidence_ids.iter().any(|x| x.starts_with("duplicate_of:")) {
+            if m.evidence_ids
+                .iter()
+                .any(|x| x.starts_with("duplicate_of:"))
+            {
                 continue;
             }
             holes += usize::from(m.member_role == "thread_line");

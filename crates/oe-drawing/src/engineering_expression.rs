@@ -61,16 +61,19 @@ pub use coverage::{concept_status, recognizer_coverage};
 mod view_layout;
 #[path = "annotation_blocks.rs"]
 mod annotation_blocks;
+
+// statements above the single objects: hatch signatures, thread forms, how views were obtained,
+// assembly drawings, names
+#[path = "assembly_drawing.rs"]
+mod assembly_drawing;
+#[path = "expression_names.rs"]
+mod expression_names;
 #[path = "section_hatching.rs"]
 mod section_hatching;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]
 mod view_types;
-#[path = "assembly_drawing.rs"]
-mod assembly_drawing;
-#[path = "expression_names.rs"]
-mod expression_names;
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
@@ -6508,7 +6511,13 @@ fn finalize(
             for ev in std::iter::once(format!("rule:{rule}")).chain(
                 e.evidence_ids
                     .iter()
-                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:") || x.starts_with("card:") || x.starts_with("variant:") || x.starts_with("concept:"))
+                    .filter(|x| {
+                        x.starts_with("GB/T")
+                            || x.starts_with("pattern:")
+                            || x.starts_with("card:")
+                            || x.starts_with("variant:")
+                            || x.starts_with("concept:")
+                    })
                     .cloned(),
             ) {
                 if !nb.exprs[idx].evidence_ids.contains(&ev) {

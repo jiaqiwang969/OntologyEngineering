@@ -401,7 +401,11 @@ fn separate_hatch_regions_are_not_neighbours() {
     let g = run(&[], &ents);
     for h in ["HL", "HR", "HK"] {
         let e = expr_with(&g, h, "section_hatch");
-        assert!(ev_with(e, "adjacent:").is_empty(), "{h}: {:?}", e.evidence_ids);
+        assert!(
+            ev_with(e, "adjacent:").is_empty(),
+            "{h}: {:?}",
+            e.evidence_ids
+        );
     }
 }
 
@@ -480,13 +484,41 @@ fn thread_end_view_with_the_thin_arc_inside_is_external() {
 
 /// A tapped hole in section along x from the face at `x0`: thin pair `major` apart over `thread`,
 /// thick pair `minor` apart over `drill`, the axis on `y`; ids prefixed with `p`.
-fn tapped(p: &str, x0: f64, y: f64, major: f64, minor: f64, thread: f64, drill: f64) -> Vec<String> {
+fn tapped(
+    p: &str,
+    x0: f64,
+    y: f64,
+    major: f64,
+    minor: f64,
+    thread: f64,
+    drill: f64,
+) -> Vec<String> {
     let id = |s: &str| format!("{p}{s}");
     vec![
-        line(&id("M1"), "02", [x0, y + major / 2.], [x0 + thread, y + major / 2.]),
-        line(&id("M2"), "02", [x0, y - major / 2.], [x0 + thread, y - major / 2.]),
-        line(&id("N1"), "01", [x0, y + minor / 2.], [x0 + drill, y + minor / 2.]),
-        line(&id("N2"), "01", [x0, y - minor / 2.], [x0 + drill, y - minor / 2.]),
+        line(
+            &id("M1"),
+            "02",
+            [x0, y + major / 2.],
+            [x0 + thread, y + major / 2.],
+        ),
+        line(
+            &id("M2"),
+            "02",
+            [x0, y - major / 2.],
+            [x0 + thread, y - major / 2.],
+        ),
+        line(
+            &id("N1"),
+            "01",
+            [x0, y + minor / 2.],
+            [x0 + drill, y + minor / 2.],
+        ),
+        line(
+            &id("N2"),
+            "01",
+            [x0, y - minor / 2.],
+            [x0 + drill, y - minor / 2.],
+        ),
         line(&id("AX"), "05", [x0 - 3., y], [x0 + drill + 3., y]),
     ]
 }
@@ -503,7 +535,10 @@ fn thread_in_section_is_named_by_form_and_sizes() {
     let e = expr_with(&g, "AM1", "thread_convention");
     assert_eq!(
         e.label,
-        format!("{} · 内螺纹（剖视） 大径 12 小径 10.2 通孔", view_label(&g, e))
+        format!(
+            "{} · 内螺纹（剖视） 大径 12 小径 10.2 通孔",
+            view_label(&g, e)
+        )
     );
     assert!(ev(e, "through_thread") && !ev(e, "blind_thread"));
     // ending in the material: a thread end line, the drill deeper with its bottom and point
@@ -587,7 +622,10 @@ fn thread_end_view_on_the_cutting_line_of_its_section_is_the_same_thread() {
     );
     let k = expr_with(&g, "K1", "view_callout");
     assert!(
-        ev(k, &format!("references_view:{}", s.view_id.as_deref().unwrap())),
+        ev(
+            k,
+            &format!("references_view:{}", s.view_id.as_deref().unwrap())
+        ),
         "{:?} {:?}",
         k.evidence_ids,
         s.view_id
@@ -609,8 +647,16 @@ fn thread_end_view_of_another_diameter_is_not_the_same_thread() {
         expr_with(&g, "SM1", "thread_convention"),
         expr_with(&g, "EA", "thread_convention"),
     );
-    assert!(ev_with(s, "same_thread_as:").is_empty(), "{:?}", s.evidence_ids);
-    assert!(ev_with(e, "same_thread_as:").is_empty(), "{:?}", e.evidence_ids);
+    assert!(
+        ev_with(s, "same_thread_as:").is_empty(),
+        "{:?}",
+        s.evidence_ids
+    );
+    assert!(
+        ev_with(e, "same_thread_as:").is_empty(),
+        "{:?}",
+        e.evidence_ids
+    );
 }
 
 // ---------------------------------------------------------------- view_callout and section_view_type
@@ -625,7 +671,7 @@ fn view_of<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> &'a MdDrawingV
         .unwrap_or_else(|| panic!("{src} has no view"));
     view(g, e.view_id.as_deref().unwrap())
 }
-fn referenced<'a>(e: &'a MdEngineeringExpression) -> Vec<&'a str> {
+fn referenced(e: &MdEngineeringExpression) -> Vec<&str> {
     ev_with(e, "references_view:")
 }
 
@@ -683,7 +729,9 @@ fn cutting_symbol_names_the_section_in_the_principal_position() {
     );
     // a straight cut: no turn, so no statement about the cutting planes, and no half section
     assert!(
-        !p.evidence_ids.iter().any(|x| x.starts_with("section_type:")),
+        !p.evidence_ids
+            .iter()
+            .any(|x| x.starts_with("section_type:")),
         "{:?}",
         p.evidence_ids
     );
@@ -849,8 +897,7 @@ fn cutting_path_with_a_right_angle_turn_shows_parallel_planes() {
     let w = view_of(&g, "W1");
     assert_eq!(referenced(k), vec![w.id.as_str()]);
     assert!(
-        vev(w, "section_type:parallel_planes")
-            && !vev(w, "section_type:intersecting_planes"),
+        vev(w, "section_type:parallel_planes") && !vev(w, "section_type:intersecting_planes"),
         "{:?}",
         w.evidence_ids
     );
@@ -977,7 +1024,10 @@ fn local_section_beside_the_centre_line_is_not_a_half_section() {
     // the cut ends at a wavy break line across the upper wall
     let mut wave = vec![[60., 28.]];
     for i in 1..8 {
-        wave.push([if i % 2 == 0 { 59.2 } else { 60.8 }, 28. + 1.5 * f64::from(i)]);
+        wave.push([
+            if i % 2 == 0 { 59.2 } else { 60.8 },
+            28. + 1.5 * f64::from(i),
+        ]);
     }
     wave.push([60., 40.]);
     let g = sleeve(0., 60., vec![lwpoly("WV", "02", &wave)]);
@@ -1039,7 +1089,10 @@ fn direction_view_with_section_lines_and_cutting_strokes_is_a_section() {
     let g = direction_form(true);
     let w = view_of(&g, "W1");
     let k = expr_with(&g, "AK", "view_callout");
-    assert_eq!((w.kind.as_str(), w.label.as_str()), ("direction_view", "G向"));
+    assert_eq!(
+        (w.kind.as_str(), w.label.as_str()),
+        ("direction_view", "G向")
+    );
     assert_eq!(referenced(k), vec![w.id.as_str()]);
     assert!(
         vev(w, "view_type:section")
@@ -1056,7 +1109,11 @@ fn direction_view_without_section_lines_is_not_stated_a_section() {
     let w = view_of(&g, "W1");
     assert_eq!(w.kind, "direction_view");
     assert!(
-        !vev(w, "view_type:section") && !w.evidence_ids.iter().any(|x| x.starts_with("section_type:")),
+        !vev(w, "view_type:section")
+            && !w
+                .evidence_ids
+                .iter()
+                .any(|x| x.starts_with("section_type:")),
         "{:?}",
         w.evidence_ids
     );
@@ -1093,7 +1150,13 @@ fn item_block(prefix: &str, number: &str, end: P) -> Vec<String> {
 fn parts_list_block(rows: &[(&str, &str, &str)]) -> Vec<String> {
     let xs = [0., 8., 48., 92., 100., 120.];
     let ys: Vec<f64> = (0..=rows.len() + 1)
-        .map(|k| if k == 0 { 0. } else { 10. + 7. * (k - 1) as f64 })
+        .map(|k| {
+            if k == 0 {
+                0.
+            } else {
+                10. + 7. * (k - 1) as f64
+            }
+        })
         .collect();
     let top = *ys.last().unwrap();
     let mut v = Vec::new();
@@ -1131,7 +1194,12 @@ fn screw_block() -> Vec<String> {
         line_w("W4", "0", 50, [0., 2.5], [0., -2.5]),
         line_w("W5", "0", 18, [0., -2.1], [12., -2.1]),
         line_w("W6", "0", 18, [0., 2.1], [12., 2.1]),
-        ent("LINE", "W7", "05", "370\n18\n10\n-1\n20\n0\n11\n13\n21\n0\n"),
+        ent(
+            "LINE",
+            "W7",
+            "05",
+            "370\n18\n10\n-1\n20\n0\n11\n13\n21\n0\n",
+        ),
     ]
 }
 const ROWS: [(&str, &str, &str); 3] = [
@@ -1154,10 +1222,34 @@ fn assembly(
         line("PZ", "01", [0., 40.], [100., 40.]),
         line("PC", "01", [60., 0.], [60., 20.]),
         line("PD", "01", [60., 40.], [60., 60.]),
-        hatch("H1", "10", "QQPAT", &rect_pts(0., 40., 60., 60.), &[(45., 3.)]),
-        hatch("H2", "10", "QQPAT", &rect_pts(0., 0., 60., 20.), &[(45., 3.)]),
-        hatch("H3", "10", "QQPAT", &rect_pts(60., 40., 100., 60.), &[(135., 3.)]),
-        hatch("H4", "10", "QQPAT", &rect_pts(60., 0., 100., 20.), &[(135., 3.)]),
+        hatch(
+            "H1",
+            "10",
+            "QQPAT",
+            &rect_pts(0., 40., 60., 60.),
+            &[(45., 3.)],
+        ),
+        hatch(
+            "H2",
+            "10",
+            "QQPAT",
+            &rect_pts(0., 0., 60., 20.),
+            &[(45., 3.)],
+        ),
+        hatch(
+            "H3",
+            "10",
+            "QQPAT",
+            &rect_pts(60., 40., 100., 60.),
+            &[(135., 3.)],
+        ),
+        hatch(
+            "H4",
+            "10",
+            "QQPAT",
+            &rect_pts(60., 0., 100., 20.),
+            &[(135., 3.)],
+        ),
     ]);
     let mut defs: Vec<(String, Vec<String>)> = Vec::new();
     for (k, (n, at)) in items.iter().enumerate() {
@@ -1178,7 +1270,8 @@ fn assembly(
         ents.push(insert("SX", "01", "*S1", [24., 30.]));
     }
     ents.extend(extra);
-    let defs: Vec<(&str, Vec<String>)> = defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
+    let defs: Vec<(&str, Vec<String>)> =
+        defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
     run(&defs, &ents)
 }
 fn sheet(g: &MdEngineeringExpressionGraph) -> &MdDrawingView {
@@ -1188,11 +1281,9 @@ fn hatch_expr<'a>(g: &'a MdEngineeringExpressionGraph, h: &str) -> &'a MdEnginee
     expr_with(g, h, "section_hatch")
 }
 fn stated(g: &MdEngineeringExpressionGraph) -> bool {
-    g.views.iter().any(|v| {
-        v.evidence_ids
-            .iter()
-            .any(|x| x.starts_with("drawing_type"))
-    })
+    g.views
+        .iter()
+        .any(|v| v.evidence_ids.iter().any(|x| x.starts_with("drawing_type")))
 }
 const DOTS: [(&str, P); 3] = [("1", [30., 50.]), ("2", [80., 50.]), ("3", [30., 30.])];
 
@@ -1212,7 +1303,11 @@ fn parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing() {
         assert!(vev(s, &x), "{x}: {:?}", s.evidence_ids);
     }
     let part = expr_with(&g, "SX", "standard_part");
-    assert!(vev(s, &format!("standard_part:{}", part.id)), "{:?}", s.evidence_ids);
+    assert!(
+        vev(s, &format!("standard_part:{}", part.id)),
+        "{:?}",
+        s.evidence_ids
+    );
     // the two parts hatched apart across their contact line
     let (a, b) = (hatch_expr(&g, "H1"), hatch_expr(&g, "H3"));
     assert!(
@@ -1229,7 +1324,10 @@ fn parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing() {
 #[test]
 fn item_dot_inside_a_hatch_names_its_part() {
     let g = assembly(&DOTS, Some(&ROWS), true, vec![]);
-    let (n1, n3) = (expr_with(&g, "NB0", "item_number"), expr_with(&g, "NB2", "item_number"));
+    let (n1, n3) = (
+        expr_with(&g, "NB0", "item_number"),
+        expr_with(&g, "NB2", "item_number"),
+    );
     let h1 = hatch_expr(&g, "H1");
     assert_eq!(ev_with(n1, "names_region:"), vec![h1.id.as_str()]);
     assert!(ev(n1, "variant:part_by_item_dot"));
@@ -1267,7 +1365,9 @@ fn assembly_with_part_drawing_content_is_machined_after_joining() {
     ];
     let g = assembly(&DOTS, Some(&ROWS), true, symbol);
     assert!(
-        exprs(&g, "RS").iter().any(|e| e.kind == "surface_roughness"),
+        exprs(&g, "RS")
+            .iter()
+            .any(|e| e.kind == "surface_roughness"),
         "the symbol is read"
     );
     let s = sheet(&g);
@@ -1292,11 +1392,17 @@ fn item_numbers_and_opposite_hatches_without_a_list_are_a_candidate() {
         assert!(vev(s, x), "{x}: {:?}", s.evidence_ids);
     }
     assert!(
-        s.evidence_ids.iter().any(|x| x.starts_with("adjacent_parts:")),
+        s.evidence_ids
+            .iter()
+            .any(|x| x.starts_with("adjacent_parts:")),
         "{:?}",
         s.evidence_ids
     );
-    assert!(s.unknowns.iter().any(|u| u.contains("candidate")), "{:?}", s.unknowns);
+    assert!(
+        s.unknowns.iter().any(|u| u.contains("candidate")),
+        "{:?}",
+        s.unknowns
+    );
 }
 
 #[test]
@@ -1320,7 +1426,10 @@ fn parts_list_and_a_fit_designation_are_a_candidate() {
     ents.push(dim);
     ents.push(insert("ML", "02", "*M1", [200., -100.]));
     let g = run(
-        &[("*D1", children.to_vec()), ("*M1", parts_list_block(&ROWS[..2]))],
+        &[
+            ("*D1", children.to_vec()),
+            ("*M1", parts_list_block(&ROWS[..2])),
+        ],
         &ents,
     );
     let d = exprs(&g, "DD")
@@ -1340,7 +1449,13 @@ fn parts_list_and_a_fit_designation_are_a_candidate() {
 #[test]
 fn series_table_on_a_part_drawing_is_not_an_assembly() {
     let mut ents = outline("P", 0., 0., 50., 30.);
-    ents.push(hatch("HA", "10", "QQPAT", &rect_pts(0., 0., 50., 30.), &[(45., 3.)]));
+    ents.push(hatch(
+        "HA",
+        "10",
+        "QQPAT",
+        &rect_pts(0., 0., 50., 30.),
+        &[(45., 3.)],
+    ));
     for r in 0..=3 {
         let y = 100. + 7. * f64::from(r);
         ents.push(line(&format!("Gh{r}"), "02", [100., y], [160., y]));
@@ -1379,7 +1494,13 @@ fn series_table_on_a_part_drawing_is_not_an_assembly() {
 #[test]
 fn parts_list_alone_does_not_decide() {
     let mut ents = outline("P", 0., 0., 50., 30.);
-    ents.push(hatch("HA", "10", "QQPAT", &rect_pts(0., 0., 50., 30.), &[(45., 3.)]));
+    ents.push(hatch(
+        "HA",
+        "10",
+        "QQPAT",
+        &rect_pts(0., 0., 50., 30.),
+        &[(45., 3.)],
+    ));
     ents.push(insert("ML", "02", "*M1", [200., -100.]));
     let g = run(&[("*M1", parts_list_block(&ROWS))], &ents);
     assert!(g.expressions.iter().any(|e| e.kind == "parts_list"));
@@ -1410,8 +1531,20 @@ fn item_numbers_that_disagree_with_the_list_do_not_decide() {
 fn two_regions(left: &[(f64, f64)], right: &[(f64, f64)]) -> MdEngineeringExpressionGraph {
     let mut ents = outline("P", 0., 0., 60., 30.);
     ents.push(line("PM", "01", [30., 0.], [30., 30.]));
-    ents.push(hatch("HL", "10", "QQPAT", &rect_pts(0., 0., 30., 30.), left));
-    ents.push(hatch("HR", "10", "QQPAT", &rect_pts(30., 0., 60., 30.), right));
+    ents.push(hatch(
+        "HL",
+        "10",
+        "QQPAT",
+        &rect_pts(0., 0., 30., 30.),
+        left,
+    ));
+    ents.push(hatch(
+        "HR",
+        "10",
+        "QQPAT",
+        &rect_pts(30., 0., 60., 30.),
+        right,
+    ));
     let mut defs = Vec::new();
     for (k, (n, at)) in [("1", [15., 15.]), ("2", [45., 15.])].iter().enumerate() {
         let place = [at[0] + 5., 50.];
@@ -1421,7 +1554,8 @@ fn two_regions(left: &[(f64, f64)], right: &[(f64, f64)]) -> MdEngineeringExpres
         ));
         ents.push(insert(&format!("NB{k}"), "02", &format!("*N{k}"), place));
     }
-    let defs: Vec<(&str, Vec<String>)> = defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
+    let defs: Vec<(&str, Vec<String>)> =
+        defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
     run(&defs, &ents)
 }
 
@@ -1429,8 +1563,16 @@ fn two_regions(left: &[(f64, f64)], right: &[(f64, f64)]) -> MdEngineeringExpres
 fn one_part_hatched_in_two_regions_is_not_two_parts() {
     let g = two_regions(&[(45., 3.)], &[(45., 3.)]);
     let (l, r) = (hatch_expr(&g, "HL"), hatch_expr(&g, "HR"));
-    assert_eq!(ev_with(l, "adjacent:"), vec![r.id.as_str()], "they do share a line");
-    assert!(ev_with(l, "different_part_from:").is_empty(), "{:?}", l.evidence_ids);
+    assert_eq!(
+        ev_with(l, "adjacent:"),
+        vec![r.id.as_str()],
+        "they do share a line"
+    );
+    assert!(
+        ev_with(l, "different_part_from:").is_empty(),
+        "{:?}",
+        l.evidence_ids
+    );
     assert!(!stated(&g), "{:?}", sheet(&g).evidence_ids);
 }
 
@@ -1439,14 +1581,24 @@ fn cross_hatched_region_is_not_two_parts() {
     let cross = [(45., 3.), (135., 3.)];
     let g = two_regions(&cross, &cross);
     let l = hatch_expr(&g, "HL");
-    assert!(ev_with(l, "different_part_from:").is_empty(), "{:?}", l.evidence_ids);
+    assert!(
+        ev_with(l, "different_part_from:").is_empty(),
+        "{:?}",
+        l.evidence_ids
+    );
     assert!(!stated(&g), "{:?}", sheet(&g).evidence_ids);
 }
 
 #[test]
 fn phantom_line_neighbour_does_not_make_an_assembly() {
     let mut ents = outline("P", 0., 0., 50., 30.);
-    ents.push(hatch("HA", "10", "QQPAT", &rect_pts(0., 0., 50., 30.), &[(45., 3.)]));
+    ents.push(hatch(
+        "HA",
+        "10",
+        "QQPAT",
+        &rect_pts(0., 0., 50., 30.),
+        &[(45., 3.)],
+    ));
     for (i, (a, b)) in [
         ([50., 5.], [80., 5.]),
         ([80., 5.], [80., 25.]),
@@ -1487,7 +1639,8 @@ fn two_items_in_one_signature_do_not_spread() {
         ));
         ents.push(insert(&format!("NB{k}"), "02", &format!("*N{k}"), place));
     }
-    let defs: Vec<(&str, Vec<String>)> = defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
+    let defs: Vec<(&str, Vec<String>)> =
+        defs.iter().map(|(n, v)| (n.as_str(), v.clone())).collect();
     let g = run(&defs, &ents);
     assert_eq!(ev_with(hatch_expr(&g, "HG0"), "item:"), vec!["1"]);
     assert_eq!(ev_with(hatch_expr(&g, "HG1"), "item:"), vec!["2"]);
@@ -1506,7 +1659,13 @@ fn no_expression_is_named_by_a_source_handle() {
     // a thin-coloured edge between two outline corners, read as an outline edge, and the other
     // fixtures of this file: no label is a handle or handles joined
     let mut ents = outline("P", 0., 0., 60., 30.);
-    ents.push(hatch("HA", "10", "QQPAT", &rect_pts(0., 0., 60., 30.), &[(45., 3.)]));
+    ents.push(hatch(
+        "HA",
+        "10",
+        "QQPAT",
+        &rect_pts(0., 0., 60., 30.),
+        &[(45., 3.)],
+    ));
     ents.extend(tapped("T", 0., 15., 9., 7.2, 12., 12.));
     let g = run(&[], &ents);
     let handles: BTreeSet<&str> = g.source.entities.iter().map(|e| e.id.as_str()).collect();

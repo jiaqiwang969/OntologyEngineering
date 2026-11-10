@@ -853,6 +853,33 @@ kinds = ["title_block"]
 kind = ""
 ids = ["DC-G9-023"]
 
+[[rules]]
+rule = "card:not_plotted_content/definition_point_layer"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
+[[rules]]
+rule = "card:not_plotted_content/plot_switch_off"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
+[[rules]]
+rule = "card:not_plotted_content/layer_off_or_frozen"
+function = "not_plotted::construction"
+piece = false
+kinds = ["construction_reference"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-101"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -882,7 +909,7 @@ missing = "用线型画的虚线已识别；炸开成一段段短线的虚线未
 [[concepts]]
 id = "DC-G1-007"
 level = "partial"
-by = ["card:view_callout", "card:view_callout/cutting_plane_group"]
+by = ["card:line_width_evidence", "card:view_callout", "card:view_callout/cutting_plane_group"]
 missing = "整块剖切符号（粗短画、箭头、字母与转折）已识别；散线画的转折处短画、连接用的细点画线与无箭头的短画未识别"
 
 [[concepts]]
@@ -905,7 +932,7 @@ by = ["card:outline_joins", "card:visible_edge_line", "grouped_line_type_pieces_
 id = "DC-G1-016"
 level = "partial"
 by = ["card:line_width_evidence", "convention:member_line_width_class"]
-missing = "实体与图层线宽成两档时按线宽判定粗细；只在识别轮廓时使用，线型表（line_styles）仍按图层约定报告，线宽组别本身未核对"
+missing = "实体与图层线宽成两档时按线宽、按颜色出图时按颜色判定粗细，线型表（line_styles）与成员线型都按此报告；线宽组别本身未核对"
 
 [[concepts]]
 id = "DC-G1-018"
@@ -957,8 +984,8 @@ missing = "按线型识别细双点画线，未判断它表示相邻零件、极
 [[concepts]]
 id = "DC-G1-043"
 level = "partial"
-by = ["convention:member_line_width_class"]
-missing = "细实线由图层约定与成员作用推出，未读取实际线宽值"
+by = ["card:line_width_evidence", "convention:member_line_width_class"]
+missing = "注写成员（尺寸线、界线、引出线、框格线等）报告为细实线，本图线宽或出图颜色说明画成粗线时报告为粗线；线宽的实际数值（mm）未读取"
 
 [[concepts]]
 id = "DC-G1-044"
@@ -1008,7 +1035,7 @@ by = ["card:technical_note"]
 id = "DC-G1-079"
 level = "partial"
 by = ["card:line_width_evidence"]
-missing = "只在图层约定已核对、按颜色出图时以粗实线层颜色区分粗细；颜色—线型—线宽共现表未完整统计，企业自定义颜色映射未重建"
+missing = "只在图层约定已核对、按颜色出图时以粗实线层与细实线层的颜色区分粗细（随块按默认颜色），线型表与成员线型按颜色先于图层报告；只用于文本层或兼用于粗、细层的颜色不作证据，颜色—线型—线宽共现表未完整统计，企业自定义颜色映射未重建"
 
 [[concepts]]
 id = "DC-G1-085"
@@ -1025,7 +1052,7 @@ missing = "实心三角终端在单箭头尺寸与指引线、框格指引线、
 [[concepts]]
 id = "DC-G1-101"
 level = "full"
-by = ["convention:layer_convention_table6"]
+by = ["card:not_plotted_content", "card:not_plotted_content/definition_point_layer", "card:not_plotted_content/layer_off_or_frozen", "card:not_plotted_content/plot_switch_off", "convention:layer_convention_table6"]
 
 [[concepts]]
 id = "DC-G1-114"
@@ -1205,6 +1232,12 @@ by = ["card:annotation_break"]
 missing = "轮廓在注写文字、图块符号、尺寸线或终端处断开时按推断连接（圆弧只补小缺口，不与自身另一端相接）；中心线、剖面线在数字处断开和剖面区域内的留白未单独识别"
 
 [[concepts]]
+id = "DC-G4-005"
+level = "partial"
+by = ["card:dimension_line_parts"]
+missing = "延到交点的细线以尺寸界线起点（或原生尺寸定义点）确认、归入从交点引出的尺寸；只画了交点而没有延长细线的注法，以及尺寸界线与尺寸线斜交的情形未单独识别"
+
+[[concepts]]
 id = "DC-G4-006"
 level = "full"
 by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
@@ -1224,7 +1257,7 @@ missing = "原生尺寸的替代显示文字（group 1 不含 <>）未与测量�
 [[concepts]]
 id = "DC-G4-019"
 level = "full"
-by = ["concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
+by = ["card:dimension_line_parts", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
 
 [[concepts]]
 id = "DC-G4-023"
@@ -1266,7 +1299,7 @@ by = ["card:dimension_text"]
 id = "DC-G4-058"
 level = "partial"
 by = ["card:dimension_line_parts", "concentric_arc_tangent_terminators_and_text", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text"]
-missing = "超出段、画进轮廓的起头、两个尺寸共用一条界线、为符号让位断成两段的界线、画了两遍的界线和借作界线的轴线已识别；与尺寸线倾斜的尺寸界线未单独识别"
+missing = "超出段、画进轮廓的起头、两个尺寸共用一条界线、为符号让位断成两段的界线、画了两遍的界线和借作界线的轴线已识别；原生线性尺寸的每条界线按自己的起点取向并止于尺寸线外的超出段，兼作界线的轮廓和界线所接的被测轮廓记为界线所依轮廓（不再记作细的尺寸界线），共线归并止于第一段轮廓；与尺寸线倾斜的尺寸界线未单独识别，轮廓延长到虚拟交点的细线未读出"
 
 [[concepts]]
 id = "DC-G4-059"

@@ -53,6 +53,18 @@ mod loose_annotations;
 #[path = "line_evidence.rs"]
 mod line_evidence;
 
+// lines as the sheet plots them (correction round after the expert's review)
+#[path = "extension_lines.rs"]
+mod extension_lines;
+#[path = "line_widths.rs"]
+mod line_widths;
+#[path = "not_plotted.rs"]
+mod not_plotted;
+#[path = "terminators.rs"]
+mod terminators;
+#[path = "value_fragments.rs"]
+mod value_fragments;
+
 #[path = "coverage.rs"]
 mod coverage;
 pub use coverage::{concept_status, recognizer_coverage};
@@ -351,6 +363,26 @@ struct Style {
     explicit_color: Option<i32>,
     byblock: bool,
 }
+impl Style {
+    /// The colour attribute is BYBLOCK on a line with a line type of its own. Outside a block
+    /// there is no block to take the colour from: BYBLOCK is not a colour, and such a root
+    /// entity is shown and plotted in the default colour (card `line_width_evidence`, variant
+    /// `default_colour_at_sheet_level`).
+    fn colour_byblock(&self) -> bool {
+        self.explicit_color == Some(0) && self.pattern != Pattern::ByBlock
+    }
+    /// The colour the entity plots in: its own or its layer's, the default colour for BYBLOCK.
+    fn plot_colour(&self) -> i32 {
+        if self.explicit_color == Some(0) {
+            DEFAULT_COLOUR
+        } else {
+            self.color.abs()
+        }
+    }
+}
+/// The colour index CAD systems give an entity that names none (white on a dark screen, black on
+/// paper); a layer missing from the table gets the same.
+const DEFAULT_COLOUR: i32 = 7;
 
 fn style_of(
     r: &Record,
@@ -993,6 +1025,8 @@ struct Ctx<'a> {
     scale: f64,
     thin_colors: BTreeSet<i32>,
     extent: [f64; 4],
+    /// Layers that never plot (upper-cased name) with the card variant (module `not_plotted`).
+    unplotted: BTreeMap<String, &'static str>,
 }
 impl Ctx<'_> {
     fn lt(&self, id: &str) -> &'static str {
@@ -1121,7 +1155,10 @@ impl Ctx<'_> {
             return false;
         };
         st.pattern == Pattern::Continuous
-            && !st.byblock
+            // BYBLOCK colour at sheet level: by its joins under a checked convention (module
+            // `line_evidence`), like any other continuous line where no convention decides
+            && (!st.byblock || !self.conv.qualified)
+            && !not_plotted::source(self, id)
             && !st
                 .explicit_color
                 .is_some_and(|c| self.thin_colors.contains(&c))
@@ -1346,7 +1383,7 @@ fn native_dimensions(
     b: &mut Builder,
     text_anchor: &mut BTreeMap<usize, (P, f64)>,
     native_texts: &mut BTreeMap<usize, TextFact>,
-) {
+) -> Result<()> {
     for (h, r) in cx.rec.iter().filter(|(_, r)| r.kind == "DIMENSION") {
         let dtype = int(r, 70) & 7;
         let off = r.xy(12).unwrap_or([0., 0.]);
@@ -1361,12 +1398,8 @@ fn native_dimensions(
                 })
                 .collect();
         let measured = measurement(r, dtype, &brecs);
-        let direct_text = brecs
-            .iter()
-            .filter(|x| matches!(x.kind.as_str(), "MTEXT" | "TEXT"))
-            .map(|x| dd::raw_text(x))
-            .collect::<Vec<_>>()
-            .join(" ");
+        // pieces of the value in reading order (module `value_fragments`)
+        let direct_text = value_fragments::direct_text(&brecs)?;
         // CAXA draws some dimension texts only through block references nested in the
         // dimension's block; they are read only when the block holds no text of its own.
         let nested_text = if direct_text.trim().is_empty() {
@@ -1514,6 +1547,8 @@ fn native_dimensions(
                 vec![format!("native_member:{}", m.id)],
             );
         }
+        // Terminators stored as a filled hatch or a tapered polyline (module `terminators`).
+        tips.extend(terminators::native(cx, b, e, h, off)?);
         // Angular and other non-linear dimensions: extension lines are the radial block lines.
         if u.is_none() {
             for bl in &mut block_lines {
@@ -1579,13 +1614,10 @@ fn native_dimensions(
             .src
             .uses
             .iter()
-            .filter(|u| u.consumer_id == *h && u.rule.starts_with("linear_"))
+            // (root lines under the extension lines: module `extension_lines`)
+            .filter(|u| u.consumer_id == *h && u.rule == "linear_dimension_line_support")
         {
-            let role = if us.rule == "linear_dimension_line_support" {
-                "dimension_line"
-            } else {
-                "extension_line"
-            };
+            let role = "dimension_line";
             b.member(
                 e,
                 &us.occurrence_id,
@@ -1645,49 +1677,11 @@ fn native_dimensions(
         // through the dimension line with its overshoot) and their collinear pieces.
         if let (Some(u), Ok(p10)) = (u, r.xy(10)) {
             let alen = tips.iter().map(|t| t.len).fold(0.6 * cx.scale, f64::max);
-            let v = [-u[1], u[0]];
-            let origins: Vec<(P, P, f64)> = [13, 14]
-                .iter()
-                .filter_map(|oc| r.xy(*oc).ok())
-                .map(|o| {
-                    let t = add(p10, mul(u, dot(sub(o, p10), u)));
-                    (o, t, dot(sub(o, t), v))
-                })
-                .collect();
-            // Side of the features relative to the dimension line (from either origin).
-            let side = origins
-                .iter()
-                .map(|x| x.2)
-                .find(|so| so.abs() > tol)
-                .map(f64::signum);
-            for (_, t, so) in &origins {
-                let iv = [so.min(0.) - 2. * alen, so.max(0.) + 2. * alen];
-                // Each extension line ends a short overshoot past its own dimension
-                // line; pieces of stacked dimensions beyond it are not members.
-                let far = side.map(|sg| mul(v, -sg));
-                for lid in collinear_chain(cx, b, *t, v, iv, tol, &BTreeSet::new(), &[], false) {
-                    let (a, c) = cx.lines[&lid];
-                    let clipped = match far {
-                        Some(f) => clip_along(a, c, *t, f, 2. * alen, tol),
-                        None => Some([0., 1.]),
-                    };
-                    if let Some(civ) = clipped {
-                        b.member(
-                            e,
-                            &lid,
-                            None,
-                            civ,
-                            "extension_line",
-                            member_line_type(cx.lt(&lid), "extension_line"),
-                            "candidate",
-                            vec![],
-                            vec![format!("on_native_extension_line:{h}")],
-                        );
-                    }
-                }
-            }
+            let origins: Vec<P> = [13, 14].iter().filter_map(|oc| r.xy(*oc).ok()).collect();
+            extension_lines::native(cx, b, e, h, u, p10, &origins, alen, tol);
         }
     }
+    Ok(())
 }
 
 /// Member roles that consume a source exclusively for annotation; such sources
@@ -1859,16 +1853,17 @@ fn extension_at(
     let limit = dot(sub(near, tip), f).max(2.5 * alen);
     let mut low = dot(sub(far_end, tip), f);
     let mut origin = far_end;
-    for cid in collinear_chain(
+    // collinear pieces up to the first outline piece (module `extension_lines`)
+    let widths = line_evidence::Widths::of(cx);
+    for cid in extension_lines::chain(
         cx,
         b,
+        &widths,
         a,
         unit(sub(c, a)),
         [0., dist(a, c)],
         tol,
         &skip,
-        &[],
-        false,
     ) {
         let (p, q) = cx.lines[&cid];
         let Some(iv) = clip_along(p, q, tip, f, limit, tol) else {
@@ -5143,7 +5138,7 @@ fn line_kinds(cx: &Ctx, b: &mut Builder) {
         // A centre line lent to a dimension as its extension line is still the centre line
         // (card dimension_line_parts, variant axis_as_extension_line).
         let lent = line_evidence::lent_to_dimension(b, h);
-        if !is_curve_kind(&r.kind) || b.used(h) && !lent {
+        if !is_curve_kind(&r.kind) || b.used(h) && !lent || not_plotted::source(cx, h) {
             continue;
         }
         let st = &cx.style[h];
@@ -5706,7 +5701,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
     let breaks: BTreeSet<String> = b
         .members
         .iter()
-        .filter(|m| m.member_role == "break_curve")
+        .filter(|m| m.member_role == "break_curve" && !not_plotted::source(cx, &m.source_handle))
         .map(|m| m.source_handle.clone())
         .collect();
     // Thick and thin from the drawing's own evidence (card line_width_evidence).
@@ -5716,6 +5711,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         .members
         .iter()
         .filter(|m| m.member_role == "thread_line" && cx.arc(&m.source_handle).is_some())
+        .filter(|m| !not_plotted::source(cx, &m.source_handle))
         .map(|m| m.source_handle.clone())
         .collect();
     let partner = |id: &str| cand.contains_key(id) || breaks.contains(id) || threads.contains(id);
@@ -5724,7 +5720,10 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         cx.style
             .get(id)
             .is_some_and(|s| s.pattern == Pattern::DashDot)
+            && !not_plotted::source(cx, id)
     };
+    // An end that meets only curves that are not plotted is free on the sheet.
+    let unplotted_ends = not_plotted::free_ends(cx);
     let mut junctions: BTreeMap<String, Vec<(f64, String)>> = BTreeMap::new();
     // Parameters where a source meets a partner's end with its own end (a corner,
     // not a T-junction).
@@ -5994,14 +5993,21 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             ts.sort_by(f64::total_cmp);
             ts.dedup_by(|x, y| (*x - *y).abs() < 1e-6);
             let open = |t: f64| {
-                cx.src.relations.iter().any(|r| {
-                    r.kind == "open_endpoint"
-                        && r.from_id == *h
-                        && r.from_parameter.is_some_and(|x| (x - t).abs() < 1e-9)
-                })
+                unplotted_ends.contains(&(h.clone(), t > 0.5))
+                    || cx.src.relations.iter().any(|r| {
+                        r.kind == "open_endpoint"
+                            && r.from_id == *h
+                            && r.from_parameter.is_some_and(|x| (x - t).abs() < 1e-9)
+                    })
             };
             let mut spans: Vec<[f64; 2]> = if ts.len() >= 2 {
-                vec![[ts[0], ts[ts.len() - 1]]]
+                // a free tail just past the view limit that cuts the line is a drafting overshoot
+                let span = [ts[0], ts[ts.len() - 1]];
+                let whole = line_evidence::overshoot(cx, h, span, &open, &breaks);
+                if whole.is_some() {
+                    ev.extend(line_evidence::naming("overshoot_past_view_limit"));
+                }
+                vec![whole.unwrap_or(span)]
             } else if *prec == 2 {
                 if by_weight {
                     ev.extend(line_evidence::naming("lineweight_classes"));
@@ -6800,6 +6806,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         scale,
         thin_colors,
         extent,
+        unplotted: not_plotted::layers(&d)?,
     };
     // The knowledge read below must parse and validate before any rule runs.
     representation::representation_knowledge()?;
@@ -6809,7 +6816,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut text_anchor = BTreeMap::new();
     let mut native_texts = BTreeMap::new();
     let mut anchors = BTreeMap::new();
-    native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts);
+    native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts)?;
     blocks(&cx, &mut b, &mut def);
     view_layout::arrows_and_letters(&cx, &mut b)?;
     let block_titles = annotation_blocks::read(&cx, &mut b, &def, &mut anchors)?;
@@ -6867,6 +6874,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::section_lines_by_spacing(&cx, &mut b)?;
     line_evidence::hatch_remnants(&cx, &mut b)?;
     line_evidence::hole_patterns(&cx, &mut b)?;
+    extension_lines::virtual_corners(&cx, &mut b)?;
     let cover = topology::cover(&cx, &b);
     structure(&cx, &mut b, &cover);
     duplicate_spans(&cx, &mut b);
@@ -6884,6 +6892,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
+    extension_lines::lend_outline(&cx, &mut b)?;
+    not_plotted::construction(&cx, &mut b)?;
     let (mut regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;
     view_types::cutting_references(&b, &regions, &vmap, &mut refs);
@@ -6895,7 +6905,9 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     assembly_drawing::state(&cx, &mut nb, &mut regions)?;
     expression_names::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
+    line_widths::members(&cx, &mut nb)?;
     coverage::assign(&mut nb)?;
+    not_plotted::mark(&cx, &mut nb);
     let view_of: BTreeMap<String, Option<String>> = nb
         .exprs
         .iter()
@@ -6909,12 +6921,14 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         nb.members[i].evidence_ids.push(label);
     }
     let structural_lines = topology::structural_lines(&cx, &nb, &cover, &implied_spans);
+    let widths = line_evidence::Widths::of(&cx);
     let line_styles = cx
         .src
         .entities
         .iter()
         .map(|e| {
-            let (lt, basis, rule) = cx.base[&e.id].clone();
+            // the line type the sheet plots (module `line_widths`)
+            let (lt, basis, rule, plotted) = line_widths::style(&cx, &widths, &e.id);
             let st = &cx.style[&e.id];
             MdLineStyle {
                 source_handle: e.id.clone(),
@@ -6929,10 +6943,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
                 layer_rule: rule,
                 line_type: lt.into(),
                 basis: basis.into(),
-                evidence_ids: vec![
+                evidence_ids: [
                     format!("color:{}", st.color),
                     format!("byblock:{}", st.byblock),
-                ],
+                ]
+                .into_iter()
+                .chain(plotted)
+                .collect(),
             }
         })
         .collect::<Vec<_>>();

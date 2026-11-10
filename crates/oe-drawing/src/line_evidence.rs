@@ -133,6 +133,24 @@ impl Widths {
     pub(super) fn weights_decide(&self) -> bool {
         !self.by_weight.is_empty()
     }
+    /// Width class of a root source by the drawing's own evidence alone, with the card variant:
+    /// its lineweight class when lineweights decide; else, when the drawing plots by colour, its
+    /// plotting colour (the thick-line layer's colour is thick, a thin-line layer's colour thin,
+    /// BYBLOCK plots in the default colour) whatever its layer. None when neither decides.
+    pub(super) fn evidence(&self, cx: &Ctx, id: &str) -> Option<(Width, &'static str)> {
+        if let Some(w) = self.weight(id) {
+            return Some((w, "lineweight_classes"));
+        }
+        let thick = self.thick_colour?;
+        let c = cx.style.get(id)?.plot_colour();
+        if c == thick {
+            Some((Width::Thick, "colour_before_layer"))
+        } else if cx.thin_colors.contains(&c) {
+            Some((Width::Thin, "colour_before_layer"))
+        } else {
+            None
+        }
+    }
     /// A continuous line drawn thick by the drawing's own evidence: its lineweight class, else the
     /// outline style of the checked layer convention, or the thick colour on any layer when the
     /// drawing plots by colour (an explicit thin colour is thin).
@@ -140,7 +158,7 @@ impl Widths {
         let Some(st) = cx.style.get(id) else {
             return false;
         };
-        if st.pattern != Pattern::Continuous || st.byblock {
+        if st.pattern != Pattern::Continuous || st.byblock && !st.colour_byblock() {
             return false;
         }
         if let Some(w) = self.weight(id) {
@@ -149,7 +167,7 @@ impl Widths {
         let thin_explicit = st
             .explicit_color
             .is_some_and(|c| cx.thin_colors.contains(&c.abs()));
-        cx.structural_style(id) || !thin_explicit && self.thick_colour == Some(st.color)
+        cx.structural_style(id) || !thin_explicit && self.thick_colour == Some(st.plot_colour())
     }
 }
 
@@ -195,6 +213,20 @@ pub(super) fn outline_candidates(
             cand.remove(&h);
             out.thin_by_weight.insert(h);
         }
+        // BYBLOCK is not a colour: a root curve that carries it is decided by its lineweight
+        for (h, st) in &cx.style {
+            if st.pattern == Pattern::Continuous
+                && st.colour_byblock()
+                && w.weight(h) == Some(Width::Thick)
+                && !cand.contains_key(h)
+                && !exclusive(b, h)
+                && !not_plotted::source(cx, h)
+                && cx.rec.get(h).is_some_and(|r| is_curve_kind(&r.kind))
+            {
+                cand.insert(h.clone(), 2);
+                out.thick_by_weight.insert(h.clone());
+            }
+        }
     }
     let Some(thick) = w.thick_colour else {
         return out;
@@ -213,7 +245,10 @@ pub(super) fn outline_candidates(
             continue;
         }
         let st = &cx.style[h];
-        if st.pattern != Pattern::Continuous || st.byblock || not_plotted(cx, &st.layer) {
+        if st.pattern != Pattern::Continuous
+            || st.byblock && !st.colour_byblock()
+            || not_plotted::source(cx, h)
+        {
             continue;
         }
         let roles_ok = b.by_source.get(h).is_none_or(|ms| {
@@ -227,7 +262,12 @@ pub(super) fn outline_candidates(
         let thin_explicit = st
             .explicit_color
             .is_some_and(|c| cx.thin_colors.contains(&c.abs()));
-        if thin_layer && !thin_explicit && st.color == thick {
+        if st.colour_byblock() {
+            // weighed as the default colour, whatever its layer
+            if st.plot_colour() == thick {
+                pool.insert(h.clone(), "default_colour_at_sheet_level");
+            }
+        } else if thin_layer && !thin_explicit && st.color == thick {
             pool.insert(h.clone(), "outline_colour_on_thin_layer");
         } else if thin_explicit
             && !thin_layer
@@ -245,10 +285,18 @@ pub(super) fn outline_candidates(
     let mut corner: BTreeSet<(&str, i64)> = BTreeSet::new();
     let mut open: BTreeSet<(&str, i64)> = BTreeSet::new();
     let end_key = |t: f64| (t * 1e6).round() as i64;
+    // an end that meets only curves that are not plotted is free on the sheet
+    let unplotted_ends = not_plotted::free_ends(cx);
+    for (h, at_one) in &unplotted_ends {
+        if let Some((k, _)) = pool.get_key_value(h) {
+            open.insert((k.as_str(), end_key(if *at_one { 1. } else { 0. })));
+        }
+    }
     let axis = |id: &str| {
         cx.style
             .get(id)
             .is_some_and(|s| s.pattern == Pattern::DashDot)
+            && !not_plotted::source(cx, id)
     };
     #[allow(clippy::manual_range_contains)]
     let at_end = |t: Option<f64>| t.is_some_and(|x| x < 1e-6 || x > 1. - 1e-6);
@@ -305,7 +353,12 @@ pub(super) fn outline_candidates(
     }
     // Only lines in the outline colour are continued across such a gap: a thin-coloured line
     // facing another one across a symbol is an extension line broken for it.
-    let outline_coloured = |h: &str| pool.get(h) == Some(&"outline_colour_on_thin_layer");
+    let outline_coloured = |h: &str| {
+        matches!(
+            pool.get(h),
+            Some(&"outline_colour_on_thin_layer") | Some(&"default_colour_at_sheet_level")
+        )
+    };
     let partners: Vec<topology::Partner> = cand
         .keys()
         .chain(pool.keys().filter(|h| outline_coloured(h)))
@@ -362,19 +415,32 @@ pub(super) fn outline_candidates(
                 .arc(k)
                 .is_some_and(|(c0, r0, s0, sw, full)| on_arc(p, c0, r0, s0, sw, full, gap))
     };
+    // A view limit (break curve) that the settled outline reaches is where the view stops: it
+    // grounds the lines ending on it as the outline does (variant `grounded_by_view_limit`).
+    let settled_limits: BTreeSet<&str> = breaks
+        .iter()
+        .filter(|k| {
+            cand.keys()
+                .filter_map(|c| ends_of(c))
+                .any(|e| near(e[0], k) || near(e[1], k))
+        })
+        .map(String::as_str)
+        .collect();
     // Ends of a pooled source that meet the other curves of `with` (by incidence or within the
-    // drafting gap): the junction parameters, and whether one of them is a settled outline.
-    let joins = |h: &str, with: &BTreeSet<String>| -> (Vec<f64>, bool) {
+    // drafting gap): the junction parameters, whether one of them is a settled outline, and
+    // whether one of them is a view limit the settled outline reaches.
+    let joins = |h: &str, with: &BTreeSet<String>| -> (Vec<f64>, bool, bool) {
         let partner = |k: &str| {
             k == "@axis"
                 || (k != h && (cand.contains_key(k) || breaks.contains(k) || with.contains(k)))
         };
         let mut ts: Vec<f64> = explained.get(h).cloned().unwrap_or_default();
-        let mut grounded = false;
+        let (mut grounded, mut limit) = (false, false);
         for (t, k) in meets.get(h).into_iter().flatten() {
             if partner(k) {
                 ts.push(*t);
                 grounded |= cand.contains_key(k.as_str());
+                limit |= settled_limits.contains(k.as_str());
             }
         }
         if let Some(e) = ends_of(h) {
@@ -390,10 +456,11 @@ pub(super) fn outline_candidates(
                 {
                     ts.push(t);
                     grounded |= cand.contains_key(k.as_str());
+                    limit |= settled_limits.contains(k.as_str());
                 }
             }
         }
-        (ts, grounded)
+        (ts, grounded, limit)
     };
     // The largest set of pooled sources each of which joins the outline or the set as an outline
     // piece does: a line not used by any annotation at two places, a used line (a shared extension
@@ -404,9 +471,13 @@ pub(super) fn outline_candidates(
         let keep: BTreeSet<String> = set
             .iter()
             .filter(|h| {
-                let (mut ts, _) = joins(h, &set);
+                let (mut ts, _, _) = joins(h, &set);
                 let at = |t: f64| ts.iter().any(|x| (x - t).abs() < 1e-6);
-                if cx.lines.contains_key(h.as_str()) && !b.used(h) {
+                // (a line a dimension only starts from, or one running on past where an
+                // extension line ends, is not decided by that use)
+                if cx.lines.contains_key(h.as_str())
+                    && !extension_lines::drawn_as_extension_line(b, h)
+                {
                     ts.sort_by(f64::total_cmp);
                     ts.dedup_by(|x, y| (*x - *y).abs() < 1e-6);
                     // two junctions, or an outline drawn in the outline colour continued from a
@@ -415,7 +486,7 @@ pub(super) fn outline_candidates(
                     // extension line (card visible_edge_line, counter-example)
                     ts.len() >= 2
                         || ts.len() == 1
-                            && pool[h.as_str()] == "outline_colour_on_thin_layer"
+                            && outline_coloured(h)
                             && [(0., 1.), (1., 0.)].iter().any(|(j, f)| {
                                 (ts[0] - j).abs() < 1e-6
                                     && corner.contains(&(h.as_str(), end_key(*j)))
@@ -434,7 +505,17 @@ pub(super) fn outline_candidates(
     }
     // Each connected group of them must meet the settled outline somewhere: a closed figure of
     // such lines standing apart from the part is not its outline.
-    let mut grounded: BTreeSet<String> = set.iter().filter(|h| joins(h, &set).1).cloned().collect();
+    let mut grounded: BTreeSet<String> = BTreeSet::new();
+    let mut by_limit: BTreeSet<String> = BTreeSet::new();
+    for h in &set {
+        let (_, outline, limit) = joins(h, &set);
+        if outline || limit {
+            grounded.insert(h.clone());
+        }
+        if limit && !outline {
+            by_limit.insert(h.clone());
+        }
+    }
     loop {
         let more: Vec<String> = set
             .iter()
@@ -453,29 +534,14 @@ pub(super) fn outline_candidates(
     }
     for h in &grounded {
         cand.insert(h.clone(), 1);
-        out.admitted.insert(h.clone(), pool[h]);
+        let variant = if by_limit.contains(h) {
+            "grounded_by_view_limit"
+        } else {
+            pool[h]
+        };
+        out.admitted.insert(h.clone(), variant);
     }
     out
-}
-
-/// A layer whose content is never plotted (DC-G1-101): AutoCAD's definition-point layer, or a
-/// layer whose plot flag (group 290) is off. Its lines are no evidence of what the sheet shows.
-pub(super) fn not_plotted(cx: &Ctx, layer: &str) -> bool {
-    let named = representation::card_ref("line_width_evidence")
-        .ok()
-        .and_then(|c| c.lexicon.as_ref())
-        .is_some_and(|l| {
-            l.iter()
-                .filter(|x| x.entry == "not_plotted_layer")
-                .flat_map(|x| x.values.iter())
-                .any(|v| v.eq_ignore_ascii_case(layer))
-        });
-    named
-        || cx.d.records.iter().any(|r| {
-            r.kind == "LAYER"
-                && r.get(2) == Some(layer)
-                && r.get(290).is_some_and(|v| v.trim() == "0")
-        })
 }
 
 /// A straight line whose two ends are corners of the outline (each meets another structural line
@@ -566,10 +632,45 @@ pub(super) fn lent_to_dimension(b: &Builder, h: &str) -> bool {
     })
 }
 
+/// A drafting overshoot past a view limit (card `outline_joins`, variant
+/// `overshoot_past_view_limit`): an outline line cut by a break curve (the curve's line passes
+/// through the line's outermost junction) but drawn a little beyond it, its tail ending free and
+/// no longer than the drafting gap, is the same segment. Returns the widened span.
+pub(super) fn overshoot(
+    cx: &Ctx,
+    h: &str,
+    span: [f64; 2],
+    free: &dyn Fn(f64) -> bool,
+    limits: &BTreeSet<String>,
+) -> Option<[f64; 2]> {
+    let k = join_gap(cx);
+    let (a, c) = cx.lines.get(h)?;
+    let len = dist(*a, *c);
+    let on_limit = |t: f64| {
+        let p = lerp(*a, *c, t);
+        limits.iter().any(|l| {
+            cx.polys.get(l).is_some_and(|(pts, _, _)| {
+                pts.windows(2).any(|w| lines_seg_dist(p, w[0], w[1]) <= k)
+            }) || cx
+                .lines
+                .get(l)
+                .is_some_and(|(p0, p1)| lines_seg_dist(p, *p0, *p1) <= k)
+        })
+    };
+    let mut s = span;
+    if s[0] > 0. && s[0] * len <= k && free(0.) && on_limit(s[0]) {
+        s[0] = 0.;
+    }
+    if s[1] < 1. && (1. - s[1]) * len <= k && free(1.) && on_limit(s[1]) {
+        s[1] = 1.;
+    }
+    (s != span).then_some(s)
+}
+
 /// The card and variant evidence of a variant of `line_width_evidence` or `outline_joins`.
 pub(super) fn naming(variant: &str) -> Vec<String> {
     let card = match variant {
-        "arc_to_arc_gap" | "end_on_thread_circle" => "outline_joins",
+        "arc_to_arc_gap" | "end_on_thread_circle" | "overshoot_past_view_limit" => "outline_joins",
         _ => "line_width_evidence",
     };
     vec![format!("card:{card}"), format!("variant:{variant}")]
@@ -598,7 +699,7 @@ pub(super) fn thin_structural(cx: &Ctx, ev: &OutlineEvidence, h: &str) -> bool {
 
 /// Thin by the drawing's evidence: thin by the checked convention or an explicit thin colour, or
 /// any continuous line where no convention decides (`annotation_style`), or thin by lineweight.
-fn thin_line(cx: &Ctx, w: &Widths, h: &str) -> bool {
+pub(super) fn thin_line(cx: &Ctx, w: &Widths, h: &str) -> bool {
     !w.thick(cx, h)
         && (cx.annotation_style(h) || lines::thin_colour(cx, h) || w.weight(h) == Some(Width::Thin))
 }
@@ -1685,7 +1786,7 @@ pub(super) fn dimension_pieces(cx: &Ctx, b: &mut Builder) -> Result<()> {
             .find(|(_, k, x)| k != h && dist(x.tip, a.tip) <= tol && dot(x.dir, a.dir) > 0.99)
         {
             let mut ev = format!("coincident_with:{k}");
-            if not_plotted(cx, &cx.style[k].layer) {
+            if not_plotted::source(cx, k) {
                 ev = format!("printed_copy_of:{k}");
             }
             add.push((

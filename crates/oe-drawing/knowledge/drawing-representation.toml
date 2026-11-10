@@ -703,7 +703,7 @@ sources = [
 knowledge_units = ["K03", "K09"]
 recognition = "先读线宽：实体线宽，随层时取图层线宽；有效值分成细档与不小于其给定倍数的粗档，且点画线、虚线大多在细档时，粗档的连续线是粗线（不需要结点即为轮廓），细档的连续线是细线。没有线宽时，若图层约定已核对且按颜色出图，以粗实线层的颜色为粗线颜色（不得与细实线层、点画线层同色）。细线层上的粗线颜色连续线、粗线层上的细线颜色连续线进入候选，按连接关系确认：两端都接到轮廓或已确认的此类线（未被注写使用时也可是任意两处结点）才是可见轮廓；被尺寸用作界线的线必须两端都接到轮廓。图层名和颜色本身不决定。"
 markers = []
-concepts = ["DC-G1-016", "DC-G1-038", "DC-G1-079"]
+concepts = ["DC-G1-007", "DC-G1-016", "DC-G1-038", "DC-G1-043", "DC-G1-079"]
 
 [[cards.components]]
 role = "contour_segment"
@@ -738,6 +738,63 @@ distinguishing = "按约定或线宽为细实线、未被注写使用、两端�
 encodings = ["loose"]
 tests = ["thin_layer_line_between_outline_ends_is_a_thin_structural_line"]
 
+[[cards.variants]]
+id = "default_colour_at_sheet_level"
+title = "颜色为“随块”的根图线按默认颜色看待"
+distinguishing = "图线不在任何图块内而颜色属性为“随块”（线型是它自己的）：没有块可随，“随块”不是一种颜色，按默认颜色显示和出图；默认颜色与粗线颜色相同时，按细线层上粗线颜色的线同样的连接条件确认是否为轮廓。全图按线宽分档时由它的线宽决定"
+encodings = ["loose"]
+tests = ["byblock_colour_line_joined_at_both_ends_is_outline"]
+
+[[cards.variants]]
+id = "colour_before_layer"
+title = "按颜色出图时，颜色先于图层决定粗细"
+distinguishing = "全图没有线宽、按颜色出图：图线自己的颜色（随层时为图层颜色，随块时为默认颜色）与粗实线层同色即为粗线，与细实线层同色即为细线，不论它画在哪一层；线型表和成员线型都按此报告"
+encodings = ["loose"]
+tests = ["thin_colour_line_on_the_thick_layer_is_reported_thin", "thick_colour_line_on_a_thin_layer_is_reported_thick"]
+
+[[cards.variants]]
+id = "text_layer_is_no_line_width"
+title = "文本层说的是文字笔画，不是图线宽度"
+distinguishing = "表 6 的文本层（细实线文本、粗实线文本）指文字的笔画：画在这些层上的图线，粗细只由本图的颜色、线宽证据或它在表达中的角色决定"
+encodings = ["loose"]
+tests = ["extension_line_on_the_thick_text_layer_is_thin"]
+
+[[cards.variants]]
+id = "annotation_roles_thin"
+title = "尺寸线、界线、引出线等注写图线为细实线"
+distinguishing = "尺寸线、尺寸界线、引出线、框格线、表格线、投射方向箭头、放大圈和螺纹细线报告为细实线；只有本图自己的线宽或出图颜色说明它画成了粗线时才报告为粗线，图层名本身不改变它"
+encodings = ["loose", "native"]
+tests = ["dimension_line_on_the_thick_layer_without_colour_evidence_is_thin", "dimension_line_drawn_with_the_thick_lineweight_is_reported_thick"]
+
+[[cards.variants]]
+id = "cutting_stroke_by_outline_evidence"
+title = "剖切符号的短画按轮廓的证据为粗线"
+distinguishing = "剖切符号的起、迄、转折短画用粗实线：按轮廓所用的同样证据（线宽分档、出图颜色、粗实线层）确认，画在细线层上而用粗线颜色的短画也报告为粗实线"
+encodings = ["loose"]
+tests = ["cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick"]
+
+[[cards.variants]]
+id = "grounded_by_view_limit"
+title = "两端止于视图断裂边界的轮廓"
+distinguishing = "细线层上用粗线颜色画的线两端都止于视图的断裂边界（波浪线、双折线），而这条断裂边界已有确认的轮廓接在上面：视图在那里截止，这条线是被截断的轮廓，与接到轮廓上一样确认"
+encodings = ["loose"]
+tests = ["outline_colour_line_between_two_view_limits_is_outline"]
+
+[[cards.counter_examples]]
+statement = "细线层上用粗线颜色画的线只有一端止于断裂边界、另一端自由，不作轮廓"
+test = "outline_colour_line_from_a_view_limit_to_a_free_end_is_not_outline"
+
+[[cards.counter_examples]]
+statement = "不按颜色出图（命名打印样式）时颜色不说明粗细：粗线层上的细线颜色线在线型表里仍按图层报告"
+test = "colour_is_no_width_evidence_with_named_plot_styles"
+
+[[cards.counter_examples]]
+statement = "颜色随块的线只有一端接在轮廓上、另一端越过尺寸线伸出（尺寸界线），不是轮廓"
+test = "byblock_colour_extension_line_stays_annotation"
+[[cards.counter_examples]]
+statement = "线型也是随块、颜色显式改成细线颜色的散线（炸开的标注件）仍是注写，不进入轮廓候选"
+test = "exploded_piece_with_byblock_linetype_is_not_outline"
+
 [[cards.counter_examples]]
 statement = "粗线层上改成细线颜色的尺寸界线：一端在轮廓上，另一端越过尺寸线伸出，不是轮廓"
 test = "thin_colour_extension_line_stays_annotation"
@@ -752,16 +809,22 @@ test = "one_lineweight_class_does_not_decide"
 statement = "永不打印的层上的线不属于图面表达，即使两端接在轮廓上也不按细线颜色的轮廓读出"
 test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
 
+[[cards.lexicon]]
+concept = "DC-G1-043"
+entry = "thin_roles"
+values = ["dimension_line", "extension_line", "leader_line", "frame_cell", "table_line", "view_arrow", "detail_circle", "thread_line"]
+meaning = "细实线画的成员角色（GB/T 4457.4 表 1：尺寸线、尺寸界线、指引线、框格、螺纹牙底线等）：本图自己的证据不说明画成粗线时报告为细实线"
+
+[[cards.lexicon]]
+concept = "DC-G1-007"
+entry = "thick_roles"
+values = ["cutting_stroke"]
+meaning = "粗实线画的注写成员（GB/T 4457.4 表 1 01.2：剖切符号用线）：按轮廓所用的同样证据报告为粗实线"
+
 [[cards.parameters]]
 name = "weight_ratio_min"
 value = 1.5
 meaning = "粗档线宽 ≥ 该值 × 细档线宽（标准粗细比 2:1，旧图约 3:1）"
-
-[[cards.lexicon]]
-concept = "DC-G1-101"
-entry = "not_plotted_layer"
-values = ["Defpoints"]
-meaning = "永不打印的层（AutoCAD 定义点层；另有图层表中打印开关关闭的层）：其上的线不属于图面表达，不作粗细证据"
 
 [[cards]]
 id = "outline_joins"
@@ -797,9 +860,19 @@ distinguishing = "端点落在螺纹端视图的 3/4 细实线圆弧上"
 encodings = ["loose"]
 tests = ["outline_arc_ending_on_a_thread_circle_is_joined"]
 
+[[cards.variants]]
+id = "overshoot_past_view_limit"
+title = "画过视图断裂边界一点的轮廓尾巴"
+distinguishing = "轮廓线在视图断裂边界（波浪线、双折线）处被截断，却画过了边界一点：多出的尾巴不超过绘图缝隙、末端自由（出图后看不出），是同一段轮廓的绘图误差，不另作未解释段"
+encodings = ["loose"]
+tests = ["short_free_tail_past_a_view_limit_is_the_same_outline"]
+
 [[cards.counter_examples]]
 statement = "端点间差距超过绘图缝隙的两段不按连接处理"
 test = "arcs_apart_beyond_the_drafting_gap_are_not_joined"
+[[cards.counter_examples]]
+statement = "画过轮廓角点的短头、长于绘图缝隙的自由短段、末端接在别的线上的尾段，都不按画过头处理"
+test = "stub_past_a_corner_or_longer_tail_is_no_overshoot"
 
 [[cards.parameters]]
 name = "join_gap"
@@ -1142,7 +1215,6 @@ sources = [
 knowledge_units = ["K17", "K18", "K19", "K20", "K21", "K34", "K39"]
 recognition = "以尺寸表达或文字的显示文本为锚（解码 %%c、%%d、%%p 与 \\S 叠写）：开头的数字后紧跟 × 或旧式 - 再接尺寸符号或数值为数量；Ø/R/C 等前缀定尺寸类型；数值后紧跟“基本偏差字母 + 标准公差等级”为公差带代号；“上/下”成对且带符号或为 0 的为极限偏差；M、Tr、B 等前缀接直径的为螺纹标记，其后“等级数字 + 位置字母”为螺纹公差带；° ′ ″ 为角度单位。哪些符号、字母和词属于哪个概念从本卡词表读取。"
 markers = ["Ø", "R", "C", "×", "±", "°", "M", "↧", "⌴", "⌵"]
-parameters = []
 concepts = ["DC-G4-017", "DC-G4-030", "DC-G4-055", "DC-G4-006", "DC-G4-041", "DC-G4-032", "DC-G4-099", "DC-G4-040", "DC-G3-091", "DC-G3-080", "DC-G4-094", "DC-G4-088", "DC-G4-114", "DC-G4-132", "DC-G4-126", "DC-G4-103", "DC-G4-113", "DC-G3-088", "DC-G3-223", "DC-G3-232", "DC-G3-089"]
 
 [[cards.components]]
@@ -1213,6 +1285,17 @@ title = "角度与单位"
 distinguishing = "° ′ ″ 必须写出；线性尺寸缺省为毫米"
 encodings = ["text"]
 tests = ["dimension_text_angles_and_units"]
+
+[[cards.variants]]
+id = "fragments_in_reading_order"
+title = "分段写出的数值按阅读顺序拼接"
+distinguishing = "尺寸的数值分几段文字写出时，按阅读顺序拼接：先上行后下行，行内沿文字方向从前到后，不按文件里存放的先后；单独成段的尺寸符号（Ø、R、S、□ 等）是其后数字的前缀，紧接不空格"
+encodings = ["native_dimension"]
+tests = ["value_fragments_join_in_reading_order"]
+
+[[cards.counter_examples]]
+statement = "数字后面单独成段的单位或符号（如 °）仍在数字之后，不移到前面"
+test = "unit_fragment_after_the_number_stays_after_it"
 
 [[cards.counter_examples]]
 statement = "中心孔标记 B4（无 × 螺距）不是锯齿形螺纹"
@@ -1377,6 +1460,12 @@ values = ["<number>"]
 meaning = "尺寸数字"
 
 [[cards.lexicon]]
+concept = "DC-G4-017"
+entry = "lone_prefix"
+values = ["Ø", "R", "S", "SØ", "SR", "□"]
+meaning = "单独成段写出的尺寸符号：是其后尺寸数字的前缀（GB/T 4458.4 4.1.5、GB/T 16675.2 表1）"
+
+[[cards.lexicon]]
 concept = "DC-G4-099"
 entry = "pattern"
 values = ["<number>"]
@@ -1401,6 +1490,11 @@ reason = "这是对注法的说明，不是图上的注写"
 concept = "DC-G4-088"
 form = "4-Ø4"
 reason = "旧式旁注无深度、沉孔符号时与“数量-直径”尺寸相同，需借助指引线位置判断"
+
+[[cards.parameters]]
+name = "fragment_row_gap"
+value = 0.8
+meaning = "两段文字的中心沿垂直于文字方向相差超过该值 × 字高时属于不同的行（叠写偏差在同一行内）"
 
 [[cards]]
 id = "technical_note"
@@ -3130,7 +3224,7 @@ sources = [
 knowledge_units = ["K17", "K18"]
 recognition = "以已识别尺寸的尺寸界线为锚：同一根线上未解释的短端段（不超过给定长度）——在尺寸线一侧为超出段，在轮廓一侧为画进轮廓的起头——并入该界线；较长的未解释段若有另一尺寸的终端箭头垂直落在其上，则为两尺寸共用的界线。尺寸线终端之外从箭尖起共线延伸的细线是尺寸线的延长，沿它找数值。"
 markers = []
-concepts = ["DC-G4-058", "DC-G4-059"]
+concepts = ["DC-G4-005", "DC-G4-019", "DC-G4-058", "DC-G4-059"]
 
 [[cards.components]]
 role = "extension_line"
@@ -3195,6 +3289,85 @@ tests = ["dimension_parts_drawn_twice_join_the_dimension"]
 [[cards.counter_examples]]
 statement = "与界线共线但隔得较远的细线不并入界线"
 test = "collinear_line_far_from_an_extension_line_is_not_absorbed"
+
+[[cards.variants]]
+id = "own_origin_and_overshoot"
+title = "每条界线从自己的起点画到尺寸线外一点"
+distinguishing = "界线从各自的起点引到尺寸线并超出 2～3 mm；超出的方向按这条界线自己的起点定。尺寸线夹在两个起点之间时两条界线方向相反，各在自己一侧超出，不伸到尺寸线另一侧去"
+encodings = ["native"]
+tests = ["extension_lines_from_opposite_sides_each_stop_past_the_dimension_line"]
+
+[[cards.variants]]
+id = "outline_as_extension_line"
+title = "轮廓线兼作尺寸界线；界线所接的被测轮廓"
+distinguishing = "尺寸终端直接落在轮廓线上（原生尺寸不画界线）、原生界线画在轮廓线上，或界线在起点处接着同向的轮廓线：这条线是轮廓（粗线或已读为轮廓），尺寸只是借用或量到它；它在尺寸里是“界线所依轮廓”（共享），线型仍是它自己的，轮廓身份不变，每个尺寸里只记一次"
+encodings = ["loose", "native"]
+tests = ["outline_under_a_native_extension_line_is_lent_to_the_dimension", "outline_continuing_an_extension_line_is_the_measured_feature", "outline_the_terminators_stand_on_is_lent_to_the_dimension"]
+
+[[cards.counter_examples]]
+statement = "界线延长方向上隔着一段轮廓的另一段线不属于这个尺寸：共线的归并到第一段轮廓为止"
+test = "collinear_growth_stops_at_the_first_outline_piece"
+[[cards.counter_examples]]
+statement = "细线画的界线即使画过了定义点（起头画进轮廓或定义点取在半途）仍是界线，不因此改成轮廓"
+test = "thin_extension_line_drawn_past_its_origin_stays_an_extension_line"
+[[cards.counter_examples]]
+statement = "同一直线上只在起点之后（不接到起点）或只在尺寸线外侧的另一段轮廓不属于这个尺寸：它是别的要素"
+test = "outline_behind_the_origin_or_beyond_the_dimension_line_is_not_lent"
+
+[[cards.variants]]
+id = "terminator_any_entity"
+title = "尺寸线终端不论用什么实体存放"
+distinguishing = "尺寸内的填充三角形——实心多边形（SOLID、TRACE）、图块、宽度渐变到零的多段线或实心填充的 HATCH——尖端落在本尺寸的尺寸线（直线或圆弧）上、轴线沿尺寸线：是这个尺寸的终端（箭头）；形状为细长三角形，长约为底宽的数倍"
+encodings = ["native"]
+tests = ["solid_hatch_triangle_in_a_dimension_block_is_its_terminator", "tapered_polyline_in_a_dimension_block_is_its_terminator"]
+
+[[cards.counter_examples]]
+statement = "尺寸块内轴线不沿尺寸线的填充三角形（如斜度、锥度符号）不是终端"
+test = "filled_triangle_across_the_dimension_line_is_not_a_terminator"
+[[cards.counter_examples]]
+statement = "尺寸块内只画文字的图块是数值的一部分（分段写出的数值与公差），不是终端"
+test = "block_drawing_only_text_in_a_dimension_is_part_of_its_value"
+
+[[cards.parameters]]
+name = "terminator_aspect_min"
+value = 2.0
+meaning = "终端三角形长度 ≥ 该值 × 底宽（GB/T 4458.4 图 9：箭头细长；CAD 常用 3:1～6:1）"
+
+[[cards.parameters]]
+name = "terminator_aspect_max"
+value = 12.0
+meaning = "终端三角形长度 ≤ 该值 × 底宽"
+
+[[cards.parameters]]
+name = "terminator_on_line"
+value = 0.1
+meaning = "终端尖端到尺寸线的距离容差 = 该值 × 终端长度"
+
+[[cards.parameters]]
+name = "terminator_axis_sin_max"
+value = 0.1
+meaning = "终端轴线与尺寸线（圆弧取切线）夹角正弦的绝对值上限"
+
+[[cards.variants]]
+id = "outline_extended_to_virtual_corner"
+title = "光滑过渡处轮廓延长到交点的细线"
+distinguishing = "在圆角、倒角处，两侧轮廓用细实线延长到相交，尺寸界线从这个交点引出：从轮廓线（端点或线上一点）沿它的方向延到某尺寸界线起点的细线是这个尺寸的作图线（尺寸界线），不是轮廓；几个尺寸都从这个交点引出时它为各尺寸共用；压在这段细线下面的轮廓短头是轮廓画过了过渡处，同样借给这些尺寸"
+encodings = ["loose", "native"]
+tests = ["thin_line_continuing_an_outline_to_an_extension_line_start_is_construction"]
+
+[[cards.counter_examples]]
+statement = "交点处没有尺寸界线引出时，把轮廓延长的细线不归入任何尺寸；不沿轮廓方向的细线（过渡线等）也不是这种作图线"
+test = "thin_line_continuing_an_outline_without_a_dimension_is_no_construction"
+
+[[cards.parameters]]
+name = "virtual_corner_reach"
+value = 3.0
+meaning = "延到交点的作图细线长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "overshoot_max"
+value = 2.0
+meaning = "界线超出尺寸线的长度上限 = 该值 × 箭头长（标准 2～3 mm，箭头长约 3～4 mm；按 2 倍箭头长留余量）"
 
 [[cards.parameters]]
 name = "split_gap_max"
@@ -4407,3 +4580,77 @@ name = "evidence_min"
 value = 2.0
 meaning = "没有与序号对应的明细栏时，构成候选所需的证据项数"
 
+
+[[cards]]
+id = "not_plotted_content"
+expression_kind = "construction_reference"
+title = "不打印层上的内容"
+meaning = "CAD 用图层组织图线并控制显示与出图。有的层从不出图：定义点层（尺寸的定义点所在的层，任何情况下都不打印）、图层表里打印开关关闭的层、冻结或关闭的层。这些层上的内容在文件里有、图纸上没有：它不是图面表达的一部分，不能当作轮廓、不可见轮廓或中心线，也不能给打印出来的图线提供连接。读图时照样读出并标明“不打印”：没有被注写使用的图线是作图用的构造线；属于某个尺寸或注写的部分（数值、终端、界线）仍是该尺寸的组成部分，同时说明这一部分图纸上看不到。"
+sources = [
+  "GB/T 14665-2012 机械工程 CAD 制图规则 8、表 6：图层（按图线类型分层的标识）",
+  "GB/T 18229-2000 CAD 工程制图规则 9.1、表 13：图层",
+  "GB/T 15751-1995 技术产品文件 计算机辅助设计与制图 词汇：层（组织实体并控制其可见性的属性）",
+]
+knowledge_units = ["K03", "K52", "K55"]
+recognition = "先读图层表：层名为定义点层（不分大小写）、打印开关为关、冻结或关闭的层是不打印层。来源实体在这种层上（或块内成员自己的层是这种层）的成员都记“不打印”。这种层上的曲线不进入轮廓、虚线轮廓、中心线的候选，不作结点对象；打印的图线若某一端只接在这种曲线上，这一端在图面上是自由端。没有注写使用的这种曲线读作构造线。成员全部不打印的表达记“不打印”；只有一部分不打印的，在未知项里写明是哪一部分。"
+markers = []
+concepts = ["DC-G1-101"]
+parameters = []
+
+[[cards.components]]
+role = "native_member"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "POLYLINE", "SPLINE", "ELLIPSE"]
+requirement = "不打印层上、未被注写使用的曲线：构造线"
+
+[[cards.components]]
+role = "definition_point"
+primitives = ["POINT"]
+requirement = "定义点层上的点"
+
+[[cards.variants]]
+id = "definition_point_layer"
+title = "定义点层上的内容"
+distinguishing = "层名为 CAD 的定义点层（不分大小写）；该层从不打印"
+encodings = ["loose"]
+tests = ["outline_drawn_on_the_definition_point_layer_is_construction", "definition_point_is_marked_not_plotted"]
+
+[[cards.variants]]
+id = "plot_switch_off"
+title = "打印开关关闭的层上的内容"
+distinguishing = "图层表中该层的打印开关为关"
+encodings = ["loose"]
+tests = ["line_on_a_layer_with_the_plot_switch_off_is_construction"]
+
+[[cards.variants]]
+id = "layer_off_or_frozen"
+title = "冻结或关闭的层上的内容"
+distinguishing = "图层表中该层被冻结，或颜色号为负（层关闭）"
+encodings = ["loose"]
+tests = ["line_on_a_switched_off_layer_is_construction", "hidden_line_on_a_frozen_layer_is_no_hidden_outline"]
+
+[[cards.variants]]
+id = "part_of_an_annotation"
+title = "尺寸或注写的一部分在不打印层上"
+distinguishing = "尺寸的数值、终端或界线在不打印层上，其余部分正常打印：仍是这个尺寸，未知项写明哪一部分图纸上没有"
+encodings = ["loose", "native"]
+tests = ["dimension_with_a_terminator_on_a_never_plotted_layer_stays_a_dimension"]
+
+[[cards.variants]]
+id = "free_end_at_unplotted_curve"
+title = "打印的轮廓只接在不打印的线上"
+distinguishing = "轮廓线的一端只与不打印层上的曲线相接：图面上这一端是自由端，不算结点"
+encodings = ["loose"]
+tests = ["outline_joined_only_through_a_never_plotted_line_is_not_admitted"]
+
+[[cards.counter_examples]]
+statement = "层名里只是含有定义点层名字样、本身可打印的层，其上的图线照常读出"
+test = "layer_whose_name_only_contains_the_definition_point_name_plots"
+[[cards.counter_examples]]
+statement = "不打印层上的线不因两端接在轮廓上而成为轮廓（原有反例，见 line_width_evidence）"
+test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
+
+[[cards.lexicon]]
+concept = "DC-G1-101"
+entry = "definition_point_layer"
+values = ["Defpoints"]
+meaning = "CAD 的定义点层：尺寸定义点所在的层，任何情况下都不打印；层名不分大小写"

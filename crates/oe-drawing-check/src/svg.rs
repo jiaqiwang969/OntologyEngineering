@@ -55,10 +55,7 @@ mod tests {
     fn member_identities_are_read_with_their_roots() {
         let svg = br#"<svg><g data-entity="A1"><path d="M0 0Z"/></g><g data-entity="A1" data-member="A1/B2/C3"><path d="M0 0Z"/></g><g data-member="A1/B2"></g><g data-entity="D4" data-member="D4/E5"/></svg>"#;
         let found = inventory(svg).unwrap();
-        assert_eq!(
-            found.entities.into_iter().collect::<Vec<_>>(),
-            ["A1", "D4"]
-        );
+        assert_eq!(found.entities.into_iter().collect::<Vec<_>>(), ["A1", "D4"]);
         assert_eq!(
             found.members.into_iter().collect::<Vec<_>>(),
             [

@@ -133,10 +133,8 @@ fn the_review_page_keeps_masks_in_the_paper_colour() {
 #[test]
 fn the_review_page_template_takes_widths_from_line_types_and_reads_member_identity() {
     let template = String::from_utf8(
-        std::fs::read(
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("assets/expression-review.html"),
-        )
-        .unwrap(),
+        std::fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join("assets/expression-review.html"))
+            .unwrap(),
     )
     .unwrap();
     for gone in ["'.62'", "'.32'", "'.45'"] {
@@ -188,7 +186,11 @@ fn the_review_page_accepts_a_member_identity_only_inside_its_own_root() {
     let named = |attributes: &str| {
         let plain = format!("<g data-entity=\"{root}\">");
         assert!(svg.contains(&plain));
-        svg.replacen(&plain, &format!("<g data-entity=\"{root}\"{attributes}>"), 1)
+        svg.replacen(
+            &plain,
+            &format!("<g data-entity=\"{root}\"{attributes}>"),
+            1,
+        )
     };
     let with_member = named(&format!(" data-member=\"{member}\""));
     let shown = oe_drawing::page::rendering(with_member.as_bytes()).unwrap();
@@ -201,7 +203,10 @@ fn the_review_page_accepts_a_member_identity_only_inside_its_own_root() {
     let data = payload(&text);
     assert_eq!(data["rendered_member_identities"], 1);
     assert!(data["native_member_kinds"][member].is_string(), "{member}");
-    assert!(data["native_member_kinds"][root].is_null(), "roots are not nested members");
+    assert!(
+        data["native_member_kinds"][root].is_null(),
+        "roots are not nested members"
+    );
     // The members reach the page with the native member each one names.
     assert!(
         data["graph"]["members"]
@@ -269,7 +274,14 @@ struct Synthetic {
 
 type Pt = (f64, f64);
 /// (source, role, line type, native member, interval, evidence)
-type Part<'a> = (&'a str, &'a str, &'a str, Option<&'a str>, [f64; 2], &'a [&'a str]);
+type Part<'a> = (
+    &'a str,
+    &'a str,
+    &'a str,
+    Option<&'a str>,
+    [f64; 2],
+    &'a [&'a str],
+);
 
 impl Synthetic {
     fn points(&self, pts: &[Pt], join: &str, pair: &str) -> String {
@@ -313,16 +325,20 @@ impl Synthetic {
         self.entities.push(json!({"id":id,"handle":id,"kind":kind,"layer":"L","line_type":"Continuous",
             "geometry_kind":if line.is_some(){"line"}else{"unqualified"},"geometry_limit":Value::Null,
             "coordinates":line.map(|c|c.to_vec()).unwrap_or_default(),"member_ids":ids,"text":Value::Null}));
-        self.natives.push(json!({"id":id,"handle":id,"kind":kind,"block_path":[id],"raw_text":Value::Null,
-            "role":"native_member","source_layer":"L"}));
+        self.natives.push(
+            json!({"id":id,"handle":id,"kind":kind,"block_path":[id],"raw_text":Value::Null,
+            "role":"native_member","source_layer":"L"}),
+        );
         for (n, k) in nested {
             let mut path = vec![id];
             path.extend(n.split('/'));
             self.natives.push(json!({"id":format!("{id}/{n}"),"handle":n.rsplit('/').next().unwrap(),"kind":k,
                 "block_path":path,"raw_text":Value::Null,"role":"native_member","source_layer":"L"}));
         }
-        self.styles.push(json!({"source_handle":id,"pattern":"continuous","line_type":"continuous",
-            "basis":"synthetic","layer_rule":Value::Null}));
+        self.styles.push(
+            json!({"source_handle":id,"pattern":"continuous","line_type":"continuous",
+            "basis":"synthetic","layer_rule":Value::Null}),
+        );
     }
     #[allow(clippy::too_many_arguments)]
     fn expression(
@@ -390,11 +406,32 @@ impl Synthetic {
             Some("view:principal"),
             &[
                 (id, "native_dimension", "dimension", None, WHOLE, &proof),
-                (id, "dimension_line", "thin_continuous", Some(&m[0]), WHOLE, &[]),
+                (
+                    id,
+                    "dimension_line",
+                    "thin_continuous",
+                    Some(&m[0]),
+                    WHOLE,
+                    &[],
+                ),
                 (id, "arrowhead", "fill", Some(&m[1]), WHOLE, &[]),
                 (id, "arrowhead", "fill", Some(&m[2]), WHOLE, &[]),
-                (id, "extension_line", "thin_continuous", Some(&m[3]), WHOLE, &[]),
-                (id, "extension_line", "thin_continuous", Some(&m[4]), WHOLE, &[]),
+                (
+                    id,
+                    "extension_line",
+                    "thin_continuous",
+                    Some(&m[3]),
+                    WHOLE,
+                    &[],
+                ),
+                (
+                    id,
+                    "extension_line",
+                    "thin_continuous",
+                    Some(&m[4]),
+                    WHOLE,
+                    &[],
+                ),
                 (id, "dimension_text", "text", Some(&m[5]), WHOLE, &[]),
             ],
             &proof,
@@ -442,10 +479,38 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "主视图 · 可见轮廓",
         main,
         &[
-            ("L1", "contour_segment", "thick_continuous", None, WHOLE, &[]),
-            ("L2", "contour_segment", "thick_continuous", None, [0., third], &[]),
-            ("L3", "contour_segment", "thick_continuous", None, WHOLE, &[]),
-            ("L4", "contour_segment", "thick_continuous", None, WHOLE, &[]),
+            (
+                "L1",
+                "contour_segment",
+                "thick_continuous",
+                None,
+                WHOLE,
+                &[],
+            ),
+            (
+                "L2",
+                "contour_segment",
+                "thick_continuous",
+                None,
+                [0., third],
+                &[],
+            ),
+            (
+                "L3",
+                "contour_segment",
+                "thick_continuous",
+                None,
+                WHOLE,
+                &[],
+            ),
+            (
+                "L4",
+                "contour_segment",
+                "thick_continuous",
+                None,
+                WHOLE,
+                &[],
+            ),
         ],
         &[],
         &[],
@@ -467,7 +532,12 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         &[],
         &[],
     );
-    s.structural(&hidden[0], "hidden_outline", "thin_dashed", [60., 40., 60., 100.]);
+    s.structural(
+        &hidden[0],
+        "hidden_outline",
+        "thin_dashed",
+        [60., 40., 60., 100.],
+    );
     s.expression(
         "center_axis",
         "geometry",
@@ -482,7 +552,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "dimension",
         "引出线",
         main,
-        &[("L2", "leader_line", "thin_continuous", None, [third, 1.], &[])],
+        &[(
+            "L2",
+            "leader_line",
+            "thin_continuous",
+            None,
+            [third, 1.],
+            &[],
+        )],
         &[],
         &[],
     );
@@ -524,7 +601,11 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
             ("S1/T3", "MTEXT"),
         ],
     );
-    for b in [[190., 170., 194., 176.], [196., 170., 200., 176.], [202., 170., 206., 176.]] {
+    for b in [
+        [190., 170., 194., 176.],
+        [196., 170., 200., 176.],
+        [202., 170., 206., 176.],
+    ] {
         s.fill("B1", Some("B1/T1"), &rectangle(b));
     }
     for b in [[190., 158., 194., 164.], [196., 158., 200., 164.]] {
@@ -560,15 +641,41 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "其余 12.5",
         sheet,
         &[
-            ("B1", "roughness_symbol", "thin_continuous", Some("B1/S1/P1"), WHOLE, &[]),
-            ("B1", "roughness_symbol", "thin_continuous", Some("B1/S1/P2"), WHOLE, &[]),
-            ("B1", "roughness_value", "text", Some("B1/S1/T3"), WHOLE, &[]),
+            (
+                "B1",
+                "roughness_symbol",
+                "thin_continuous",
+                Some("B1/S1/P1"),
+                WHOLE,
+                &[],
+            ),
+            (
+                "B1",
+                "roughness_symbol",
+                "thin_continuous",
+                Some("B1/S1/P2"),
+                WHOLE,
+                &[],
+            ),
+            (
+                "B1",
+                "roughness_value",
+                "text",
+                Some("B1/S1/T3"),
+                WHOLE,
+                &[],
+            ),
         ],
         &[],
         &[],
     );
     // A block the rendering gives no member identity for.
-    s.entity("B2", "INSERT", None, &[("X1", "LINE"), ("X2", "LINE"), ("X3", "MTEXT")]);
+    s.entity(
+        "B2",
+        "INSERT",
+        None,
+        &[("X1", "LINE"), ("X2", "LINE"), ("X3", "MTEXT")],
+    );
     s.stroke("B2", None, &[(60., 150.), (130., 150.)]);
     s.stroke("B2", None, &[(70., 150.), (85., 165.)]);
     s.background("B2", None, [90., 146., 110., 160.]);
@@ -578,7 +685,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "geometry",
         "块 · 可见轮廓",
         main,
-        &[("B2", "native_member", "thick_continuous", Some("B2/X1"), WHOLE, &[])],
+        &[(
+            "B2",
+            "native_member",
+            "thick_continuous",
+            Some("B2/X1"),
+            WHOLE,
+            &[],
+        )],
         &[],
         &[],
     );
@@ -587,7 +701,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "geometry",
         "块 · 剖面线 45° 间距 3",
         main,
-        &[("B2", "hatch_fill", "thin_continuous", Some("B2/X2"), WHOLE, &[])],
+        &[(
+            "B2",
+            "hatch_fill",
+            "thin_continuous",
+            Some("B2/X2"),
+            WHOLE,
+            &[],
+        )],
         &[],
         &[],
     );
@@ -618,7 +739,11 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
     s.stroke("B3", Some("B3/V1/K1"), &[(190., 30.), (250., 30.)]);
     s.stroke("B3", Some("B3/V1/K2"), &[(250., 30.), (250., 80.)]);
     for (k, x) in [(3, 200.), (4, 215.), (5, 230.)] {
-        s.stroke("B3", Some(&format!("B3/V1/K{k}")), &[(x, 30.), (x + 15., 45.)]);
+        s.stroke(
+            "B3",
+            Some(&format!("B3/V1/K{k}")),
+            &[(x, 30.), (x + 15., 45.)],
+        );
     }
     s.stroke(
         "B3",
@@ -641,8 +766,22 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "B 2.5:1 · 可见轮廓",
         detail,
         &[
-            ("B3", "native_member", "thick_continuous", Some("B3/V1/K1"), WHOLE, &[]),
-            ("B3", "native_member", "thick_continuous", Some("B3/V1/K2"), WHOLE, &[]),
+            (
+                "B3",
+                "native_member",
+                "thick_continuous",
+                Some("B3/V1/K1"),
+                WHOLE,
+                &[],
+            ),
+            (
+                "B3",
+                "native_member",
+                "thick_continuous",
+                Some("B3/V1/K2"),
+                WHOLE,
+                &[],
+            ),
         ],
         &[],
         &[],
@@ -653,9 +792,30 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "B 2.5:1 · 剖面线 45° 间距 3",
         detail,
         &[
-            ("B3", "hatch_fill", "thin_continuous", Some("B3/V1/K3"), WHOLE, &[]),
-            ("B3", "hatch_fill", "thin_continuous", Some("B3/V1/K4"), WHOLE, &[]),
-            ("B3", "hatch_fill", "thin_continuous", Some("B3/V1/K5"), WHOLE, &[]),
+            (
+                "B3",
+                "hatch_fill",
+                "thin_continuous",
+                Some("B3/V1/K3"),
+                WHOLE,
+                &[],
+            ),
+            (
+                "B3",
+                "hatch_fill",
+                "thin_continuous",
+                Some("B3/V1/K4"),
+                WHOLE,
+                &[],
+            ),
+            (
+                "B3",
+                "hatch_fill",
+                "thin_continuous",
+                Some("B3/V1/K5"),
+                WHOLE,
+                &[],
+            ),
         ],
         &[],
         &[],
@@ -665,13 +825,25 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "view",
         "B",
         detail,
-        &[("B3", "detail_circle", "thin_continuous", Some("B3/R1"), WHOLE, &[])],
+        &[(
+            "B3",
+            "detail_circle",
+            "thin_continuous",
+            Some("B3/R1"),
+            WHOLE,
+            &[],
+        )],
         &["references_view:view:B2.5:1:by_elimination"],
         &["detail_indicator"],
     );
     // A leader note stored as a block: a section line of another expression runs through the margin of the
     // text's background, the note's own leader starts inside it; neither touches the glyphs.
-    s.entity("B4", "INSERT", None, &[("Y1", "LINE"), ("Y2", "LINE"), ("Y3", "MTEXT")]);
+    s.entity(
+        "B4",
+        "INSERT",
+        None,
+        &[("Y1", "LINE"), ("Y2", "LINE"), ("Y3", "MTEXT")],
+    );
     s.stroke("B4", Some("B4/Y1"), &[(160., 111.), (186., 111.)]);
     s.stroke("B4", Some("B4/Y2"), &[(182., 116.), (195., 130.)]);
     s.background("B4", Some("B4/Y3"), [166., 110., 184., 122.]);
@@ -683,7 +855,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "geometry",
         "C · 剖面线 45° 间距 2",
         main,
-        &[("B4", "hatch_fill", "thin_continuous", Some("B4/Y1"), WHOLE, &[])],
+        &[(
+            "B4",
+            "hatch_fill",
+            "thin_continuous",
+            Some("B4/Y1"),
+            WHOLE,
+            &[],
+        )],
         &[],
         &[],
     );
@@ -693,7 +872,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "引出说明",
         main,
         &[
-            ("B4", "leader_line", "thin_continuous", Some("B4/Y2"), WHOLE, &[]),
+            (
+                "B4",
+                "leader_line",
+                "thin_continuous",
+                Some("B4/Y2"),
+                WHOLE,
+                &[],
+            ),
             ("B4", "note_text", "text", Some("B4/Y3"), WHOLE, &[]),
         ],
         &[],
@@ -724,7 +910,11 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         &["cutting_plane"],
     );
     s.entity("F1", "LWPOLYLINE", None, &[]);
-    s.stroke("F1", None, &[(5., 5.), (295., 5.), (295., 195.), (5., 195.), (5., 5.)]);
+    s.stroke(
+        "F1",
+        None,
+        &[(5., 5.), (295., 5.), (295., 195.), (5., 195.), (5., 5.)],
+    );
     s.expression(
         "sheet_frame",
         "sheet",
@@ -741,7 +931,14 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         "construction",
         "不打印层上的线",
         None,
-        &[("N1", "native_member", "continuous", None, WHOLE, &["not_plotted"])],
+        &[(
+            "N1",
+            "native_member",
+            "continuous",
+            None,
+            WHOLE,
+            &["not_plotted"],
+        )],
         &[],
         &["not_plotted"],
     );
@@ -825,7 +1022,9 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
     let (graph, svg) = synthetic(true);
     let (text, _) = oe_drawing::page::page(&graph, &svg, &request()).unwrap();
     for mode in oe_drawing_check::browser::MODES {
-        let facts = check(&text, mode).unwrap_or_else(|e| panic!("{mode}: {e}")).facts;
+        let facts = check(&text, mode)
+            .unwrap_or_else(|e| panic!("{mode}: {e}"))
+            .facts;
         // d from the four terminators, 9 long: 9 / 6.
         assert_eq!(facts["widths"]["d"], 1.5, "{mode}");
         assert_eq!(facts["widths"]["basis"], "terminator_length/6", "{mode}");

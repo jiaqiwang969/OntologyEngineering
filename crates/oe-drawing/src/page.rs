@@ -214,10 +214,10 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     // Kinds of the nested native members: the page needs them to tell a text's background from other masks.
     let mut native_kinds = Map::new();
     for m in src["members"].as_array().into_iter().flatten() {
-        if m["block_path"].as_array().is_some_and(|p| p.len() > 1) {
-            if let (Some(id), Some(kind)) = (m["id"].as_str(), m["kind"].as_str()) {
-                native_kinds.insert(id.to_owned(), json!(kind));
-            }
+        if m["block_path"].as_array().is_some_and(|p| p.len() > 1)
+            && let (Some(id), Some(kind)) = (m["id"].as_str(), m["kind"].as_str())
+        {
+            native_kinds.insert(id.to_owned(), json!(kind));
         }
     }
     let nonrendered: Vec<&String> = roots.difference(&shown.entities).collect();

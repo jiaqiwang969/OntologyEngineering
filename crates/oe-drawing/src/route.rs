@@ -841,7 +841,7 @@ impl Run<'_> {
         let issues: Value = serde_json::from_slice(&read_regular_bytes(&self.out.join("drafting-issues.json"),64*1024*1024)?)?;
         let receipt: Value = serde_json::from_slice(&read_regular_bytes(&self.out.join("correction-receipt.json"),64*1024*1024)?)?;
         let text = String::from_utf8(read_regular_bytes(&self.out.join("drafting-issues.txt"),64*1024*1024)?)?;
-        let corrected_page = if receipt["status"] == "written" {
+        let corrected = if receipt["status"] == "written" {
             let mut corrected_q = q.clone();
             corrected_q.graph=self.root.portable_data_path(&self.out.join("corrected-graph.json"))?;
             corrected_q.svg=self.root.portable_data_path(&self.out.join("corrected.svg"))?;
@@ -850,9 +850,9 @@ impl Run<'_> {
             corrected_q.title=format!("{} · 改正后",self.q.title);
             page::render(self.root,&corrected_q)?;
             s.outputs.push(self.file(&self.out.join("corrected-review-page.html"))?);
-            Some(String::from_utf8(read_regular_bytes(&self.out.join("corrected-review-page.html"),64*1024*1024)?)?)
+            Some(json!({"graph":serde_json::from_slice::<Value>(&read_regular_bytes(&self.out.join("corrected-graph.json"),64*1024*1024)?)?, "svg":String::from_utf8(read_regular_bytes(&self.out.join("corrected.svg"),64*1024*1024)?)?}))
         } else {None};
-        let review=json!({"issues":issues,"text":text,"receipt":receipt,"corrected_page":corrected_page,"corrected_dxf":"corrected.dxf"});
+        let review=json!({"issues":issues,"text":text,"receipt":receipt,"corrected":corrected,"corrected_dxf":"corrected.dxf"});
         let result = page::render_with_review(self.root, &q, Some(&review))?;
         s.facts["roots"] = json!(result.root_count);
         s.facts["rendered_roots"] = json!(result.rendered_root_count);

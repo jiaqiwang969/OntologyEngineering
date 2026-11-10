@@ -246,7 +246,7 @@ pub fn page_with_review(graph: &[u8], svg: &str, q: &MdReviewPageRequest, review
         "drafting_review":review, "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
         "native_member_kinds":Value::Object(native_kinds),"rendered_member_identities":shown.members.len()});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");
-    let text = TEMPLATE.replace("@@DATA@@", &data).replace("@@SVG@@", svg);
+    let text = TEMPLATE.replace("@@COMPARISON_JS@@", include_str!("../assets/drawing-comparison.js")).replace("@@DATA@@", &data).replace("@@SVG@@", svg);
     let result = MdReviewPage {
         schema: SCHEMA.into(),
         page: MdDrawingRouteFile {

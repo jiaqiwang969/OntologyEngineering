@@ -78,6 +78,67 @@ fn root_text(s: &[u8], handle: &str) -> String {
     lines[begin..].join("\n") + "\n"
 }
 
+// Read the header variable separately from object handles, without the writer's parser.
+fn assert_handseed(bytes: &[u8]) -> u64 {
+    let text = String::from_utf8(bytes.to_vec()).unwrap().replace("\r\n", "\n");
+    let lines: Vec<_> = text.lines().collect();
+    let tags: Vec<_> = lines.chunks_exact(2).map(|p| (p[0].trim().parse::<i32>().unwrap(), p[1].trim())).collect();
+    let seed = tags.windows(2).find(|p| p[0] == (9, "$HANDSEED")).unwrap();
+    assert_eq!(seed[1].0, 5);
+    let seed = u64::from_str_radix(seed[1].1, 16).unwrap();
+    let mut header = false;
+    let mut handles = std::collections::BTreeSet::new();
+    for (i, &(code, value)) in tags.iter().enumerate() {
+        if code == 0 { header = false; }
+        if code == 2 && i > 0 && tags[i-1] == (0, "SECTION") { header = value == "HEADER"; }
+        if !header && matches!(code, 5 | 105) {
+            let h = u64::from_str_radix(value, 16).unwrap();
+            assert!(handles.insert(h), "duplicate handle");
+            assert!(h < seed, "object handle must be below HANDSEED");
+        }
+    }
+    assert_eq!(seed, handles.last().unwrap() + 1);
+    seed
+}
+
+#[test]
+fn correction_handseed_survives_header_group_two_values() {
+    for suffix in [false, true] {
+        let s = String::from_utf8(fixture()).unwrap();
+        let variable = "9\r\n$DIMBLK\r\n2\r\nMarker\r\n";
+        let s = if suffix { s.replacen("5\r\nF0\r\n", &format!("5\r\nF0\r\n{variable}"), 1) }
+            else { s.replacen("9\r\n$HANDSEED", &format!("{variable}9\r\n$HANDSEED"), 1) };
+        let b = s.into_bytes();
+        let p = plan(&b, vec![text_op(&b)]);
+        let (out, receipt) = rewrite(&b, &p).unwrap();
+        assert_eq!(assert_handseed(&out), 0xF1);
+        assert_eq!(receipt.new_handles, ["F0"]);
+        assert!(receipt.changes.iter().any(|c| &b[c.start as usize..c.end as usize] == b"F0" && c.replacement_hex == "4631" && c.issue_id == "label"));
+        verify(&b, &out, &p, &receipt).unwrap();
+        let mut stale = out.clone();
+        let at = stale.windows(2).position(|w| w == b"F1").unwrap();
+        stale[at+1] = b'0';
+        let mut forged = receipt.clone();
+        forged.corrected_sha256 = Some(sha256(&stale));
+        forged.changes.iter_mut().find(|c| c.replacement_hex == "4631").unwrap().replacement_hex = "4630".into();
+        assert!(verify(&b, &stale, &p, &forged).is_err());
+    }
+}
+
+#[test]
+fn correction_supplies_missing_handseed_with_audited_header_patch() {
+    for omit_header in [false, true] {
+        let s = String::from_utf8(fixture()).unwrap();
+        let s = if omit_header { s.split_once("0\r\nENDSEC\r\n").unwrap().1.to_owned() }
+            else { s.replacen("9\r\n$HANDSEED\r\n5\r\nF0\r\n", "", 1) };
+        let b = s.into_bytes();
+        let p = plan(&b, vec![text_op(&b)]);
+        let (out, r) = rewrite(&b, &p).unwrap();
+        assert_handseed(&out);
+        verify(&b, &out, &p, &r).unwrap();
+    }
+}
+
 #[test]
 fn correction_applies_four_operations_preserves_unknown_tags_and_rechecks_bytes() {
     let b = fixture();
@@ -138,6 +199,7 @@ fn correction_clones_nested_shared_blocks_for_only_one_occurrence() {
     let h = &r.applied[0].result_handles[0];
     assert!(root_text(&out, h).contains("62\n4"));
     assert_eq!(r.new_handles.len(), 9);
+    assert_handseed(&out);
     verify(&b, &out, &p, &r).unwrap();
     let g = oe_drawing::engineering_expression::discover(&out).unwrap();
     assert_eq!(g.source.entities.len(), 4);

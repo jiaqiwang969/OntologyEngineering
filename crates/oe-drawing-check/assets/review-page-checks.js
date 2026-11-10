@@ -2,8 +2,8 @@ const run=async()=>{try{
 const w=document.getElementById('f').contentWindow,d=w.document,a=w.expressionReview,G=a.graph,checks=[],$=id=>d.getElementById(id);
 const ok=(p,label)=>{if(!p)throw Error(label);checks.push(label)};
 const count=()=>[...a.visible.values()].filter(x=>x.length).length;
-const sourceNodes=()=>d.querySelectorAll('svg>g[data-entity]').length;
-const overlays=()=>d.querySelectorAll('#canvas svg line[data-interval]').length;
+const sourceNodes=()=>d.querySelectorAll('#canvas>svg>g[data-entity]').length;
+const overlays=()=>d.querySelectorAll('#canvas>svg line[data-interval]').length;
 const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
 const full=r=>r.length===1&&r[0][0]===0&&r[0][1]===1;
 const facts={},NA=[];
@@ -14,6 +14,14 @@ const expect=(pred,showDup)=>{const m=new Map();for(const x of G.members){if(!pr
 const partials=m=>[...m.values()].reduce((n,r)=>n+(full(r)?0:r.length),0);
 const verify=(m,label)=>{ok(count()===m.size,label+' root coverage');for(const [id,r] of m)ok(same(a.visible.get(id),r),label+' ranges '+id);ok(overlays()===partials(m),label+' partial overlays drawn once each');ok(sourceNodes()===baseNodes,label+' source inventory unchanged');const s=shownGroups(label);checks.push(label+' groups shown by their claiming members, empty notice only when nothing is drawn');return s};
 const baseNodes=sourceNodes(),N=G.entities.length;
+if(a.drafting?.receipt.status==='written'){
+ ok(a.drawingMode==='compare','A corrected drawing initially opens in comparison mode');
+ ok(!d.querySelector('iframe')&&d.querySelectorAll('header').length===1&&d.querySelectorAll('aside').length===1,'One viewer without a nested page');
+ const left=d.querySelector('#canvas>svg').getBoundingClientRect(),right=$('correctedSvg').getBoundingClientRect();
+ ok(left.width>0&&right.width>0&&Math.abs(left.width-right.width)<2&&right.left>=left.right,'Comparison has two adjacent populated panes of equal width');
+ ok(d.querySelectorAll('#correctedSvg>g[data-entity]').length>0,'Corrected comparison pane has native drawing content');
+ facts.initial_comparison=true;a.setDrawingMode('source');
+}else if(a.drafting)ok(a.drawingMode==='source'&&$('correctedPane').hidden,'Without corrections the default remains the original drawing');
 if($('original').checked){ok(!!a.drafting,'Only the issue review initially selects the original drawing');ok(count()===N&&[...a.visible.values()].every(full),'Initial original view keeps every source range');ok([...d.querySelectorAll('#canvas>svg>g[data-entity]')].every(g=>g.style.display!=='none'),'Initial original view shows every converted group');facts.initial_original=true;$('original').click()}
 ok(G.schema==='oev2.drawing-expression-graph/1','Typed expression graph loaded');
 if(G.revisions?.identities.length){const revs=G.revisions.identities.flatMap(i=>i.revisions),diffs=G.revisions.comparisons.flatMap(c=>c.differences);ok(!$('revisionPanel').hidden,'Revision identity panel visible');ok($('revisionSelector').options.length===revs.length,'Every revision selectable');ok(revs.some(r=>r.status==='current_candidate'&&r.id===$('revisionSelector').value),'Default revision is explicitly a current candidate');ok(d.querySelectorAll('[data-difference]').length===diffs.length,'Every entity difference expandable');const buttons=[...d.querySelectorAll('#revisionDiff button[data-source]')];ok(buttons.length===diffs.reduce((n,v)=>n+v.older_handles.length+v.newer_handles.length,0)&&buttons.every(b=>G.entities.some(e=>e.id===b.dataset.source)),'Every difference links to original source entities');const initial=$('revisionSelector').value,view=a.view;for(const r of revs){$('revisionSelector').value=r.id;$('revisionSelector').dispatchEvent(new w.Event('change'));const sheet=G.views.find(v=>v.id===r.sheet_id);const evidence=$('revisionEvidence').textContent,shown=a.view,canvas=d.querySelector('#canvas>svg'),ox=Number(canvas.dataset.drawingOriginX),ty=Number(canvas.dataset.drawingTopY),b=sheet?.bbox||[],width=b[2]-b[0],height=b[3]-b[1];ok(!!sheet&&r.source_handles.every(h=>evidence.includes(h))&&evidence.includes('title_date:'+r.date),'Revision selector reads source evidence '+r.id);ok(Math.abs(shown[0]+shown[2]/2-((b[0]+b[2])/2-ox))<1e-6*Math.max(1,width)&&Math.abs(shown[1]+shown[3]/2-(ty-(b[1]+b[3])/2))<1e-6*Math.max(1,height)&&shown[2]>=width&&shown[2]<=width*1.2&&shown[3]>=height&&shown[3]<=height*1.2,'Revision selector frames its sheet '+r.id)}for(const button of [buttons[0],buttons.at(-1)].filter(Boolean)){button.click();ok(a.selection?.type==='source'&&a.selection?.id===button.dataset.source,'Difference source button selects its source '+button.dataset.source)}$('clear').click();$('revisionSelector').value=initial;$('revisionSelector').dispatchEvent(new w.Event('change'));a.setView(view);facts.revisions={identities:G.revisions.identities.length,revisions:revs.length,differences:diffs.length};}else if($('revisionPanel'))ok($('revisionPanel').hidden,'No revision relation invented for single drawings');
@@ -24,15 +32,36 @@ if(a.drafting){
  for(const i of items){ok(review.text.includes(i.id)&&review.text.includes(i.clause),'Plain text export keeps item and clause '+i.id);ok(i.classification!=='source_deviation_candidate'||i.layers.includes('source'),'Source candidates have source findings '+i.id);ok(i.classification!=='recognition_deviation'||!i.layers.includes('source'),'Reading-only deviations remain separate '+i.id)}
  if(receipt.status==='written'){
   ok(!receipt.corrected_path.startsWith('/')&&receipt.source_sha256===G.source_sha256,'Correction receipt is portable and bound to the original source');
-  await a.correctedDrawing(true);const frame=$('correctedDrawing'),child=frame.contentWindow.expressionReview,cg=child?.graph;
-  ok(!frame.hidden&&cg?.source_sha256===receipt.corrected_sha256,'Corrected presentation embeds the graph re-read from the corrected bytes');
-  for(const applied of receipt.applied){const item=items.find(i=>i.id===applied.issue_id);ok(item?.confidence==='certain'&&item.classification==='source_deviation_candidate','Only certain source items are corrected '+applied.issue_id);for(const h of applied.result_handles)ok(cg.entities.some(e=>e.id===h),'Corrected graph contains written handle '+h);if(item.rule==='G2-043-cutting-letter-required'){const site=item.details.cutting_site;ok(applied.result_handles.every(h=>cg.members.some(m=>m.source_handle===h&&m.member_role==='view_letter'&&site.source_handles.every(sh=>cg.members.some(s=>s.source_handle===sh&&s.member_role==='cutting_stroke'&&s.expression_id===m.expression_id)))),'Added letter belongs to its cutting endpoint '+item.id)}}
+  await a.correctedDrawing(true);const pane=$('correctedPane'),cg=review.corrected.graph,right=$('correctedSvg'),left=d.querySelector('#canvas>svg');
+  ok(!pane.hidden&&left.style.display==='none'&&cg.source_sha256===receipt.corrected_sha256,'Corrected presentation embeds the graph re-read from the corrected bytes');
+  for(const applied of receipt.applied){const item=items.find(i=>i.id===applied.issue_id);ok(item?.confidence==='certain'&&item.classification==='source_deviation_candidate','Only certain source items are corrected '+applied.issue_id);for(const h of applied.result_handles)ok(cg.source.entities.some(e=>e.id===h),'Corrected graph contains written handle '+h);if(item.rule==='G2-043-cutting-letter-required'){const site=item.details.cutting_site;ok(applied.result_handles.every(h=>cg.members.some(m=>m.source_handle===h&&m.member_role==='view_letter'&&site.source_handles.every(sh=>cg.members.some(s=>s.source_handle===sh&&s.member_role==='cutting_stroke'&&s.expression_id===m.expression_id)))),'Added letter belongs to its cutting endpoint '+item.id)}}
   ok(await a.showDraftingIssue(receipt.applied[0].issue_id,true),'Corrected item button locates its written entity');
-  ok(child.selection?.id===receipt.applied[0].result_handles[0],'Corrected view selection is the saved added entity');
-  await a.correctedDrawing(false);ok(frame.hidden,'Original drawing can be restored');
- }else{ok(receipt.corrected_sha256===null&&$('showCorrectedDrawing').disabled&&$('downloadCorrected').hidden,'No corrected artifact is claimed without operations')}
+  ok(a.correctedSelection===receipt.applied[0].result_handles[0],'Corrected view selection is the saved added entity');
+  await a.correctedDrawing(false);ok(pane.hidden&&left.style.display!=='none','Original drawing can be restored');
+  $('showComparison').click();
+  const world=el=>{const v=el.getAttribute('viewBox').split(/\s+/).map(Number);return [v[0]+Number(el.dataset.drawingOriginX),Number(el.dataset.drawingTopY)-v[1],v[2],v[3]]};
+  const synced=()=>world(left).every((x,i)=>Math.abs(x-world(right)[i])<1e-7*Math.max(1,Math.abs(x)));
+  ok(a.drawingMode==='compare'&&synced(),'Both panes show the same drawing coordinate range');
+  const before=a.view;$('zoomIn').click();ok(a.view[2]<before[2]&&synced(),'Toolbar zoom synchronizes both panes');
+  for(const el of [left,right]){
+   const rect=el.getBoundingClientRect(),old=a.view;
+   el.dispatchEvent(new w.WheelEvent('wheel',{clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2,deltaY:-100,bubbles:true,cancelable:true}));
+   ok(a.view[2]<old[2]&&synced(),'Wheel zoom from either pane synchronizes both panes');
+   const pan=a.view;el.dispatchEvent(new w.PointerEvent('pointerdown',{button:0,pointerId:7,clientX:rect.left+40,clientY:rect.top+40}));el.dispatchEvent(new w.PointerEvent('pointermove',{pointerId:7,clientX:rect.left+65,clientY:rect.top+52}));el.dispatchEvent(new w.PointerEvent('pointerup',{button:0,pointerId:7,clientX:rect.left+65,clientY:rect.top+52}));
+   ok(!same(a.view,pan)&&synced(),'Panning from either pane synchronizes both panes');
+  }
+  for(const applied of receipt.applied){
+   const row=[...d.querySelectorAll('[data-issue-id]')].find(n=>n.dataset.issueId===applied.issue_id);row.querySelector('summary').click();
+   const item=items.find(i=>i.id===applied.issue_id),site=item.details.cutting_site,position=site?.position;
+   ok(a.drawingMode==='compare'&&synced()&&!!a.selection&&a.correctedSelection===applied.result_handles[0],'Issue selection locates both drawings '+applied.issue_id);
+   const vb=world(left);if(position)ok(position[0]>=vb[0]&&position[0]<=vb[0]+vb[2]&&position[1]<=vb[1]&&position[1]>=vb[1]-vb[3],'Both panes contain the issue position '+applied.issue_id);
+   const group=[...right.querySelectorAll('[data-entity]')].find(n=>n.dataset.entity===applied.result_handles[0]);ok(group?.classList.contains('changed')&&group.classList.contains('selected'),'Corrected change is visibly highlighted '+applied.issue_id);
+   group.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerId:8,clientX:40,clientY:40}));group.dispatchEvent(new w.PointerEvent('pointerup',{bubbles:true,button:0,pointerId:8,clientX:40,clientY:40}));ok(a.correctedSelection===applied.result_handles[0]&&$('details').textContent.includes(cg.source_sha256),'Corrected picking uses shared inspection controls with corrected provenance');
+  }
+  a.setDrawingMode('source');
+ }else{ok(receipt.corrected_sha256===null&&$('showCorrectedDrawing').disabled&&$('showComparison').disabled&&$('downloadCorrected').hidden,'No corrected artifact is claimed without operations')}
  const first=items.find(i=>i.classification==='source_deviation_candidate');if(first){ok(await a.showDraftingIssue(first.id),'Issue button locates original source');ok($('original').checked,'Issue location shows original converter rendering')}
- $('clear').click();if($('original').checked!==raw)$('original').click();a.setView(view);
+ a.setDrawingMode('source');$('clear').click();if($('original').checked!==raw)$('original').click();a.setView(view);
  facts.drafting={issues:items.length,applied:receipt.applied.length,status:receipt.status};
 }
 
@@ -92,11 +121,11 @@ const strokeWidths=label=>{const S=pageState(),W=a.widths,out={thick:0,thin:0,pa
 const segD=(q,a,b)=>{const vx=b[0]-a[0],vy=b[1]-a[1],L=vx*vx+vy*vy,t=L<1e-18?0:Math.max(0,Math.min(1,((q[0]-a[0])*vx+(q[1]-a[1])*vy)/L));return Math.hypot(q[0]-a[0]-t*vx,q[1]-a[1]-t*vy)};
 // Drawn structural lines: one element per line, the inferred spans each inside exactly one drawn line, their source end points
 // on it within the band of one drawn line (0.02 drawing units).
-const drawnLines=()=>{const nodes=[...d.querySelectorAll('#canvas svg [data-line]')],ids=nodes.map(n=>n.dataset.line),once=new Set(ids).size===ids.length,byId=new Map(LINES.map(l=>[l.id,l]));let solid=true,dashed=true,endsOk=true,maxEnd=0;const inferred=[];
+const drawnLines=()=>{const nodes=[...d.querySelectorAll('#canvas>svg [data-line]')],ids=nodes.map(n=>n.dataset.line),once=new Set(ids).size===ids.length,byId=new Map(LINES.map(l=>[l.id,l]));let solid=true,dashed=true,endsOk=true,maxEnd=0;const inferred=[];
  for(const n of nodes){const l=byId.get(n.dataset.line),dash=n.getAttribute('stroke-dasharray');if(l.line_class==='visible_outline'&&dash&&dash!=='none')solid=false;if(l.line_class==='hidden_outline'&&!(dash&&dash!=='none'))dashed=false;
   for(const id of (n.dataset.inferred||'').split(' ').filter(Boolean)){inferred.push(id);const s=IMP.find(x=>x.id===id),pts=[[s.points[0]-ox0,ty0-s.points[1]],[s.points[2]-ox0,ty0-s.points[3]]];
    for(const q of pts){let dd;if(n.tagName==='line')dd=segD(q,[+n.getAttribute('x1'),+n.getAttribute('y1')],[+n.getAttribute('x2'),+n.getAttribute('y2')]);else if(l.arc)dd=Math.abs(Math.hypot(q[0]-(l.arc[0]-ox0),q[1]-(ty0-l.arc[1]))-l.arc[2]);else dd=Infinity;maxEnd=Math.max(maxEnd,dd);if(!(dd<=0.02+1e-9))endsOk=false}}}
- return {nodes:nodes.length,ids,once,solid,dashed,inferred,inferredOnce:new Set(inferred).size===inferred.length,endsOk,maxEnd,overlay:d.querySelectorAll('#canvas svg [data-implied]').length}};
+ return {nodes:nodes.length,ids,once,solid,dashed,inferred,inferredOnce:new Set(inferred).size===inferred.length,endsOk,maxEnd,overlay:d.querySelectorAll('#canvas>svg [data-implied]').length}};
 const carriedHidden=()=>{const shown=new Set(drawnLines().ids);return G.members.every(m=>{const l=a.memberLine.get(m.id);if(!l||!shown.has(l.id))return true;return !(a.visible.get(m.source_handle)||[]).some(r=>Math.min(r[1],m.interval[1])-Math.max(r[0],m.interval[0])>1e-9)})};
 ok($('complete').checked,'Complete structure is the default');const dl=drawnLines(),dImp=dl.inferred.length;
 ok(dl.nodes===LINES.length&&dl.once,'Default view draws every structural line once as one element');ok(dl.solid,'Visible-outline lines are drawn solid');ok(dl.dashed,'Hidden-outline lines are drawn dashed');
@@ -105,8 +134,8 @@ ok(carriedHidden(),'Source spans carried by a structural line are not drawn agai
 ok(secOnly.every(h=>!(a.visible.get(h)||[]).length),'Default view hides section-only sources');
 facts.default_view={complete_checked:$('complete').checked,implied_drawn:dImp,section_profile_sources:SEC,section_only_hidden:secOnly.filter(h=>!(a.visible.get(h)||[]).length).length};
 facts.structural_lines={lines:LINES.length,drawn:dl.nodes,drawn_once:dl.once,visible_solid:dl.solid,hidden_dashed:dl.dashed,implied_overlay:dl.overlay,inferred_in_lines:dImp,inferred_endpoints_ok:dl.endsOk,inferred_endpoint_max_distance:dl.maxEnd,carried_not_drawn_again:carriedHidden(),
- visible_dasharray:[...d.querySelectorAll('#canvas svg [data-line]')].filter(n=>LINES.find(l=>l.id===n.dataset.line).line_class==='visible_outline').map(n=>n.getAttribute('stroke-dasharray')).filter(Boolean).length};
-$('complete').click();ok(!$('complete').checked&&d.querySelectorAll('#canvas svg [data-implied],#canvas svg [data-line]').length===0,'Unticking shows the source as drawn');ok(SEC.every(h=>(a.visible.get(h)||[]).length>0),'As drawn shows every section-profile source');facts.default_view.as_drawn_shows_section_profile=SEC.every(h=>(a.visible.get(h)||[]).length>0);
+ visible_dasharray:[...d.querySelectorAll('#canvas>svg [data-line]')].filter(n=>LINES.find(l=>l.id===n.dataset.line).line_class==='visible_outline').map(n=>n.getAttribute('stroke-dasharray')).filter(Boolean).length};
+$('complete').click();ok(!$('complete').checked&&d.querySelectorAll('#canvas>svg [data-implied],#canvas>svg [data-line]').length===0,'Unticking shows the source as drawn');ok(SEC.every(h=>(a.visible.get(h)||[]).length>0),'As drawn shows every section-profile source');facts.default_view.as_drawn_shows_section_profile=SEC.every(h=>(a.visible.get(h)||[]).length>0);
 facts.kind_labels=Object.fromEntries(a.presentKinds.map(k=>[k,d.querySelector('[data-kind="'+k+'"]').closest('label').querySelector('.name').childNodes[0].textContent]));
 const all=expect(()=>true,false),dupMembers=G.members.filter(m=>DUP.has(m.id)),hiddenNow=dupMembers.filter(m=>hidden(m,()=>true));
 ok(count()===all.size,'Every source drawn with every filter selected; duplicate spans drawn once by their primary');
@@ -138,16 +167,16 @@ const shared=G.entities.find(e=>e.geometry_kind==='line'&&!a.bySource.get(e.id).
 const svg=d.querySelector('#canvas>svg'),ox=Number(svg.dataset.drawingOriginX),ty=Number(svg.dataset.drawingTopY),near=(x,y)=>Math.abs(x-y)<1e-8;
 if(shared){ok(!!shared,'A bounded shared contour source exists in the graph');
 $('kindNone').click();d.querySelector('[data-kind="visible_contour"]').click();
-const rr=a.visible.get(shared.id),nodes=[...d.querySelectorAll('#canvas svg line[data-entity]')].filter(n=>n.dataset.entity===shared.id),pc=shared.coordinates;
+const rr=a.visible.get(shared.id),nodes=[...d.querySelectorAll('#canvas>svg line[data-entity]')].filter(n=>n.dataset.entity===shared.id),pc=shared.coordinates;
 ok(rr.length>0&&!full(rr)&&nodes.length===rr.length,'Bounded contour span shown alone, once per range');
 for(let i=0;i<nodes.length;i++){const n=nodes[i],[u,v]=rr[i];ok(near(+n.getAttribute('x1'),pc[0]+u*(pc[2]-pc[0])-ox)&&near(+n.getAttribute('y1'),ty-pc[1]-u*(pc[3]-pc[1])),'Span start on the original source domain');ok(near(+n.getAttribute('x2'),pc[0]+v*(pc[2]-pc[0])-ox)&&near(+n.getAttribute('y2'),ty-pc[1]-v*(pc[3]-pc[1])),'Span end on the original source domain')}
-$('kindAll').click();ok(full(a.visible.get(shared.id))&&![...d.querySelectorAll('#canvas svg line[data-entity]')].some(n=>n.dataset.entity===shared.id),'All kinds restore the whole source without duplicate overlay')}else NA.push('bounded shared contour source');
+$('kindAll').click();ok(full(a.visible.get(shared.id))&&![...d.querySelectorAll('#canvas>svg line[data-entity]')].some(n=>n.dataset.entity===shared.id),'All kinds restore the whole source without duplicate overlay')}else NA.push('bounded shared contour source');
 const dims=G.expressions.filter(e=>e.family==='dimension'||e.family==='tolerance').sort((x,y)=>a.exprMembers.get(y.id).length-a.exprMembers.get(x.id).length);
 const target=dims[0]||[...G.expressions].sort((x,y)=>a.exprMembers.get(y.id).length-a.exprMembers.get(x.id).length)[0];if(!dims.length)NA.push('annotation expression (the largest expression is focused instead)');const btn=d.querySelector('#exprList button[data-expr="'+target.id+'"]');ok(!!btn,'Expression list offers the largest annotation expression');btn.click();
 ok(a.selection.type==='expr'&&a.selection.id===target.id,'Expression focus selected from list');
 const memberSrc=new Set(a.exprMembers.get(target.id).map(m=>m.source_handle));
 for(const id of memberSrc){const g=live().filter(n=>n.dataset.entity===id);ok(g.every(n=>n.classList.contains('selected')===claimers(n).some(m=>m.expression_id===target.id)),'Focused member marked on the groups its expression claims '+id)}
-const other=[...d.querySelectorAll('svg>g[data-entity]')].find(n=>!memberSrc.has(n.dataset.entity)&&n.style.display!=='none');ok(!!other,'A visible non-member exists while focusing');const op0=other.style.getPropertyValue('--op');ok(op0==='1','Non-members keep full opacity while focusing (no default dimming)');
+const other=[...d.querySelectorAll('#canvas>svg>g[data-entity]')].find(n=>!memberSrc.has(n.dataset.entity)&&n.style.display!=='none');ok(!!other,'A visible non-member exists while focusing');const op0=other.style.getPropertyValue('--op');ok(op0==='1','Non-members keep full opacity while focusing (no default dimming)');
 $('dimOthers').click();const op1=other.style.getPropertyValue('--op');ok(op1==='.2','Dimming option dims non-members');$('dimOthers').click();const op2=other.style.getPropertyValue('--op');ok(op2==='1','Clearing the option restores full opacity');facts.dimming={focused:target.id,non_member:other.dataset.entity,default_opacity:op0,option_opacity:op1,after_clear:op2};
 ok($('details').textContent.includes(target.rule)&&$('details').textContent.includes(target.label.slice(0,6)),'Expression details show rule and label');
 $('clear').click();ok(a.selection===null,'Selection cleared');
@@ -162,18 +191,18 @@ ok($('details').textContent.includes(known.id),'Source details keep handle ident
 ok(!Object.keys(CMPX).length&&$('compare').textContent.includes('没有嵌入独立参照'),'No independent reference embedded and the comparison card says so');
 $('search').value='';$('search').dispatchEvent(new w.Event('input'));ok(d.querySelectorAll('#exprList button[data-expr]').length===G.expressions.length,'Cleared search lists every expression');
 $('kindNone').click();$('original').click();ok(count()===N,'Raw comparison shows complete source');$('original').click();ok(count()===0,'Leaving raw comparison restores filters');
-$('kindAll').click();ok(d.querySelectorAll('#canvas svg [data-implied],#canvas svg [data-line]').length===0,'As drawn: no implied span and no structural line');
+$('kindAll').click();ok(d.querySelectorAll('#canvas>svg [data-implied],#canvas>svg [data-line]').length===0,'As drawn: no implied span and no structural line');
 $('complete').click();const cl=drawnLines();ok(cl.nodes===LINES.length&&cl.once&&cl.overlay===0&&cl.inferred.length===IMP.length,'Complete structure draws every structural line once, inferred spans inside them');
 const impOk=cl.endsOk;ok(impOk,'Implied spans drawn at their source end points');ok(secOnly.every(h=>!(a.visible.get(h)||[]).length),'Complete structure hides section-only sources');const nComplete=cl.inferred.length;ok(sourceNodes()===baseNodes,'Complete structure keeps the source inventory');
-const hl=LINES.find(l=>l.line_class==='hidden_outline');if(hl){$('kindNone').click();d.querySelector('[data-kind="hidden_contour"]').click();const hn=[...d.querySelectorAll('#canvas svg [data-line]')];ok(hn.length===LINES.filter(l=>l.line_class==='hidden_outline').length&&hn.every(n=>LINES.find(l=>l.id===n.dataset.line).line_class==='hidden_outline'),'Kind filter selects the structural lines of its class');$('kindAll').click()}
+const hl=LINES.find(l=>l.line_class==='hidden_outline');if(hl){$('kindNone').click();d.querySelector('[data-kind="hidden_contour"]').click();const hn=[...d.querySelectorAll('#canvas>svg [data-line]')];ok(hn.length===LINES.filter(l=>l.line_class==='hidden_outline').length&&hn.every(n=>LINES.find(l=>l.id===n.dataset.line).line_class==='hidden_outline'),'Kind filter selects the structural lines of its class');$('kindAll').click()}
 // The complete structure with one kind selected at a time: what is drawn follows the members, and the empty notice never lies
 // over drawn structural lines (the outline kinds are drawn by lines only).
 facts.complete_by_kind={};for(const kind of a.presentKinds){$('kindNone').click();d.querySelector('[data-kind="'+kind+'"]').click();const s=shownGroups('Complete structure, kind '+kind);facts.complete_by_kind[kind]={groups_shown:s.groups_shown,structural_lines:s.structural_lines,sources_drawn:s.sources_drawn,sources_drawn_by_lines_only:s.sources_drawn_by_lines_only,empty_notice:s.empty_notice};
  if(kind==='visible_contour')ok(s.structural_lines===0||!s.empty_notice,'Only the visible outline selected: no empty notice over drawn structural lines')}
 ok(true,'Complete structure, one kind at a time: groups by their claiming members, empty notice only when nothing is drawn');$('kindAll').click();
 const tl=LINES.find(l=>l.trimmed.length);if(tl){a.chooseLine(tl.id);ok($('details').textContent.includes(tl.id)&&$('details').textContent.includes('截下'),'Line details show the trimmed part');$('clear').click()}
-$('complete').click();ok(d.querySelectorAll('#canvas svg [data-implied],#canvas svg [data-line]').length===0,'Leaving complete structure removes structural lines');
-$('openEnds').click();const mk=[...d.querySelector('#canvas svg').lastElementChild.children];ok(mk.length===(G.structure_ends||[]).length,'End markers for every reported end');
+$('complete').click();ok(d.querySelectorAll('#canvas>svg [data-implied],#canvas>svg [data-line]').length===0,'Leaving complete structure removes structural lines');
+$('openEnds').click();const mk=[...d.querySelector('#canvas>svg').lastElementChild.children];ok(mk.length===(G.structure_ends||[]).length,'End markers for every reported end');
 const byColor={};for(const m of mk)byColor[m.getAttribute('stroke')]=(byColor[m.getAttribute('stroke')]||0)+1;$('openEnds').click();
 facts.topology={as_drawn_implied:0,complete_implied:nComplete,implied_endpoints_ok:impOk,end_markers:mk.length,marker_colors:byColor};
 const multi=id=>new Set(a.bySource.get(id).map(m=>m.expression_id)).size>1,hiddenS=x=>{const p=DUP.get(x.id);return !!p&&multi(p)&&a.bySource.get(p).some(isContour)};

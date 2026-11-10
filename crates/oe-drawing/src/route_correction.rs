@@ -218,7 +218,7 @@ impl Run<'_> {
             s.inputs.push(self.file(&self.out.join(name))?);
         }
         let report = json!({"status":"passed","source_sha256":receipt.source_sha256,"corrected_sha256":receipt.corrected_sha256,
-            "checks":["recorded byte changes reconstruct saved drawing", "untargeted source records unchanged", "new handles unique", "operation postconditions", "bytes-only readback", "rendered roots belong to corrected source", "added cutting letters belong to their endpoint symbols"],
+            "checks":["recorded byte changes reconstruct saved drawing", "untargeted source records unchanged", "new handles unique", "all handles below HANDSEED; HANDSEED equals maximum live handle plus one", "operation postconditions", "bytes-only readback", "rendered roots belong to corrected source", "added cutting letters belong to their endpoint symbols"],
             "scope":"correction execution and source preservation, not engineering acceptance"});
         oe_core::write_new(&self.out.join("correction-check.json"), &report)?;
         s.outputs

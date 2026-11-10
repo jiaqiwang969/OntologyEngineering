@@ -45,9 +45,14 @@ struct Raw<'a> {
 }
 impl<'a> Raw<'a> {
     fn parse(bytes: &'a [u8]) -> Result<Self> {
-        ensure!(bytes.len() <= 64 * 1024 * 1024, "correction_source_budget");
         // The independent native reader also rejects malformed encodings and record structure.
         crate::native_readback::Drawing::parse(bytes)?;
+        Self::scan(bytes)
+    }
+    // Internal patch assembly may temporarily use the old seed as a new object handle.
+    // Native validation runs on input and on the final bytes after header maintenance.
+    fn scan(bytes: &'a [u8]) -> Result<Self> {
+        ensure!(bytes.len() <= 64 * 1024 * 1024, "correction_source_budget");
         let lines: Vec<_> = bytes
             .split_inclusive(|c| *c == b'\n')
             .scan(0, |p, s| {
@@ -85,7 +90,7 @@ impl<'a> Raw<'a> {
             let r = records.last_mut().context("correction_record_start")?;
             if code == 2 {
                 match r.kind.as_str() {
-                    "SECTION" => {
+                    "SECTION" if r.tags.len() == 1 => {
                         section = value.clone();
                         r.section = section.clone();
                     }
@@ -149,6 +154,20 @@ impl<'a> Raw<'a> {
             }
         }
         Ok(h)
+    }
+    fn handseed(&self) -> Result<Option<&Tag>> {
+        let mut found = None;
+        for r in self.records.iter().filter(|r| r.section == "HEADER") {
+            for (i, t) in r.tags.iter().enumerate() {
+                if t.code == 9 && t.value == "$HANDSEED" {
+                    let value = r.tags.get(i + 1).context("correction_handseed_value")?;
+                    ensure!(found.is_none() && value.code == 5, "correction_handseed_unique_code");
+                    ensure!(u64::from_str_radix(&value.value, 16)? > 0, "correction_handseed_positive");
+                    found = Some(value);
+                }
+            }
+        }
+        Ok(found)
     }
     fn entity(&self, h: &str, section: &str, block: &str) -> Result<usize> {
         let rs: Vec<_> = self
@@ -651,16 +670,7 @@ pub fn rewrite(
         .unwrap_or(0)
         .checked_add(1)
         .context("correction_handle_space_exhausted")?;
-    let seed = raw
-        .records
-        .iter()
-        .find(|r| r.section == "HEADER")
-        .and_then(|r| {
-            r.tags
-                .windows(2)
-                .find(|t| t[0].value == "$HANDSEED")
-                .map(|t| t[1].clone())
-        });
+    let seed = raw.handseed()?.cloned();
     if let Some(t) = &seed {
         ensure!(t.code == 5, "correction_handseed_code");
         next = next.max(u64::from_str_radix(&t.value, 16)?);
@@ -850,15 +860,27 @@ pub fn rewrite(
             });
         }
     }
-    if !editor.fresh.is_empty()
-        && let Some(t) = seed
-    {
-        editor.changes.push(Patch {
-            start: t.start,
-            end: t.end,
-            bytes: format!("{:X}", editor.next).into_bytes(),
-            issue: issue.clone(),
-        });
+    if !plan.operations.is_empty() {
+        // HEADER group 2 variables are values, not SECTION names. Derive the seed
+        // from all live object handles (including cloned definitions), never from itself.
+        let interim = splice(source, &editor.changes)?;
+        let live = Raw::scan(&interim)?.handles()?;
+        let next = live.last().copied().unwrap_or(0).checked_add(1)
+            .context("correction_handle_space_exhausted")?;
+        let value = format!("{next:X}");
+        if let Some(t) = seed {
+            if t.value != value {
+                editor.changes.push(Patch { start:t.start, end:t.end, bytes:value.into_bytes(), issue:issue.clone() });
+            }
+        } else {
+            let n = editor.raw.newline;
+            let (at, text) = if editor.raw.records.iter().any(|r| r.section == "HEADER") {
+                (editor.raw.section_end("HEADER")?, format!("9{n}$HANDSEED{n}5{n}{value}{n}"))
+            } else {
+                (0, format!("0{n}SECTION{n}2{n}HEADER{n}9{n}$HANDSEED{n}5{n}{value}{n}0{n}ENDSEC{n}"))
+            };
+            editor.changes.push(Patch { start:at, end:at, bytes:text.into_bytes(), issue:issue.clone() });
+        }
     }
     editor.changes.sort_by_key(|p| p.start);
     let corrected = splice(source, &editor.changes)?;
@@ -1145,8 +1167,11 @@ pub fn verify(
                         || (rec.kind == "TABLE" && rec.table == "BLOCK_RECORD" && t.code == 70))
             })
         });
+        let header_insert = change.start == change.end && a.handseed()?.is_none()
+            && (a.section_end("HEADER").ok() == Some(change.start)
+                || (change.start == 0 && !a.records.iter().any(|r| r.section == "HEADER")));
         ensure!(
-            target_record || insertion || metadata,
+            target_record || insertion || metadata || header_insert,
             "correction_patch_outside_declared_scope"
         );
     }
@@ -1216,23 +1241,27 @@ pub fn verify(
         }
     }
     ensure!(expected_new == fresh, "correction_unplanned_new_records");
+    let added_header = !a.records.iter().any(|r| r.section == "HEADER") && b.records.iter().any(|r| r.section == "HEADER");
     ensure!(
-        b.records.len() + ah.difference(&bh).count() == a.records.len() + fresh.len(),
+        b.records.len() + ah.difference(&bh).count() == a.records.len() + fresh.len() + if added_header { 2 } else { 0 },
         "correction_unplanned_record_inventory"
     );
-    if !fresh.is_empty()
-        && let Some(seed) = b
-            .records
-            .iter()
-            .filter(|r| r.section == "HEADER")
-            .flat_map(|r| r.tags.windows(2))
-            .find(|p| p[0].value == "$HANDSEED")
-    {
+    if !plan.operations.is_empty() {
+        let seed = b.handseed()?.context("correction_handseed_missing")?;
+        let next = bh.last().copied().unwrap_or(0).checked_add(1)
+            .context("correction_handle_space_exhausted")?;
         ensure!(
-            u64::from_str_radix(&seed[1].value, 16)?
-                > *bh.last().context("correction_no_live_handles")?,
+            u64::from_str_radix(&seed.value, 16)? == next,
             "correction_handseed_not_advanced"
         );
+        if a.handseed()?.is_none() {
+            let n = a.newline;
+            let expected = if added_header { format!("0{n}SECTION{n}2{n}HEADER{n}9{n}$HANDSEED{n}5{n}{next:X}{n}0{n}ENDSEC{n}") }
+                else { format!("9{n}$HANDSEED{n}5{n}{next:X}{n}") };
+            let at = if added_header {0} else {a.section_end("HEADER")?};
+            ensure!(changes.iter().filter(|c| c.start==at && c.end==at).count()==1
+                && changes.iter().any(|c| c.start==at && c.end==at && c.bytes==expected.as_bytes()), "correction_unplanned_header_fields");
+        }
     }
     let applied_issues: BTreeSet<_> = r.applied.iter().map(|a| a.issue_id.as_str()).collect();
     let remaining: Vec<_> = plan
@@ -1444,6 +1473,7 @@ pub fn write_new(
         "saved_bytes_match_receipt".into(),
         "untargeted_records_identical".into(),
         "unique_live_handles".into(),
+        "all_handles_below_handseed_and_seed_equals_max_plus_one".into(),
     ];
     Ok(receipt)
 }

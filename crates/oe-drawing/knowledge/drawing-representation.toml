@@ -4054,3 +4054,150 @@ meaning = "镜像点与另一侧轮廓重合的距离容差 = 该值 × 字高"
 name = "break_line_reach"
 value = 0.5
 meaning = "波浪线到剖面区域的距离不超过该值 × 字高时，该剖面区域是局部剖视"
+
+[[cards]]
+id = "assembly_drawing"
+expression_kind = "view"
+title = "装配图：由明细栏、零件序号与相邻零件的剖面线认出"
+meaning = "装配图表达一台机器或一个部件中各零件的装配关系：一组视图、必要的尺寸（含配合代号）、技术要求、零部件序号、明细栏和标题栏。装配图中一般应有明细栏，画在标题栏上方，序号列自下而上递增；所有零件都编序号，序号与明细栏的序号一致，指引线从所指零件的可见轮廓内引出、末端画圆点（薄件或涂黑断面用箭头）。剖视中相邻金属零件的剖面线方向相反，或方向一致而间隔不等；同一零件在各剖视中剖面线方向、间隔一致；紧固件、实心件纵向剖切时按不剖绘制；配合尺寸注孔轴配合代号（如 H7/g6）。只凭一项（例如只有一张表）不判定；焊接件图也有明细栏，但表示一个零件（焊缝符号本卡不读）；零件图上的参数表（表格图）没有序号。"
+sources = [
+  "GB/T 10609.2-2009 技术制图 明细栏 3.1（装配图中一般应有明细栏）、3.2.1、3.2.2（明细栏可作为装配图的续页按 A4 幅面单独给出）",
+  "GB/T 4458.2-2003 机械制图 装配图中零、部件序号及其编排方法 3.1、3.3（序号与明细栏一致）、4.1、4.4（指引线自所指部分的可见轮廓内引出，末端画圆点）、4.5",
+  "GB/T 4457.5-2013 机械制图 剖面区域的表示法 4.2（相邻辅助零件不画剖面符号）、4.7（相邻金属零件的剖面线方向相反或方向一致而间隔不等；同一零件的剖面线方向相同、间隔相等）、4.8（接合件）",
+  "GB/T 17453-2005 技术制图 图样画法 剖面区域的表示法 5（相邻零件剖面线示例）",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 4.4（紧固件纵向剖切按不剖绘制）",
+  "GB/T 4458.5-2003 机械制图 尺寸公差与配合注法 5.1（装配图中的配合代号）",
+  "机械制图（第7版）§10-1 一 装配图的内容",
+]
+knowledge_units = ["K15"]
+recognition = "按图纸读：E1 本张图纸上有明细栏；E2 视图中有零件序号，其序号都是明细栏的行号，被指到的行数不少于给定个数和给定比例；E3 同一视图中两个剖面区域共用一段边界线、方向或间隔不同（两个相邻零件）；E4 由序号和明细栏中的标准编号认出的不剖标准件；E5 尺寸中有孔、轴公差带代号用斜线隔开的配合代号。E1 与 E2 同时成立即判为装配图：图纸视图记 drawing_type:assembly、parts_list:<明细栏表达>、item_numbers:<被指到的行数>，名称后加“ · 装配图”；否则 E1 至 E5（没有明细栏时以序号代 E2）中有给定个数成立时记为候选（drawing_type_candidate:assembly）。逐个零件：序号圆点所在的剖面区域就是该序号的零件（序号记 names_region，剖面区域记 item）；圆点落在标准件内时序号记 names_part；同一视图中与它方向、间隔相同的剖面区域是同一零件（只由一个序号指到时才推及）；共用边界而剖面线不同的两个区域互记 different_part_from。"
+markers = []
+concepts = ["DC-G8-013", "DC-G2-009"]
+
+[[cards.components]]
+role = "table_line"
+primitives = ["INSERT", "LINE"]
+requirement = "明细栏（E1）：格线与文字成一个图块，表头在下，序号列连续递增"
+
+[[cards.components]]
+role = "note_text"
+primitives = ["INSERT", "MTEXT", "TEXT"]
+requirement = "零件序号（E2）：整数写在横线上或圆内，指引线末端圆点在零件内"
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH"]
+requirement = "相邻零件的剖面区域（E3）：共用一段边界线，方向相反或间隔不等"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["INSERT"]
+requirement = "按不剖绘制的标准件（E4）：只有结构线的图库图块"
+
+[[cards.components]]
+role = "dimension_text"
+primitives = ["DIMENSION", "MTEXT", "TEXT"]
+requirement = "配合代号（E5）：大写字母加等级的孔公差带、斜线、小写字母加等级的轴公差带"
+
+[[cards.variants]]
+id = "list_on_the_sheet"
+title = "明细栏在本张图纸上，序号与它对应"
+distinguishing = "E1 与 E2：本张图纸的明细栏，视图中的序号都是它的行号"
+encodings = ["block"]
+tests = ["parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing"]
+
+[[cards.variants]]
+id = "list_on_a_separate_sheet"
+title = "只有序号，明细栏在续页上"
+distinguishing = "本张图纸没有明细栏（明细栏可单独给出），视图中有序号，再有另一项证据（相邻零件的剖面线不同、配合代号）：候选"
+encodings = ["block", "hatch"]
+tests = ["item_numbers_and_opposite_hatches_without_a_list_are_a_candidate"]
+
+[[cards.variants]]
+id = "machined_after_joining"
+title = "接合件：装配后再加工，装配图上带零件图的内容"
+distinguishing = "已判为装配图的图纸上又有表面结构要求或几何公差：几个零件接合后一起加工（如热套、骑缝螺钉固定后加工），装配图同时是加工图"
+encodings = ["inferred"]
+tests = ["assembly_with_part_drawing_content_is_machined_after_joining"]
+
+[[cards.variants]]
+id = "fit_designation"
+title = "配合代号是装配图的一项证据"
+distinguishing = "尺寸文字中孔的公差带代号（大写字母加等级）与轴的公差带代号（小写字母加等级）用斜线隔开，如 H7/g6；螺纹副的 6H/6g（数字在前）、极限偏差的“+0.02/0”不算"
+encodings = ["text"]
+tests = ["parts_list_and_a_fit_designation_are_a_candidate"]
+
+[[cards.variants]]
+id = "adjacent_parts_hatched_apart"
+title = "共用边界、剖面线不同的两个剖面区域是两个相邻零件"
+distinguishing = "同一视图中两个剖面区域共用一段边界线，剖面线方向相差不小于给定角度，或间隔之比不小于给定值"
+encodings = ["hatch"]
+tests = ["item_numbers_and_opposite_hatches_without_a_list_are_a_candidate", "parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing"]
+
+[[cards.variants]]
+id = "part_by_item_dot"
+title = "序号圆点所在的区域就是该序号的零件"
+distinguishing = "指引线末端的圆点落在哪个剖面区域内，那个区域就是这个序号的零件；落在由该序号认出的标准件内，就是那个标准件"
+encodings = ["block", "hatch"]
+tests = ["item_dot_inside_a_hatch_names_its_part"]
+
+[[cards.variants]]
+id = "part_by_signature"
+title = "同一视图中剖面线方向、间隔相同的区域是同一零件"
+distinguishing = "同一零件的剖面线方向相同、间隔相等：与有序号圆点的区域方向、间隔相同的其他区域也是那个零件（这种剖面线只由一个序号指到时）"
+encodings = ["hatch"]
+tests = ["hatch_of_the_same_signature_is_the_same_part"]
+
+[[cards.counter_examples]]
+statement = "零件图上的参数表（表格图）不是明细栏，没有序号的零件图不是装配图"
+test = "series_table_on_a_part_drawing_is_not_an_assembly"
+
+[[cards.counter_examples]]
+statement = "只有明细栏一项证据时不作判断（焊接件图、单独的明细表）"
+test = "parts_list_alone_does_not_decide"
+
+[[cards.counter_examples]]
+statement = "序号不是明细栏的行号时不判定为装配图，最多是候选"
+test = "item_numbers_that_disagree_with_the_list_do_not_decide"
+
+[[cards.counter_examples]]
+statement = "同一零件被分成两个剖面区域、方向与间隔相同，不是两个零件"
+test = "one_part_hatched_in_two_regions_is_not_two_parts"
+
+[[cards.counter_examples]]
+statement = "一个区域中两组交叉的剖面线（非金属材料的剖面符号）不是两个零件"
+test = "cross_hatched_region_is_not_two_parts"
+
+[[cards.counter_examples]]
+statement = "用细双点画线画出、不画剖面线的相邻辅助零件不使图样成为装配图"
+test = "phantom_line_neighbour_does_not_make_an_assembly"
+
+[[cards.counter_examples]]
+statement = "方向、间隔相同的剖面线由两个不同序号指到时，不按剖面线推及其他区域"
+test = "two_items_in_one_signature_do_not_spread"
+
+[[cards.parameters]]
+name = "direction_difference_min"
+value = 30.0
+meaning = "两个剖面区域算作剖面线方向不同的最小方向差（度；相邻零件一般相差 90°）"
+
+[[cards.parameters]]
+name = "spacing_ratio_min"
+value = 1.3
+meaning = "两个剖面区域算作间隔不等的最小间隔之比（大 ÷ 小）"
+
+[[cards.parameters]]
+name = "item_numbers_min"
+value = 2.0
+meaning = "作为证据的序号最少个数"
+
+[[cards.parameters]]
+name = "rows_named_min"
+value = 0.5
+meaning = "被序号指到的明细栏行数占全部行数的下限（一张图纸上可只画出部分零件）"
+
+[[cards.parameters]]
+name = "evidence_min"
+value = 2.0
+meaning = "没有与序号对应的明细栏时，构成候选所需的证据项数"
+

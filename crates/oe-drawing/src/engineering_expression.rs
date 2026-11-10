@@ -67,6 +67,8 @@ mod section_hatching;
 mod thread_forms;
 #[path = "view_types.rs"]
 mod view_types;
+#[path = "assembly_drawing.rs"]
+mod assembly_drawing;
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
@@ -6877,6 +6879,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     view_types::state(&cx, &mut nb, &mut regions)?;
     section_hatching::state(&cx, &mut nb, &regions)?;
     thread_forms::state(&cx, &mut nb, &regions)?;
+    assembly_drawing::state(&cx, &mut nb, &mut regions)?;
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb
@@ -6931,7 +6934,9 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             state: r.state.into(),
             evidence_ids: r.evidence.clone(),
             unknowns: if r.kind == "sheet" {
-                view_layout::sheet_unknowns(r)
+                let mut u = view_layout::sheet_unknowns(r);
+                u.extend(assembly_drawing::unknowns(r));
+                u
             } else {
                 vec!["Projection relation to the principal view remains a candidate".into()]
             },

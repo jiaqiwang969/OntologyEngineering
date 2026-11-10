@@ -2911,7 +2911,7 @@ sources = [
 knowledge_units = ["K17", "K18"]
 recognition = "以已识别尺寸的尺寸界线为锚：同一根线上未解释的短端段（不超过给定长度）——在尺寸线一侧为超出段，在轮廓一侧为画进轮廓的起头——并入该界线；较长的未解释段若有另一尺寸的终端箭头垂直落在其上，则为两尺寸共用的界线。尺寸线终端之外从箭尖起共线延伸的细线是尺寸线的延长，沿它找数值。"
 markers = []
-concepts = ["DC-G4-019", "DC-G4-058", "DC-G4-059"]
+concepts = ["DC-G4-005", "DC-G4-019", "DC-G4-058", "DC-G4-059"]
 
 [[cards.components]]
 role = "extension_line"
@@ -3034,6 +3034,22 @@ meaning = "终端尖端到尺寸线的距离容差 = 该值 × 终端长度"
 name = "terminator_axis_sin_max"
 value = 0.1
 meaning = "终端轴线与尺寸线（圆弧取切线）夹角正弦的绝对值上限"
+
+[[cards.variants]]
+id = "outline_extended_to_virtual_corner"
+title = "光滑过渡处轮廓延长到交点的细线"
+distinguishing = "在圆角、倒角处，两侧轮廓用细实线延长到相交，尺寸界线从这个交点引出：从轮廓线（端点或线上一点）沿它的方向延到某尺寸界线起点的细线是这个尺寸的作图线（尺寸界线），不是轮廓；几个尺寸都从这个交点引出时它为各尺寸共用；压在这段细线下面的轮廓短头是轮廓画过了过渡处，同样借给这些尺寸"
+encodings = ["loose", "native"]
+tests = ["thin_line_continuing_an_outline_to_an_extension_line_start_is_construction"]
+
+[[cards.counter_examples]]
+statement = "交点处没有尺寸界线引出时，把轮廓延长的细线不归入任何尺寸；不沿轮廓方向的细线（过渡线等）也不是这种作图线"
+test = "thin_line_continuing_an_outline_without_a_dimension_is_no_construction"
+
+[[cards.parameters]]
+name = "virtual_corner_reach"
+value = 3.0
+meaning = "延到交点的作图细线长度上限 = 该值 × 字高"
 
 [[cards.parameters]]
 name = "overshoot_max"

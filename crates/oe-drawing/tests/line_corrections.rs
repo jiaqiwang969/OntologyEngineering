@@ -1470,3 +1470,79 @@ fn stub_past_a_corner_or_longer_tail_is_no_overshoot() {
     ]);
     assert!(contour_cover(&g, "QL").iter().all(|iv| iv[0] > 0.));
 }
+
+// ---------------------------------------------------------------- dimension_line_parts: extended to the virtual corner
+
+/// A plate with a chamfered upper-left corner; thin lines continue the left side and the upper
+/// edge to their intersection; the upper edge itself is drawn on to that intersection. With
+/// `dimensioned`, a width dimension drawn with loose parts starts its left extension line there.
+fn chamfered_corner(dimensioned: bool) -> MdEngineeringExpressionGraph {
+    let mut ents = vec![
+        line("CB", "01", [0., 0.], [40., 0.]),
+        line("CR", "01", [40., 0.], [40., 20.]),
+        line("CT", "01", [40., 20.], [0., 20.]),
+        line("CS", "01", [0., 0.], [0., 18.]),
+        line("CC", "01", [0., 18.], [2., 20.]),
+        line("CV", "02", [0., 18.], [0., 20.]),
+        line("CH", "02", [2., 20.], [0., 20.]),
+        line("CX", "05", [-5., 10.], [45., 10.]),
+    ];
+    if dimensioned {
+        ents.extend([
+            line("CEA", "02", [0., 20.], [0., 34.]),
+            line("CEB", "02", [40., 20.], [40., 34.]),
+            solid("CT1", "08", [0., 31.], [3., 31.]),
+            solid("CT2", "08", [40., 31.], [37., 31.]),
+            line("CDL", "08", [3., 31.], [37., 31.]),
+            text("CDV", "11", "40", [17., 32.], 3.5),
+        ]);
+    }
+    run(&ents)
+}
+
+#[test]
+fn thin_line_continuing_an_outline_to_an_extension_line_start_is_construction() {
+    let g = chamfered_corner(true);
+    let e = exprs_of(&g, "CDV")
+        .into_iter()
+        .find(|e| e.kind == "dimension_linear")
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "CDV")));
+    for h in ["CV", "CH"] {
+        let ms: Vec<_> = in_dimension(&g, h)
+            .into_iter()
+            .filter(|m| m.expression_id == e.id)
+            .collect();
+        assert!(
+            !ms.is_empty() && ms.iter().all(|m| m.member_role == "extension_line"),
+            "{h}: {:?}",
+            members(&g, h)
+        );
+        assert!(!kinds(&g, h).contains("visible_contour"), "{h}");
+    }
+    // the upper edge drawn on past the chamfer under the thin piece is lent, in its own type
+    let stub: Vec<_> = in_dimension(&g, "CT")
+        .into_iter()
+        .filter(|m| m.expression_id == e.id)
+        .collect();
+    assert!(
+        stub.iter()
+            .any(|m| m.member_role == "extension_origin" && m.line_type == "thick_continuous"),
+        "{:?}",
+        members(&g, "CT")
+    );
+    assert!(names(
+        e,
+        "dimension_line_parts",
+        "outline_extended_to_virtual_corner"
+    ));
+    assert!(e.concept_ids.contains(&"DC-G4-005".to_string()));
+    extension_lines_are_thin_and_off_the_outline(&g);
+}
+
+#[test]
+fn thin_line_continuing_an_outline_without_a_dimension_is_no_construction() {
+    let g = chamfered_corner(false);
+    for h in ["CV", "CH"] {
+        assert!(in_dimension(&g, h).is_empty(), "{h}");
+    }
+}

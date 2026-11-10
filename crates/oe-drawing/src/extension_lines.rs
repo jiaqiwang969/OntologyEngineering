@@ -347,3 +347,157 @@ pub(super) fn lend_outline(cx: &Ctx, b: &mut Builder) -> Result<()> {
     }
     Ok(())
 }
+
+/// Dimensioning a smooth transition (card `dimension_line_parts`, variant
+/// `outline_extended_to_virtual_corner`; DC-G4-005, GB/T 4458.4-2003 4.1.4 and figure 4): the
+/// outlines on both sides of a fillet or chamfer are continued by thin lines to their
+/// intersection, and the extension lines start there. A thin line that continues an outline line
+/// from its end (or from a point on it) to the start of a dimension's extension line is that
+/// dimension's construction (role `extension_line`), never outline; when several dimensions start
+/// at that corner it serves each. An outline stub drawn under the thin piece is the outline drawn
+/// past the transition into the construction: it is lent to the same dimensions.
+pub(super) fn virtual_corners(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let c = representation::card_ref(CARD)?;
+    let tol = representation::param(c, "coincident_tolerance")? * cx.scale.max(1e-6);
+    let reach = representation::param(c, "virtual_corner_reach")? * cx.scale.max(1e-6);
+    let w = Widths::of(cx);
+    let dims: BTreeSet<&str> = b
+        .exprs
+        .iter()
+        .filter(|e| e.kind.starts_with("dimension_") || e.kind == "thread_note")
+        .map(|e| e.id.as_str())
+        .collect();
+    let index: BTreeMap<&str, usize> = b
+        .exprs
+        .iter()
+        .enumerate()
+        .map(|(i, e)| (e.id.as_str(), i))
+        .collect();
+    // where extension lines start: the ends of extension-line sources and native origins
+    let mut starts: Vec<(P, usize, P)> = Vec::new();
+    for m in &b.members {
+        if !dims.contains(m.expression_id.as_str()) {
+            continue;
+        }
+        let e = index[m.expression_id.as_str()];
+        if m.member_role == "extension_line"
+            && m.native_member_id.is_none()
+            && let Some((a, z)) = cx.lines.get(&m.source_handle)
+        {
+            starts.push((*a, e, unit(sub(*z, *a))));
+            starts.push((*z, e, unit(sub(*a, *z))));
+        }
+        if m.member_role == "native_dimension"
+            && let Some(r) = cx.rec.get(&m.source_handle)
+        {
+            for code in [13, 14] {
+                if let Ok(o) = r.xy(code) {
+                    starts.push((o, e, [0., 0.]));
+                }
+            }
+        }
+    }
+    // outline lines: drawn thick by the layer convention or by the drawing's own evidence
+    let outline: Vec<(&String, P, P)> = cx
+        .lines
+        .iter()
+        .filter(|(h, _)| (cx.structural_style(h) || w.thick(cx, h)) && !exclusive(b, h))
+        .map(|(h, (a, z))| (h, *a, *z))
+        .collect();
+    let mut add: Vec<(usize, String, [f64; 2], &'static str, String)> = Vec::new();
+    for (h, (a, z)) in &cx.lines {
+        let len = dist(*a, *z);
+        if len <= tol
+            || len > reach
+            || b.used(h)
+            || not_plotted::source(cx, h)
+            || cx.style[h].pattern != Pattern::Continuous
+            || !line_evidence::thin_line(cx, &w, h)
+        {
+            continue;
+        }
+        let u = unit(sub(*z, *a));
+        for (v, p) in [(*a, *z), (*z, *a)] {
+            let at: BTreeSet<usize> = starts
+                .iter()
+                .filter(|(s, _, _)| dist(*s, v) <= tol)
+                .map(|x| x.1)
+                .collect();
+            if at.is_empty() {
+                continue;
+            }
+            // the outline the thin piece continues: collinear, reaching its other end
+            let continued: Vec<&(&String, P, P)> = outline
+                .iter()
+                .filter(|(_, oa, oz)| {
+                    cross(unit(sub(*oz, *oa)), u).abs() <= 0.01
+                        && project(p, *oa, *oz).1 <= tol
+                        && on_seg(p, *oa, *oz, tol).is_some()
+                })
+                .collect();
+            if continued.is_empty() {
+                continue;
+            }
+            for &e in &at {
+                add.push((
+                    e,
+                    h.clone(),
+                    [0., 1.],
+                    "extension_line",
+                    format!("continues:{}", continued[0].0),
+                ));
+                // an outline stub lying under the thin piece
+                for (o, oa, oz) in &continued {
+                    let (t0, t1) = (project(*a, *oa, *oz).0, project(*z, *oa, *oz).0);
+                    let iv = [t0.min(t1).max(0.), t0.max(t1).min(1.)];
+                    if (iv[1] - iv[0]) * dist(*oa, *oz) > tol {
+                        add.push((
+                            e,
+                            (*o).clone(),
+                            iv,
+                            "extension_origin",
+                            format!("coincident_with:{h}"),
+                        ));
+                    }
+                }
+            }
+            break;
+        }
+    }
+    let mut named: BTreeSet<usize> = BTreeSet::new();
+    for (e, h, iv, role, why) in add {
+        let line_type = if role == "extension_origin" {
+            member_line_type(cx.lt(&h), "contour_segment")
+        } else {
+            member_line_type(cx.lt(&h), "extension_line")
+        };
+        b.member(
+            e,
+            &h,
+            None,
+            iv,
+            role,
+            line_type,
+            "candidate",
+            vec![],
+            vec![
+                format!("card:{CARD}"),
+                "variant:outline_extended_to_virtual_corner".into(),
+                why,
+            ],
+        );
+        named.insert(e);
+    }
+    for e in named {
+        for x in [
+            format!("card:{CARD}"),
+            "variant:outline_extended_to_virtual_corner".to_string(),
+            "concept:DC-G4-005".to_string(),
+        ] {
+            if !b.exprs[e].evidence_ids.contains(&x) {
+                b.exprs[e].evidence_ids.push(x);
+            }
+        }
+    }
+    Ok(())
+}

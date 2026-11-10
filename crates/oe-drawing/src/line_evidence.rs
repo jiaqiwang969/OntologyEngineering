@@ -699,7 +699,7 @@ pub(super) fn thin_structural(cx: &Ctx, ev: &OutlineEvidence, h: &str) -> bool {
 
 /// Thin by the drawing's evidence: thin by the checked convention or an explicit thin colour, or
 /// any continuous line where no convention decides (`annotation_style`), or thin by lineweight.
-fn thin_line(cx: &Ctx, w: &Widths, h: &str) -> bool {
+pub(super) fn thin_line(cx: &Ctx, w: &Widths, h: &str) -> bool {
     !w.thick(cx, h)
         && (cx.annotation_style(h) || lines::thin_colour(cx, h) || w.weight(h) == Some(Width::Thin))
 }

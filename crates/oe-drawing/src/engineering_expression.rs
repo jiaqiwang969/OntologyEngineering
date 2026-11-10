@@ -6842,6 +6842,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::section_lines_by_spacing(&cx, &mut b)?;
     line_evidence::hatch_remnants(&cx, &mut b)?;
     line_evidence::hole_patterns(&cx, &mut b)?;
+    extension_lines::virtual_corners(&cx, &mut b)?;
     let cover = topology::cover(&cx, &b);
     structure(&cx, &mut b, &cover);
     duplicate_spans(&cx, &mut b);

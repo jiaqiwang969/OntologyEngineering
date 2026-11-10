@@ -1453,12 +1453,13 @@ fn callout(stroke: [[f64; 2]; 2]) -> Vec<String> {
 #[test]
 fn cutting_plane_stroke_joins_the_arrow_and_letter() {
     let g = run("", &callout([[8., -6.], [8., 0.]]));
-    let e = expr_with(&g, "AL", "view_callout").expect("viewing direction");
+    let e = expr_with(&g, "AL", "view_callout").expect("cutting symbol");
     assert!(g.members.iter().any(|m| m.expression_id == e.id
         && m.source_handle == "AK"
         && m.member_role == "cutting_stroke"));
+    // with its stroke it is a cutting symbol, no longer the arrow of a direction view
     assert!(
-        has(e, &["DC-G2-043", "DC-G1-007", "DC-G2-072"]),
+        has(e, &["DC-G2-043", "DC-G1-007"]) && !has(e, &["DC-G2-072"]),
         "{:?}",
         e.concept_ids
     );

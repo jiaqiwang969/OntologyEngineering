@@ -62,6 +62,19 @@ mod view_layout;
 #[path = "annotation_blocks.rs"]
 mod annotation_blocks;
 
+// statements above the single objects: hatch signatures, thread forms, how views were obtained,
+// assembly drawings, names
+#[path = "assembly_drawing.rs"]
+mod assembly_drawing;
+#[path = "expression_names.rs"]
+mod expression_names;
+#[path = "section_hatching.rs"]
+mod section_hatching;
+#[path = "thread_forms.rs"]
+mod thread_forms;
+#[path = "view_types.rs"]
+mod view_types;
+
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 type P = [f64; 2];
@@ -2431,13 +2444,17 @@ fn hatch_and_points(cx: &Ctx, b: &mut Builder) {
     for (h, r) in &cx.rec {
         match r.kind.as_str() {
             "HATCH" => {
+                // named by view, direction and spacing once the views are known (`section_hatching`);
+                // the pattern name a CAD system stores is evidence, never the name of the hatch
                 let e = b.expr(
                     "section_hatch",
-                    r.get(2).unwrap_or("HATCH"),
+                    "剖面线",
                     "native_hatch_pattern",
                     "observed",
                     vec![],
-                    vec![format!("source:{h}")],
+                    std::iter::once(format!("source:{h}"))
+                        .chain(r.get(2).map(|n| format!("pattern_name:{}", n.trim())))
+                        .collect(),
                     vec!["Sectioned material region and cutting plane remain unresolved".into()],
                 );
                 b.member(
@@ -5203,15 +5220,18 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 .map_or((None, vec![]), |(p, ev)| (Some(p), ev)),
         };
         if let Some(p) = partner {
+            // internal or external thread by which of the two circles is the thin one
+            let form = thread_forms::end_view(rad, cx.arc(&p).map_or(rad, |x| x.1));
             let e = b.expr(
                 "thread_convention",
                 h,
                 "piece:three_quarter_thin_circle_concentric_with_full_circle",
                 "candidate",
-                vec![],
+                vec![form.qualifier.into()],
                 [format!("partner:{p}"), "GB/T 4459.1".into()]
                     .into_iter()
                     .chain(wide.iter().cloned())
+                    .chain(form.evidence.iter().cloned())
                     .collect(),
                 vec![],
             );
@@ -5224,7 +5244,7 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 member_line_type(cx.lt(h), "thread_line"),
                 "candidate",
                 vec![],
-                vec![format!("concentric:{p}")],
+                vec![format!("concentric:{p}"), form.arc.clone()],
             );
             // GB/T 4459.1 end view: the full circle is the other thread diameter of the same convention.
             let e2 = b.expr(
@@ -5232,10 +5252,11 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 &p,
                 "piece:full_circle_of_three_quarter_thread_convention",
                 "candidate",
-                vec![],
+                vec![form.qualifier.into()],
                 [format!("partner:{h}"), "GB/T 4459.1".into()]
                     .into_iter()
                     .chain(wide.iter().take(2).cloned())
+                    .chain(form.evidence.iter().cloned())
                     .collect(),
                 vec![],
             );
@@ -5254,7 +5275,7 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 },
                 "candidate",
                 vec![],
-                vec![format!("concentric:{h}")],
+                vec![format!("concentric:{h}"), form.circle.clone()],
             );
             // the same circle drawn again is the same thread diameter
             for d in line_evidence::same_circles(cx, &p) {
@@ -6450,9 +6471,9 @@ fn finalize(
     regions: &[Region],
     refs: &BTreeMap<usize, String>,
 ) -> Builder {
-    let label_of: BTreeMap<&str, &str> = regions
+    let label_of: BTreeMap<&str, String> = regions
         .iter()
-        .map(|r| (r.id.as_str(), r.label.as_str()))
+        .map(|r| (r.id.as_str(), view_layout::shown_label(r)))
         .collect();
     let mut nb = Builder::default();
     let mut groups: BTreeMap<(String, String), usize> = BTreeMap::new();
@@ -6463,22 +6484,26 @@ fn finalize(
         let view = vmap.get(&i).cloned();
         let piece = e.rule.strip_prefix("piece:");
         let ni = if let Some(rule) = piece {
-            let key = (e.kind.clone(), view.clone().unwrap_or_default());
+            // pieces of one form (internal or external thread end views) are a group of their own
+            let form = thread_forms::group_form(e);
+            let key = (
+                format!("{}{}", e.kind, form.join(",")),
+                view.clone().unwrap_or_default(),
+            );
             let idx = *groups.entry(key).or_insert_with(|| {
                 let label = format!(
                     "{} · {}",
                     label_of
                         .get(view.as_deref().unwrap_or(""))
-                        .copied()
-                        .unwrap_or("未定视图"),
-                    kind_cn(&e.kind)
+                        .map_or("未定视图", String::as_str),
+                    thread_forms::group_name(&form).unwrap_or(kind_cn(&e.kind))
                 );
                 nb.expr(
                     &e.kind,
                     &label,
                     "grouped_line_type_pieces_by_view",
                     "candidate",
-                    vec![],
+                    form.clone(),
                     vec![],
                     vec!["Part feature identity of each piece requires projection evidence".into()],
                 )
@@ -6486,7 +6511,13 @@ fn finalize(
             for ev in std::iter::once(format!("rule:{rule}")).chain(
                 e.evidence_ids
                     .iter()
-                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:") || x.starts_with("card:") || x.starts_with("variant:"))
+                    .filter(|x| {
+                        x.starts_with("GB/T")
+                            || x.starts_with("pattern:")
+                            || x.starts_with("card:")
+                            || x.starts_with("variant:")
+                            || x.starts_with("concept:")
+                    })
                     .cloned(),
             ) {
                 if !nb.exprs[idx].evidence_ids.contains(&ev) {
@@ -6825,6 +6856,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::cutting_strokes(&cx, &mut b)?;
     view_layout::cutting_paths(&cx, &mut b)?;
     line_evidence::thread_sections(&cx, &mut b)?;
+    thread_forms::sections_by_hatch(&cx, &mut b)?;
     line_kinds(&cx, &mut b);
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);
@@ -6852,9 +6884,16 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
-    let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
+    let (mut regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;
+    view_types::cutting_references(&b, &regions, &vmap, &mut refs);
     let mut nb = finalize(&b, &vmap, &regions, &refs);
+    view_types::state(&cx, &mut nb, &mut regions)?;
+    section_hatching::state(&cx, &mut nb, &regions)?;
+    thread_forms::assembled(&cx, &mut nb)?;
+    thread_forms::state(&cx, &mut nb, &regions)?;
+    assembly_drawing::state(&cx, &mut nb, &mut regions)?;
+    expression_names::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb
@@ -6902,14 +6941,16 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         .map(|r| MdDrawingView {
             id: r.id.clone(),
             kind: r.kind.into(),
-            label: r.label.clone(),
+            label: view_layout::shown_label(r),
             scale_text: r.scale.clone(),
             bbox: r.bbox.to_vec(),
             label_source_ids: r.label_sources.clone(),
             state: r.state.into(),
             evidence_ids: r.evidence.clone(),
             unknowns: if r.kind == "sheet" {
-                vec![]
+                let mut u = view_layout::sheet_unknowns(r);
+                u.extend(assembly_drawing::unknowns(r));
+                u
             } else {
                 vec!["Projection relation to the principal view remains a candidate".into()]
             },

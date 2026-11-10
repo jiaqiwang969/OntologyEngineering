@@ -464,7 +464,7 @@ piece = true
 kinds = ["thread_convention"]
 [[rules.concepts]]
 kind = ""
-ids = ["DC-G3-024", "DC-G3-005", "DC-G1-048"]
+ids = ["DC-G1-048"]
 
 [[rules]]
 rule = "piece:full_circle_of_three_quarter_thread_convention"
@@ -473,7 +473,7 @@ piece = true
 kinds = ["thread_convention"]
 [[rules.concepts]]
 kind = ""
-ids = ["DC-G3-024", "DC-G3-005", "DC-G1-049"]
+ids = ["DC-G1-049"]
 
 [[rules]]
 rule = "piece:coaxial_hidden_major_minor_pairs_with_thread_end"
@@ -1129,14 +1129,14 @@ missing = "“可以保留”（只注标记不画符号）的中心孔未识别
 [[concepts]]
 id = "DC-G3-005"
 level = "partial"
-by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "card:thread_representation/internal_thread_in_section", "piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "端视图与剖视画法已识别；不可见内螺纹（虚线）只按成对虚线识别，螺纹标记与画出的孔径不符时只记录不纠正"
+by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "card:thread_representation/internal_thread_in_section"]
+missing = "端视图（细 3/4 圆在粗圆之外）与剖视画法已识别并互相关联，图上没有线宽时剖视画法按剖面线画到哪对线判别；不可见内螺纹（虚线）只按成对虚线识别，螺纹标记与画出的孔径不符时不提示"
 
 [[concepts]]
 id = "DC-G3-024"
 level = "partial"
-by = ["piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "端视图的 3/4 细圆与虚线螺纹对能识别；侧视图的大小径线与螺纹终止线未按内外螺纹分开"
+by = ["card:thread_representation"]
+missing = "端视图（细 3/4 圆在粗圆之内）已识别为外螺纹；平行于轴线的视图中外螺纹的大径粗线、小径细线与螺纹终止线未识别"
 
 [[concepts]]
 id = "DC-G3-080"
@@ -1659,13 +1659,13 @@ missing = "只把遮罩对象（WIPEOUT）并入其注写对象；剖面线与�
 id = "DC-G2-015"
 level = "partial"
 by = ["card:view_callout"]
-missing = "只从整块剖切符号的直角转折识别；阶梯剖视图本身未分类"
+missing = "整块或散画的剖切符号在转折处成直角时记为平行剖切面，所指视图记 section_type:parallel_planes；阶梯剖视图中各段剖切面后的结构未分类"
 
 [[concepts]]
 id = "DC-G2-016"
 level = "partial"
-by = ["card:view_callout"]
-missing = "只从整块剖切符号在视图中心的斜角转折识别；旋转剖视图本身（转到剖切面上的结构）未分类"
+by = ["card:section_view_type", "card:view_callout"]
+missing = "整块或散画的剖切符号在转折处成斜角时，符号记为相交剖切面，所指的“X—X”视图记 section_type:intersecting_planes（转折点在回转视图中心时记为依据）；转到剖切面上的结构本身、展开画法未分类"
 
 [[concepts]]
 id = "DC-G3-060"
@@ -1737,4 +1737,28 @@ id = "DC-G9-026"
 level = "partial"
 by = ["card:title_block_field"]
 missing = "只识别图框外注写中带质量词的文字；标题栏内质量栏的填写值未单独定栏"
+
+[[concepts]]
+id = "DC-G2-020"
+level = "partial"
+by = ["card:section_view_type"]
+missing = "剖面线全在贯穿视图的对称中心线一侧、两侧轮廓不成镜像、中心线上没有粗实线时记为半剖；半标注的直径尺寸未作旁证，局部被波浪线围住的剖面线不参与判断"
+
+[[concepts]]
+id = "DC-G8-013"
+level = "partial"
+by = ["card:assembly_drawing"]
+missing = "明细栏与序号对应时判为装配图（另有相邻零件剖面线不同、不剖的标准件、配合代号作证据），序号圆点所在的剖面区域记为该零件，同方向同间隔的区域推及；零件的可见轮廓未分给各零件，标题栏材料栏与零件代号的关系未读，焊接件图未与装配图分开"
+
+[[concepts]]
+id = "DC-G2-009"
+level = "partial"
+by = ["card:assembly_drawing"]
+missing = "同一视图中共用边界、剖面线方向或间隔不同的两个填充区域记为两个相邻零件；散画的剖面线（没有区域边界）与不同视图之间同一零件的对应未读"
+
+[[concepts]]
+id = "DC-G3-056"
+level = "partial"
+by = ["card:thread_representation"]
+missing = "标准件图块中的外螺纹与它旋入的剖视螺孔（大径线共线、同轴）互记旋合与旋合长度；被零件遮住的螺孔线仍记为可见轮廓（遮挡未读），散画的外螺纹与螺栓、螺柱连接未识别"
 

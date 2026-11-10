@@ -483,6 +483,8 @@ meaning = "剖面线是画在剖面区域内的等距平行细实线（通常 45
 sources = [
   "专家纠正 E-2026-11-06-1（2026-11-06 经用户确认）：放大图中与剖面线近乎平行、从端面画到轴线的单根粗线是手画的剖面线，填充边界是沿它选出的",
   "GB/T 4457.5-2013 剖面区域的表示法",
+  "GB/T 4457.5-2013 4.1（同一金属零件的剖面线间隔相等、方向相同）",
+  "GB/T 17453-2005 技术制图 图样画法 剖面区域的表示法（剖面线的角度与间距）",
   "GB/T 4457.4-2002 图线（剖面线为细实线）",
   "专家纠正 E-2026-11-06-1：剖面线跟可见轮廓线识别不清，需要增加对两者区分度的理解",
 ]
@@ -576,6 +578,38 @@ meaning = "剖面区域内残段长度上限 = 该值 × 字高"
 name = "lattice_gap_max"
 value = 10.0
 meaning = "同一零件被孔或空腔隔开的几组散画剖面线，在同一间距网格上、彼此相距不超过该值 × 间距时合为一处剖面线"
+
+[[cards.variants]]
+id = "pattern_signature"
+title = "剖面线的方向与间隔是剖面区域的特征，也是它的名称"
+distinguishing = "同一金属零件的剖面线间隔相等、方向相同（GB/T 4457.5-2013 4.1；GB/T 17453-2005）：填充对象取图案定义中各线的方向与相邻线的垂直距离，一根根画出的剖面线取线本身的方向与横向偏移的中位步距；表达的名称为“视图 · 剖面线 方向° 间距 值”，CAD 存的图案名（如“用户定义”一类的厂商用词）不是名称，只留作依据；涂黑的剖面区域没有方向与间隔"
+encodings = ["hatch", "loose", "block"]
+tests = ["hatch_states_the_direction_and_spacing_of_its_pattern", "loose_section_lines_state_their_own_direction_and_spacing"]
+
+[[cards.variants]]
+id = "shared_boundary"
+title = "两个剖面区域共用一段边界线"
+distinguishing = "同一视图中两个填充区域的边界有一段重合（共线并重叠，长度不小于一个间隔）：互相记为相邻；相邻两区域是两个零件还是一个零件，按装配图知识由方向与间隔判断"
+encodings = ["hatch"]
+tests = ["hatch_regions_sharing_a_boundary_name_each_other"]
+
+[[cards.counter_examples]]
+statement = "同一视图中互不相接的两个剖面区域不记为相邻"
+test = "separate_hatch_regions_are_not_neighbours"
+
+[[cards.counter_examples]]
+statement = "实心填充（涂黑）的剖面区域不报方向与间隔"
+test = "solid_filled_section_states_no_direction"
+
+[[cards.parameters]]
+name = "shared_edge_min"
+value = 1.0
+meaning = "两个剖面区域共用边界的最小长度 = 该值 × 剖面线间隔（两者中较小的）"
+
+[[cards.parameters]]
+name = "shared_edge_tolerance"
+value = 0.02
+meaning = "判断两段边界重合的横向容差 = 该值 × 剖面线间隔"
 
 [[cards]]
 id = "detail_circle_interruption"
@@ -928,7 +962,7 @@ sources = [
 knowledge_units = ["K13", "K34"]
 recognition = "端视图：一段细实线圆弧，包角在给定范围内（约 3/4 圈），与一个整圆同心；两者半径比在常用窗口内时直接读出（现有规则）；比值低于常用窗口而不低于宽窗口下限时，弧须按本图证据为细线，且没有横跨该孔的普通直径尺寸；横跨该孔、写有螺纹标记的标注记作旁证。整圆按螺纹约定为粗实线轮廓，不论图层与颜色。剖视：一对按本图证据为细线的平行线，其内侧一对粗线关于同一中线对称、沿中线互相重叠，粗细间距比在给定范围内；中线上有孔的轴线、或细线对的一端有横跨大径的粗终止线、或剖面线边界沿粗线，三者有一即读出。粗线对比细线对更深时，为不穿通螺孔，钻孔底线与锥顶线并入。"
 markers = []
-concepts = ["DC-G3-005", "DC-G3-002", "DC-G3-094", "DC-G1-048", "DC-G1-049"]
+concepts = ["DC-G3-005", "DC-G3-002", "DC-G3-094", "DC-G1-048", "DC-G1-049", "DC-G3-024", "DC-G3-056"]
 
 [[cards.components]]
 role = "thread_line"
@@ -1010,6 +1044,85 @@ meaning = "钻孔锥顶线与轴线夹角余弦的下限（锥顶角约 145°）
 name = "drill_point_cos_max"
 value = 0.7
 meaning = "钻孔锥顶线与轴线夹角余弦的上限（锥顶角约 90°；标准约 118°～120°，余弦约 0.5）"
+
+[[cards.variants]]
+id = "internal_thread_end_view"
+title = "端视图：细实线 3/4 圆在粗实线圆之外是内螺纹"
+distinguishing = "牙底用细实线表示（GB/T 4459.1-1995 3.1）：约 3/4 圈的细实线圆弧半径大于同心的粗实线整圆时，细弧是大径（牙底）、粗圆是小径（牙顶），即内螺纹（螺孔）；只带内螺纹画法的概念"
+encodings = ["loose"]
+tests = ["thread_end_view_with_the_thin_arc_outside_is_internal"]
+
+[[cards.variants]]
+id = "external_thread_end_view"
+title = "端视图：细实线 3/4 圆在粗实线圆之内是外螺纹"
+distinguishing = "约 3/4 圈的细实线圆弧半径小于同心的粗实线整圆时，粗圆是大径（牙顶）、细弧是小径（牙底），即外螺纹；只带外螺纹画法的概念。同一视图中内、外螺纹的端视图各自成组"
+encodings = ["loose"]
+tests = ["thread_end_view_with_the_thin_arc_inside_is_external"]
+
+[[cards.variants]]
+id = "thread_named_by_form"
+title = "螺纹表达的名称写它是什么"
+distinguishing = "名称由所在视图、内螺纹或外螺纹、端视或剖视、大径与小径组成；剖视再写通孔（大径细线两端都止于端面、没有终止线）或盲孔与螺纹深度（大径细线的长度）；图元句柄不是名称"
+encodings = ["loose"]
+tests = ["thread_in_section_is_named_by_form_and_sizes", "thread_end_view_with_the_thin_arc_outside_is_internal"]
+
+[[cards.variants]]
+id = "same_thread_in_two_views"
+title = "同一螺纹的端视图与剖视"
+distinguishing = "同一张图纸的两个视图中，端视图细实线圆弧的直径与剖视中细实线对的间距（大径）相同，且端视图圆心落在剖视螺纹的轴线上（两视图按投影关系配置），或落在指向该剖视图的剖切符号的剖切线上：两处是同一螺纹，互相记为依据。小径是约定画法（约 0.85 倍大径），两处画得不同不妨碍"
+encodings = ["inferred"]
+tests = ["thread_end_view_on_the_axis_of_its_section_is_the_same_thread", "thread_end_view_on_the_cutting_line_of_its_section_is_the_same_thread"]
+
+[[cards.counter_examples]]
+statement = "轴线上另一直径的螺纹端视图不是这处剖视螺纹"
+test = "thread_end_view_of_another_diameter_is_not_the_same_thread"
+
+[[cards.variants]]
+id = "external_thread_in_view"
+title = "图库零件上的外螺纹：粗实线大径内侧的一对细实线是牙底"
+distinguishing = "牙顶（大径）画粗实线、牙底（小径）画细实线（GB/T 4459.1-1995 3.1）：标准件图块中关于它的轴线对称的一对细线在一对粗线内侧，比值在给定窗口内并沿轴线重叠，这对细线是外螺纹的牙底线；明细栏名称写有“M d×l”时核对大径与长度"
+encodings = ["block"]
+tests = ["screw_block_root_lines_are_thread_lines"]
+
+[[cards.variants]]
+id = "assembled_threads"
+title = "旋合的内外螺纹：螺孔中的螺钉"
+distinguishing = "以剖视表示内外螺纹连接时，旋合部分按外螺纹画（GB/T 4459.1-1995 3.9）：剖视中内螺纹的大径细线与标准件外螺纹的大径粗线共线、同一轴线，两者沿轴线重叠的长度是旋合长度，两处互记为旋合"
+encodings = ["block", "loose"]
+tests = ["screw_in_a_tapped_hole_is_engaged"]
+
+[[cards.counter_examples]]
+statement = "图块中两对都是粗线（台阶轴、销）时没有外螺纹"
+test = "block_with_two_thick_pairs_has_no_external_thread"
+
+[[cards.counter_examples]]
+statement = "螺钉穿过光孔（孔是一对粗线，没有内螺纹）时不记旋合"
+test = "screw_in_a_clearance_hole_is_not_engaged"
+
+[[cards.variants]]
+id = "root_inside_hatch"
+title = "图上没有线宽时由剖面线认出剖视中的内螺纹"
+distinguishing = "剖视中剖面线画到粗实线为止（GB/T 4459.1-1995 3.5）：关于同一中线对称、沿中线重叠的两对平行线，中线上有点画线；外侧一对两边都在同一剖面线区域内（剖面线穿过它），是牙底（大径）；内侧一对外边有剖面线、朝中线一边没有（孔），是牙顶（小径）。只在图上没有线宽证据（没有线宽分级、图层约定未经核验）时使用"
+encodings = ["loose"]
+tests = ["thread_in_section_without_widths_is_read_from_the_hatch"]
+
+[[cards.counter_examples]]
+statement = "外侧一对也是剖面线的边界（只一边有剖面线）的两对平行线是阶梯孔或沉孔，不是螺纹"
+test = "stepped_hole_without_widths_is_not_a_thread"
+
+[[cards.counter_examples]]
+statement = "两对线之间的带状区域用另一剖面线（方向或间隔不同）或不画剖面线时是衬套、套筒等另一零件，不是螺纹"
+test = "bush_hatched_apart_without_widths_is_not_a_thread"
+
+[[cards.parameters]]
+name = "hatch_probe"
+value = 0.25
+meaning = "判断线两侧有无剖面线的探点离线的距离 = 该值 × 牙底线与牙顶线的间距"
+
+[[cards.parameters]]
+name = "same_thread_tolerance"
+value = 0.02
+meaning = "同一螺纹的端视图与剖视：大径之差、圆心到轴线（或剖切线）距离的上限 = 该值 × 大径"
 
 [[cards]]
 id = "dimension_text"
@@ -1327,7 +1440,7 @@ id = "heat_treatment"
 title = "热处理与硬度"
 distinguishing = "处理名称、硬度值、硬化层深度"
 encodings = ["text"]
-tests = ["technical_note_heat_treatment_and_hardness"]
+tests = ["technical_note_heat_treatment_and_hardness", "annealing_ageing_and_blasting_items_take_their_topics"]
 [[cards.variants]]
 id = "requirement_block"
 title = "整块技术要求：标题、条目与其余表面的结构要求在一个图块中"
@@ -1443,8 +1556,8 @@ meaning = "铸件技术要求"
 [[cards.lexicon]]
 concept = "DC-G9-002"
 entry = "topic:material_heat"
-values = ["热处理", "调质", "淬火", "回火", "渗碳", "渗氮", "HRC", "HB", "HV", "硬度", "材料"]
-meaning = "条目主题：材料与热处理"
+values = ["热处理", "调质", "淬火", "回火", "渗碳", "渗氮", "HRC", "HB", "HV", "硬度", "材料", "正火", "退火", "时效", "消除应力", "去应力", "消除内应力"]
+meaning = "条目主题：材料与热处理（正火、退火、时效与消除应力见 GB/T 24745-2009 表5 第28、64、75条）"
 [[cards.lexicon]]
 concept = "DC-G9-002"
 entry = "topic:protection_requirement"
@@ -1470,8 +1583,8 @@ test = "ruled_table_texts_are_not_requirement_items"
 [[cards.lexicon]]
 concept = "DC-G9-002"
 entry = "topic:process_requirement"
-values = ["钻", "铣", "车削", "磨削", "加工", "装配", "配作", "相对位置", "键槽", "工艺"]
-meaning = "条目主题：加工与装配（含铸造等工艺性结构的处理）；书名号内引用文件的名称不决定主题"
+values = ["钻", "铣", "车削", "磨削", "加工", "装配", "配作", "相对位置", "键槽", "工艺", "喷砂", "喷丸"]
+meaning = "条目主题：加工与装配（含铸造等工艺性结构的处理，表面喷砂、喷丸见 GB/T 24745-2009 表5 第43、44、78条）；书名号内引用文件的名称不决定主题"
 
 [[cards]]
 id = "title_block_field"
@@ -2433,6 +2546,25 @@ entry = "most_surfaces_word"
 values = ["其余"]
 meaning = "其余表面的统一要求（GB/T 131-1993 写在符号前）"
 
+[[cards.variants]]
+id = "symbol_only_named_by_form"
+title = "不带数值的符号以它要求的工艺命名"
+distinguishing = "只有符号、没有数值时，表达名称写符号的含义：内切小圆为“不去除材料”，封口横线为“去除材料”（GB/T 131-2006 4.1.2、4.1.3）；基本符号单独使用时仍写符号"
+encodings = ["block", "loose"]
+tests = ["texture_symbol_without_value_is_named_by_its_form"]
+
+[[cards.lexicon]]
+concept = "DC-G6-063"
+entry = "symbol_only_word"
+values = ["不去除材料"]
+meaning = "不允许去除材料的符号（内切小圆）不带数值时的名称（GB/T 131-2006 4.1.3）"
+
+[[cards.lexicon]]
+concept = "DC-G6-072"
+entry = "symbol_only_word"
+values = ["去除材料"]
+meaning = "要求去除材料的符号（封口横线）不带数值时的名称（GB/T 131-2006 4.1.2）"
+
 [[cards]]
 id = "view_callout"
 expression_kind = "view_callout"
@@ -2689,6 +2821,53 @@ meaning = "无箭头剖切短画的长度下限 = 该值 × 字高（成对、�
 name = "path_angle_deg"
 value = 5.0
 meaning = "剖切路径上下一段短画与当前方向的夹角上限（度）"
+
+[[cards.variants]]
+id = "cutting_plane_group_without_widths"
+title = "图上没有线宽时按几何认出整块的剖切符号"
+distinguishing = "剖切符号由剖切面起、迄（和转折）处的短画、外端垂直的箭头与相同字母组成（GB/T 17452-1998 8.1、8.2）：图块的线不分粗细时，没有箭头连着的短线是短画，连着实心箭头的是箭杆；须有两支箭头，其余条件与整块的剖切符号相同；线宽只是旁证"
+encodings = ["block"]
+tests = ["cutting_plane_block_without_widths_is_read_by_geometry"]
+
+[[cards.counter_examples]]
+statement = "没有线宽的图块中只有短线与字母、没有两支箭头时，不按剖切符号读"
+test = "block_without_widths_and_arrows_is_not_a_cutting_plane"
+
+[[cards.variants]]
+id = "cutting_symbol_names_its_view"
+title = "剖切符号的字母指向同名的“X—X”视图，不论该视图在配置中的位置"
+distinguishing = "剖视图上方注“X—X”，相应视图上的剖切符号注同一字母（GB/T 4458.6-2002 6.1）：剖切符号指向本张图纸上名称为“X—X”的视图，即使它放在主视图位置；没有“X—X”而有同字母的“X向”视图时指向它（按向视图写法命名的剖视）；同字母的局部放大图名称（“X 比例”）不是它所指的视图"
+encodings = ["block", "loose"]
+tests = ["cutting_symbol_names_the_section_in_the_principal_position", "cutting_symbol_does_not_name_a_detail_view_of_its_letter"]
+
+[[cards.variants]]
+id = "cutting_symbol_by_stroke"
+title = "带剖切短画的箭头与字母是剖切符号，不是向视图箭头"
+distinguishing = "剖切符号用粗短画指示剖切面的起、迄和转折位置，用箭头指示投射方向（GB/T 17452-1998 3.6）：箭头、字母之外带有剖切短画的标注，无论做成一个图块还是散画，都是剖切符号（限定词 cutting_plane），不带向视图的概念"
+encodings = ["loose", "block"]
+tests = ["loose_arrow_with_a_stroke_is_a_cutting_symbol"]
+
+[[cards.variants]]
+id = "turn_of_the_cutting_path"
+title = "剖切路径的转折：直角为平行剖切面，斜角为相交剖切面"
+distinguishing = "两段短画在一点相接而不共线：夹角为直角是几个平行的剖切平面（GB/T 4458.6-2002 5.3），为斜角是几个相交的剖切平面（5.4），其交线常在回转视图的中心（转折点是该视图中圆的圆心时记为依据）；散画的剖切路径与整块的剖切符号同样判断"
+encodings = ["loose", "block"]
+tests = ["loose_cutting_path_with_an_oblique_turn_shows_intersecting_planes", "cutting_path_with_a_right_angle_turn_shows_parallel_planes"]
+
+[[cards.counter_examples]]
+statement = "只有箭头和字母、没有剖切短画的散画标注仍是向视图的投射方向"
+test = "loose_arrow_without_a_stroke_stays_a_view_direction"
+
+[[cards.parameters]]
+name = "turn_right_angle_cos_max"
+value = 0.1
+meaning = "转折处两段短画夹角余弦的绝对值不超过该值为直角转折（平行剖切面），超过为斜角转折（相交剖切面）"
+
+[[cards.lexicon]]
+concept = "DC-G2-043"
+entry = "excludes"
+values = ["DC-G2-072"]
+meaning = "带剖切短画的是剖切符号：它的箭头是剖视的投射方向，不是向视图的标注"
 
 [[cards]]
 id = "theoretically_exact_dimension"
@@ -3181,8 +3360,15 @@ distinguishing = "标题栏日期较晚，图框外有同一日期的更改说�
 encodings = ["block", "text"]
 tests = ["later_dated_sheet_with_a_revision_note_supersedes_the_earlier"]
 
+[[cards.variants]]
+id = "sheet_in_view_names"
+title = "几张图纸时视图名称带图纸"
+distinguishing = "一个模型空间有两张以上图纸时，每张图纸里的视图名称前写所在图纸（“图纸 2 · A-A”），两张图纸上同名的视图因此分得开；视图上的表达名称同样带图纸；图纸本身仍叫“图纸 n”。较晚版本取代较早版本记为候选，依据是标题栏日期和同日期的更改说明，图样上没有作废标记"
+encodings = ["inferred"]
+tests = ["views_on_two_sheets_name_their_sheet"]
+
 [[cards.counter_examples]]
-statement = "只有一张图纸时视图编号不加图纸前缀"
+statement = "只有一张图纸时视图编号与名称都不加图纸前缀"
 test = "one_sheet_keeps_plain_view_ids"
 
 [[cards.counter_examples]]
@@ -3943,4 +4129,281 @@ concept = "DC-G1-047"
 entry = "pronoun"
 values = ["此直径", "此尺寸", "此处"]
 meaning = "说明句用以指代所写的尺寸，句子是以该尺寸为界的要求"
+
+[[cards]]
+id = "section_view_type"
+expression_kind = "view"
+title = "视图是怎样得到的：剖视图的种类与剖切面"
+meaning = "一个视图有两件互不相干的事：它在配置中的位置（主视图、左视图、俯视图……）和它是怎样得到的——视图，还是全剖、半剖、局部剖视图；用单一剖切面，还是几个平行或几个相交的剖切面。注有“X—X”的剖视图放在主视图位置时既是主视图也是剖视图。几个相交的剖切平面剖得的图形旋转到同一投影平面上画出（旋转剖），其剖切符号在两平面的交线处转折成斜角；机件对称或接近对称时，可以对称中心线为界，一半画成剖视图、另一半画成视图（半剖视图）；剖切面完全剖开机件的是全剖视图。有的图样把剖视图按向视图的写法命名为“X向”，它仍是剖视图。"
+sources = [
+  "GB/T 17452-1998 技术制图 图样画法 剖视图和断面图 5（剖切面的分类）、6.1 全剖视图、6.2 半剖视图、6.3 局部剖视图",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 5.3（几个平行的剖切平面）、5.4（几个相交的剖切平面，旋转到一个投影平面）、5.5（半剖视图）、5.6（局部剖视图以波浪线分界）、6.1（剖视图名称与剖切符号）",
+  "GB/T 4458.1-2002 机械制图 图样画法 视图 4.1 基本视图",
+  "机械制图（第7版）§7-2 剖视图",
+]
+knowledge_units = ["K11", "K13"]
+recognition = "视图的种类（kind）与名称不变，得到方式记为视图的依据。（1）名称为“X—X”的视图是剖切得到的视图（view_type:section，剖视图或断面图）；名称为“X向”、区域内有剖面线、且指向它的标注带剖切短画的视图，也是剖切得到的视图。（2）指向该视图的剖切符号在转折处成斜角：section_type:intersecting_planes；成直角：section_type:parallel_planes。（3）半剖：视图中有一条贯穿可见轮廓全长、把轮廓范围大致平分的点画线；不被波浪线围住的剖面线全部在它的一侧，沿它的方向占到轮廓长度的给定比例；两侧都有可见轮廓，两侧轮廓不成镜像；没有可见轮廓线沿这条点画线：section_type:half。波浪线或双折线贴着的剖面区域是局部剖视，不参与半剖的判断。只画剖切面的断面图与连同剖切面后结构一起画的剖视图本卡不区分，因此不判全剖。"
+markers = []
+concepts = ["DC-G2-020", "DC-G2-016"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线：所在的一侧、是否被波浪线围住"
+
+[[cards.components]]
+role = "center_line"
+primitives = ["LINE"]
+requirement = "半剖视图中分开剖视与视图两半的对称中心线"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE"]
+requirement = "视图的可见轮廓：定出范围，比较中心线两侧是否成镜像"
+
+[[cards.components]]
+role = "cutting_stroke"
+primitives = ["LINE", "INSERT"]
+requirement = "指向该视图的剖切符号的短画及其转折"
+
+[[cards.variants]]
+id = "section_named_by_its_title"
+title = "名称为“X—X”的视图是剖视图，不论它在配置中的位置"
+distinguishing = "视图名称为两个相同字母以横线相连；放在主视图位置时种类仍是主视图，另记 view_type:section"
+encodings = ["inferred"]
+tests = ["cutting_symbol_names_the_section_in_the_principal_position"]
+
+[[cards.variants]]
+id = "by_intersecting_planes"
+title = "几个相交的剖切平面剖得、旋转到同一平面的剖视图"
+distinguishing = "指向该视图的剖切符号在转折处两段短画成斜角"
+encodings = ["inferred"]
+tests = ["loose_cutting_path_with_an_oblique_turn_shows_intersecting_planes", "block_cutting_symbol_with_an_oblique_turn_types_the_view_it_names"]
+
+[[cards.variants]]
+id = "by_parallel_planes"
+title = "几个平行的剖切平面剖得的剖视图"
+distinguishing = "指向该视图的剖切符号在转折处两段短画成直角"
+encodings = ["inferred"]
+tests = ["cutting_path_with_a_right_angle_turn_shows_parallel_planes"]
+
+[[cards.variants]]
+id = "half_section"
+title = "半剖视图"
+distinguishing = "剖面线只在贯穿视图的对称中心线一侧，另一侧是外形；两侧轮廓不成镜像；中心线上没有粗实线，剖与不剖以中心线为界而没有波浪线"
+encodings = ["inferred"]
+tests = ["section_lines_on_one_side_of_the_centre_line_make_a_half_section"]
+
+[[cards.variants]]
+id = "section_named_as_direction_view"
+title = "按向视图写法命名的剖视图"
+distinguishing = "名称为“X向”，区域内有剖面线，指向它的字母标注带剖切短画：视图种类与名称不变，另记为剖视图"
+encodings = ["inferred"]
+tests = ["direction_view_with_section_lines_and_cutting_strokes_is_a_section"]
+
+[[cards.counter_examples]]
+statement = "中心线两侧都有剖面线的是全剖，不是半剖"
+test = "section_lines_on_both_sides_of_the_centre_line_are_not_a_half_section"
+
+[[cards.counter_examples]]
+statement = "中心线一侧由波浪线围住的剖面线是局部剖视，不是半剖"
+test = "local_section_beside_the_centre_line_is_not_a_half_section"
+
+[[cards.counter_examples]]
+statement = "中心线一侧只占很短一段的剖面线（局部结构、重合断面）不是半剖"
+test = "short_hatch_beside_the_centre_line_is_not_a_half_section"
+
+[[cards.counter_examples]]
+statement = "只画出一半的视图（中心线另一侧没有轮廓）不是半剖"
+test = "view_drawn_on_one_side_of_the_centre_line_is_not_a_half_section"
+
+[[cards.counter_examples]]
+statement = "没有剖面线的“X向”视图即使由带短画的标注指向，也不记为剖视图"
+test = "direction_view_without_section_lines_is_not_stated_a_section"
+
+[[cards.parameters]]
+name = "axis_span_min"
+value = 0.9
+meaning = "半剖的中心线沿自身方向覆盖可见轮廓范围的比例下限"
+
+[[cards.parameters]]
+name = "symmetry_offset_max"
+value = 0.1
+meaning = "可见轮廓范围相对中心线的偏心上限 = 该值 × 轮廓在垂直方向的总宽（机件对称或接近对称）"
+
+[[cards.parameters]]
+name = "hatch_span_min"
+value = 0.5
+meaning = "一侧的剖面线沿中心线方向的范围 ÷ 轮廓范围的下限（半边被整个剖开）"
+
+[[cards.parameters]]
+name = "side_outline_min"
+value = 0.2
+meaning = "中心线每一侧的可见轮廓长度占全部轮廓长度的下限"
+
+[[cards.parameters]]
+name = "asymmetry_min"
+value = 0.1
+meaning = "按中心线镜像后在另一侧找不到对应的轮廓长度占全部轮廓长度的下限（两半不成镜像）"
+
+[[cards.parameters]]
+name = "on_axis_tolerance"
+value = 0.05
+meaning = "判断点在中心线上的距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "mirror_tolerance"
+value = 0.1
+meaning = "镜像点与另一侧轮廓重合的距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "break_line_reach"
+value = 0.5
+meaning = "波浪线到剖面区域的距离不超过该值 × 字高时，该剖面区域是局部剖视"
+
+[[cards]]
+id = "assembly_drawing"
+expression_kind = "view"
+title = "装配图：由明细栏、零件序号与相邻零件的剖面线认出"
+meaning = "装配图表达一台机器或一个部件中各零件的装配关系：一组视图、必要的尺寸（含配合代号）、技术要求、零部件序号、明细栏和标题栏。装配图中一般应有明细栏，画在标题栏上方，序号列自下而上递增；所有零件都编序号，序号与明细栏的序号一致，指引线从所指零件的可见轮廓内引出、末端画圆点（薄件或涂黑断面用箭头）。剖视中相邻金属零件的剖面线方向相反，或方向一致而间隔不等；同一零件在各剖视中剖面线方向、间隔一致；紧固件、实心件纵向剖切时按不剖绘制；配合尺寸注孔轴配合代号（如 H7/g6）。只凭一项（例如只有一张表）不判定；焊接件图也有明细栏，但表示一个零件（焊缝符号本卡不读）；零件图上的参数表（表格图）没有序号。"
+sources = [
+  "GB/T 10609.2-2009 技术制图 明细栏 3.1（装配图中一般应有明细栏）、3.2.1、3.2.2（明细栏可作为装配图的续页按 A4 幅面单独给出）",
+  "GB/T 4458.2-2003 机械制图 装配图中零、部件序号及其编排方法 3.1、3.3（序号与明细栏一致）、4.1、4.4（指引线自所指部分的可见轮廓内引出，末端画圆点）、4.5",
+  "GB/T 4457.5-2013 机械制图 剖面区域的表示法 4.2（相邻辅助零件不画剖面符号）、4.7（相邻金属零件的剖面线方向相反或方向一致而间隔不等；同一零件的剖面线方向相同、间隔相等）、4.8（接合件）",
+  "GB/T 17453-2005 技术制图 图样画法 剖面区域的表示法 5（相邻零件剖面线示例）",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 4.4（紧固件纵向剖切按不剖绘制）",
+  "GB/T 4458.5-2003 机械制图 尺寸公差与配合注法 5.1（装配图中的配合代号）",
+  "机械制图（第7版）§10-1 一 装配图的内容",
+]
+knowledge_units = ["K15"]
+recognition = "按图纸读：E1 本张图纸上有明细栏；E2 视图中有零件序号，其序号都是明细栏的行号，被指到的行数不少于给定个数和给定比例；E3 同一视图中两个剖面区域共用一段边界线、方向或间隔不同（两个相邻零件）；E4 由序号和明细栏中的标准编号认出的不剖标准件；E5 尺寸中有孔、轴公差带代号用斜线隔开的配合代号。E1 与 E2 同时成立即判为装配图：图纸视图记 drawing_type:assembly、parts_list:<明细栏表达>、item_numbers:<被指到的行数>，名称后加“ · 装配图”；否则 E1 至 E5（没有明细栏时以序号代 E2）中有给定个数成立时记为候选（drawing_type_candidate:assembly）。逐个零件：序号圆点所在的剖面区域就是该序号的零件（序号记 names_region，剖面区域记 item）；圆点落在标准件内时序号记 names_part；同一视图中与它方向、间隔相同的剖面区域是同一零件（只由一个序号指到时才推及）；共用边界而剖面线不同的两个区域互记 different_part_from。"
+markers = []
+concepts = ["DC-G8-013", "DC-G2-009"]
+
+[[cards.components]]
+role = "table_line"
+primitives = ["INSERT", "LINE"]
+requirement = "明细栏（E1）：格线与文字成一个图块，表头在下，序号列连续递增"
+
+[[cards.components]]
+role = "note_text"
+primitives = ["INSERT", "MTEXT", "TEXT"]
+requirement = "零件序号（E2）：整数写在横线上或圆内，指引线末端圆点在零件内"
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH"]
+requirement = "相邻零件的剖面区域（E3）：共用一段边界线，方向相反或间隔不等"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["INSERT"]
+requirement = "按不剖绘制的标准件（E4）：只有结构线的图库图块"
+
+[[cards.components]]
+role = "dimension_text"
+primitives = ["DIMENSION", "MTEXT", "TEXT"]
+requirement = "配合代号（E5）：大写字母加等级的孔公差带、斜线、小写字母加等级的轴公差带"
+
+[[cards.variants]]
+id = "list_on_the_sheet"
+title = "明细栏在本张图纸上，序号与它对应"
+distinguishing = "E1 与 E2：本张图纸的明细栏，视图中的序号都是它的行号"
+encodings = ["block"]
+tests = ["parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing"]
+
+[[cards.variants]]
+id = "list_on_a_separate_sheet"
+title = "只有序号，明细栏在续页上"
+distinguishing = "本张图纸没有明细栏（明细栏可单独给出），视图中有序号，再有另一项证据（相邻零件的剖面线不同、配合代号）：候选"
+encodings = ["block", "hatch"]
+tests = ["item_numbers_and_opposite_hatches_without_a_list_are_a_candidate"]
+
+[[cards.variants]]
+id = "machined_after_joining"
+title = "接合件：装配后再加工，装配图上带零件图的内容"
+distinguishing = "已判为装配图的图纸上又有表面结构要求或几何公差：几个零件接合后一起加工（如热套、骑缝螺钉固定后加工），装配图同时是加工图"
+encodings = ["inferred"]
+tests = ["assembly_with_part_drawing_content_is_machined_after_joining"]
+
+[[cards.variants]]
+id = "fit_designation"
+title = "配合代号是装配图的一项证据"
+distinguishing = "尺寸文字中孔的公差带代号（大写字母加等级）与轴的公差带代号（小写字母加等级）用斜线隔开，如 H7/g6；螺纹副的 6H/6g（数字在前）、极限偏差的“+0.02/0”不算"
+encodings = ["text"]
+tests = ["parts_list_and_a_fit_designation_are_a_candidate"]
+
+[[cards.variants]]
+id = "adjacent_parts_hatched_apart"
+title = "共用边界、剖面线不同的两个剖面区域是两个相邻零件"
+distinguishing = "同一视图中两个剖面区域共用一段边界线，剖面线方向相差不小于给定角度，或间隔之比不小于给定值"
+encodings = ["hatch"]
+tests = ["item_numbers_and_opposite_hatches_without_a_list_are_a_candidate", "parts_list_with_agreeing_item_numbers_makes_an_assembly_drawing"]
+
+[[cards.variants]]
+id = "part_by_item_dot"
+title = "序号圆点所在的区域就是该序号的零件"
+distinguishing = "指引线末端的圆点落在哪个剖面区域内，那个区域就是这个序号的零件；落在由该序号认出的标准件内，就是那个标准件"
+encodings = ["block", "hatch"]
+tests = ["item_dot_inside_a_hatch_names_its_part"]
+
+[[cards.variants]]
+id = "part_by_signature"
+title = "同一视图中剖面线方向、间隔相同的区域是同一零件"
+distinguishing = "同一零件的剖面线方向相同、间隔相等：与有序号圆点的区域方向、间隔相同的其他区域也是那个零件（这种剖面线只由一个序号指到时）"
+encodings = ["hatch"]
+tests = ["hatch_of_the_same_signature_is_the_same_part"]
+
+[[cards.counter_examples]]
+statement = "零件图上的参数表（表格图）不是明细栏，没有序号的零件图不是装配图"
+test = "series_table_on_a_part_drawing_is_not_an_assembly"
+
+[[cards.counter_examples]]
+statement = "只有明细栏一项证据时不作判断（焊接件图、单独的明细表）"
+test = "parts_list_alone_does_not_decide"
+
+[[cards.counter_examples]]
+statement = "序号不是明细栏的行号时不判定为装配图，最多是候选"
+test = "item_numbers_that_disagree_with_the_list_do_not_decide"
+
+[[cards.counter_examples]]
+statement = "同一零件被分成两个剖面区域、方向与间隔相同，不是两个零件"
+test = "one_part_hatched_in_two_regions_is_not_two_parts"
+
+[[cards.counter_examples]]
+statement = "一个区域中两组交叉的剖面线（非金属材料的剖面符号）不是两个零件"
+test = "cross_hatched_region_is_not_two_parts"
+
+[[cards.counter_examples]]
+statement = "用细双点画线画出、不画剖面线的相邻辅助零件不使图样成为装配图"
+test = "phantom_line_neighbour_does_not_make_an_assembly"
+
+[[cards.counter_examples]]
+statement = "方向、间隔相同的剖面线由两个不同序号指到时，不按剖面线推及其他区域"
+test = "two_items_in_one_signature_do_not_spread"
+
+[[cards.parameters]]
+name = "direction_difference_min"
+value = 30.0
+meaning = "两个剖面区域算作剖面线方向不同的最小方向差（度；相邻零件一般相差 90°）"
+
+[[cards.parameters]]
+name = "spacing_ratio_min"
+value = 1.3
+meaning = "两个剖面区域算作间隔不等的最小间隔之比（大 ÷ 小）"
+
+[[cards.parameters]]
+name = "item_numbers_min"
+value = 2.0
+meaning = "作为证据的序号最少个数"
+
+[[cards.parameters]]
+name = "rows_named_min"
+value = 0.5
+meaning = "被序号指到的明细栏行数占全部行数的下限（一张图纸上可只画出部分零件）"
+
+[[cards.parameters]]
+name = "evidence_min"
+value = 2.0
+meaning = "没有与序号对应的明细栏时，构成候选所需的证据项数"
 

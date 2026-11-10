@@ -415,19 +415,32 @@ pub(super) fn outline_candidates(
                 .arc(k)
                 .is_some_and(|(c0, r0, s0, sw, full)| on_arc(p, c0, r0, s0, sw, full, gap))
     };
+    // A view limit (break curve) that the settled outline reaches is where the view stops: it
+    // grounds the lines ending on it as the outline does (variant `grounded_by_view_limit`).
+    let settled_limits: BTreeSet<&str> = breaks
+        .iter()
+        .filter(|k| {
+            cand.keys()
+                .filter_map(|c| ends_of(c))
+                .any(|e| near(e[0], k) || near(e[1], k))
+        })
+        .map(String::as_str)
+        .collect();
     // Ends of a pooled source that meet the other curves of `with` (by incidence or within the
-    // drafting gap): the junction parameters, and whether one of them is a settled outline.
-    let joins = |h: &str, with: &BTreeSet<String>| -> (Vec<f64>, bool) {
+    // drafting gap): the junction parameters, whether one of them is a settled outline, and
+    // whether one of them is a view limit the settled outline reaches.
+    let joins = |h: &str, with: &BTreeSet<String>| -> (Vec<f64>, bool, bool) {
         let partner = |k: &str| {
             k == "@axis"
                 || (k != h && (cand.contains_key(k) || breaks.contains(k) || with.contains(k)))
         };
         let mut ts: Vec<f64> = explained.get(h).cloned().unwrap_or_default();
-        let mut grounded = false;
+        let (mut grounded, mut limit) = (false, false);
         for (t, k) in meets.get(h).into_iter().flatten() {
             if partner(k) {
                 ts.push(*t);
                 grounded |= cand.contains_key(k.as_str());
+                limit |= settled_limits.contains(k.as_str());
             }
         }
         if let Some(e) = ends_of(h) {
@@ -443,10 +456,11 @@ pub(super) fn outline_candidates(
                 {
                     ts.push(t);
                     grounded |= cand.contains_key(k.as_str());
+                    limit |= settled_limits.contains(k.as_str());
                 }
             }
         }
-        (ts, grounded)
+        (ts, grounded, limit)
     };
     // The largest set of pooled sources each of which joins the outline or the set as an outline
     // piece does: a line not used by any annotation at two places, a used line (a shared extension
@@ -457,7 +471,7 @@ pub(super) fn outline_candidates(
         let keep: BTreeSet<String> = set
             .iter()
             .filter(|h| {
-                let (mut ts, _) = joins(h, &set);
+                let (mut ts, _, _) = joins(h, &set);
                 let at = |t: f64| ts.iter().any(|x| (x - t).abs() < 1e-6);
                 // (a line a dimension only starts from, or one running on past where an
                 // extension line ends, is not decided by that use)
@@ -491,7 +505,17 @@ pub(super) fn outline_candidates(
     }
     // Each connected group of them must meet the settled outline somewhere: a closed figure of
     // such lines standing apart from the part is not its outline.
-    let mut grounded: BTreeSet<String> = set.iter().filter(|h| joins(h, &set).1).cloned().collect();
+    let mut grounded: BTreeSet<String> = BTreeSet::new();
+    let mut by_limit: BTreeSet<String> = BTreeSet::new();
+    for h in &set {
+        let (_, outline, limit) = joins(h, &set);
+        if outline || limit {
+            grounded.insert(h.clone());
+        }
+        if limit && !outline {
+            by_limit.insert(h.clone());
+        }
+    }
     loop {
         let more: Vec<String> = set
             .iter()
@@ -510,7 +534,12 @@ pub(super) fn outline_candidates(
     }
     for h in &grounded {
         cand.insert(h.clone(), 1);
-        out.admitted.insert(h.clone(), pool[h]);
+        let variant = if by_limit.contains(h) {
+            "grounded_by_view_limit"
+        } else {
+            pool[h]
+        };
+        out.admitted.insert(h.clone(), variant);
     }
     out
 }

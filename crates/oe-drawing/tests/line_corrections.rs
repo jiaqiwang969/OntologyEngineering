@@ -1324,3 +1324,69 @@ fn unit_fragment_after_the_number_stays_after_it() {
     let label = dv_label(&g);
     assert!(label.starts_with("36"), "{label}");
 }
+
+// ---------------------------------------------------------------- line_width_evidence: lines between view limits
+
+fn lwpoly(id: &str, layer: &str, pts: &[P]) -> String {
+    let mut t = format!("90\n{}\n70\n0\n", pts.len());
+    for p in pts {
+        t.push_str(&format!("10\n{}\n20\n{}\n", p[0], p[1]));
+    }
+    ent("LWPOLYLINE", id, layer, &t)
+}
+/// A partial view between two wavy view limits at x = 0 and x = 60: the upper edge on the thick
+/// layer, the lower edge on a thin layer in the outline colour; `more` is added.
+fn between_limits(more: Vec<String>) -> MdEngineeringExpressionGraph {
+    let wave = |dx: f64| -> Vec<P> {
+        [
+            [0., -5.],
+            [1., 0.],
+            [-1., 5.],
+            [1., 10.],
+            [-1., 15.],
+            [1., 20.],
+            [-1., 25.],
+            [1., 30.],
+            [0., 35.],
+        ]
+        .iter()
+        .map(|p| [p[0] + dx, p[1]])
+        .collect()
+    };
+    let mut ents = vec![
+        lwpoly("ZL", "02", &wave(0.)),
+        lwpoly("ZR", "02", &wave(60.)),
+        line("ZT", "01", [1., 30.], [61., 30.]),
+        line("ZB", "09", [1., 0.], [61., 0.]),
+    ];
+    ents.extend(more);
+    run(&ents)
+}
+
+#[test]
+fn outline_colour_line_between_two_view_limits_is_outline() {
+    let g = between_limits(vec![]);
+    assert!(
+        kinds(&g, "ZL").contains("break_line"),
+        "{:?}",
+        kinds(&g, "ZL")
+    );
+    let e =
+        expr_with(&g, "ZB", "visible_contour").unwrap_or_else(|| panic!("{:?}", kinds(&g, "ZB")));
+    assert!(
+        names(e, "line_width_evidence", "grounded_by_view_limit"),
+        "{:?}",
+        e.evidence_ids
+    );
+    assert_eq!(line_type(&g, e, "ZB"), "thick_continuous");
+}
+
+#[test]
+fn outline_colour_line_from_a_view_limit_to_a_free_end_is_not_outline() {
+    let g = between_limits(vec![line("ZF", "09", [1., 10.], [41., 10.])]);
+    assert!(
+        !kinds(&g, "ZF").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "ZF")
+    );
+}

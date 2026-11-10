@@ -739,6 +739,17 @@ distinguishing = "剖切符号的起、迄、转折短画用粗实线：按轮�
 encodings = ["loose"]
 tests = ["cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick"]
 
+[[cards.variants]]
+id = "grounded_by_view_limit"
+title = "两端止于视图断裂边界的轮廓"
+distinguishing = "细线层上用粗线颜色画的线两端都止于视图的断裂边界（波浪线、双折线），而这条断裂边界已有确认的轮廓接在上面：视图在那里截止，这条线是被截断的轮廓，与接到轮廓上一样确认"
+encodings = ["loose"]
+tests = ["outline_colour_line_between_two_view_limits_is_outline"]
+
+[[cards.counter_examples]]
+statement = "细线层上用粗线颜色画的线只有一端止于断裂边界、另一端自由，不作轮廓"
+test = "outline_colour_line_from_a_view_limit_to_a_free_end_is_not_outline"
+
 [[cards.counter_examples]]
 statement = "不按颜色出图（命名打印样式）时颜色不说明粗细：粗线层上的细线颜色线在线型表里仍按图层报告"
 test = "colour_is_no_width_evidence_with_named_plot_styles"

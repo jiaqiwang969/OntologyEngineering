@@ -6890,6 +6890,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     view_types::state(&cx, &mut nb, &mut regions)?;
     section_hatching::state(&cx, &mut nb, &regions)?;
+    thread_forms::assembled(&cx, &mut nb)?;
     thread_forms::state(&cx, &mut nb, &regions)?;
     assembly_drawing::state(&cx, &mut nb, &mut regions)?;
     expression_names::state(&cx, &mut nb, &regions)?;

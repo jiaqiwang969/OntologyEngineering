@@ -549,3 +549,196 @@ pub(super) fn sections_by_hatch(cx: &Ctx, b: &mut Builder) -> Result<()> {
     }
     Ok(())
 }
+
+// ---------------------------------------------------------------- threads in an assembly
+
+/// Nominal size and length of a screw designation `M d × l` in a parts-list name (GB/T 193 and the
+/// designations of the screw standards: thread letter, nominal diameter, a multiplication sign
+/// and the nominal length).
+fn designation(text: &str) -> Option<(String, f64, f64)> {
+    let c: Vec<char> = text.chars().collect();
+    let number = |from: usize| -> (usize, String) {
+        let mut i = from;
+        let mut s = String::new();
+        while i < c.len() && (c[i].is_ascii_digit() || (c[i] == '.' && !s.is_empty())) {
+            s.push(c[i]);
+            i += 1;
+        }
+        (i, s)
+    };
+    (0..c.len()).filter(|&i| c[i] == 'M').find_map(|i| {
+        let (j, d) = number(i + 1);
+        let times = c.get(j).is_some_and(|x| matches!(x, '×' | 'x' | 'X' | '*'));
+        let (k, l) = if times {
+            number(j + 1)
+        } else {
+            (j, String::new())
+        };
+        let (d, l) = (d.parse::<f64>().ok()?, l.parse::<f64>().ok()?);
+        Some((c[i..k].iter().collect(), d, l))
+    })
+}
+
+/// A library part drawn with an external thread (card `thread_representation`, variant
+/// `external_thread_in_view`; GB/T 4459.1-1995 3.1: the crest thick, the root thin and just
+/// inside it), and the tapped hole it is screwed into (variant `assembled_threads`; 3.9: the
+/// engaged part is drawn as the external thread, the rest of each by its own representation).
+/// The part's thin pair, symmetric about its centre line inside its thick pair in the card's ratio
+/// window, becomes its thread lines; a section of an internal thread whose major lines run along
+/// the part's crest lines on the same axis is the hole it is engaged in, over the length the two
+/// overlap. When the parts list names the part with a designation `M d × l`, its size is checked.
+pub(super) fn assembled(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let card = representation::card_ref("thread_representation")?;
+    let rmin = representation::param(card, "section_ratio_min")?;
+    let rmax = representation::param(card, "section_ratio_max")?;
+    let tol_ratio = representation::param(card, "same_thread_tolerance")?;
+    let line_of = |m: &MdExpressionMember| -> Option<(P, P)> {
+        let part = cx.blocks.part(m.native_member_id.as_deref()?)?;
+        match &part.geom {
+            annotation_blocks::Geom::Line(a, z) => Some((*a, *z)),
+            annotation_blocks::Geom::Path(v, false) if v.len() == 2 => Some((v[0], v[1])),
+            _ => None,
+        }
+    };
+    for i in 0..b.exprs.len() {
+        if b.exprs[i].kind != "standard_part" {
+            continue;
+        }
+        let id = b.exprs[i].id.clone();
+        let ms: Vec<(usize, String, (P, P))> = b
+            .members
+            .iter()
+            .enumerate()
+            .filter(|(_, m)| m.expression_id == id)
+            .filter_map(|(k, m)| line_of(m).map(|l| (k, m.member_role.clone(), l)))
+            .filter(|(_, _, (a, z))| dist(*a, *z) > 1e-9)
+            .collect();
+        let Some((_, _, (p0, q0))) = ms.iter().find(|m| m.1 == "center_line") else {
+            continue;
+        };
+        let u = unit(sub(*q0, *p0));
+        let off = |p: P| cross(u, sub(p, *p0));
+        let along = |p: P| dot(sub(p, *p0), u);
+        let parallel = |(a, z): &(P, P)| cross(unit(sub(*z, *a)), u).abs() < 0.01;
+        let level = |(a, z): &(P, P)| (off(*a) + off(*z)) / 2.;
+        let span = |(a, z): &(P, P)| (along(*a).min(along(*z)), along(*a).max(along(*z)));
+        let pairs = |role: &str| -> Vec<(usize, usize, f64, (f64, f64))> {
+            let ls: Vec<&(usize, String, (P, P))> = ms
+                .iter()
+                .filter(|m| m.1 == role && parallel(&m.2))
+                .collect();
+            let mut out = Vec::new();
+            for (x, a) in ls.iter().enumerate() {
+                for c in &ls[x + 1..] {
+                    let (oa, oc) = (level(&a.2), level(&c.2));
+                    if oa * oc < 0. && (oa + oc).abs() <= tol_ratio * (oa - oc).abs() {
+                        let (sa, sc) = (span(&a.2), span(&c.2));
+                        let ov = (sa.0.max(sc.0), sa.1.min(sc.1));
+                        if ov.1 > ov.0 {
+                            out.push((a.0, c.0, (oa - oc).abs(), ov));
+                        }
+                    }
+                }
+            }
+            out
+        };
+        let crests = pairs("contour_segment");
+        let roots = pairs("native_member");
+        let found = crests.iter().find_map(|c| {
+            roots.iter().find_map(|r| {
+                let q = r.2 / c.2;
+                let ov = r.3.1.min(c.3.1) - r.3.0.max(c.3.0);
+                ((rmin..=rmax).contains(&q) && ov > 0.5 * (c.3.1 - c.3.0)).then_some((c, r))
+            })
+        });
+        let Some((crest, root)) = found else { continue };
+        let (major, minor) = (crest.2, root.2);
+        for k in [root.0, root.1] {
+            b.members[k].member_role = "thread_line".into();
+            b.members[k].line_type = "thin_continuous".into();
+        }
+        let ev = &mut b.exprs[i].evidence_ids;
+        for x in [
+            "card:thread_representation".to_string(),
+            "variant:external_thread_in_view".into(),
+            "concept:DC-G3-024".into(),
+            format!("major:{}", fmt_num((major * 1e4).round() / 1e4)),
+            format!("minor:{}", fmt_num((minor * 1e4).round() / 1e4)),
+        ] {
+            if !ev.contains(&x) {
+                ev.push(x);
+            }
+        }
+        // the part's length along its axis: the extent of its outline
+        let (lo, hi) = ms
+            .iter()
+            .filter(|m| m.1 == "contour_segment")
+            .map(|m| span(&m.2))
+            .fold((f64::INFINITY, f64::NEG_INFINITY), |a, s| {
+                (a.0.min(s.0), a.1.max(s.1))
+            });
+        let length = hi - lo;
+        // the designation of its parts-list row, as its label carries it
+        let label = b.exprs[i].label.clone();
+        if let Some((text, d, l)) = designation(&label) {
+            let agrees = (d - major).abs() <= tol_ratio * d && (l - length).abs() <= tol_ratio * l;
+            let x = format!(
+                "{}:{text}",
+                if agrees {
+                    "designation_agrees"
+                } else {
+                    "designation_differs"
+                }
+            );
+            if !b.exprs[i].evidence_ids.contains(&x) {
+                b.exprs[i].evidence_ids.push(x);
+            }
+        }
+        // the tapped hole it is screwed into: an internal thread in section on the same axis whose
+        // major lines run along the part's crest lines
+        let t = tol_ratio * major;
+        let hole = b.exprs.iter().position(|e| {
+            e.kind == "thread_convention" && e.rule.starts_with("card:thread_representation/") && {
+                let ls: Vec<(P, P)> = b
+                    .members
+                    .iter()
+                    .filter(|m| m.expression_id == e.id && m.member_role == "thread_line")
+                    .filter_map(|m| cx.lines.get(&m.source_handle).copied())
+                    .collect();
+                ls.len() == 2
+                    && ls
+                        .iter()
+                        .all(|l| parallel(l) && (level(l).abs() - major / 2.).abs() <= t)
+                    && level(&ls[0]) * level(&ls[1]) < 0.
+                    && ls
+                        .iter()
+                        .all(|l| span(l).1.min(hi) - span(l).0.max(lo) > 0.)
+            }
+        });
+        let Some(h) = hole else { continue };
+        let engaged = b
+            .members
+            .iter()
+            .filter(|m| m.expression_id == b.exprs[h].id && m.member_role == "thread_line")
+            .filter_map(|m| cx.lines.get(&m.source_handle).copied())
+            .map(|l| span(&l).1.min(hi) - span(&l).0.max(lo))
+            .fold(f64::INFINITY, f64::min);
+        let (hid, sid) = (b.exprs[h].id.clone(), id.clone());
+        let len = fmt_num((engaged * 1e4).round() / 1e4);
+        for (own, other) in [(h, &sid), (i, &hid)] {
+            let ev = &mut b.exprs[own].evidence_ids;
+            for x in [
+                format!("engaged_with:{other}"),
+                format!("engaged_length:{len}"),
+                "card:thread_representation".into(),
+                "variant:assembled_threads".into(),
+                "concept:DC-G3-056".into(),
+            ] {
+                if !ev.contains(&x) {
+                    ev.push(x);
+                }
+            }
+        }
+    }
+    Ok(())
+}

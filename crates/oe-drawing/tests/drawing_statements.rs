@@ -1216,6 +1216,15 @@ fn assembly(
     screw: bool,
     extra: Vec<String>,
 ) -> MdEngineeringExpressionGraph {
+    assembly_with(items, rows, screw.then(screw_block), extra)
+}
+/// The same section with the screw drawn by the given block (none for no screw).
+fn assembly_with(
+    items: &[(&str, P)],
+    rows: Option<&[(&str, &str, &str)]>,
+    screw: Option<Vec<String>>,
+    extra: Vec<String>,
+) -> MdEngineeringExpressionGraph {
     let mut ents = outline("P", 0., 0., 100., 60.);
     ents.extend([
         line("PY", "01", [0., 20.], [100., 20.]),
@@ -1265,8 +1274,8 @@ fn assembly(
         defs.push(("*M1".into(), parts_list_block(r)));
         ents.push(insert("ML", "02", "*M1", [200., -100.]));
     }
-    if screw {
-        defs.push(("*S1".into(), screw_block()));
+    if let Some(parts) = screw {
+        defs.push(("*S1".into(), parts));
         ents.push(insert("SX", "01", "*S1", [24., 30.]));
     }
     ents.extend(extra);
@@ -1941,5 +1950,117 @@ fn block_without_widths_and_arrows_is_not_a_cutting_plane() {
             .iter()
             .map(|e| (&e.kind, &e.rule))
             .collect::<Vec<_>>()
+    );
+}
+
+// ---------------------------------------------------------------- thread_representation: threads in an assembly
+
+fn member_role<'a>(
+    g: &'a MdEngineeringExpressionGraph,
+    e: &MdEngineeringExpression,
+    path: &str,
+) -> Option<&'a str> {
+    g.members
+        .iter()
+        .find(|m| m.expression_id == e.id && m.native_member_id.as_deref() == Some(path))
+        .map(|m| m.member_role.as_str())
+}
+
+#[test]
+fn screw_block_root_lines_are_thread_lines() {
+    let g = assembly(&DOTS, Some(&ROWS), true, vec![]);
+    let part = expr_with(&g, "SX", "standard_part");
+    assert_eq!(member_role(&g, part, "SX/W5"), Some("thread_line"));
+    assert_eq!(member_role(&g, part, "SX/W6"), Some("thread_line"));
+    assert_eq!(member_role(&g, part, "SX/W1"), Some("contour_segment"));
+    assert!(
+        ev(part, "variant:external_thread_in_view")
+            && ev(part, "major:5")
+            && ev(part, "minor:4.2")
+            && ev(part, "designation_agrees:M5×12"),
+        "{:?}",
+        part.evidence_ids
+    );
+    assert!(
+        concepts(part).contains("DC-G3-024"),
+        "{:?}",
+        part.concept_ids
+    );
+}
+
+#[test]
+fn block_with_two_thick_pairs_has_no_external_thread() {
+    // a stepped pin: both pairs drawn thick
+    let mut pin = screw_block();
+    pin[4] = line_w("W5", "0", 50, [0., -2.1], [12., -2.1]);
+    pin[5] = line_w("W6", "0", 50, [0., 2.1], [12., 2.1]);
+    let g = assembly_with(&DOTS, Some(&ROWS), Some(pin), vec![]);
+    let part = expr_with(&g, "SX", "standard_part");
+    assert!(
+        !g.members
+            .iter()
+            .any(|m| m.expression_id == part.id && m.member_role == "thread_line"),
+        "{:?}",
+        part.evidence_ids
+    );
+    assert!(!ev(part, "variant:external_thread_in_view"));
+}
+
+/// A blind tapped hole in the bore band on the screw's axis (y = 30): mouth face at x = 24,
+/// thin major lines at ±2.5 to the thread end at x = 34, thick minor lines at ±2.2 to the
+/// drill bottom at x = 36, the centre line.
+fn tapped_hole() -> Vec<String> {
+    vec![
+        line("TF", "01", [24., 20.], [24., 40.]),
+        line("TM1", "02", [24., 32.5], [34., 32.5]),
+        line("TM2", "02", [24., 27.5], [34., 27.5]),
+        line("TN1", "01", [24., 32.2], [36., 32.2]),
+        line("TN2", "01", [24., 27.8], [36., 27.8]),
+        line("TE", "01", [34., 27.5], [34., 32.5]),
+        line("TB", "01", [36., 27.8], [36., 32.2]),
+        line("TA", "05", [21., 30.], [39., 30.]),
+    ]
+}
+
+#[test]
+fn screw_in_a_tapped_hole_is_engaged() {
+    let g = assembly(&DOTS, Some(&ROWS), true, tapped_hole());
+    let (hole, part) = (
+        expr_with(&g, "TM1", "thread_convention"),
+        expr_with(&g, "SX", "standard_part"),
+    );
+    assert_eq!(ev_with(hole, "engaged_with:"), vec![part.id.as_str()]);
+    assert_eq!(ev_with(part, "engaged_with:"), vec![hole.id.as_str()]);
+    assert!(
+        ev(hole, "engaged_length:10") && ev(hole, "variant:assembled_threads"),
+        "{:?}",
+        hole.evidence_ids
+    );
+    assert!(
+        concepts(hole).contains("DC-G3-056"),
+        "{:?}",
+        hole.concept_ids
+    );
+}
+
+#[test]
+fn screw_in_a_clearance_hole_is_not_engaged() {
+    let clearance = vec![
+        line("TF", "01", [24., 20.], [24., 40.]),
+        line("TN1", "01", [24., 33.], [36., 33.]),
+        line("TN2", "01", [24., 27.], [36., 27.]),
+        line("TB", "01", [36., 27.], [36., 33.]),
+        line("TA", "05", [21., 30.], [39., 30.]),
+    ];
+    let g = assembly(&DOTS, Some(&ROWS), true, clearance);
+    let part = expr_with(&g, "SX", "standard_part");
+    assert!(
+        ev_with(part, "engaged_with:").is_empty(),
+        "{:?}",
+        part.evidence_ids
+    );
+    assert!(
+        !g.expressions.iter().any(|e| e.kind == "thread_convention"),
+        "no thread in a clearance hole"
     );
 }

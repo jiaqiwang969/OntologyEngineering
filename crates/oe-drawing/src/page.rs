@@ -241,7 +241,7 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
         "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
         "native_member_kinds":Value::Object(native_kinds),"rendered_member_identities":shown.members.len()});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");
-    let text = TEMPLATE.replace("@@DATA@@", &data).replace("@@SVG@@", svg);
+    let text = TEMPLATE.replace("@@SECTION_REVIEW@@", include_str!("../assets/section-review.js")).replace("@@DATA@@", &data).replace("@@SVG@@", svg);
     let result = MdReviewPage {
         schema: SCHEMA.into(),
         page: MdDrawingRouteFile {

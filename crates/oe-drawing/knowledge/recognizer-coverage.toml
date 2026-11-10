@@ -1240,7 +1240,7 @@ missing = "延到交点的细线以尺寸界线起点（或原生尺寸定义点
 [[concepts]]
 id = "DC-G4-006"
 level = "full"
-by = ["card:annotation_constituents", "card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+by = ["convention:unresolved_dimension_constituents_rules", "card:annotation_constituents", "card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
 
 [[concepts]]
 id = "DC-G4-015"
@@ -1251,7 +1251,7 @@ missing = "一端箭头的尺寸能识别，但不检查它是否越过对称线
 [[concepts]]
 id = "DC-G4-017"
 level = "partial"
-by = ["card:dimension_text"]
+by = ["convention:unresolved_dimension_constituents_rules", "card:dimension_text"]
 missing = "原生尺寸的替代显示文字（group 1 不含 <>）未与测量值核对，文字中的不明记号未报告"
 
 [[concepts]]
@@ -1278,7 +1278,7 @@ by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_fr
 [[concepts]]
 id = "DC-G4-032"
 level = "full"
-by = ["card:annotation_constituents", "card:angle_unit", "card:dimension_text", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+by = ["convention:unresolved_dimension_constituents_rules", "card:annotation_constituents", "card:angle_unit", "card:dimension_text", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
 
 [[concepts]]
 id = "DC-G4-040"
@@ -1304,7 +1304,7 @@ missing = "超出段、画进轮廓的起头、两个尺寸共用一条界线、
 [[concepts]]
 id = "DC-G4-059"
 level = "full"
-by = ["card:annotation_constituents", "card:dimension_line_parts", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
+by = ["convention:unresolved_dimension_constituents_rules", "card:annotation_constituents", "card:dimension_line_parts", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
 
 [[concepts]]
 id = "DC-G4-061"
@@ -1795,3 +1795,9 @@ level = "partial"
 by = ["card:thread_representation"]
 missing = "标准件图块中的外螺纹与它旋入的剖视螺孔（大径线共线、同轴）互记旋合与旋合长度；被零件遮住的螺孔线仍记为可见轮廓（遮挡未读），散画的外螺纹与螺栓、螺柱连接未识别"
 
+
+# Independent rule coverage; this does not promote recognition capability levels.
+[[conventions]]
+name = "unresolved_dimension_constituents_rules"
+applies_to = "oe-drawing-check/knowledge/drafting-ontology.toml: G4-059-unresolved-terminator-on-carrier and G4-059-unresolved-dimension-continuation; recognition-layer findings only, synthetic tests in oe-drawing-check/tests/drafting_constituents.rs"
+ids = ["DC-G4-006", "DC-G4-017", "DC-G4-032", "DC-G4-059"]

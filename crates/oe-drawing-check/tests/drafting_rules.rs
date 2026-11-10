@@ -209,6 +209,27 @@ fn outline(d: &mut Drawing, a: [f64; 2], b: [f64; 2]) -> String {
 fn fixture(rule: &str, violating: bool) -> Drawing {
     let mut d = Drawing::default();
     match rule {
+        "G4-059-unresolved-terminator-on-carrier" | "G4-059-unresolved-dimension-continuation" => {
+            let e = d.expression("dimension_linear", "8");
+            let l = d.line([0., 0.], [24., 0.]);
+            d.member_in(&e, &l, "dimension_line", "thin_continuous");
+            let t = d.text("8", [9., 1.], 2., 0.);
+            d.member_in(&e, &t, "dimension_text", "thin_continuous");
+            let h = d.entity("SOLID", "10\n26\n20\n0\n11\n24\n21\n0.32\n12\n24\n22\n-0.32\n13\n24\n23\n-0.32\n");
+            if rule == "G4-059-unresolved-terminator-on-carrier" && violating {
+                d.member(&h, "unresolved_source", "thin_continuous", "unresolved", "");
+            } else {
+                d.member_in(&e, &h, "arrowhead", "thin_continuous");
+            }
+            if rule == "G4-059-unresolved-dimension-continuation" {
+                let remainder = d.line([24., 0.], [26., 0.]);
+                if violating {
+                    d.member(&remainder, "unresolved_source", "thin_continuous", "unresolved", "");
+                } else {
+                    d.member_in(&e, &remainder, "dimension_line", "thin_continuous");
+                }
+            }
+        }
         "G1-032-wavy-ends-on-outline" => {
             outline(&mut d, [0.0, -5.0], [0.0, 5.0]);
             outline(&mut d, [10.0, -5.0], [10.0, 5.0]);

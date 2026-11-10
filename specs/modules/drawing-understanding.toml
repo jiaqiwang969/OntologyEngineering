@@ -5429,11 +5429,11 @@ required = true
 format = "typed"
 meaning = "Predicate of the fact vocabulary; the ontology declares exactly these properties"
 unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
-precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights); terminatorOnCarrier and boundedContinuationOf use local arrow-length/text-height ratios declared in the ontology knowledge, not product tolerances"
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith"]
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith", "terminatorOnCarrier", "boundedContinuationOf"]
 
 [[types.fields]]
 name = "object"

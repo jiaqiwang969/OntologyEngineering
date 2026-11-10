@@ -5699,6 +5699,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "alignedWith"),
     ("MdDraftingRelation", "predicate", "angleDeg"),
     ("MdDraftingRelation", "predicate", "angleToDimensionLineDeg"),
+    ("MdDraftingRelation", "predicate", "boundedContinuationOf"),
     ("MdDraftingRelation", "predicate", "chainedWith"),
     ("MdDraftingRelation", "predicate", "coincidentWith"),
     ("MdDraftingRelation", "predicate", "colourIndex"),
@@ -5724,6 +5725,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "scaledBy"),
     ("MdDraftingRelation", "predicate", "sourceHandle"),
     ("MdDraftingRelation", "predicate", "spacingUnits"),
+    ("MdDraftingRelation", "predicate", "terminatorOnCarrier"),
     ("MdDraftingRelation", "predicate", "text"),
     ("MdDraftingRelation", "predicate", "view"),
     ("MdDraftingRule", "severity", "info"),
@@ -20593,7 +20595,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundedContinuationOf","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","terminatorOnCarrier","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

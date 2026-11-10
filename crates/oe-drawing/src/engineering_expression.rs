@@ -54,6 +54,8 @@ mod loose_annotations;
 mod line_evidence;
 
 // lines as the sheet plots them (correction round after the expert's review)
+#[path = "annotation_constituents.rs"]
+mod annotation_constituents;
 #[path = "extension_lines.rs"]
 mod extension_lines;
 #[path = "line_widths.rs"]
@@ -1630,6 +1632,7 @@ fn native_dimensions(
                 vec![format!("rule:{}", us.rule)],
             );
         }
+        annotation_constituents::native_head_pieces(cx, b, e, &tips, &block_lines)?;
         // Angular dimensions: root reference lines drawn on the two measured sides.
         let sides: Vec<(P, P)> = match dtype {
             2 => [(13, 14), (15, 10)]
@@ -4178,13 +4181,16 @@ fn leader_annotations(
         let Some((sid, pts)) = shoulder else { continue };
         let mut taken = BTreeSet::from([sid.clone(), t.id.clone()]);
         let n = pts.len();
-        let (mut segs, arrows, ends) = branches(
-            cx,
-            b,
-            &[(pts[0], pts[1]), (pts[n - 1], pts[n - 2])],
-            &mut taken,
-            4,
-        );
+        let starts = [(pts[0], pts[1]), (pts[n - 1], pts[n - 2])];
+        let bounded = if t.lex == Lex::Radius {
+            annotation_constituents::radius_branch(cx, b, &starts, &taken)
+                .expect("validated constituent card")
+        } else {
+            None
+        };
+        let radius_path = bounded.is_some();
+        let (mut segs, arrows, ends) = bounded
+            .unwrap_or_else(|| branches(cx, b, &starts, &mut taken, 4));
         segs.insert(0, sid.clone());
         let kind = match t.lex {
             Lex::Radius => "dimension_radius",
@@ -4257,6 +4263,9 @@ fn leader_annotations(
             vec![format!("text:{}", t.id), format!("shoulder:{sid}")],
             vec!["Target feature requires projection evidence".into()],
         );
+        if radius_path {
+            annotation_constituents::tag_radius(b, e);
+        }
         for g in &group {
             b.member(
                 e,
@@ -6819,12 +6828,14 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts)?;
     blocks(&cx, &mut b, &mut def);
     view_layout::arrows_and_letters(&cx, &mut b)?;
+    annotation_constituents::view_arrows(&cx, &mut b)?;
     let block_titles = annotation_blocks::read(&cx, &mut b, &def, &mut anchors)?;
     representation::datum_symbols(&cx, &mut b)?;
     representation::center_holes(&cx, &mut b)?;
     hatch_and_points(&cx, &mut b);
     representation::section_lines(&cx, &mut b)?;
     exploded_dimensions(&cx, &mut b, &mut anchors);
+    annotation_constituents::chained_angles(&cx, &mut b)?;
     exploded_angles(&cx, &mut b);
     let lined = loose_annotations::line_frames(&cx, &b)?;
     let mut loose = representation::loose_glyphs(&cx, &b, &lined)?;
@@ -6890,6 +6901,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     loose_annotations::redrawn_copies(&cx, &mut b)?;
     loose_annotations::margin_notes(&cx, &mut b)?;
     line_evidence::dimension_pieces(&cx, &mut b)?;
+    annotation_constituents::outside_lines(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
     extension_lines::lend_outline(&cx, &mut b)?;
@@ -6904,6 +6916,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     thread_forms::state(&cx, &mut nb, &regions)?;
     assembly_drawing::state(&cx, &mut nb, &mut regions)?;
     expression_names::state(&cx, &mut nb, &regions)?;
+    annotation_constituents::contour_aliases(&cx, &mut nb)?;
     unresolved(&cx, &mut nb, &regions);
     line_widths::members(&cx, &mut nb)?;
     coverage::assign(&mut nb)?;

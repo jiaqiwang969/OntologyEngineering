@@ -4665,3 +4665,151 @@ concept = "DC-G1-101"
 entry = "definition_point_layer"
 values = ["Defpoints"]
 meaning = "CAD 的定义点层：尺寸定义点所在的层，任何情况下都不打印；层名不分大小写"
+
+[[cards]]
+id = "annotation_constituents"
+expression_kind = "annotation_constituents"
+title = "标注组成要素按局部几何归属"
+meaning = "按自身文字、承载线、终端与界线的几何组合确定标注归属；同心半径、连续角度、外置数值、原生终端填充和视向标记各有独立条件。精确重合的剩余源区间可归已确定轮廓；没有证据的短线仍待解释。"
+sources = ["GB/T 14665-2012 4.3；重合图线优先顺序，原实体保留为来源别名", "GB/T 4458.1-2002 图2；向视配置的局部视图", "GB/T 4458.4-2003 4.2.1、4.3.1；尺寸线终端与外置尺寸数值", "GB/T 4458.4-2003 4.1.5、4.3.3 图22、23；连续角度尺寸", "GB/T 4458.4-2003 4.2.3 图12、4.2.6 图16、5.2；半径线、箭头和外置数值", "GB/T 4458.4-2003 3.1；所注尺寸数值与绘图比例分开"]
+knowledge_units = ["K17", "K18", "K20"]
+recognition = "半径路径在自身圆心停止；连续角度按定向终端分区；外置线需本尺寸数值和终端相接；原生终端仅补其填充区间；散视向标记需独立视图名和唯一箭杆；轮廓别名需整个未覆盖区间与确定轮廓精确重合。图面参数不是产品尺寸公差，也不证明工程对象相同。"
+markers = []
+concepts = ["DC-G4-006", "DC-G4-032", "DC-G4-058", "DC-G4-059", "DC-G2-072", "DC-G1-055"]
+[[cards.components]]
+role = "dimension_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "半径、角度或线性尺寸数值，与自身承载线关联"
+[[cards.components]]
+role = "arrowhead"
+primitives = ["SOLID", "LWPOLYLINE"]
+requirement = "半径终端沿径向、角度终端沿圆弧切向、直线尺寸终端与承载线同轴"
+[[cards.components]]
+role = "dimension_line"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "半径路径不跨入另一半径，角度圆弧段不跨入邻角，外置线和填充下区间仅归对应尺寸"
+[[cards.variants]]
+id = "radius_internal_head"
+title = "半径箭头在尺寸线内接点"
+distinguishing = "箭头位于引线台与圆心之间，路径在圆心止住；允许相同圆心的其他半径，也不要求图面半径等于标注数值"
+encodings = ["loose"]
+tests = ["concentric_radius_paths_stop_at_their_common_centre", "internal_radius_head_uses_arc_geometry_not_nominal_scale"]
+[[cards.counter_examples]]
+statement = "没有支撑圆弧的内接箭头不能仅凭邻近半径文字并入该尺寸"
+test = "internal_head_without_a_supporting_arc_is_not_invented"
+[[cards.parameters]]
+name = "incidence_arrow"
+value = 3e-2
+meaning = "箭尖、圆弧与尺寸线的容差为当地箭长的此比例；是图面判读参数，非产品尺寸公差"
+[[cards.parameters]]
+name = "direction_sine"
+value = 5e-2
+meaning = "箭轴与圆弧半径方向夹角的正弦上限"
+[[cards.variants]]
+id = "chained_angle_sectors"
+title = "同圆周的连续角度"
+distinguishing = "每一数值位于自身两个定向终端之间，原始圆弧段完整落在该角区内；共用边上相反朝向的两个箭头各归一侧"
+encodings = ["loose"]
+tests = ["adjacent_angle_values_own_separate_arcs_and_opposed_heads"]
+[[cards.variants]]
+id = "bounded_angular_side"
+title = "角度界线只取抵达箭尖的有界线段"
+distinguishing = "径向线段自身或端点的小间隙抵达本角度终端；允许中心线作为界线，不取无限延长线上远处的短线"
+encodings = ["loose"]
+tests = ["adjacent_angle_values_own_separate_arcs_and_opposed_heads"]
+[[cards.counter_examples]]
+statement = "同一角区有两个数值时不以源顺序决定归属；远在同一径向上的短线也不是尺寸界线"
+test = "ambiguous_angular_values_and_distant_side_are_not_claimed"
+[[cards.parameters]]
+name = "angular_circle_arrow"
+value = 0.25
+meaning = "直箭头和圆弧之间图面间隙上限为此比例的箭长"
+[[cards.parameters]]
+name = "angular_text_height"
+value = 2.5
+meaning = "角度文字中心到圆周的搜索距离，以当地字高计"
+[[cards.parameters]]
+name = "angular_end_arrow"
+value = 1.2
+meaning = "圆弧端部与箭尖之间可以由箭头填充覆盖的距离，以箭长计"
+[[cards.parameters]]
+name = "side_gap_arrow"
+value = 1.0
+meaning = "径向界线端点至终端的最大连接间隙，以箭长计；投影仍须在线段范围附近"
+
+[[cards.variants]]
+id = "outside_value_continuation"
+title = "成对终端外的数值承载线"
+distinguishing = "数值位于该尺寸箭尖之外的独立尺寸线段上，线段与自身终端连通，且没有越过另一标注的终端"
+encodings = ["loose"]
+tests = ["outside_value_carrier_joins_its_existing_dimension"]
+[[cards.counter_examples]]
+statement = "仅邻近尺寸、没有该尺寸文字，或继续跨过其他终端的线段，不因共线而收入"
+test = "outside_carrier_does_not_cross_another_terminator"
+
+[[cards.variants]]
+id = "native_terminator_footprint"
+title = "原生终端填充下面的尺寸线"
+distinguishing = "根实体已经与该尺寸原生尺寸线重合，其未覆盖区间落在同一原生箭头底边至箭尖之间；只补该区间，保留其余未解释段"
+encodings = ["native", "loose"]
+tests = ["native_arrow_fill_covers_only_its_root_carrier_interval"]
+[[cards.counter_examples]]
+statement = "邻近的平行线或只有界线而没有本尺寸尺寸线重合依据，不能因靠近箭头而吸收"
+test = "native_head_does_not_take_parallel_or_unconnected_lines"
+
+[[cards.components]]
+role = "view_letter"
+primitives = ["TEXT", "MTEXT"]
+requirement = "独立的大写字母，另有对应的视向名称；不在基准框内"
+[[cards.components]]
+role = "view_arrow"
+primitives = ["LINE", "SOLID", "LWPOLYLINE"]
+requirement = "单独短箭杆连接一个终端，箭尾不接其他引线或剖切短画"
+[[cards.variants]]
+id = "loose_view_direction"
+title = "散字母、散终端和散箭杆的视向标注"
+distinguishing = "三者几何唯一对应，并能找到同字母加方向后缀的独立视图名称；早于尺寸占用判定"
+encodings = ["loose"]
+tests = ["loose_letter_head_and_shaft_reference_the_named_view"]
+[[cards.counter_examples]]
+statement = "框内字母、接着其他引线的箭杆，或缺少对应视图名称的字母，不能由本变体建立视向关系"
+test = "datum_or_unmatched_letter_does_not_create_a_direction_view"
+[[cards.parameters]]
+name = "view_shaft_arrow"
+value = 6.0
+meaning = "视向箭杆长度上限为当地箭长的此倍数；字母距离沿用 view_callout 的 letter_reach × 字高"
+[[cards.parameters]]
+name = "view_incidence_arrow"
+value = 0.15
+meaning = "箭杆连接箭头的图面容差，以当地箭长计"
+
+[[cards.components]]
+role = "coincident_source"
+primitives = ["LINE"]
+requirement = "整个未覆盖区间与同一个已确定可见轮廓区间精确重合；来源实体仍保留"
+[[cards.variants]]
+id = "coincident_contour_interval"
+title = "已知轮廓的重画区间"
+distinguishing = "将精确重合的未覆盖源区间作为已知轮廓的别名；同一实体的其他未匹配区间继续独立保留"
+encodings = ["loose"]
+tests = ["contour_alias_keeps_the_unmatched_sliver_explicit"]
+[[cards.counter_examples]]
+statement = "邻近平行线不等于重画轮廓；只有部分相交、分属不同轮廓的区间不能直接整体归属"
+test = "nearby_parallel_and_partly_overlapping_lines_are_not_aliases"
+[[cards.parameters]]
+name = "coincidence_roundoff_height"
+value = 0.000001
+meaning = "精确重合的数值舍入界为此比例字高，并封顶于既有 1e-6 图面单位；方向正弦用同一无量纲舍入界，不作近似平行线吸收"
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["LINE"]
+requirement = "角度径向界线自身抵达终端；允许相邻角度共用同一条界线"
+[[cards.parameters]]
+name = "angular_tangent_cos"
+value = 0.3
+meaning = "角度箭轴与圆弧半径夹角余弦的绝对值上限；直箭头允许与当地切线有小角差"
+[[cards.parameters]]
+name = "terminator_direction_cos"
+value = 0.9
+meaning = "角区起止箭头与指定切向的同向余弦下限，用来区分共用边上相反方向的终端"

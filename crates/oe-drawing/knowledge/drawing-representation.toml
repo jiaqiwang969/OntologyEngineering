@@ -808,6 +808,21 @@ name = "gap_to_symbol_max"
 value = 1.5
 meaning = "缺口长度 ≤ 该值 × 符号外框对角线"
 
+[[cards.parameters]]
+name = "gap_end_to_crossing_max"
+value = 1.0
+meaning = "为尺寸线、终端让位的缺口：缺口每一端到最外侧穿越处的距离 ≤ 该值 × 箭头长度"
+
+[[cards.parameters]]
+name = "arc_gap_sweep_max_deg"
+value = 90.0
+meaning = "圆弧沿圆补出的缺口圆心角上限（度，约四分之一圈）"
+
+[[cards.parameters]]
+name = "arc_gap_to_drawn_sweep_max"
+value = 1.0
+meaning = "圆弧沿圆补出的缺口圆心角 ≤ 该值 × 该圆上已画出的圆心角之和"
+
 [[cards]]
 id = "hole_pattern"
 expression_kind = "visible_contour"
@@ -2803,6 +2818,21 @@ meaning = "散线剖面线互相平行的角度容差（度）"
 name = "min_section_lines"
 value = 2.0
 meaning = "落在曲线上的平行剖面线最少条数"
+
+[[cards.parameters]]
+name = "end_on_outline"
+value = 0.1
+meaning = "波浪线端点落在轮廓（或放大圈）上、图线落在局部剖视范围内的距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "end_near_region"
+value = 0.75
+meaning = "被局部剖视打断的轮廓端点到剖视范围的距离上限 = 该值 × 字高（虚线端点常停在波浪线前后一小段）"
+
+[[cards.parameters]]
+name = "end_near_region_share"
+value = 0.25
+meaning = "上述距离上限同时不超过该值 × 剖视范围的尺度（面积的平方根），小范围按自身大小收紧"
 
 [[cards]]
 id = "dimension_line_parts"

@@ -12,5 +12,7 @@ pub(crate) mod native_layers;
 pub(crate) mod native_readback;
 pub mod page;
 pub mod review;
+pub mod revisions;
+pub mod correction;
 pub mod route;
 pub mod usage_discovery;

@@ -2755,6 +2755,15 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdConceptSource", "clause", "String"),
     ("MdConceptSource", "document", "String"),
     ("MdConceptSource", "page", "i64"),
+    ("MdCorrectionApplied", "issue_id", "String"),
+    ("MdCorrectionApplied", "operation_id", "String"),
+    ("MdCorrectionApplied", "result_handles", "Vec<String>"),
+    ("MdCorrectionApplied", "source_occurrence", "Vec<String>"),
+    ("MdCorrectionText", "height", "f64"),
+    ("MdCorrectionText", "layer", "String"),
+    ("MdCorrectionText", "position", "Vec<f64>"),
+    ("MdCorrectionText", "rotation", "f64"),
+    ("MdCorrectionText", "value", "String"),
     ("MdCoverageConcept", "by", "Vec<String>"),
     ("MdCoverageConcept", "id", "String"),
     ("MdCoverageConcept", "level", "String"),
@@ -2778,6 +2787,16 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "role", "String"),
     ("MdDiscoveredUse", "rule", "String"),
     ("MdDiscoveredUse", "state", "String"),
+    ("MdDraftingIssue", "alternatives", "Vec<String>"),
+    ("MdDraftingIssue", "clause", "String"),
+    ("MdDraftingIssue", "concept_ids", "Vec<String>"),
+    ("MdDraftingIssue", "confidence", "String"),
+    ("MdDraftingIssue", "id", "String"),
+    ("MdDraftingIssue", "location", "String"),
+    ("MdDraftingIssue", "observed", "Vec<String>"),
+    ("MdDraftingIssue", "proposed_correction", "String"),
+    ("MdDraftingIssue", "rule", "String"),
+    ("MdDraftingIssue", "source_occurrences", "Vec<String>"),
     ("MdDrawingConcept", "aliases", "Vec<String>"),
     ("MdDrawingConcept", "components", "Vec<String>"),
     ("MdDrawingConcept", "confusions", "Vec<String>"),
@@ -2803,6 +2822,38 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDrawingConceptGroup", "group", "String"),
     ("MdDrawingConceptGroup", "label", "String"),
     ("MdDrawingConceptGroup", "schema", "String"),
+    ("MdDrawingCorrectionOperation", "expected_record_sha256", "Option<String>"),
+    ("MdDrawingCorrectionOperation", "id", "String"),
+    ("MdDrawingCorrectionOperation", "issue_id", "String"),
+    ("MdDrawingCorrectionOperation", "kind", "String"),
+    ("MdDrawingCorrectionOperation", "occurrence", "Vec<String>"),
+    ("MdDrawingCorrectionOperation", "style", "Vec<MdDxfStyleEdit>"),
+    ("MdDrawingCorrectionOperation", "text", "Option<MdCorrectionText>"),
+    ("MdDrawingCorrectionOperation", "translation", "Vec<f64>"),
+    ("MdDrawingCorrectionPlan", "issues", "Vec<MdDraftingIssue>"),
+    ("MdDrawingCorrectionPlan", "operations", "Vec<MdDrawingCorrectionOperation>"),
+    ("MdDrawingCorrectionPlan", "source_sha256", "String"),
+    ("MdDrawingCorrectionReceipt", "applied", "Vec<MdCorrectionApplied>"),
+    ("MdDrawingCorrectionReceipt", "changes", "Vec<MdDxfByteChange>"),
+    ("MdDrawingCorrectionReceipt", "checks", "Vec<String>"),
+    ("MdDrawingCorrectionReceipt", "corrected_path", "Option<String>"),
+    ("MdDrawingCorrectionReceipt", "corrected_sha256", "String"),
+    ("MdDrawingCorrectionReceipt", "new_handles", "Vec<String>"),
+    ("MdDrawingCorrectionReceipt", "remaining_issue_ids", "Vec<String>"),
+    ("MdDrawingCorrectionReceipt", "source_path", "Option<String>"),
+    ("MdDrawingCorrectionReceipt", "source_sha256", "String"),
+    ("MdDrawingIdentity", "id", "String"),
+    ("MdDrawingIdentity", "name", "String"),
+    ("MdDrawingIdentity", "number", "String"),
+    ("MdDrawingIdentity", "revisions", "Vec<MdDrawingRevision>"),
+    ("MdDrawingRevision", "date", "String"),
+    ("MdDrawingRevision", "evidence_ids", "Vec<String>"),
+    ("MdDrawingRevision", "id", "String"),
+    ("MdDrawingRevision", "sheet_id", "String"),
+    ("MdDrawingRevision", "source_handles", "Vec<String>"),
+    ("MdDrawingRevision", "status", "String"),
+    ("MdDrawingRevisions", "comparisons", "Vec<MdRevisionComparison>"),
+    ("MdDrawingRevisions", "identities", "Vec<MdDrawingIdentity>"),
     ("MdDrawingRouteFile", "bytes", "u64"),
     ("MdDrawingRouteFile", "path", "String"),
     ("MdDrawingRouteFile", "sha256", "String"),
@@ -2843,6 +2894,12 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDrawingView", "scale_text", "Option<String>"),
     ("MdDrawingView", "state", "String"),
     ("MdDrawingView", "unknowns", "Vec<String>"),
+    ("MdDxfByteChange", "end", "u64"),
+    ("MdDxfByteChange", "issue_id", "String"),
+    ("MdDxfByteChange", "replacement_hex", "String"),
+    ("MdDxfByteChange", "start", "u64"),
+    ("MdDxfStyleEdit", "code", "i64"),
+    ("MdDxfStyleEdit", "value", "String"),
     ("MdEngineeringExpression", "concept_ids", "Vec<String>"),
     ("MdEngineeringExpression", "engineering_target", "Option<String>"),
     ("MdEngineeringExpression", "evidence_ids", "Vec<String>"),
@@ -2864,6 +2921,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpressionGraph", "line_styles", "Vec<MdLineStyle>"),
     ("MdEngineeringExpressionGraph", "members", "Vec<MdExpressionMember>"),
     ("MdEngineeringExpressionGraph", "profile", "String"),
+    ("MdEngineeringExpressionGraph", "revisions", "Option<MdDrawingRevisions>"),
     ("MdEngineeringExpressionGraph", "schema", "String"),
     ("MdEngineeringExpressionGraph", "source", "MdUsageGraph"),
     ("MdEngineeringExpressionGraph", "source_sha256", "String"),
@@ -2871,6 +2929,12 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpressionGraph", "structure_ends", "Vec<MdStructuralEnd>"),
     ("MdEngineeringExpressionGraph", "unknowns", "Vec<String>"),
     ("MdEngineeringExpressionGraph", "views", "Vec<MdDrawingView>"),
+    ("MdEntityDifference", "category", "String"),
+    ("MdEntityDifference", "evidence_ids", "Vec<String>"),
+    ("MdEntityDifference", "id", "String"),
+    ("MdEntityDifference", "newer_handles", "Vec<String>"),
+    ("MdEntityDifference", "older_handles", "Vec<String>"),
+    ("MdEntityDifference", "translation", "Vec<f64>"),
     ("MdExpressionGraphCheck", "by_kind", "std::collections::BTreeMap<String, u64>"),
     ("MdExpressionGraphCheck", "count", "u64"),
     ("MdExpressionGraphCheck", "graph_sha256", "String"),
@@ -3004,6 +3068,11 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdReviewPageRequest", "svg", "String"),
     ("MdReviewPageRequest", "title", "String"),
     ("MdReviewPageRequest", "version", "String"),
+    ("MdRevisionComparison", "differences", "Vec<MdEntityDifference>"),
+    ("MdRevisionComparison", "id", "String"),
+    ("MdRevisionComparison", "newer", "String"),
+    ("MdRevisionComparison", "older", "String"),
+    ("MdRevisionComparison", "translation", "Vec<f64>"),
     ("MdStructuralEnd", "cause", "String"),
     ("MdStructuralEnd", "evidence_ids", "Vec<String>"),
     ("MdStructuralEnd", "id", "String"),
@@ -5587,6 +5656,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "state", "candidate"),
     ("MdDiscoveredUse", "state", "observed"),
     ("MdDiscoveredUse", "state", "unknown"),
+    ("MdDraftingIssue", "confidence", "certain"),
+    ("MdDraftingIssue", "confidence", "likely"),
+    ("MdDraftingIssue", "confidence", "needs_expert"),
     ("MdDrawingConcept", "group", "G1"),
     ("MdDrawingConcept", "group", "G2"),
     ("MdDrawingConcept", "group", "G3"),
@@ -5613,9 +5685,16 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingConceptGroup", "group", "G7"),
     ("MdDrawingConceptGroup", "group", "G8"),
     ("MdDrawingConceptGroup", "group", "G9"),
+    ("MdDrawingCorrectionOperation", "kind", "add_text"),
+    ("MdDrawingCorrectionOperation", "kind", "delete"),
+    ("MdDrawingCorrectionOperation", "kind", "move"),
+    ("MdDrawingCorrectionOperation", "kind", "set_style"),
+    ("MdDrawingRevision", "status", "current_candidate"),
+    ("MdDrawingRevision", "status", "historical_candidate"),
     ("MdDrawingRouteReceipt", "status", "failed"),
     ("MdDrawingRouteReceipt", "status", "page_not_checked"),
     ("MdDrawingRouteReceipt", "status", "passed"),
+    ("MdDrawingRouteStep", "id", "check-corrected"),
     ("MdDrawingRouteStep", "id", "check-graph"),
     ("MdDrawingRouteStep", "id", "check-page"),
     ("MdDrawingRouteStep", "id", "classify"),
@@ -5623,11 +5702,14 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingRouteStep", "id", "convert"),
     ("MdDrawingRouteStep", "id", "page"),
     ("MdDrawingRouteStep", "id", "probe-sandbox"),
+    ("MdDrawingRouteStep", "id", "read-corrected"),
     ("MdDrawingRouteStep", "id", "read-source"),
     ("MdDrawingRouteStep", "id", "render"),
+    ("MdDrawingRouteStep", "id", "render-corrected"),
     ("MdDrawingRouteStep", "id", "request"),
     ("MdDrawingRouteStep", "id", "verify-runtime"),
     ("MdDrawingRouteStep", "id", "verify-source"),
+    ("MdDrawingRouteStep", "id", "write-corrected"),
     ("MdDrawingRouteStep", "status", "failed"),
     ("MdDrawingRouteStep", "status", "not_applicable"),
     ("MdDrawingRouteStep", "status", "not_run"),
@@ -5705,6 +5787,13 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpressionGraph", "layer_convention", "not_qualified"),
     ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/2"),
     ("MdEngineeringExpressionGraph", "schema", "oev2.drawing-expression-graph/1"),
+    ("MdEntityDifference", "category", "added"),
+    ("MdEntityDifference", "category", "deleted"),
+    ("MdEntityDifference", "category", "geometry_changed"),
+    ("MdEntityDifference", "category", "moved"),
+    ("MdEntityDifference", "category", "same"),
+    ("MdEntityDifference", "category", "style_changed"),
+    ("MdEntityDifference", "category", "text_changed"),
     ("MdExpressionGraphCheck", "status", "passed"),
     ("MdExpressionMember", "line_type", "block"),
     ("MdExpressionMember", "line_type", "continuous"),
@@ -20182,6 +20271,58 @@ impl MdConceptSource {
     }
 }
 
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdCorrectionApplied {
+    /// issue id
+    pub issue_id: String,
+    /// operation id
+    pub operation_id: String,
+    /// result handles
+    pub result_handles: Vec<String>,
+    /// source occurrence
+    pub source_occurrence: Vec<String>,
+}
+impl MdCorrectionApplied {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.issue_id.trim().is_empty() { failures.push("MdCorrectionApplied.issue_id:required".into()); }
+        if self.operation_id.trim().is_empty() { failures.push("MdCorrectionApplied.operation_id:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdCorrectionText {
+    /// height
+    pub height: f64,
+    /// layer
+    pub layer: String,
+    /// position
+    pub position: Vec<f64>,
+    /// rotation
+    pub rotation: f64,
+    /// value
+    pub value: String,
+}
+impl MdCorrectionText {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if !self.height.is_finite() { failures.push("MdCorrectionText.height:finite".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdCorrectionText.layer:required".into()); }
+        if !self.rotation.is_finite() { failures.push("MdCorrectionText.rotation:finite".into()); }
+        if self.value.trim().is_empty() { failures.push("MdCorrectionText.value:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// Coverage verdict of one concept
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -20314,6 +20455,47 @@ impl MdDiscoveredUse {
     }
 }
 
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingIssue {
+    /// alternatives
+    pub alternatives: Vec<String>,
+    /// clause
+    pub clause: String,
+    /// concept ids
+    pub concept_ids: Vec<String>,
+    /// confidence
+    pub confidence: String,
+    /// id
+    pub id: String,
+    /// location
+    pub location: String,
+    /// observed
+    pub observed: Vec<String>,
+    /// proposed correction
+    pub proposed_correction: String,
+    /// rule
+    pub rule: String,
+    /// source occurrences
+    pub source_occurrences: Vec<String>,
+}
+impl MdDraftingIssue {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.clause.trim().is_empty() { failures.push("MdDraftingIssue.clause:required".into()); }
+        if self.confidence.trim().is_empty() { failures.push("MdDraftingIssue.confidence:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDraftingIssue.id:required".into()); }
+        if self.location.trim().is_empty() { failures.push("MdDraftingIssue.location:required".into()); }
+        if self.proposed_correction.trim().is_empty() { failures.push("MdDraftingIssue.proposed_correction:required".into()); }
+        if self.rule.trim().is_empty() { failures.push("MdDraftingIssue.rule:required".into()); }
+
+        if !["certain","likely","needs_expert",].contains(&self.confidence.as_str()) { failures.push("MdDraftingIssue.confidence:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -20403,6 +20585,169 @@ impl MdDrawingConceptGroup {
         if self.schema.trim().is_empty() { failures.push("MdDrawingConceptGroup.schema:required".into()); }
 
         if !["G1","G2","G3","G4","G5","G6","G7","G8","G9",].contains(&self.group.as_str()) { failures.push("MdDrawingConceptGroup.group:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingCorrectionOperation {
+    /// expected record sha256
+    pub expected_record_sha256: Option<String>,
+    /// id
+    pub id: String,
+    /// issue id
+    pub issue_id: String,
+    /// kind
+    pub kind: String,
+    /// occurrence
+    pub occurrence: Vec<String>,
+    /// style
+    pub style: Vec<MdDxfStyleEdit>,
+    /// text
+    pub text: Option<MdCorrectionText>,
+    /// translation
+    pub translation: Vec<f64>,
+}
+impl MdDrawingCorrectionOperation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdDrawingCorrectionOperation.id:required".into()); }
+        if self.issue_id.trim().is_empty() { failures.push("MdDrawingCorrectionOperation.issue_id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdDrawingCorrectionOperation.kind:required".into()); }
+
+        if !["add_text","delete","move","set_style",].contains(&self.kind.as_str()) { failures.push("MdDrawingCorrectionOperation.kind:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingCorrectionPlan {
+    /// issues
+    pub issues: Vec<MdDraftingIssue>,
+    /// operations
+    pub operations: Vec<MdDrawingCorrectionOperation>,
+    /// source sha256
+    pub source_sha256: String,
+}
+impl MdDrawingCorrectionPlan {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.source_sha256.trim().is_empty() { failures.push("MdDrawingCorrectionPlan.source_sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingCorrectionReceipt {
+    /// applied
+    pub applied: Vec<MdCorrectionApplied>,
+    /// changes
+    pub changes: Vec<MdDxfByteChange>,
+    /// checks
+    pub checks: Vec<String>,
+    /// corrected path
+    pub corrected_path: Option<String>,
+    /// corrected sha256
+    pub corrected_sha256: String,
+    /// new handles
+    pub new_handles: Vec<String>,
+    /// remaining issue ids
+    pub remaining_issue_ids: Vec<String>,
+    /// source path
+    pub source_path: Option<String>,
+    /// source sha256
+    pub source_sha256: String,
+}
+impl MdDrawingCorrectionReceipt {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.corrected_sha256.trim().is_empty() { failures.push("MdDrawingCorrectionReceipt.corrected_sha256:required".into()); }
+        if self.source_sha256.trim().is_empty() { failures.push("MdDrawingCorrectionReceipt.source_sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingIdentity {
+    /// id
+    pub id: String,
+    /// name
+    pub name: String,
+    /// number
+    pub number: String,
+    /// revisions
+    pub revisions: Vec<MdDrawingRevision>,
+}
+impl MdDrawingIdentity {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdDrawingIdentity.id:required".into()); }
+        if self.name.trim().is_empty() { failures.push("MdDrawingIdentity.name:required".into()); }
+        if self.number.trim().is_empty() { failures.push("MdDrawingIdentity.number:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRevision {
+    /// date
+    pub date: String,
+    /// evidence ids
+    pub evidence_ids: Vec<String>,
+    /// id
+    pub id: String,
+    /// sheet id
+    pub sheet_id: String,
+    /// source handles
+    pub source_handles: Vec<String>,
+    /// status
+    pub status: String,
+}
+impl MdDrawingRevision {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.date.trim().is_empty() { failures.push("MdDrawingRevision.date:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDrawingRevision.id:required".into()); }
+        if self.sheet_id.trim().is_empty() { failures.push("MdDrawingRevision.sheet_id:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdDrawingRevision.status:required".into()); }
+
+        if !["current_candidate","historical_candidate",].contains(&self.status.as_str()) { failures.push("MdDrawingRevision.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRevisions {
+    /// comparisons
+    pub comparisons: Vec<MdRevisionComparison>,
+    /// identities
+    pub identities: Vec<MdDrawingIdentity>,
+}
+impl MdDrawingRevisions {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -20542,7 +20887,7 @@ impl MdDrawingRouteStep {
         if !self.seconds.is_finite() { failures.push("MdDrawingRouteStep.seconds:finite".into()); }
         if self.status.trim().is_empty() { failures.push("MdDrawingRouteStep.status:required".into()); }
 
-        if !["check-graph","check-page","classify","context","convert","page","probe-sandbox","read-source","render","request","verify-runtime","verify-source",].contains(&self.id.as_str()) { failures.push("MdDrawingRouteStep.id:allowed_values".into()); }
+        if !["check-corrected","check-graph","check-page","classify","context","convert","page","probe-sandbox","read-corrected","read-source","render","render-corrected","request","verify-runtime","verify-source","write-corrected",].contains(&self.id.as_str()) { failures.push("MdDrawingRouteStep.id:allowed_values".into()); }
         if !["failed","not_applicable","not_run","passed","skipped",].contains(&self.status.as_str()) { failures.push("MdDrawingRouteStep.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20582,6 +20927,49 @@ impl MdDrawingView {
 
         if !["detail_view","direction_view","partial_view","principal","section_view","sheet",].contains(&self.kind.as_str()) { failures.push("MdDrawingView.kind:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdDrawingView.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDxfByteChange {
+    /// end
+    pub end: u64,
+    /// issue id
+    pub issue_id: String,
+    /// replacement
+    pub replacement_hex: String,
+    /// start
+    pub start: u64,
+}
+impl MdDxfByteChange {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.issue_id.trim().is_empty() { failures.push("MdDxfByteChange.issue_id:required".into()); }
+        if self.replacement_hex.trim().is_empty() { failures.push("MdDxfByteChange.replacement_hex:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDxfStyleEdit {
+    /// code
+    pub code: i64,
+    /// value
+    pub value: String,
+}
+impl MdDxfStyleEdit {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.value.trim().is_empty() { failures.push("MdDxfStyleEdit.value:required".into()); }
+
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -20655,6 +21043,8 @@ pub struct MdEngineeringExpressionGraph {
     pub members: Vec<MdExpressionMember>,
     /// Rule profile
     pub profile: String,
+    /// Source-derived identities, candidate revisions and complete entity correspondences
+    pub revisions: Option<MdDrawingRevisions>,
     /// Graph schema
     pub schema: String,
     /// Lossless native source graph
@@ -20682,6 +21072,35 @@ impl MdEngineeringExpressionGraph {
         if !["gbt14665_2012_table6_consistent","not_qualified",].contains(&self.layer_convention.as_str()) { failures.push("MdEngineeringExpressionGraph.layer_convention:allowed_values".into()); }
         if !["dxf-expression-rules/2",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
         if !["oev2.drawing-expression-graph/1",].contains(&self.schema.as_str()) { failures.push("MdEngineeringExpressionGraph.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdEntityDifference {
+    /// category
+    pub category: String,
+    /// evidence ids
+    pub evidence_ids: Vec<String>,
+    /// id
+    pub id: String,
+    /// newer handles
+    pub newer_handles: Vec<String>,
+    /// older handles
+    pub older_handles: Vec<String>,
+    /// translation
+    pub translation: Vec<f64>,
+}
+impl MdEntityDifference {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.category.trim().is_empty() { failures.push("MdEntityDifference.category:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdEntityDifference.id:required".into()); }
+
+        if !["added","deleted","geometry_changed","moved","same","style_changed","text_changed",].contains(&self.category.as_str()) { failures.push("MdEntityDifference.category:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21327,6 +21746,33 @@ impl MdReviewPageRequest {
         if self.svg.trim().is_empty() { failures.push("MdReviewPageRequest.svg:required".into()); }
         if self.title.trim().is_empty() { failures.push("MdReviewPageRequest.title:required".into()); }
         if self.version.trim().is_empty() { failures.push("MdReviewPageRequest.version:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound drawing revision or corrected-copy evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRevisionComparison {
+    /// differences
+    pub differences: Vec<MdEntityDifference>,
+    /// id
+    pub id: String,
+    /// newer
+    pub newer: String,
+    /// older
+    pub older: String,
+    /// translation
+    pub translation: Vec<f64>,
+}
+impl MdRevisionComparison {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdRevisionComparison.id:required".into()); }
+        if self.newer.trim().is_empty() { failures.push("MdRevisionComparison.newer:required".into()); }
+        if self.older.trim().is_empty() { failures.push("MdRevisionComparison.older:required".into()); }
 
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }

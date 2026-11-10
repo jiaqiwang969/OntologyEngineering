@@ -3128,6 +3128,19 @@ failures = "首个不符即停并给出该项名称；浏览器超时或失败�
 status = "source_only"
 source_refs = ["drawing_understanding_method"]
 
+
+[[types.fields]]
+name="revisions"
+rust_type="Option<MdDrawingRevisions>"
+required=false
+format="typed"
+meaning="Source-derived identities, candidate revisions and complete entity correspondences"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
 [[types]]
 name = "MdCadcraftRuntime"
 contract_group = "engineering"
@@ -3331,7 +3344,7 @@ precision = "Exact bytes, identities and counts; seconds as measured"
 write = "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence"
 applicability = "One drawing per run through the pinned converter and the current oev2 executable; no reference answers, regions, feedback or paired models as input"
 acceptance = "Route execution, source conservation and output-contract checks only; not engineering acceptance of the classification"
-allowed_values = ["verify-runtime", "read-source", "probe-sandbox", "convert", "render", "context", "request", "classify", "check-graph", "page", "check-page", "verify-source"]
+allowed_values = ["verify-runtime", "read-source", "probe-sandbox", "convert", "render", "context", "request", "classify", "check-graph", "write-corrected", "read-corrected", "render-corrected", "check-corrected", "page", "check-page", "verify-source"]
 
 [[types.fields]]
 name = "status"
@@ -3543,6 +3556,8 @@ precision = "Exact bytes, identities and counts; seconds as measured"
 write = "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence"
 applicability = "One drawing per run through the pinned converter and the current oev2 executable; no reference answers, regions, feedback or paired models as input"
 acceptance = "Route execution, source conservation and output-contract checks only; not engineering acceptance of the classification"
+
+
 
 [[types]]
 name = "MdDrawingRouteReceipt"
@@ -5212,3 +5227,901 @@ precision="Exact rule and concept identity; level is an audited judgement with w
 write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
 applicability="Recognition coverage of the dxf-expression-rules/2 profile"
 acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdDrawingRevisions"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="identities"
+rust_type="Vec<MdDrawingIdentity>"
+required=true
+format="typed"
+meaning="identities"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="comparisons"
+rust_type="Vec<MdRevisionComparison>"
+required=true
+format="typed"
+meaning="comparisons"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDrawingIdentity"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="number"
+rust_type="String"
+required=true
+format="typed"
+meaning="number"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="name"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="revisions"
+rust_type="Vec<MdDrawingRevision>"
+required=true
+format="typed"
+meaning="revisions"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDrawingRevision"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="sheet_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="sheet id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="date"
+rust_type="String"
+required=true
+format="typed"
+meaning="date"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="status"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+allowed_values=["historical_candidate", "current_candidate"]
+
+[[types.fields]]
+name="evidence_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="evidence ids"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="source_handles"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="source handles"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdRevisionComparison"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="older"
+rust_type="String"
+required=true
+format="typed"
+meaning="older"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="newer"
+rust_type="String"
+required=true
+format="typed"
+meaning="newer"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="translation"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="translation"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="differences"
+rust_type="Vec<MdEntityDifference>"
+required=true
+format="typed"
+meaning="differences"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdEntityDifference"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="category"
+rust_type="String"
+required=true
+format="typed"
+meaning="category"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+allowed_values=["same", "moved", "style_changed", "geometry_changed", "text_changed", "added", "deleted"]
+
+[[types.fields]]
+name="older_handles"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="older handles"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="newer_handles"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="newer handles"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="translation"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="translation"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="evidence_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="evidence ids"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDraftingIssue"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="location"
+rust_type="String"
+required=true
+format="typed"
+meaning="location"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="source_occurrences"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="source occurrences"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="observed"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="observed"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="rule"
+rust_type="String"
+required=true
+format="typed"
+meaning="rule"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="clause"
+rust_type="String"
+required=true
+format="typed"
+meaning="clause"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="concept_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="concept ids"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="confidence"
+rust_type="String"
+required=true
+format="typed"
+meaning="confidence"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+allowed_values=["certain", "likely", "needs_expert"]
+
+[[types.fields]]
+name="alternatives"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="alternatives"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="proposed_correction"
+rust_type="String"
+required=true
+format="typed"
+meaning="proposed correction"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDrawingCorrectionPlan"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="source_sha256"
+rust_type="String"
+required=true
+format="typed"
+meaning="source sha256"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="issues"
+rust_type="Vec<MdDraftingIssue>"
+required=true
+format="typed"
+meaning="issues"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="operations"
+rust_type="Vec<MdDrawingCorrectionOperation>"
+required=true
+format="typed"
+meaning="operations"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDrawingCorrectionOperation"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="issue_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="issue id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="kind"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+allowed_values=["add_text", "set_style", "delete", "move"]
+
+[[types.fields]]
+name="occurrence"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="occurrence"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="expected_record_sha256"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="expected record sha256"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="text"
+rust_type="Option<MdCorrectionText>"
+required=false
+format="typed"
+meaning="text"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="style"
+rust_type="Vec<MdDxfStyleEdit>"
+required=true
+format="typed"
+meaning="style"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="translation"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="translation"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdCorrectionText"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="value"
+rust_type="String"
+required=true
+format="typed"
+meaning="value"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="position"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="position"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="height"
+rust_type="f64"
+required=true
+format="typed"
+meaning="height"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="rotation"
+rust_type="f64"
+required=true
+format="typed"
+meaning="rotation"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="layer"
+rust_type="String"
+required=true
+format="typed"
+meaning="layer"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDxfStyleEdit"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="code"
+rust_type="i64"
+required=true
+format="typed"
+meaning="code"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="value"
+rust_type="String"
+required=true
+format="typed"
+meaning="value"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDxfByteChange"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="start"
+rust_type="u64"
+required=true
+format="typed"
+meaning="start"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="end"
+rust_type="u64"
+required=true
+format="typed"
+meaning="end"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="replacement_hex"
+rust_type="String"
+required=true
+format="typed"
+meaning="replacement"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="issue_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="issue id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdCorrectionApplied"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="operation_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="operation id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="issue_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="issue id"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="source_occurrence"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="source occurrence"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="result_handles"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="result handles"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types]]
+name="MdDrawingCorrectionReceipt"
+contract_group="engineering"
+meaning="Source-bound drawing revision or corrected-copy evidence"
+identity="Source digest, drawing revision and occurrence or issue identity"
+
+[[types.fields]]
+name="source_sha256"
+rust_type="String"
+required=true
+format="typed"
+meaning="source sha256"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="corrected_sha256"
+rust_type="String"
+required=true
+format="typed"
+meaning="corrected sha256"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="source_path"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="source path"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="corrected_path"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="corrected path"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="applied"
+rust_type="Vec<MdCorrectionApplied>"
+required=true
+format="typed"
+meaning="applied"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="remaining_issue_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="remaining issue ids"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="changes"
+rust_type="Vec<MdDxfByteChange>"
+required=true
+format="typed"
+meaning="changes"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="new_handles"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="new handles"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"
+
+[[types.fields]]
+name="checks"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="checks"
+unit="Drawing coordinates for geometry; byte offsets for edits; identities and evidence dimensionless"
+precision="Source hashes and byte spans exact; geometric matching uses drawing-relative tolerance, not product tolerance"
+write="Locked ggen contract; Rust source-only revision comparison and explicit correction writer"
+applicability="Revision candidates and separately approved corrected copies; never engineering adoption"
+acceptance="Source conservation, complete correspondence, certain-issue preconditions and independently reproducible checks"

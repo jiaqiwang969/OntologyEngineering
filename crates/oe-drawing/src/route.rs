@@ -8,6 +8,8 @@
 //! every later step is recorded as not run. Passing says the route ran as pinned and its outputs keep the source
 //! and the contracts; it is not an engineering acceptance of the classification.
 use crate::{engineering_expression, page, review, usage_discovery};
+#[path = "route_correction.rs"]
+mod corrections;
 use anyhow::{Context, Result, anyhow, ensure};
 use oe_contracts::*;
 use oe_core::process::{
@@ -24,7 +26,7 @@ pub const REQUEST_SCHEMA: &str = "oev2.drawing-route-request/1";
 pub const RECEIPT_SCHEMA: &str = "oev2.drawing-route-receipt/1";
 pub const RUNTIME_SCHEMA: &str = "oev2.cadcraft-runtime/1";
 pub const LOCK_SCHEMA: &str = "oev2.cadcraft-source-lock/1";
-pub const STEPS: [&str; 12] = [
+pub const STEPS: [&str; 16] = [
     "verify-runtime",
     "read-source",
     "probe-sandbox",
@@ -34,6 +36,10 @@ pub const STEPS: [&str; 12] = [
     "request",
     "classify",
     "check-graph",
+    "write-corrected",
+    "read-corrected",
+    "render-corrected",
+    "check-corrected",
     "page",
     "check-page",
     "verify-source",
@@ -188,9 +194,20 @@ struct Run<'a> {
     context: Option<ProjectReviewContext>,
     request: Option<MdUsageDiscoveryRequest>,
     page: Option<PathBuf>,
+    correction: Option<(MdDrawingCorrectionPlan, MdDrawingCorrectionReceipt)>,
+    correction_plan: Option<PathBuf>,
 }
 
 pub fn route(root: &SkillRoot, q: &MdDrawingRouteRequest) -> Result<MdDrawingRouteReceipt> {
+    run_route(root,q,None)
+}
+
+/// The same route with an explicit source-bound plan. The plan is never passed to classification.
+/// Automatic plans derived from rule findings are a separate producer of this execution capability.
+pub fn route_with_correction(root:&SkillRoot,q:&MdDrawingRouteRequest,plan:&Path)->Result<MdDrawingRouteReceipt> {
+    run_route(root,q,Some(plan.to_path_buf()))
+}
+fn run_route(root:&SkillRoot,q:&MdDrawingRouteRequest,correction_plan:Option<PathBuf>)->Result<MdDrawingRouteReceipt> {
     ensure!(
         q.validate().is_ok() && q.schema == REQUEST_SCHEMA,
         "drawing_route_contract"
@@ -228,10 +245,13 @@ pub fn route(root: &SkillRoot, q: &MdDrawingRouteRequest) -> Result<MdDrawingRou
         context: None,
         request: None,
         page: None,
+        correction: None,
+        correction_plan,
     };
     let started_at = utc_now();
     let mut steps: Vec<MdDrawingRouteStep> = STEPS
         .iter()
+        .filter(|id|run.correction_plan.is_some() || !["write-corrected","read-corrected","render-corrected","check-corrected"].contains(id))
         .map(|id| MdDrawingRouteStep {
             id: (*id).into(),
             status: "not_run".into(),
@@ -297,6 +317,10 @@ impl Run<'_> {
             "request" => self.write_request(s),
             "classify" => self.classify(s),
             "check-graph" => self.check_graph(s),
+            "write-corrected" => self.write_corrected(s),
+            "read-corrected" => self.read_corrected(s),
+            "render-corrected" => self.render_corrected(s),
+            "check-corrected" => self.check_corrected(s),
             "page" => self.page(s),
             "check-page" => self.check_page(s),
             "verify-source" => self.verify_source(s),

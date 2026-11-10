@@ -701,6 +701,7 @@ fn every_card_is_used_and_every_named_test_exists() {
         include_str!("local_section_region.rs"),
         include_str!("drawing_statements.rs"),
         include_str!("line_corrections.rs"),
+        include_str!("../src/revisions.rs"),
     ]
     .concat();
     for c in &k.cards {

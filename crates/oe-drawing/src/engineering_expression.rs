@@ -6973,7 +6973,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             },
         })
         .collect::<Vec<_>>();
-    let graph = MdEngineeringExpressionGraph {
+    let mut graph = MdEngineeringExpressionGraph {
         schema: SCHEMA.into(),
         profile: PROFILE.into(),
         source_sha256: src.source_sha256.clone(),
@@ -6987,6 +6987,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         structure_ends,
         implied_spans,
         structural_lines,
+        revisions: None,
         unknowns: vec![
             "Implied spans are drafting-convention inferences for the complete-structure representation; they are not source lines or members".into(),
             "Structural lines join collinear or co-circular connected outline pieces of one view and class; the joining is a drafting interpretation, not a part feature".into(),
@@ -6996,6 +6997,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             "Rule thresholds and view heuristics were calibrated on development drawings; results on another drawing need independent evaluation".into(),
         ],
     };
+    graph.revisions = crate::revisions::discover(bytes, &graph)?;
     check(&graph)?;
     Ok(graph)
 }

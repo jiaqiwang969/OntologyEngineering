@@ -185,6 +185,7 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     for k in ["structure_ends", "implied_spans", "structural_lines"] {
         subset.insert(k.into(), g.get(k).cloned().unwrap_or_else(|| json!([])));
     }
+    subset.insert("revisions".into(), g.get("revisions").cloned().unwrap_or(Value::Null));
     subset.insert("entities".into(), json!(entities));
     subset.insert(
         "native_member_count".into(),

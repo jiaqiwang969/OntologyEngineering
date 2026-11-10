@@ -965,3 +965,10 @@ fn thin_circle_without_a_detail_name_is_not_a_boundary() {
             .any(|e| e.rule.starts_with("card:detail_view/boundary_"))
     );
 }
+
+#[test]
+fn cutting_path_end_letter_joins_its_endpoint_symbol() {
+    let g=cutting_path(vec![text("M3","11","M",[98.25,40.5],3.5)]);
+    let members:Vec<_>=g.members.iter().filter(|m|m.source_handle=="M3"&&m.member_role=="view_letter").collect();
+    assert!(members.iter().any(|m|g.members.iter().any(|s|s.source_handle=="S2"&&s.member_role=="cutting_stroke"&&s.expression_id==m.expression_id)),"{members:?}");
+}

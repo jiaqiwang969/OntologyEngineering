@@ -8,6 +8,8 @@
 //! every later step is recorded as not run. Passing says the route ran as pinned and its outputs keep the source
 //! and the contracts; it is not an engineering acceptance of the classification.
 use crate::{engineering_expression, page, review, usage_discovery};
+#[path = "route_correction.rs"]
+mod corrections;
 use anyhow::{Context, Result, anyhow, ensure};
 use oe_contracts::*;
 use oe_core::process::{
@@ -24,7 +26,7 @@ pub const REQUEST_SCHEMA: &str = "oev2.drawing-route-request/1";
 pub const RECEIPT_SCHEMA: &str = "oev2.drawing-route-receipt/1";
 pub const RUNTIME_SCHEMA: &str = "oev2.cadcraft-runtime/1";
 pub const LOCK_SCHEMA: &str = "oev2.cadcraft-source-lock/1";
-pub const STEPS: [&str; 13] = [
+pub const STEPS: [&str; 19] = [
     "verify-runtime",
     "read-source",
     "probe-sandbox",
@@ -34,9 +36,15 @@ pub const STEPS: [&str; 13] = [
     "request",
     "classify",
     "check-graph",
+    "check-rules",
+    "issues",
+    "plan-corrected",
+    "write-corrected",
+    "read-corrected",
+    "render-corrected",
+    "check-corrected",
     "page",
     "check-page",
-    "check-rules",
     "verify-source",
 ];
 pub const MODES: [&str; 7] = [
@@ -189,9 +197,20 @@ struct Run<'a> {
     context: Option<ProjectReviewContext>,
     request: Option<MdUsageDiscoveryRequest>,
     page: Option<PathBuf>,
+    correction: Option<(MdDrawingCorrectionPlan, MdDrawingCorrectionReceipt)>,
+    correction_plan: Option<PathBuf>,
 }
 
 pub fn route(root: &SkillRoot, q: &MdDrawingRouteRequest) -> Result<MdDrawingRouteReceipt> {
+    run_route(root,q,None)
+}
+
+/// The same route with an explicit source-bound plan. The plan is never passed to classification.
+/// Automatic plans derived from rule findings are a separate producer of this execution capability.
+pub fn route_with_correction(root:&SkillRoot,q:&MdDrawingRouteRequest,plan:&Path)->Result<MdDrawingRouteReceipt> {
+    run_route(root,q,Some(plan.to_path_buf()))
+}
+fn run_route(root:&SkillRoot,q:&MdDrawingRouteRequest,correction_plan:Option<PathBuf>)->Result<MdDrawingRouteReceipt> {
     ensure!(
         q.validate().is_ok() && q.schema == REQUEST_SCHEMA,
         "drawing_route_contract"
@@ -229,6 +248,8 @@ pub fn route(root: &SkillRoot, q: &MdDrawingRouteRequest) -> Result<MdDrawingRou
         context: None,
         request: None,
         page: None,
+        correction: None,
+        correction_plan,
     };
     let started_at = utc_now();
     let mut steps: Vec<MdDrawingRouteStep> = STEPS
@@ -298,6 +319,12 @@ impl Run<'_> {
             "request" => self.write_request(s),
             "classify" => self.classify(s),
             "check-graph" => self.check_graph(s),
+            "issues" => self.issues(s),
+            "plan-corrected" => self.plan_corrected(s),
+            "write-corrected" => self.write_corrected(s),
+            "read-corrected" => self.read_corrected(s),
+            "render-corrected" => self.render_corrected(s),
+            "check-corrected" => self.check_corrected(s),
             "page" => self.page(s),
             "check-page" => self.check_page(s),
             "check-rules" => self.check_rules(s),
@@ -811,7 +838,22 @@ impl Run<'_> {
         };
         s.inputs.push(self.file(&graph)?);
         s.inputs.push(self.file(&svg)?);
-        let result = page::render(self.root, &q)?;
+        let issues: Value = serde_json::from_slice(&read_regular_bytes(&self.out.join("drafting-issues.json"),64*1024*1024)?)?;
+        let receipt: Value = serde_json::from_slice(&read_regular_bytes(&self.out.join("correction-receipt.json"),64*1024*1024)?)?;
+        let text = String::from_utf8(read_regular_bytes(&self.out.join("drafting-issues.txt"),64*1024*1024)?)?;
+        let corrected = if receipt["status"] == "written" {
+            let mut corrected_q = q.clone();
+            corrected_q.graph=self.root.portable_data_path(&self.out.join("corrected-graph.json"))?;
+            corrected_q.svg=self.root.portable_data_path(&self.out.join("corrected.svg"))?;
+            corrected_q.output=self.root.portable_data_path(&self.out.join("corrected-review-page.html"))?;
+            corrected_q.source_note="改正 DXF 经只收字节的程序重新识别，并由固定转换器渲染".into();
+            corrected_q.title=format!("{} · 改正后",self.q.title);
+            page::render(self.root,&corrected_q)?;
+            s.outputs.push(self.file(&self.out.join("corrected-review-page.html"))?);
+            Some(json!({"graph":serde_json::from_slice::<Value>(&read_regular_bytes(&self.out.join("corrected-graph.json"),64*1024*1024)?)?, "svg":String::from_utf8(read_regular_bytes(&self.out.join("corrected.svg"),64*1024*1024)?)?}))
+        } else {None};
+        let review=json!({"issues":issues,"text":text,"receipt":receipt,"corrected":corrected,"corrected_dxf":"corrected.dxf"});
+        let result = page::render_with_review(self.root, &q, Some(&review))?;
         s.facts["roots"] = json!(result.root_count);
         s.facts["rendered_roots"] = json!(result.rendered_root_count);
         s.facts["expressions"] = json!(result.expression_count);
@@ -828,13 +870,14 @@ impl Run<'_> {
         let page = self.page.clone().context("drawing_route_page_missing")?;
         s.inputs.push(self.file(&page)?);
         let mut runs = serde_json::Map::new();
-        for mode in MODES {
+        let pages = if self.out.join("corrected-review-page.html").is_file() { vec![("",page),("corrected-",self.out.join("corrected-review-page.html"))] } else { vec![("",page)] };
+        for (prefix,page) in pages { for mode in MODES {
             let q = MdReviewPageCheckRequest {
                 schema: oe_drawing_check::browser::REQUEST_SCHEMA.into(),
                 page: self.root.portable_data_path(&page)?,
                 output_directory: self
                     .root
-                    .portable_data_path(&self.out.join(format!("browser-{mode}")))?,
+                    .portable_data_path(&self.out.join(format!("browser-{prefix}{mode}")))?,
                 chrome: chrome.clone(),
                 mode: mode.into(),
                 region: None,
@@ -842,9 +885,10 @@ impl Run<'_> {
             };
             let report = oe_drawing_check::browser::check_page(self.root, &q)?;
             s.facts["browser"] = json!(report.browser);
-            runs.insert(mode.into(), json!(report.count));
+            runs.insert(format!("{prefix}{mode}"), json!(report.count));
             s.outputs.push(report.result);
             s.outputs.push(report.screenshot);
+        }
         }
         s.facts["runs"] = Value::Object(runs);
         Ok("passed")

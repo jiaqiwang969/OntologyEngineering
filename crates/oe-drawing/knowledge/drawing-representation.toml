@@ -2875,9 +2875,19 @@ tests = ["cutting_strokes_without_arrows_with_letters"]
 [[cards.variants]]
 id = "cutting_path"
 title = "完整的剖切路径：转折处短画与字母、终点短画与箭头"
-distinguishing = "从起点短画沿剖切面方向找下一段短画：两段在一点以非直线相接为转折（注同一字母），之后的短画外端有垂直箭头为终点（字母可省）"
+distinguishing = "从起点短画沿剖切面方向找下一段短画：两段在一点以非直线相接为转折（注同一字母），之后的短画外端有垂直箭头为终点；漏字母仍保留源图已有的短画和箭头，由缺标规则另报。GB/T 4458.6 §6.2 省略箭头不等于省略字母，§6.3–6.4 对整套标记的省略条件另核"
 encodings = ["loose", "block"]
-tests = ["cutting_path_keeps_its_turn_letter_and_end_arrow", "stroke_at_the_tail_of_an_arrow_block"]
+tests = ["cutting_path_keeps_its_turn_letter_and_end_arrow", "stroke_at_the_tail_of_an_arrow_block", "cutting_path_end_letter_joins_its_endpoint_symbol"]
+
+[[cards.variants]]
+id = "named_cutting_sites"
+title = "已有命名路径的各端和转折须有同名字母"
+distinguishing = "GB/T 4458.6-2002 §6.1 和 GB/T 17452-1998 §8.2：已有明确命名的路径，由源短画端点、转折和同名文字形成核查位置。§6.2 的邻近投影只免箭头；§6.3 单一对称剖切和 §6.4 清楚的局部剖视可免整套标记，不据空白推断缺标。几何参数按字高，见 drafting-ontology.toml cutting_identifiers。"
+encodings = ["loose"]
+tests = ["cutting_letter_sites_cover_start_end_turn_and_complete"]
+[[cards.counter_examples]]
+statement = "没有明确路径不臆造起止标记；字母冲突不自动补另一字母"
+test = "cutting_letter_sites_do_not_invent_omitted_paths_or_resolve_conflicts"
 
 [[cards.counter_examples]]
 statement = "字母旁的短线若字母没有在任何“X—X”名称中出现，不作为剖切短画"
@@ -3509,7 +3519,7 @@ meaning = "参与配置的视图可见轮廓外形的最大边长下限 = 该值
 id = "drawing_sheet"
 expression_kind = "sheet_frame"
 title = "一张图纸：图框与其中的标题栏"
-meaning = "每张图样都有自己的图框，标题栏在图框右下角；一个模型空间可以并排放几张图纸。视图、视图编号、尺寸终端的配对都在一张图纸之内，不跨图纸。图号相同的两张图纸是同一图样的两个版本：标题栏日期较晚、并有同一日期的更改说明（常写在图框外）的一张是现行版本，取代日期较早的一张。"
+meaning = "每张图样都有自己的图框，标题栏在图框右下角；一个模型空间可以并排放几张图纸。视图、视图编号、尺寸终端的配对都在一张图纸之内，不跨图纸。版本候选须另核图号、名称、日期和可归属的更改说明；标题栏字段本身不证明发布有效性。"
 sources = [
   "GB/T 14689-2008 技术制图 图纸幅面和格式 4 图框格式",
   "GB/T 10609.1-2008 技术制图 标题栏（标题栏位于图框右下角；签字区的年月日）",
@@ -5027,3 +5037,58 @@ tests = ["unhatched_shaft_has_no_invented_section"]
 [[cards.counter_examples]]
 statement = "空白带也可能是孔或凹槽，不能凭空白强判纵剖肋板"
 test = "unhatched_shaft_has_no_invented_section"
+
+[[cards]]
+id = "drawing_revision"
+expression_kind = "sheet_frame"
+title = "图样身份与版本候选"
+meaning = "图号和名称共同标识候选图样；同文件中字段相同、日期递增且较晚图纸带有可归属的修改说明时，建立版本候选。标题栏和更改区的字段含义据国标与教材；按日期推断现行候选是可撤销的工程推断，未经签审不能确认生效。几何对应不等于恢复编辑历史。"
+sources = ["GB/T 10609.1-2008 技术制图 标题栏，组成及更改区", "GB/T 14689-2008 §4 图框格式", "机械制图（第7版）§1-1、图1-2及图1-3，标题栏图号、名称、年月日与更改区", "Autodesk DXF Reference TEXT, group codes 10/11/72/73 (encoding semantics only; https://help.autodesk.com/cloudhelp/2024/ENU/AutoCAD-DXF/files/GUID-62E5383D-8A14-47B4-BFC4-35824CAE8363.htm)"]
+knowledge_units = ["K03", "K61"]
+recognition = "先取源标题栏图号与名称；按已读日期排序，只将有归属更改说明的较晚图纸作为现行候选。以图框对齐，再由重复几何支持局部平移；保留重复图元多重性、一对多分段对应和未配对图元，不以句柄数值推断历史。"
+markers = ["改", "修订", "增加", "增补", "删除", "减少", "调整", "revision", "revised", "changed", "added", "removed"]
+concepts = ["DC-G9-018", "DC-G9-019", "DC-G9-023"]
+[[cards.components]]
+role = "table_text"
+primitives = ["TEXT", "MTEXT", "ATTRIB"]
+requirement = "两张图纸源标题栏的相同图号、名称、不同日期和较晚图纸的修改说明"
+[[cards.components]]
+role = "frame_border"
+primitives = ["INSERT", "LINE", "LWPOLYLINE"]
+requirement = "图框确定所属纸页和初始配准；源图元决定差别"
+[[cards.variants]]
+id = "dated_candidate"
+title = "有说明的较晚候选"
+distinguishing = "姓名或签署不是版本发布授权；页面明确候选"
+encodings = ["inferred"]
+tests = ["revision_identity_requires_matching_fields_and_attributed_note"]
+[[cards.variants]]
+id = "geometric_correspondence"
+title = "配准与七类逐图元差别"
+distinguishing = "图框平移、局部视图平移、样式差别、几何差别、文字差别及增删；重复线和分段线保留重数"
+encodings = ["inferred"]
+tests = ["revision_comparison_preserves_seven_categories_and_split_multiplicity"]
+[[cards.counter_examples]]
+statement = "名称不同、日期相同、缺少说明或说明属于另一张图时均不建立版本关系"
+test = "revision_identity_rejects_mismatched_ambiguous_or_unattributed_sources"
+[[cards.counter_examples]]
+statement = "只有一张图不生成版本关系；源句柄不同本身不能判为图样变更"
+test = "revision_single_sheet_and_changed_handles_are_not_edits"
+[[cards.parameters]]
+name = "alignment_tolerance"
+value = 0.00000001
+meaning = "数值配准容差 = 图框对角线 × 本比例；不是产品公差"
+[[cards.parameters]]
+name = "similarity_fraction"
+value = 0.5
+meaning = "局部对应搜索的线长或字高比例；分段覆盖至少为原线长的此比例，不补出缺失几何"
+
+[[cards.variants]]
+id = "justified_text"
+title = "对齐文字内容更改"
+distinguishing = "文字变长使原生第一对齐点重算；居中等对齐方式按有效第二对齐点比较，不能把重算点当作图样几何变更"
+encodings = ["text"]
+tests = ["revision_justified_text_uses_the_semantic_alignment_point"]
+[[cards.counter_examples]]
+statement = "左基线对齐的第二点没有定位意义；居中文字内容不变但第一点重算也不是修改"
+test = "revision_justified_text_uses_the_semantic_alignment_point"

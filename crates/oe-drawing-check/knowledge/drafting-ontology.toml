@@ -153,6 +153,8 @@ md:crossSectionType a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label 
 md:sectionExtent a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "范围：half、local、local_axis、cross_section、unknown"@zh ; rdfs:comment "local_axis 仅用于已知局部剖且原生外缘确实沿轴线的边界使用。未知不等于不适用。"@zh .
 md:parentOutlineContinuation a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "该线连续伸至区域两侧：true、false；单独不证明母视图身份"@zh .
 md:sectionGeometry a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "原生边界可核程度：complete、partial、unavailable"@zh ; rdfs:comment "直边、圆弧和带凸度闭合路径；实体包含按偶奇规则保留孔洞。部分边界只支持实际可读边上的重合，不支持内部判定。"@zh .
+md:CuttingLetterSite a owl:Class ; rdfs:label "已有明确命名剖切路径的端点或转折标记位置"@zh .
+md:cutLetterCount a owl:DatatypeProperty ; rdfs:label "该位置附近同名剖切字母数"@zh .
 '''
 
 [shapes]
@@ -687,6 +689,21 @@ rule:G2-018-outline-in-cut-face-unknown a sh:NodeShape ;
     rdfs:label "可见轮廓穿过剖切面实体内部（前提未知）"@zh ;
     sh:message "可见轮廓穿过剖切面实体内部；断面类型未知，尚未排除重合断面的连续母视图轮廓，仅作专家复核线索。"@zh ;
     sh:or ( rule:section-interior-permitted [ sh:not [ sh:property [ sh:path md:crossSectionType ; sh:hasValue "unknown" ] ] ] ) .
+
+# GB/T 4458.6 §6.2 only exempts arrows; §§6.3–6.4 allow a whole marking to be omitted in defined cases.
+# Only an existing explicitly named path creates a CuttingLetterSite; an absent path is not guessed.
+rule:G2-043-cutting-letter-required a sh:NodeShape ;
+    sh:targetClass md:CuttingLetterSite ;
+    md:ruleId "G2-043-cutting-letter-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043 ;
+    md:clause "GB/T 4458.6-2002 6.1；6.2–6.4 的省略条件；GB/T 17452-1998 8.2" ;
+    md:confidence "certain" ;
+    md:proposedCorrection "按同一剖切路径另一端字母的内容、字高、文字样式和方向，在该端或转折的外侧空白处补同名字母；找不到不碰线位置时保留待处理"@zh ;
+    rdfs:label "已有明确命名的剖切路径各端和转折标记具有同名字母"@zh ;
+    sh:property rule:G2-043-cutting-letter-required-p1 .
+rule:G2-043-cutting-letter-required-p1 a sh:PropertyShape ;
+    sh:path md:cutLetterCount ; sh:minCount 1 ; sh:minInclusive 1 ;
+    sh:message "此明确命名剖切路径的端点或转折标记附近缺少同名字母；邻近投影配置省略箭头不等于省略字母"@zh .
 '''
 
 
@@ -815,3 +832,21 @@ variants = ["Visible outline in cut face: section_internal_outline_known_and_unk
 counter_examples = ["Thread thin line: section_thread_exception_is_in_shape", "Continuous parent outline of superimposed section: section_parent_outline_exception_needs_region_evidence", "Partial/unavailable boundary: section_incomplete_native_geometry_is_not_a_cut_face", "Different regions keep different origins: section_origins_do_not_leak_between_regions"]
 parameters = ["coincidence_text_height", "sagitta_text_height", "interior_chord_text_height"]
 scale_test = "section_rules_are_scale_equivariant"
+
+
+
+[cutting_identifiers]
+concepts = ["DC-G2-043"]
+source = "GB/T 4458.6-2002 6.1–6.4; GB/T 17452-1998 8.2"
+composition = ["existing named cutting path", "end strokes and turn strokes", "same-letter TEXT near each position"]
+variants = ["missing start", "missing end", "missing turn", "arrows omitted but letters required"]
+counterexamples = ["complete marking", "no explicit path (symmetry/local omissions)", "conflicting letter"]
+tests = ["cutting_letter_sites_cover_start_end_turn_and_complete", "cutting_letter_sites_do_not_invent_omitted_paths_or_resolve_conflicts"]
+parameter_basis = "Ratios below are geometric association and placement tolerances relative to the source letter height, not numeric requirements of the standard. Loose planar strokes/TEXT only; nested occurrences and ambiguous names remain outside this automatic profile."
+[cutting_identifiers.parameters]
+join_height_ratio = 0.15
+letter_reach_height_ratio = 3.0
+turn_sine_min = 0.1
+outside_height_ratio = 1.5
+placement_step_height_ratio = 0.5
+clearance_height_ratio = 0.35

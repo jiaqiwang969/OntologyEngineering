@@ -233,6 +233,7 @@ fn fixture(rule: &str, violating: bool) -> Drawing {
                 }
             }
         }
+        "G2-043-cutting-letter-required" => return cutting_fixture(if violating {Some("end")} else {None}),
         "G1-032-wavy-ends-on-outline" => {
             outline(&mut d, [0.0, -5.0], [0.0, 5.0]);
             outline(&mut d, [10.0, -5.0], [10.0, 5.0]);
@@ -690,4 +691,42 @@ fn repeated_rule_reports_are_byte_identical() {
         assert_eq!(sha256(first), sha256(second), "report/facts artifact {index} differs between identical runs");
         assert!(first == second);
     }
+}
+
+fn cutting_fixture(missing:Option<&str>) -> Drawing {
+    let mut d=Drawing::default();
+    let e=d.expression("view_callout","N");
+    d.expressions.last_mut().unwrap()["qualifiers"]=json!(["cutting_plane"]);
+    for (a,b) in [([0.,0.],[0.,8.]),([0.,40.],[0.,32.]),([0.,40.],[8.,40.]),([80.,40.],[72.,40.])] {
+        let h=d.line(a,b); d.member_in(&e,&h,"cutting_stroke","thick_continuous");
+    }
+    for (site,p) in [("start",[-1.,-6.]),("turn",[-5.,44.]),("end",[84.,39.])] {
+        if missing==Some(site) {continue;}
+        let h=d.text("N",p,2.7,0.);d.member_in(&e,&h,"view_letter","text");
+    }
+    let title=d.text("N-N",[32.,-30.],2.7,0.);d.member(&title,"view_title","text","view_callout","N-N");
+    d
+}
+#[test]
+fn cutting_letter_sites_cover_start_end_turn_and_complete() {
+    // Arrow omission is allowed in a projected neighbouring view, but the remaining named marks need letters.
+    for missing in ["start","end","turn"] {
+        let d=cutting_fixture(Some(missing));
+        for (_,findings) in d.findings() {
+            assert_eq!(findings.iter().filter(|f|f.rule_id=="G2-043-cutting-letter-required").count(),1,"{missing}: {findings:?}");
+        }
+        let sites=drafting::cutting_sites(&d.dxf(),&d.graph()).unwrap();
+        assert_eq!(sites.iter().filter(|s|s["present"]==false).count(),1);
+        assert!(sites.iter().filter(|s|s["present"]==false).all(|s|!s["proposed_text"].is_null()));
+    }
+    assert!(cutting_fixture(None).rule_ids().is_empty());
+}
+#[test]
+fn cutting_letter_sites_do_not_invent_omitted_paths_or_resolve_conflicts() {
+    let mut d=cutting_fixture(Some("end"));
+    d.expressions[0]["qualifiers"]=json!([]);
+    assert!(drafting::cutting_sites(&d.dxf(),&d.graph()).unwrap().is_empty(),"symmetry/local omission has no explicit path");
+    d.expressions[0]["qualifiers"]=json!(["cutting_plane"]);
+    let other=d.text("P",[84.,39.],2.7,0.);d.member(&other,"note_text","text","technical_note","P");
+    assert!(drafting::cutting_sites(&d.dxf(),&d.graph()).unwrap().iter().all(|s|s["present"]==true),"a conflicting identifier needs review, not automatic replacement");
 }

@@ -703,6 +703,8 @@ fn every_card_is_used_and_every_named_test_exists() {
         include_str!("line_corrections.rs"),
         include_str!("annotation_constituents.rs"),
         include_str!("section_regions.rs"),
+        include_str!("../src/revisions.rs"),
+        include_str!("../../oe-drawing-check/tests/drafting_rules.rs"),
     ]
     .concat();
     for c in &k.cards {

@@ -96,6 +96,10 @@ pub fn rendering(svg: &[u8]) -> Result<Rendering> {
 
 /// The page text and what it embeds.
 pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String, MdReviewPage)> {
+    page_with_review(graph, svg, q, None)
+}
+
+pub fn page_with_review(graph: &[u8], svg: &str, q: &MdReviewPageRequest, review: Option<&Value>) -> Result<(String, MdReviewPage)> {
     let g: Value = oe_core::json::strict_json(graph)?;
     ensure!(
         g["schema"] == crate::engineering_expression::SCHEMA,
@@ -185,6 +189,7 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     for k in ["structure_ends", "implied_spans", "structural_lines"] {
         subset.insert(k.into(), g.get(k).cloned().unwrap_or_else(|| json!([])));
     }
+    subset.insert("revisions".into(), g.get("revisions").cloned().unwrap_or(Value::Null));
     subset.insert("entities".into(), json!(entities));
     subset.insert(
         "native_member_count".into(),
@@ -238,10 +243,10 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     }
     let payload = json!({"graph":Value::Object(subset),"concepts":Value::Object(concepts),"candidate":q.candidate,"version":q.version,"title":q.title,
         "source_note":q.source_note,"status_note":q.status_note,"graph_sha256":graph_sha256,"svg_sha256":svg_sha256,
-        "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
+        "drafting_review":review, "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
         "native_member_kinds":Value::Object(native_kinds),"rendered_member_identities":shown.members.len()});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");
-    let text = TEMPLATE.replace("@@SECTION_REVIEW@@", include_str!("../assets/section-review.js")).replace("@@DATA@@", &data).replace("@@SVG@@", svg);
+    let text = TEMPLATE.replace("@@SECTION_REVIEW@@", include_str!("../assets/section-review.js")).replace("@@COMPARISON_JS@@", include_str!("../assets/drawing-comparison.js")).replace("@@DATA@@", &data).replace("@@SVG@@", svg);
     let result = MdReviewPage {
         schema: SCHEMA.into(),
         page: MdDrawingRouteFile {
@@ -260,6 +265,10 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
 
 /// Write one new page from a frozen graph and its rendering.
 pub fn render(root: &SkillRoot, q: &MdReviewPageRequest) -> Result<MdReviewPage> {
+    render_with_review(root, q, None)
+}
+
+pub fn render_with_review(root: &SkillRoot, q: &MdReviewPageRequest, review: Option<&Value>) -> Result<MdReviewPage> {
     ensure!(
         q.validate().is_ok() && q.schema == REQUEST_SCHEMA,
         "review_page_request_contract"
@@ -270,7 +279,7 @@ pub fn render(root: &SkillRoot, q: &MdReviewPageRequest) -> Result<MdReviewPage>
         LIMIT,
     )?)
     .context("review_page_svg_utf8")?;
-    let (text, result) = page(&graph, &svg, q)?;
+    let (text, result) = page_with_review(&graph, &svg, q, review)?;
     oe_core::write_new_bytes(&root.private_path(Path::new(&q.output))?, text.as_bytes())?;
     ensure!(result.validate().is_ok(), "review_page_result_contract");
     Ok(result)

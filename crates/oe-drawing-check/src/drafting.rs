@@ -22,6 +22,11 @@ use std::path::Path;
 
 #[path = "drafting_constituents.rs"]
 mod constituents;
+#[path = "drafting_cutting.rs"]
+mod cutting;
+
+/// Source-bound named cutting positions, shared by the rule facts and correction planner.
+pub fn cutting_sites(bytes: &[u8], graph: &Value) -> Result<Vec<Value>> { cutting::values(bytes, graph) }
 
 pub const SCHEMA: &str = "oev2.drawing-drafting-rules/1";
 pub const REQUEST_SCHEMA: &str = "oev2.drawing-drafting-rules-request/1";
@@ -42,7 +47,7 @@ mod sections;
 const SCOPE: &str = "Drafting rules of the ontology evaluated on facts exported from the source bytes and the frozen graph; a finding is a deviation to review, not a correction and not engineering acceptance.";
 
 /// Every class of the fact vocabulary; the ontology and the spec declare the same set (tested).
-pub const CLASSES: [&str; 40] = [
+pub const CLASSES: [&str; 41] = [
     "Line",
     "VisibleOutline",
     "HiddenOutline",
@@ -83,9 +88,10 @@ pub const CLASSES: [&str; 40] = [
     "Construction",
     "SectionBoundarySpan",
     "SectionInteriorUse",
+    "CuttingLetterSite",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 43] = [
+pub const PREDICATES: [&str; 44] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -129,6 +135,7 @@ pub const PREDICATES: [&str; 43] = [
     "sectionExtent",
     "parentOutlineContinuation",
     "sectionGeometry",
+    "cutLetterCount",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -217,6 +224,8 @@ pub struct Rule {
     pub concept_ids: Vec<String>,
     pub clause: String,
     pub label: String,
+    pub confidence: String,
+    pub proposed_correction: String,
     pub messages: Vec<String>,
     pub severity: String,
     pub target_classes: Vec<String>,
@@ -328,6 +337,8 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
                 .collect(),
             clause: value(&format!("{NS}clause")).unwrap_or_default(),
             label: value(&format!("{RDFS}label")).unwrap_or_default(),
+            confidence: value(&format!("{NS}confidence")).unwrap_or_else(|| "needs_expert".into()),
+            proposed_correction: value(&format!("{NS}proposedCorrection")).unwrap_or_else(|| "请专家确认".into()),
             messages,
             severity,
             target_classes,
@@ -2549,6 +2560,7 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         let mut rels = relations(&objs);
         rels.extend(constituents::relations(&g, &d, &objs)?);
         sections::augment(layer, &g, &d, &mut objs, &mut rels)?;
+        cutting::append(layer, &g, &d, &mut objs, &mut rels)?;
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2586,6 +2598,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
                 concept_ids: r.concept_ids.clone(),
                 clause: r.clause.clone(),
                 label: r.label.clone(),
+                confidence: r.confidence.clone(),
+                proposed_correction: r.proposed_correction.clone(),
                 message: r.messages.join("；"),
                 severity: r.severity.clone(),
                 target_classes: r.target_classes.clone(),
@@ -2619,6 +2633,7 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
         let mut rels = relations(&objs);
         rels.extend(constituents::relations(graph, &d, &objs)?);
         sections::augment(layer, graph, &d, &mut objs, &mut rels)?;
+        cutting::append(layer, graph, &d, &mut objs, &mut rels)?;
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);

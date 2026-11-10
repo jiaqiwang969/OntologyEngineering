@@ -301,12 +301,23 @@ fn the_route_on_the_public_drawing_writes_graph_check_and_page() {
             ("request", "passed"),
             ("classify", "passed"),
             ("check-graph", "passed"),
+            ("check-rules", "passed"),
+            ("issues", "passed"),
+            ("plan-corrected", "passed"),
+            ("write-corrected", "passed"),
+            ("read-corrected", "passed"),
+            ("render-corrected", "passed"),
+            ("check-corrected", "passed"),
             ("page", "passed"),
             ("check-page", "skipped"),
-            ("check-rules", "passed"),
             ("verify-source", "passed"),
         ]
     );
+    let correction = read(&home.path.join("route/correction-receipt.json"));
+    assert_eq!(correction["status"], "not_needed");
+    assert!(correction["corrected_sha256"].is_null());
+    assert!(!home.path.join("route/corrected.dxf").exists());
+    assert!(home.path.join("route/drafting-issues.txt").is_file());
     let rules = read(&home.path.join("route/drafting-rules.json"));
     assert_eq!(rules["status"], "checked");
     assert!(rules["rule_count"].as_u64().unwrap() >= 12, "{rules:#}");

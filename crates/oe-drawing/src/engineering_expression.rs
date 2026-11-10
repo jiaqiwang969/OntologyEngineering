@@ -6891,7 +6891,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     section_hatching::state(&cx, &mut nb, &regions)?;
     thread_forms::state(&cx, &mut nb, &regions)?;
     assembly_drawing::state(&cx, &mut nb, &mut regions)?;
-    expression_names::state(&cx, &mut nb, &regions);
+    expression_names::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb

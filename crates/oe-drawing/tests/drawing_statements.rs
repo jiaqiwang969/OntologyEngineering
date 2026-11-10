@@ -1679,3 +1679,37 @@ fn no_expression_is_named_by_a_source_handle() {
         );
     }
 }
+
+#[test]
+fn texture_symbol_without_value_is_named_by_its_form() {
+    // the indication for most surfaces with the circle form, and a bar-form symbol, both without
+    // a value; a basic symbol alone keeps the symbol
+    let arms = |p: &str| {
+        vec![
+            line(&format!("{p}s"), "0", [0., 0.], [-2.5, 4.33]),
+            line(&format!("{p}l"), "0", [0., 0.], [5., 8.66]),
+        ]
+    };
+    let mut circle_form = arms("A");
+    circle_form.push(circle("Ao", "0", [0., 2.6], 1.2));
+    circle_form.push(text("Aw", "0", "其余", [-12., 2.], 3.5));
+    let mut bar_form = arms("B");
+    bar_form.push(line("Bb", "0", [-2.5, 4.33], [2.5, 4.33]));
+    bar_form.push(text("Bw", "0", "其余", [-12., 2.], 3.5));
+    let g = run(
+        &[("*R1", circle_form), ("*R2", bar_form), ("*R3", arms("C"))],
+        &[
+            insert("RA", "11", "*R1", [0., 0.]),
+            insert("RB", "11", "*R2", [60., 0.]),
+            insert("RC", "11", "*R3", [120., 0.]),
+        ],
+    );
+    let label = |h: &str| expr_with(&g, h, "surface_roughness").label.clone();
+    assert_eq!(label("RA"), "其余 不去除材料");
+    assert_eq!(label("RB"), "其余 去除材料");
+    assert_eq!(label("RC"), "√");
+    assert!(ev(
+        expr_with(&g, "RA", "surface_roughness"),
+        "variant:symbol_only_named_by_form"
+    ));
+}

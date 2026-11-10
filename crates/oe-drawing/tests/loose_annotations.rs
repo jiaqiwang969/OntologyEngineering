@@ -930,7 +930,8 @@ fn most_surfaces_word_and_valueless_symbol_in_one_block() {
     let g = run(&blk, &[insert("GN", "11", "GEN", [100., 100.], 1.)]);
     let e =
         expr_with(&g, "GN", "surface_roughness").unwrap_or_else(|| panic!("{:?}", kinds(&g, "GN")));
-    assert_eq!(e.label, "其余 √");
+    // the symbol without a value is named by its form (no material removal)
+    assert_eq!(e.label, "其余 不去除材料");
     assert!(e.qualifiers.iter().any(|q| q == "general_requirement"));
     assert!(
         names(e, "surface_texture_symbol", "most_surfaces") && has(e, &["DC-G6-006", "DC-G6-063"]),
@@ -952,7 +953,8 @@ fn most_surfaces_word_written_before_a_symbol_block() {
     );
     let e =
         expr_with(&g, "SY", "surface_roughness").unwrap_or_else(|| panic!("{:?}", kinds(&g, "SY")));
-    assert_eq!(e.label, "其余 √");
+    // the symbol without a value is named by its form (no material removal)
+    assert_eq!(e.label, "其余 不去除材料");
     assert!(e.qualifiers.iter().any(|q| q == "general_requirement"));
     assert!(role(&g, e, "W").contains("note_text"));
     assert!(has(e, &["DC-G6-006"]), "{:?}", e.concept_ids);

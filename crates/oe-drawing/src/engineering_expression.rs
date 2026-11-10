@@ -60,6 +60,8 @@ mod extension_lines;
 mod line_widths;
 #[path = "terminators.rs"]
 mod terminators;
+#[path = "value_fragments.rs"]
+mod value_fragments;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -1381,12 +1383,8 @@ fn native_dimensions(
                 })
                 .collect();
         let measured = measurement(r, dtype, &brecs);
-        let direct_text = brecs
-            .iter()
-            .filter(|x| matches!(x.kind.as_str(), "MTEXT" | "TEXT"))
-            .map(|x| dd::raw_text(x))
-            .collect::<Vec<_>>()
-            .join(" ");
+        // pieces of the value in reading order (module `value_fragments`)
+        let direct_text = value_fragments::direct_text(&brecs)?;
         // CAXA draws some dimension texts only through block references nested in the
         // dimension's block; they are read only when the block holds no text of its own.
         let nested_text = if direct_text.trim().is_empty() {

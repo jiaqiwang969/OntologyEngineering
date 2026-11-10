@@ -1128,3 +1128,65 @@ fn block_drawing_only_text_in_a_dimension_is_part_of_its_value() {
     assert!(has(&ev, "block_draws_only_text"), "{ev:?}");
     assert_eq!(native_role(&g, "HB1").0, "arrowhead");
 }
+
+// ---------------------------------------------------------------- dimension_text: pieces of one value
+
+fn mtext(id: &str, layer: &str, s: &str, p: P, h: f64) -> String {
+    ent(
+        "MTEXT",
+        id,
+        layer,
+        &format!(
+            "10\n{}\n20\n{}\n40\n{h}\n71\n5\n1\n{s}\n11\n1\n21\n0\n",
+            p[0], p[1]
+        ),
+    )
+}
+/// A native diameter dimension without a text override whose block writes its value in the
+/// pieces `pieces` (stored in that order), with its dimension line and terminators.
+fn value_in_pieces(pieces: &[String]) -> MdEngineeringExpressionGraph {
+    let mut children = dimension_line("VP", [40., 20.], [76., 20.]);
+    children.extend(pieces.iter().cloned());
+    let blk = blocks_section(&[("*DV", children)]);
+    let dim = ent(
+        "DIMENSION",
+        "DV",
+        "08",
+        "2\n*DV\n10\n76\n20\n20\n11\n58\n21\n24\n70\n35\n15\n40\n25\n20\n42\n36\n",
+    );
+    run_full(GB, &blk, &[dim])
+}
+fn dv_label(g: &MdEngineeringExpressionGraph) -> String {
+    exprs_of(g, "DV")
+        .into_iter()
+        .find(|e| e.kind.starts_with("dimension_"))
+        .map(|e| e.label.clone())
+        .unwrap_or_else(|| panic!("{:?}", kinds(g, "DV")))
+}
+
+#[test]
+fn value_fragments_join_in_reading_order() {
+    // the number is stored first, the diameter sign second but written before it
+    let g = value_in_pieces(&[
+        mtext("VN", "0", "36", [60., 24.], 3.5),
+        mtext("VS", "0", "%%c", [55., 24.], 3.5),
+    ]);
+    assert_eq!(dv_label(&g), "Ø36");
+    // a second line written under the value follows it
+    let g = value_in_pieces(&[
+        mtext("VN", "0", "36", [60., 24.], 3.5),
+        mtext("VS", "0", "%%c", [55., 24.], 3.5),
+        mtext("VL", "0", "EQS", [58., 19.], 3.5),
+    ]);
+    assert_eq!(dv_label(&g), "Ø36 EQS");
+}
+
+#[test]
+fn unit_fragment_after_the_number_stays_after_it() {
+    let g = value_in_pieces(&[
+        mtext("VD", "0", "%%d", [62., 24.], 3.5),
+        mtext("VN", "0", "36", [58., 24.], 3.5),
+    ]);
+    let label = dv_label(&g);
+    assert!(label.starts_with("36"), "{label}");
+}

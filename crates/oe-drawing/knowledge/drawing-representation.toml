@@ -1031,7 +1031,6 @@ sources = [
 knowledge_units = ["K17", "K18", "K19", "K20", "K21", "K34", "K39"]
 recognition = "以尺寸表达或文字的显示文本为锚（解码 %%c、%%d、%%p 与 \\S 叠写）：开头的数字后紧跟 × 或旧式 - 再接尺寸符号或数值为数量；Ø/R/C 等前缀定尺寸类型；数值后紧跟“基本偏差字母 + 标准公差等级”为公差带代号；“上/下”成对且带符号或为 0 的为极限偏差；M、Tr、B 等前缀接直径的为螺纹标记，其后“等级数字 + 位置字母”为螺纹公差带；° ′ ″ 为角度单位。哪些符号、字母和词属于哪个概念从本卡词表读取。"
 markers = ["Ø", "R", "C", "×", "±", "°", "M", "↧", "⌴", "⌵"]
-parameters = []
 concepts = ["DC-G4-017", "DC-G4-030", "DC-G4-055", "DC-G4-006", "DC-G4-041", "DC-G4-032", "DC-G4-099", "DC-G4-040", "DC-G3-091", "DC-G3-080", "DC-G4-094", "DC-G4-088", "DC-G4-114", "DC-G4-132", "DC-G4-126", "DC-G4-103", "DC-G4-113", "DC-G3-088", "DC-G3-223", "DC-G3-232", "DC-G3-089"]
 
 [[cards.components]]
@@ -1102,6 +1101,17 @@ title = "角度与单位"
 distinguishing = "° ′ ″ 必须写出；线性尺寸缺省为毫米"
 encodings = ["text"]
 tests = ["dimension_text_angles_and_units"]
+
+[[cards.variants]]
+id = "fragments_in_reading_order"
+title = "分段写出的数值按阅读顺序拼接"
+distinguishing = "尺寸的数值分几段文字写出时，按阅读顺序拼接：先上行后下行，行内沿文字方向从前到后，不按文件里存放的先后；单独成段的尺寸符号（Ø、R、S、□ 等）是其后数字的前缀，紧接不空格"
+encodings = ["native_dimension"]
+tests = ["value_fragments_join_in_reading_order"]
+
+[[cards.counter_examples]]
+statement = "数字后面单独成段的单位或符号（如 °）仍在数字之后，不移到前面"
+test = "unit_fragment_after_the_number_stays_after_it"
 
 [[cards.counter_examples]]
 statement = "中心孔标记 B4（无 × 螺距）不是锯齿形螺纹"
@@ -1266,6 +1276,12 @@ values = ["<number>"]
 meaning = "尺寸数字"
 
 [[cards.lexicon]]
+concept = "DC-G4-017"
+entry = "lone_prefix"
+values = ["Ø", "R", "S", "SØ", "SR", "□"]
+meaning = "单独成段写出的尺寸符号：是其后尺寸数字的前缀（GB/T 4458.4 4.1.5、GB/T 16675.2 表1）"
+
+[[cards.lexicon]]
 concept = "DC-G4-099"
 entry = "pattern"
 values = ["<number>"]
@@ -1290,6 +1306,11 @@ reason = "这是对注法的说明，不是图上的注写"
 concept = "DC-G4-088"
 form = "4-Ø4"
 reason = "旧式旁注无深度、沉孔符号时与“数量-直径”尺寸相同，需借助指引线位置判断"
+
+[[cards.parameters]]
+name = "fragment_row_gap"
+value = 0.8
+meaning = "两段文字的中心沿垂直于文字方向相差超过该值 × 字高时属于不同的行（叠写偏差在同一行内）"
 
 [[cards]]
 id = "technical_note"

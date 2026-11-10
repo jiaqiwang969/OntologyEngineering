@@ -225,6 +225,25 @@ const pageSeq=live().map(g=>SEQ.get(g)),wasRaw=$('original').checked;if(!wasRaw)
  for(const g of L){if(g.style.display==='none')throw Error('Original view hides a group of '+g.dataset.entity);const own=[...PRIS[SEQ.get(g)].querySelectorAll('[stroke-width]')];[...g.querySelectorAll('[stroke-width]')].forEach((n,k)=>{if(n.getAttribute('stroke-width')!==own[k].getAttribute('stroke-width')||!close(px(n),Number(own[k].getAttribute('stroke-width'))))throw Error('Original view changes a converter stroke width: '+g.dataset.entity);strokes++})}
  ok(true,'Original view keeps the converter stroke widths');const np=notPlotted('Original view');ok(np.groups_faint===0,'Original view draws content that never plots like the rest');facts.original_view={strokes,groups:L.length,order_as_converted:true,empty_notice:!$('empty').hidden}}
 if(!wasRaw){$('original').click();const back=live().map(g=>SEQ.get(g));ok(back.length===pageSeq.length&&back.every((x,i)=>x===pageSeq[i]),'Leaving the original view restores the page order');facts.widths.after_original=strokeWidths('After leaving the original view');ok(true,'Leaving the original view restores the widths by member')}
+// Check section overlays against graph evidence, in both presentations and the untouched original.
+{
+ const R=G.expressions.filter(e=>e.evidence_ids.some(x=>x.startsWith('cross_section_type:'))),B=[];
+ for(const m of G.members)for(const ev of m.evidence_ids)if(ev.startsWith('section_boundary:'))B.push({...JSON.parse(ev.slice('section_boundary:'.length)),m});
+ ok($('sectionList').querySelectorAll('[data-section-region]').length===R.length,'Section list covers every classified hatch region');
+ const saved={complete:$('complete').checked,original:$('original').checked,edges:$('sectionEdges').checked};
+ const toggle=(id,state)=>{if($(id).checked!==state)$(id).click()};
+ toggle('original',false);toggle('sectionEdges',true);
+ for(const complete of [true,false]){toggle('complete',complete);
+  const expected=B.filter(s=>a.passes(s.m)),nodes=[...d.querySelectorAll('#section-boundaries [data-section-boundary]')];
+  ok(nodes.length===expected.length,'Section boundary span count in '+(complete?'complete':'as-drawn'));
+  nodes.forEach((n,i)=>{const s=expected[i];ok(n.dataset.sectionMember===s.m.id&&n.dataset.sectionBoundary===s.region&&same(JSON.parse(n.dataset.sectionInterval),s.interval),'Boundary identity and bounded source interval '+i);
+   if(s.arc){const first=n.getPointAtLength(0),len=n.getTotalLength(),last=n.getPointAtLength(len);ok(close(first.x,s.points[0][0]-ox0)&&close(first.y,ty0-s.points[0][1])&&close(last.x,s.points[1][0]-ox0)&&close(last.y,ty0-s.points[1][1])&&Math.abs(len-s.arc[2]*s.arc[4])<=0.002*s.arc[2]*s.arc[4],'Circular boundary follows its source span '+i)}else ok(close(+n.getAttribute('x1'),s.points[0][0]-ox0)&&close(+n.getAttribute('y1'),ty0-s.points[0][1])&&close(+n.getAttribute('x2'),s.points[1][0]-ox0)&&close(+n.getAttribute('y2'),ty0-s.points[1][1]),'Boundary endpoints match evidence '+i)});
+  ok(sourceNodes()===baseNodes,'Section overlay preserves source inventory');
+ }
+ toggle('original',true);ok(d.querySelectorAll('#section-boundaries [data-section-boundary]').length===0,'Original drawing has no section overlay');
+ toggle('sectionEdges',saved.edges);toggle('complete',saved.complete);toggle('original',saved.original);
+ facts.section_regions={regions:R.length,boundary_spans:B.length,center_line_spans:B.filter(s=>s.carrier==='center_line').length,checked_presentations:['complete','as-drawn','original']};
+}
 facts.not_applicable=NA;document.getElementById('checks').textContent=JSON.stringify({status:'passed',count:checks.length,checks,facts,sourceNodes:baseNodes,roots:N,expressions:G.expressions.length,visibleAtScreenshot:count(),mode});
 }catch(e){document.getElementById('checks').textContent=JSON.stringify({status:'failed',error:String(e),stack:e.stack})}};
 // Frame f is the page under test; frame p is the same page with scripting disabled (the drawing as embedded).

@@ -82,6 +82,8 @@ mod assembly_drawing;
 mod expression_names;
 #[path = "section_hatching.rs"]
 mod section_hatching;
+#[path = "section_regions.rs"]
+mod section_regions;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]
@@ -6906,7 +6908,6 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     expression_names::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
     line_widths::members(&cx, &mut nb)?;
-    coverage::assign(&mut nb)?;
     not_plotted::mark(&cx, &mut nb);
     let view_of: BTreeMap<String, Option<String>> = nb
         .exprs
@@ -6920,6 +6921,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     for (i, label) in topology::section_profile(&cx, &nb, &cover, &implied_spans) {
         nb.members[i].evidence_ids.push(label);
     }
+    section_regions::state(&cx, &mut nb, &regions)?;
+    coverage::assign(&mut nb)?;
     let structural_lines = topology::structural_lines(&cx, &nb, &cover, &implied_spans);
     let widths = line_evidence::Widths::of(&cx);
     let line_styles = cx

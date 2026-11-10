@@ -964,6 +964,47 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
 
 const CHROME: &str = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
+#[test]
+fn section_browser_checks_detect_a_boundary_drawn_beyond_its_evidence() {
+    if !Path::new(CHROME).is_file() {
+        eprintln!("skipped: no Chrome at {CHROME}");
+        return;
+    }
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..").canonicalize().unwrap();
+    let scratch = Scratch::new(&source);
+    let root = oe_core::SkillRoot::new(&source).unwrap().with_project_data_root(&scratch.0).unwrap();
+    let (bytes, svg) = synthetic(true);
+    let mut g: Value = serde_json::from_slice(&bytes).unwrap();
+    let hatch = g["expressions"].as_array_mut().unwrap().iter_mut().find(|e| e["kind"] == "section_hatch").unwrap();
+    hatch["evidence_ids"].as_array_mut().unwrap().push(json!("cross_section_type:unknown"));
+    let region = hatch["id"].clone();
+    let src = g["source"]["entities"].as_array().unwrap().iter().find(|e| e["geometry_kind"] == "line").unwrap();
+    let handle = src["id"].clone();
+    let p: Vec<f64> = src["coordinates"].as_array().unwrap().iter().map(|n| n.as_f64().unwrap()).collect();
+    let point = |t: f64| [p[0] + t * (p[2] - p[0]), p[1] + t * (p[3] - p[1])];
+    let span = json!({"region":region,"interval":[0.2,0.6],"parameter":"source_line","points":[point(0.2),point(0.6)],"carrier":"source_line"});
+    let m = g["members"].as_array_mut().unwrap().iter_mut().find(|m| m["source_handle"] == handle).unwrap();
+    m["evidence_ids"].as_array_mut().unwrap().push(json!(format!("section_boundary:{span}")));
+    let (page, _) = oe_drawing::page::page(&serde_json::to_vec(&g).unwrap(), &svg, &request()).unwrap();
+    let broken = page.replace("p[1][0]-originX);n.setAttribute('y2'", "p[1][0]-originX+7);n.setAttribute('y2'");
+    assert_ne!(page, broken);
+    for (n, text) in [page, broken].into_iter().enumerate() {
+        let file = format!("section-page-{n}.html");
+        std::fs::write(scratch.0.join(&file), text).unwrap();
+        let q = oe_contracts::MdReviewPageCheckRequest {
+            schema: oe_drawing_check::browser::REQUEST_SCHEMA.into(), page: file,
+            output_directory: format!("section-check-{n}"), chrome: CHROME.into(),
+            mode: "kind".into(), region: None, focus_label: None,
+        };
+        let result = oe_drawing_check::browser::check_page(&root, &q);
+        if n == 0 {
+            assert_eq!(result.unwrap().facts["section_regions"]["boundary_spans"], 1);
+        } else {
+            assert!(result.unwrap_err().to_string().contains("Boundary endpoints match evidence"));
+        }
+    }
+}
+
 /// A project data directory under the skill's private `var`, removed when the test ends.
 struct Scratch(std::path::PathBuf);
 impl Scratch {
@@ -972,10 +1013,15 @@ impl Scratch {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
+        // Two browser tests may start within one clock tick. Time alone is not a
+        // unique owner: one Scratch must never remove the other test's files.
+        static SERIAL: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let serial = SERIAL.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let path = source
             .join("var")
-            .join(format!("review-page-test-{}-{nanos}", std::process::id()));
-        std::fs::create_dir_all(&path).unwrap();
+            .join(format!("review-page-test-{}-{nanos}-{serial}", std::process::id()));
+        std::fs::create_dir_all(source.join("var")).unwrap();
+        std::fs::create_dir(&path).unwrap();
         Self(path)
     }
 }

@@ -1074,8 +1074,8 @@ missing = "识别原生填充图案，但不把图案对应到材料类别"
 [[concepts]]
 id = "DC-G2-023"
 level = "partial"
-by = ["card:local_section_boundary", "piece:free_curve_bounding_hatched_local_section"]
-missing = "局部剖视的范围按波浪线与其两端之间的轮廓求出（一条波浪线落在同一轮廓上、两条横跨同一对轮廓、放大圈内的局部剖），区域内只因剖开才画出的图线、剖面线与波浪线标为局部剖视专属，被剖开显露的虚线在完整结构中连通；以轴线为分界的局部剖、两端落在不同轮廓需沿轮廓转角围成的范围未识别；剖面轮廓在完整结构中只能隐去、不能改画为虚线，同一段虚线圆弧两端隔剖视相对时不连"
+by = ["card:local_section_boundary", "piece:free_curve_bounding_hatched_local_section", "card:section_extent_context"]
+missing = "局部剖视的范围按波浪线与其两端之间的轮廓求出（一条波浪线落在同一轮廓上、两条横跨同一对轮廓、放大圈内的局部剖），区域内只因剖开才画出的图线、剖面线与波浪线标为局部剖视专属，被剖开显露的虚线在完整结构中连通；以轴线为分界的局部剖、两端落在不同轮廓需沿轮廓转角围成的范围未识别；剖面轮廓在完整结构中只能隐去、不能改画为虚线，同一段虚线圆弧两端隔剖视相对时不连；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G2-043"
@@ -1691,14 +1691,14 @@ missing = "只把遮罩对象（WIPEOUT）并入其注写对象；剖面线与�
 [[concepts]]
 id = "DC-G2-015"
 level = "partial"
-by = ["card:view_callout"]
-missing = "整块或散画的剖切符号在转折处成直角时记为平行剖切面，所指视图记 section_type:parallel_planes；阶梯剖视图中各段剖切面后的结构未分类"
+by = ["card:view_callout", "card:section_extent_context"]
+missing = "整块或散画的剖切符号在转折处成直角时记为平行剖切面，所指视图记 section_type:parallel_planes；阶梯剖视图中各段剖切面后的结构未分类；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G2-016"
 level = "partial"
-by = ["card:section_view_type", "card:view_callout"]
-missing = "整块或散画的剖切符号在转折处成斜角时，符号记为相交剖切面，所指的“X—X”视图记 section_type:intersecting_planes（转折点在回转视图中心时记为依据）；转到剖切面上的结构本身、展开画法未分类"
+by = ["card:section_view_type", "card:view_callout", "card:section_extent_context"]
+missing = "整块或散画的剖切符号在转折处成斜角时，符号记为相交剖切面，所指的“X—X”视图记 section_type:intersecting_planes（转折点在回转视图中心时记为依据）；转到剖切面上的结构本身、展开画法未分类；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G3-060"
@@ -1774,8 +1774,8 @@ missing = "只识别图框外注写中带质量词的文字；标题栏内质量
 [[concepts]]
 id = "DC-G2-020"
 level = "partial"
-by = ["card:section_view_type"]
-missing = "剖面线全在贯穿视图的对称中心线一侧、两侧轮廓不成镜像、中心线上没有粗实线时记为半剖；半标注的直径尺寸未作旁证，局部被波浪线围住的剖面线不参与判断"
+by = ["card:section_view_type", "card:section_extent_context"]
+missing = "剖面线全在贯穿视图的对称中心线一侧、两侧轮廓不成镜像、中心线上没有粗实线时记为半剖；半标注的直径尺寸未作旁证，局部被波浪线围住的剖面线不参与判断；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G8-013"
@@ -1792,6 +1792,42 @@ missing = "同一视图中共用边界、剖面线方向或间隔不同的两个
 [[concepts]]
 id = "DC-G3-056"
 level = "partial"
-by = ["card:thread_representation"]
-missing = "标准件图块中的外螺纹与它旋入的剖视螺孔（大径线共线、同轴）互记旋合与旋合长度；被零件遮住的螺孔线仍记为可见轮廓（遮挡未读），散画的外螺纹与螺栓、螺柱连接未识别"
+by = ["card:thread_representation", "card:section_line_exceptions"]
+missing = "标准件图块中的外螺纹与它旋入的剖视螺孔（大径线共线、同轴）互记旋合与旋合长度；被零件遮住的螺孔线仍记为可见轮廓（遮挡未读），散画的外螺纹与螺栓、螺柱连接未识别；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
+
+[[concepts]]
+id = "DC-G2-028"
+level = "partial"
+by = ["card:section_cross_section_type", "card:section_region_boundary"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[concepts]]
+id = "DC-G2-033"
+level = "partial"
+by = ["card:section_cross_section_type"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[concepts]]
+id = "DC-G2-034"
+level = "partial"
+by = ["card:section_cross_section_type", "card:section_region_boundary"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[concepts]]
+id = "DC-G2-018"
+level = "partial"
+by = ["card:section_line_origin"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[concepts]]
+id = "DC-G2-013"
+level = "partial"
+by = ["card:section_extent_context"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[concepts]]
+id = "DC-G3-046"
+level = "partial"
+by = ["card:section_line_exceptions"]
+missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"

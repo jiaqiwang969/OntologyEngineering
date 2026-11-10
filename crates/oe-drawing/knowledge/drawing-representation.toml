@@ -4665,3 +4665,217 @@ concept = "DC-G1-101"
 entry = "definition_point_layer"
 values = ["Defpoints"]
 meaning = "CAD 的定义点层：尺寸定义点所在的层，任何情况下都不打印；层名不分大小写"
+
+[[cards]]
+id = "section_cross_section_type"
+parameters = []
+expression_kind = "section_hatch"
+title = "断面配置与确定程度"
+meaning = "移出断面在视图外用粗实线，重合断面在剖切位置用细实线；重合处原视图轮廓连续。DC-G2-033 只指对称断面配置在中断处，不是全部移出断面的别名。"
+sources = ["GB/T 4458.6-2002 7.1–7.3、7.8；GB/T 17452-1998 7.1–7.2"]
+knowledge_units = ["K11", "K13"]
+recognition = "原生闭合边界、可靠线宽、母视图连续轮廓及独立剖切标注相互核对；缺少任何决定性条件保留未知。中断配置暂不自动确认。"
+markers = []
+concepts = ["DC-G2-028", "DC-G2-033", "DC-G2-034"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "边界、母视图轮廓及源区间"
+
+[[cards.variants]]
+id = "superimposed"
+title = "闭合细线断面与母视图连续轮廓相交"
+distinguishing = "闭合细线断面与母视图连续轮廓相交"
+encodings = ["inferred"]
+tests = ["superimposed_thin_face_retains_parent_outline"]
+
+[[cards.variants]]
+id = "removed"
+title = "独立剖切标注指向仅含断面轮廓的视图"
+distinguishing = "独立剖切标注指向仅含断面轮廓的视图"
+encodings = ["inferred"]
+tests = ["separate_named_face_is_removed"]
+
+[[cards.variants]]
+id = "ambiguous"
+title = "线宽或空间关系不足，类型未知且概念只作候选"
+distinguishing = "线宽或空间关系不足，类型未知且概念只作候选"
+encodings = ["inferred"]
+tests = ["ambiguous_width_never_suppresses_a_crossing"]
+
+[[cards.counter_examples]]
+statement = "局部小剖面或不明断开不能直接指定为中断处移出断面"
+test = "ambiguous_width_never_suppresses_a_crossing"
+
+[[cards]]
+id = "section_region_boundary"
+expression_kind = "section_hatch"
+title = "断面边界与源图线区间"
+meaning = "原生剖面边界与图线重合的区间是边界承担证据。中心线兼作边界不改变源线型，其余区间不算边界。"
+sources = ["GB/T 4458.6-2002 7.1、7.8；GB/T 17452-1998 3.2"]
+knowledge_units = ["K11", "K13"]
+recognition = "按字高比例的误差求同一直线上的非零重叠；有凸度的多段线弦、圆弧采样弦不能冒充直边；圆弧以同圆的角度交集记源区间。椭圆、样条或散画边界未确认时明确记录缺口。"
+markers = []
+concepts = ["DC-G2-028", "DC-G2-034"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "边界、母视图轮廓及源区间"
+
+[[cards.variants]]
+id = "axis_span"
+title = "点画线只有落在剖面外缘的一段兼作边界"
+distinguishing = "点画线只有落在剖面外缘的一段兼作边界"
+encodings = ["inferred"]
+tests = ["axis_boundary_is_bounded_and_keeps_line_type", "closed_polyline_keeps_its_closing_boundary"]
+
+[[cards.variants]]
+id = "partial_boundary"
+title = "椭圆、样条与散画剖面边界不确定时保留部分覆盖"
+distinguishing = "椭圆、样条与散画剖面边界不确定时保留部分覆盖"
+encodings = ["inferred"]
+tests = ["bulged_hatch_chord_is_not_a_boundary"]
+
+[[cards.variants]]
+id = "circular_boundary"
+title = "原生圆弧边界"
+distinguishing = "同圆的角度区间重合；顺时针 HATCH 角度先归一，曲边保持圆弧"
+encodings = ["native"]
+tests = ["circular_boundary_uses_exact_angular_span"]
+
+[[cards.counter_examples]]
+statement = "仅在一点碰到剖面边界不构成边界承担"
+test = "point_contact_is_not_a_boundary"
+
+[[cards.parameters]]
+name = "coincidence_tolerance"
+value = 0.015
+meaning = "边界重合容差 = 该值 × 图面文字中位字高"
+
+[[cards.parameters]]
+name = "context_margin"
+value = 0.6
+meaning = "剖面区域周围的取证边距 = 该值 × 中位字高"
+
+[[cards.parameters]]
+name = "embedded_extent_max"
+value = 0.72
+meaning = "区域对角线 / 所属视图对角线的上限，仅作配置候选"
+
+[[cards]]
+id = "section_line_origin"
+parameters = []
+expression_kind = "section_hatch"
+title = "剖切图线来源证据"
+meaning = "来源分剖前已有、剖切形成、剖后应消失、未知；一个投影上的相交不足以决定深度，未知不等于应删除。剖面线表示切面，不是实体棱边。"
+sources = ["GB/T 17452-1998 3.1–3.2；GB/T 4458.6-2002 5.1、5.6、7.8"]
+knowledge_units = ["K11", "K13"]
+recognition = "逐区域给附近成员留来源及依据；中心轴和螺纹保留，剖面符号为剖切形成，已确认重合断面中的母视图轮廓为剖前已有。缺深度信息不输出确定的 suppressed。多区域意见不同则总类为未知，分区意见并存。"
+markers = []
+concepts = ["DC-G2-018"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "边界、母视图轮廓及源区间"
+
+[[cards.variants]]
+id = "scoped_origins"
+title = "同一成员的每个相邻剖面区域分别记依据"
+distinguishing = "同一成员的每个相邻剖面区域分别记依据"
+encodings = ["inferred"]
+tests = ["all_hatch_regions_have_scoped_origins"]
+
+[[cards.counter_examples]]
+statement = "内部轮廓仅凭穿过剖面不能判为剖后应消失"
+test = "ambiguous_width_never_suppresses_a_crossing"
+
+[[cards]]
+id = "section_extent_context"
+parameters = []
+expression_kind = "section_hatch"
+title = "剖切范围、剖切面布置与放大关系分开"
+meaning = "全剖、半剖、局部剖表示范围；平行或相交剖切面表示布置；局部放大表示比例。这些关系独立，不用其中一个替换另一个。"
+sources = ["GB/T 17452-1998 5–6；GB/T 4458.6-2002 5.3–5.6"]
+knowledge_units = ["K11", "K13"]
+recognition = "接续已有视图剖切布置、半剖和局部剖证据，不改视图种类；未画剖面线的放大图只记未知候选。"
+markers = []
+concepts = ["DC-G2-013", "DC-G2-015", "DC-G2-016", "DC-G2-020", "DC-G2-023"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "边界、母视图轮廓及源区间"
+
+[[cards.variants]]
+id = "detail_without_hatch"
+title = "无剖面线的局部放大图不强判断面"
+distinguishing = "无剖面线的局部放大图不强判断面"
+encodings = ["inferred"]
+tests = ["unhatched_detail_keeps_unknown_origins"]
+
+[[cards.counter_examples]]
+statement = "没有剖面线的普通视图不凭外形成为剖面"
+test = "unhatched_shaft_has_no_invented_section"
+
+[[cards]]
+id = "section_line_exceptions"
+parameters = []
+expression_kind = "section_hatch"
+title = "剖视中的保留线及不剖规定"
+meaning = "剖面线可画到螺纹粗实线且穿过细实线；重合断面中的母视图轮廓连续；纵向剖切的肋、轮辐和轴类等按规定处理，须先知道剖切方向。"
+sources = ["GB/T 4459.1-1995 3.5；GB/T 4458.6-2002 4.4、7.8"]
+knowledge_units = ["K11", "K13"]
+recognition = "螺纹成员保留已有种类和线型，单图缺乏纵横剖切证据时不从空白区推定肋板，不自动加剖面线、不删除轮廓。"
+markers = []
+concepts = ["DC-G3-046", "DC-G3-056"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "边界、母视图轮廓及源区间"
+
+[[cards.variants]]
+id = "thread_inside_face"
+title = "螺纹细线在剖面区仍保留"
+distinguishing = "螺纹细线在剖面区仍保留"
+encodings = ["inferred"]
+tests = ["thread_inside_hatch_is_pre_existing"]
+
+[[cards.variants]]
+id = "longitudinal_unknown"
+title = "无纵横方向证据的轴类不自动剖切"
+distinguishing = "无纵横方向证据的轴类不自动剖切"
+encodings = ["inferred"]
+tests = ["unhatched_shaft_has_no_invented_section"]
+
+[[cards.counter_examples]]
+statement = "空白带也可能是孔或凹槽，不能凭空白强判纵剖肋板"
+test = "unhatched_shaft_has_no_invented_section"

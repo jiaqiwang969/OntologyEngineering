@@ -698,6 +698,7 @@ fn every_card_is_used_and_every_named_test_exists() {
         include_str!("annotation_blocks.rs"),
         include_str!("loose_annotations.rs"),
         include_str!("line_evidence.rs"),
+        include_str!("local_section_region.rs"),
     ]
     .concat();
     for c in &k.cards {

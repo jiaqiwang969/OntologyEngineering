@@ -9,15 +9,23 @@
 //! * GB/T 4458.1 local detail: a thin detail circle only marks the enlarged part;
 //!   collinear outline pieces whose facing ends both lie on one detail circle are
 //!   one line cut at the circle (card `detail_circle_interruption`);
-//! * GB/T 4458.1 / 4457.4: inside a local section the outline is replaced by
-//!   the section; an end inside a hatched region bounded by a break curve or a
-//!   detail circle is interrupted by that section.
+//! * GB/T 4458.4: the outline is kept clear of dimension lines and terminators
+//!   in the same way; a gap crossed only by the dimension line or terminator of
+//!   a dimension, close to it at both ends, is such a break too (card
+//!   `annotation_break`, variant `broken_for_dimension_line`);
+//! * GB/T 17452 6.3 / GB/T 4458.6 5.6: inside a local section the outline is
+//!   replaced by the section; the region is the area enclosed by the break
+//!   curve(s) and the outline between their ends (module `local_section`), and
+//!   an end in it is interrupted by that section. What is drawn only because of
+//!   the cut is left out of the structure; an end that meets nothing else is free.
 //!
 //! Outline inferred across an explained interruption is kept apart from source
 //! members (complete-structure representation only). A gap whose facing ends
 //! meet other structure (a slot cutting through a line) is a real opening and
 //! is never bridged. Straight lines continue collinearly and arcs along their
-//! circle, so a circle broken for a text is treated like a broken line.
+//! circle. An arc continues only to another arc, across a gap that is small
+//! against what is drawn of the circle: a fillet never closes into a circle and
+//! an arc is never joined to its own other end.
 //!
 //! Structural lines: within one view and outline class, the collinear (or
 //! co-circular) connected source pieces and inferred spans are one drawn line,
@@ -28,6 +36,10 @@
 //! Nothing here reads old labels, regions or paired models.
 use super::*;
 use oe_contracts::{MdImpliedSpan, MdStructuralEnd, MdStructuralLine};
+
+#[path = "local_section.rs"]
+mod local_section;
+use local_section::LocalSection;
 
 /// Text box: centre, unit direction, half width, half height, height, handle.
 type TextBox = (P, P, f64, f64, f64, String);
@@ -40,9 +52,14 @@ pub(super) struct Cover {
     /// Annotation segments (dimension, extension and leader lines, terminators):
     /// end points, half width and source handle.
     strips: Vec<(P, P, f64, String)>,
-    /// Section hatch clusters: bounding box, evidence handles (hatch pieces,
-    /// boundary curves and detail circles meeting the cluster) and hatch pieces.
-    sections: Vec<([f64; 4], Vec<String>, Vec<String>)>,
+    /// Strokes of dimensions an outline is kept clear of: dimension lines and the bodies of
+    /// terminators (end points and source handle), root sources and parts of native dimensions.
+    dimension_strokes: Vec<(P, P, String)>,
+    /// Usual terminator length of the drawing.
+    arrow: f64,
+    /// Local sections: the region enclosed by the break curve(s) and the outline between their
+    /// ends, with the hatch in it.
+    sections: Vec<LocalSection>,
     /// Detail circles: centre, radius and source handle.
     circles: Vec<(P, f64, String)>,
     /// Annotation symbols drawn as blocks (texture, datum, frame, view symbols): strokes in
@@ -131,73 +148,60 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
             _ => {}
         }
     }
-    // Hatch pieces clustered by proximity, so a grouping by view cannot merge
-    // separate sections into one region.
-    let kind_of: BTreeMap<&str, &str> = b
+    // Dimension lines and terminators of dimensions, also those inside native dimensions (placed
+    // by the block offset of the dimension).
+    let dimension: BTreeSet<&str> = b
         .exprs
         .iter()
-        .map(|e| (e.id.as_str(), e.kind.as_str()))
+        .filter(|e| e.kind.starts_with("dimension_") || e.kind == "thread_note")
+        .map(|e| e.id.as_str())
         .collect();
-    let s = cx.scale.max(1.);
-    let mut pieces: Vec<([f64; 4], String)> = b
+    let mut dimension_strokes = Vec::new();
+    let mut arrows = Vec::new();
+    for m in b
         .members
         .iter()
-        .filter(|m| kind_of.get(m.expression_id.as_str()) == Some(&"section_hatch"))
-        // parts of a block reference are placed through the block, not by their root
-        .filter(|m| m.native_member_id.is_none())
-        .filter_map(|m| {
-            cx.bbox(&m.source_handle)
-                .map(|bb| (bb, m.source_handle.clone()))
-        })
-        .collect();
-    pieces.sort_by(|x, y| x.1.cmp(&y.1));
-    pieces.dedup_by(|x, y| x.1 == y.1);
-    let near = |x: &[f64; 4], y: &[f64; 4], g: f64| {
-        x[0] - g <= y[2] && y[0] - g <= x[2] && x[1] - g <= y[3] && y[1] - g <= x[3]
-    };
-    let mut clusters: Vec<([f64; 4], Vec<String>)> = Vec::new();
-    for (bb, h) in pieces {
-        let mut merged = ([bb[0], bb[1], bb[2], bb[3]], vec![h]);
-        let mut rest = Vec::new();
-        for c in clusters {
-            if near(&c.0, &merged.0, 1.5 * s) {
-                merged.0 = [
-                    merged.0[0].min(c.0[0]),
-                    merged.0[1].min(c.0[1]),
-                    merged.0[2].max(c.0[2]),
-                    merged.0[3].max(c.0[3]),
-                ];
-                merged.1.extend(c.1);
-            } else {
-                rest.push(c);
-            }
+        .filter(|m| dimension.contains(m.expression_id.as_str()))
+    {
+        let h = m.source_handle.as_str();
+        let stroke = match (m.member_role.as_str(), m.native_member_id.as_deref()) {
+            ("dimension_line", None) => cx
+                .lines
+                .get(h)
+                .map(|(a, c)| (lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1]))),
+            ("arrowhead", None) => cx.arrow(h).map(|a| {
+                arrows.push(a.len);
+                (a.tip, sub(a.tip, mul(a.dir, a.len)))
+            }),
+            ("dimension_line" | "arrowhead", Some(id)) => cx
+                .rec
+                .get(h)
+                .filter(|r| r.kind == "DIMENSION")
+                .zip(id.rsplit('/').next().and_then(|n| cx.block_rec.get(n)))
+                .and_then(|(r, x)| {
+                    let off = r.xy(12).unwrap_or([0., 0.]);
+                    match x.kind.as_str() {
+                        "LINE" if m.member_role == "dimension_line" => x
+                            .xy(10)
+                            .ok()
+                            .zip(x.xy(11).ok())
+                            .map(|(p, q)| (add(p, off), add(q, off))),
+                        "SOLID" | "TRACE" => arrow_of(x).map(|a| {
+                            arrows.push(a.len);
+                            let tip = add(a.tip, off);
+                            (tip, sub(tip, mul(a.dir, a.len)))
+                        }),
+                        _ => None,
+                    }
+                }),
+            _ => None,
+        };
+        if let Some((p, q)) = stroke {
+            dimension_strokes.push((p, q, h.to_string()));
         }
-        rest.push(merged);
-        clusters = rest;
     }
-    // A section is bounded by a break curve or a detail circle that meets it.
-    let mut sections = Vec::new();
-    for (bb, hatch) in clusters {
-        let mut hs = hatch.clone();
-        let bounds: Vec<String> = b
-            .members
-            .iter()
-            .filter(|m| matches!(m.member_role.as_str(), "break_curve" | "detail_circle"))
-            .filter(|m| m.native_member_id.is_none())
-            .filter(|m| {
-                cx.bbox(&m.source_handle)
-                    .is_some_and(|x| near(&x, &bb, 0.5 * s))
-            })
-            .map(|m| m.source_handle.clone())
-            .collect();
-        if bounds.is_empty() {
-            continue;
-        }
-        hs.extend(bounds);
-        hs.sort();
-        hs.dedup();
-        sections.push((bb, hs, hatch));
-    }
+    let arrow = median(arrows).unwrap_or(0.);
+    let sections = local_section::find(cx, b);
     let circles = b
         .members
         .iter()
@@ -207,6 +211,8 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
     Cover {
         texts,
         strips,
+        dimension_strokes,
+        arrow,
         sections,
         circles,
         symbols: super::line_evidence::annotation_symbols(cx, b),
@@ -239,6 +245,56 @@ fn symbol_break(cov: &Cover, p: P, d: P, len: f64) -> Option<Vec<String>> {
         "card:annotation_break".into(),
         "variant:broken_for_symbol".into(),
     ])
+}
+
+/// The gap from `p` along `d` of length `len` is crossed by the dimension line or the terminator
+/// of a dimension and by no outline, and each end of the gap is within about one terminator
+/// length of the outermost crossing: the outline was broken to keep the dimension line and its
+/// terminator clear (GB/T 4458.4-2003 4.3.4 names the number; card `annotation_break`, variant
+/// `broken_for_dimension_line`). A slot whose width is dimensioned is no such gap: its ends
+/// meet the slot walls and are not free.
+fn dimension_break(cov: &Cover, p: P, d: P, len: f64, partners: &[Partner]) -> Option<Vec<String>> {
+    let k = representation::card_ref("annotation_break")
+        .ok()
+        .and_then(|c| representation::param(c, "gap_end_to_crossing_max").ok())?;
+    let q = add(p, mul(d, len));
+    // Where the segment `ab` crosses the gap, as a length from `p`.
+    let crossing = |a: P, b: P| -> Option<f64> {
+        let (r, s) = (sub(q, p), sub(b, a));
+        let den = cross(r, s);
+        if den.abs() < 1e-12 {
+            return None;
+        }
+        let t = cross(sub(a, p), s) / den;
+        let u = cross(sub(a, p), r) / den;
+        ((0. ..=1.).contains(&t) && (0. ..=1.).contains(&u)).then_some(t * len)
+    };
+    let eps = 1e-6 * len.max(1.);
+    if partners
+        .iter()
+        .any(|x| crossing(x.ends[0], x.ends[1]).is_some_and(|t| t > eps && t < len - eps))
+    {
+        return None;
+    }
+    let hits: Vec<(f64, &str)> = cov
+        .dimension_strokes
+        .iter()
+        .filter_map(|(a, b, h)| crossing(*a, *b).map(|t| (t, h.as_str())))
+        .collect();
+    let lo = hits.iter().map(|x| x.0).fold(f64::INFINITY, f64::min);
+    let hi = hits.iter().map(|x| x.0).fold(f64::NEG_INFINITY, f64::max);
+    if hits.is_empty() || lo > k * cov.arrow || len - hi > k * cov.arrow {
+        return None;
+    }
+    let by: BTreeSet<String> = hits.iter().map(|x| format!("dimension:{}", x.1)).collect();
+    Some(
+        by.into_iter()
+            .chain([
+                "card:annotation_break".to_string(),
+                "variant:broken_for_dimension_line".to_string(),
+            ])
+            .collect(),
+    )
 }
 
 /// The gap from `p` along `d` of length `len` is covered by text boxes, with
@@ -297,6 +353,19 @@ pub(super) fn interruption(
     d: P,
     partners: &[Partner],
 ) -> Option<Cause> {
+    interruption_in(cx, cov, None, own, p, d, partners)
+}
+
+/// As `interruption`, among the local sections that stand once the views are known (`live`).
+fn interruption_in(
+    cx: &Ctx,
+    cov: &Cover,
+    live: Option<&[bool]>,
+    own: &str,
+    p: P,
+    d: P,
+    partners: &[Partner],
+) -> Option<Cause> {
     let s = cx.scale.max(1.);
     let tol = 2e-3 * s;
     let w = band(cx);
@@ -320,7 +389,9 @@ pub(super) fn interruption(
     let facing = |k: &Partner, i: usize| (k.handle.clone(), k.t[i], k.ends[i], k.free[i]);
     if let Some((len, k, i)) = best
         && k.free[i]
-        && let Some(ev) = text_break(cov, p, d, len).or_else(|| symbol_break(cov, p, d, len))
+        && let Some(ev) = text_break(cov, p, d, len)
+            .or_else(|| symbol_break(cov, p, d, len))
+            .or_else(|| dimension_break(cov, p, d, len, partners))
     {
         return Some(Cause {
             kind: "text_break",
@@ -328,20 +399,21 @@ pub(super) fn interruption(
             evidence: ev,
         });
     }
-    for (bb, hs, _) in &cov.sections {
-        let g = 0.5 * s;
-        let inside =
-            |q: P| q[0] >= bb[0] - g && q[0] <= bb[2] + g && q[1] >= bb[1] - g && q[1] <= bb[3] + g;
-        if !inside(p) {
+    // In a local section: the line goes on to the collinear piece across the region.
+    for (n, sec) in cov.sections.iter().enumerate() {
+        let near = sec.near;
+        if live.is_some_and(|l| !l[n]) || !sec.holds(p, near) {
             continue;
         }
         let partner = best
-            .filter(|(len, k, i)| inside(k.ends[*i]) && inside(add(p, mul(d, len / 2.))))
+            .filter(|(len, k, i)| {
+                sec.holds(k.ends[*i], near) && sec.holds(add(p, mul(d, len / 2.)), near)
+            })
             .map(|(_, k, i)| facing(k, i));
         return Some(Cause {
             kind: "local_section",
             partner,
-            evidence: hs.iter().map(|h| format!("section:{h}")).collect(),
+            evidence: sec.evidence(),
         });
     }
     None
@@ -399,12 +471,17 @@ pub(super) struct ArcPartner {
 
 /// Cause of the free end `k` (0 start, 1 end) of the outline arc `own`, found
 /// along its circle: the nearest co-circular arc end facing it across a gap
-/// covered by a text, or both ends inside a local section. Returns the cause
-/// and the gap arc (start angle, counter-clockwise sweep). An arc may face its
-/// own other end (a circle broken once).
+/// covered by a text, or across a local section. Returns the cause and the gap
+/// arc (start angle, counter-clockwise sweep). The arc goes on to the facing arc
+/// only when that end is free too and the gap is small against what is drawn of
+/// the circle (card `annotation_break`: not more than the drawn sweep, not more
+/// than about a quarter turn). It never goes on to its own other end: a fillet
+/// does not close into a circle, and an arc broken once keeps its gap, with the
+/// cause named.
 fn arc_interruption(
     cx: &Ctx,
     cov: &Cover,
+    live: &[bool],
     own: &ArcPartner,
     k: usize,
     partners: &[ArcPartner],
@@ -417,10 +494,12 @@ fn arc_interruption(
     let e = if k == 1 { own.s0 + own.sw } else { own.s0 };
     let p = at(e);
     let mut best: Option<(f64, &ArcPartner)> = None;
+    let mut drawn = 0.;
     for q in partners {
         if dist(q.c, own.c) > w || (q.r - own.r).abs() > w {
             continue;
         }
+        drawn += q.sw;
         let delta = if k == 1 {
             (q.s0 - e).rem_euclid(TAU)
         } else {
@@ -446,29 +525,40 @@ fn arc_interruption(
     let start = if k == 1 { e } else { own.s0 - delta }.rem_euclid(TAU);
     let gap = [start, delta];
     let facing = (q.handle.clone(), fi as f64, qp, q.free[fi]);
+    let card = representation::card_ref("annotation_break").ok();
+    let limit = |name: &str, default: f64| {
+        card.and_then(|c| representation::param(c, name).ok())
+            .unwrap_or(default)
+    };
+    let small = delta <= limit("arc_gap_sweep_max_deg", 90.).to_radians() + 1e-9
+        && delta <= limit("arc_gap_to_drawn_sweep_max", 1.) * drawn + 1e-9;
+    let joins = q.handle != own.handle && q.free[fi] && small;
     if q.free[fi] {
         let along = |i: usize, n: usize| at(start + delta * i as f64 / n as f64);
         if let Some(ev) = text_break_along(cov, &along, delta * own.r, delta * own.r) {
             return Some((
                 Cause {
                     kind: "text_break",
-                    partner: Some(facing),
+                    partner: joins.then_some(facing),
                     evidence: ev,
                 },
                 gap,
             ));
         }
     }
-    let g = 0.5 * s;
-    for (bb, hs, _) in &cov.sections {
-        let inside =
-            |x: P| x[0] >= bb[0] - g && x[0] <= bb[2] + g && x[1] >= bb[1] - g && x[1] <= bb[3] + g;
-        if inside(p) && inside(qp) && inside(at(start + delta / 2.)) {
+    for (n, sec) in cov.sections.iter().enumerate() {
+        let near = sec.near;
+        if live[n]
+            && joins
+            && sec.holds(p, near)
+            && sec.holds(qp, near)
+            && (1..8).all(|i| sec.holds(at(start + delta * i as f64 / 8.), near))
+        {
             return Some((
                 Cause {
                     kind: "local_section",
                     partner: Some(facing),
-                    evidence: hs.iter().map(|h| format!("section:{h}")).collect(),
+                    evidence: sec.evidence(),
                 },
                 gap,
             ));
@@ -538,7 +628,11 @@ fn path_dist(x: P, pts: &[P], arc: Option<(P, f64, f64, f64, bool)>) -> f64 {
 }
 
 /// Free ends of the visible and hidden outline with their causes, and outline
-/// inferred across explained interruptions.
+/// inferred across explained interruptions. What is drawn only because of a local
+/// section (its profile, hatch and break curve) is no part of the structure: an
+/// end that meets nothing else is free and goes on across the region. The circle
+/// of a thread convention is where an outline stops at a tapped hole: an end on
+/// it is joined (card `outline_joins`, variant `end_on_thread_circle`).
 pub(super) fn audit(
     cx: &Ctx,
     b: &Builder,
@@ -548,6 +642,7 @@ pub(super) fn audit(
     let tol = 1e-3 * s;
     let exprs: BTreeMap<&str, &MdEngineeringExpression> =
         b.exprs.iter().map(|e| (e.id.as_str(), e)).collect();
+    let section = local_section::section_only(cx, b, &cov.sections);
     let mut spans: Vec<Span> = Vec::new();
     #[allow(clippy::type_complexity)]
     let mut targets: Vec<(usize, Vec<P>, Option<(P, f64, f64, f64, bool)>)> = Vec::new();
@@ -559,8 +654,12 @@ pub(super) fn audit(
             ("visible_contour", "contour_segment") => Some("visible_outline"),
             ("hidden_contour", "hidden_segment") => Some("hidden_outline"),
             ("center_axis", _) | ("break_line", _) => None,
+            ("thread_convention", "thread_line") if cx.arc(&m.source_handle).is_some() => None,
             _ => continue,
         };
+        if section.marks.contains_key(&i) {
+            continue;
+        }
         let h = m.source_handle.as_str();
         let (pts, arc, ends) = if let Some((a, c)) = cx.lines.get(h) {
             let (p, q) = (lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1]));
@@ -725,6 +824,7 @@ pub(super) fn audit(
                 arc_interruption(
                     cx,
                     cov,
+                    &section.live,
                     &own,
                     k,
                     &arc_partners[&(sp.class, sp.view.clone())],
@@ -734,7 +834,15 @@ pub(super) fn audit(
                 Some(c)
             } else {
                 let ps_ = &partners[&(sp.class, sp.view.clone())];
-                interruption(cx, cov, &sp.handle, ps[k], dirs[k], ps_)
+                interruption_in(
+                    cx,
+                    cov,
+                    Some(&section.live),
+                    &sp.handle,
+                    ps[k],
+                    dirs[k],
+                    ps_,
+                )
             };
             let id = end_id(sp.class, &sp.handle, ts[k]);
             let (kind, evidence, partner) = match &cause {
@@ -938,98 +1046,28 @@ fn implied_mid(x: &MdImpliedSpan) -> P {
     ]
 }
 
-/// Members drawn only because a local section replaces the outline: inside a
-/// hatched local section that an inferred outline span crosses, the section
-/// profile (outline lying wholly in the region and not continuing collinearly
-/// outside it), the hatch and the section boundary. The complete-structure
-/// representation hides them; the as-drawn representation keeps them. A section
-/// no inferred outline crosses (a sectional detail view) is left alone.
+/// Members drawn only because of a local section, with the evidence they carry
+/// (`section_profile:<hatch>`, and the card and variant that say why): the
+/// outline in the region that does not go on outside it in the same line type,
+/// the hatch and the break curve (module `local_section`). The complete-structure
+/// representation leaves them out; the as-drawn representation keeps them.
 pub(super) fn section_profile(
     cx: &Ctx,
     b: &Builder,
     cov: &Cover,
-    implied: &[MdImpliedSpan],
+    _implied: &[MdImpliedSpan],
 ) -> Vec<(usize, String)> {
-    let s = cx.scale.max(1.);
-    let g = 0.5 * s;
-    let tol = 2e-3 * s;
-    let kind_of: BTreeMap<&str, &str> = b
-        .exprs
-        .iter()
-        .map(|e| (e.id.as_str(), e.kind.as_str()))
-        .collect();
-    let member_points = |m: &MdExpressionMember| -> Vec<P> {
-        if let Some((a, c)) = cx.lines.get(&m.source_handle) {
-            return vec![lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1])];
-        }
-        if let Some((c, r, s0, sw, _)) = cx.arc(&m.source_handle) {
-            return (0..=8)
-                .map(|i| {
-                    let a = s0 + sw * i as f64 / 8.;
-                    add(c, mul([a.cos(), a.sin()], r))
-                })
-                .collect();
-        }
-        cx.points(&m.source_handle)
-    };
-    let mut marks = Vec::new();
-    for (bb, _, hatch) in &cov.sections {
-        let inside =
-            |q: P| q[0] >= bb[0] - g && q[0] <= bb[2] + g && q[1] >= bb[1] - g && q[1] <= bb[3] + g;
-        let crossed = implied
-            .iter()
-            .any(|x| x.cause == "local_section" && inside(implied_mid(x)));
-        let Some(label) = hatch.first() else { continue };
-        if !crossed {
-            continue;
-        }
-        let label = format!("section_profile:{label}");
-        for (i, m) in b.members.iter().enumerate() {
-            let kind = kind_of.get(m.expression_id.as_str()).copied().unwrap_or("");
-            // A contour drawn twice is shown by its primary, which takes the mark.
-            if m.evidence_ids.iter().any(|x| x.starts_with("duplicate_of:")) {
-                continue;
-            }
-            let pts = member_points(m);
-            if pts.is_empty() || !pts.iter().all(|q| inside(*q)) {
-                continue;
-            }
-            let take = match (kind, m.member_role.as_str()) {
-                ("section_hatch", _) => hatch.contains(&m.source_handle),
-                (_, "break_curve") => true,
-                ("visible_contour", "contour_segment") => {
-                    // Outline continuing collinearly outside the region is external outline.
-                    let continued = pts.len() == 2 && dist(pts[0], pts[1]) > tol && {
-                        let d = unit(sub(pts[1], pts[0]));
-                        b.members.iter().enumerate().any(|(j, o)| {
-                            j != i
-                                && kind_of.get(o.expression_id.as_str()) == Some(&"visible_contour")
-                                && o.member_role == "contour_segment"
-                                && cx.lines.get(&o.source_handle).is_some_and(|(a, c)| {
-                                    let (p, q) =
-                                        (lerp(*a, *c, o.interval[0]), lerp(*a, *c, o.interval[1]));
-                                    !(inside(p) && inside(q))
-                                        && cross(d, sub(p, pts[0])).abs() <= tol
-                                        && cross(d, sub(q, pts[0])).abs() <= tol
-                                        && {
-                                            let (s0, s1) =
-                                                (dot(sub(p, pts[0]), d), dot(sub(q, pts[0]), d));
-                                            s0.min(s1) <= dist(pts[0], pts[1]) + tol
-                                                && s0.max(s1) >= -tol
-                                        }
-                                })
-                        })
-                    };
-                    !continued
-                }
-                _ => false,
-            };
-            if take {
-                marks.push((i, label.clone()));
-            }
-        }
-    }
-    marks
+    local_section::section_only(cx, b, &cov.sections)
+        .marks
+        .into_iter()
+        .flat_map(|(i, ev)| {
+            let have = &b.members[i].evidence_ids;
+            ev.into_iter()
+                .filter(|e| !have.contains(e))
+                .map(move |e| (i, e))
+                .collect::<Vec<_>>()
+        })
+        .collect()
 }
 
 /// A piece of a structural line: a source span (member) or an inferred span.
@@ -1124,7 +1162,6 @@ pub(super) fn structural_lines(
     let tol = 1e-3 * s;
     let otol = band(cx);
     let gtol = 0.05 * (s / 3.5).max(1.);
-    let g = 0.5 * s;
     let kind_of: BTreeMap<&str, &str> = b
         .exprs
         .iter()
@@ -1232,23 +1269,17 @@ pub(super) fn structural_lines(
             });
     }
     // Local sections that inferred outline crosses, with the inferred spans in them.
-    let crossed: Vec<([f64; 4], Vec<&MdImpliedSpan>)> = cov
+    let crossed: Vec<(&LocalSection, Vec<&MdImpliedSpan>)> = cov
         .sections
         .iter()
-        .filter_map(|(bb, _, _)| {
-            let inside = |q: P| {
-                q[0] >= bb[0] - g && q[0] <= bb[2] + g && q[1] >= bb[1] - g && q[1] <= bb[3] + g
-            };
+        .filter_map(|sec| {
             let xs: Vec<&MdImpliedSpan> = implied
                 .iter()
-                .filter(|x| x.cause == "local_section" && inside(implied_mid(x)))
+                .filter(|x| x.cause == "local_section" && sec.holds(implied_mid(x), sec.near))
                 .collect();
-            (!xs.is_empty()).then_some((*bb, xs))
+            (!xs.is_empty()).then_some((sec, xs))
         })
         .collect();
-    let in_bb = |q: P, bb: &[f64; 4]| {
-        q[0] >= bb[0] - g && q[0] <= bb[2] + g && q[1] >= bb[1] - g && q[1] <= bb[3] + g
-    };
     let mut out: Vec<MdStructuralLine> = Vec::new();
     for ((view, class), pieces) in &groups {
         let mut done = vec![false; pieces.len()];
@@ -1495,7 +1526,7 @@ pub(super) fn structural_lines(
                 .map(|i| b.members[i].source_handle.as_str())
                 .collect();
             let cut_from = |pe: P, end: f64, inward: f64, len: f64| -> Option<(f64, P, String)> {
-                let (_, xs) = crossed.iter().find(|(bb, _)| in_bb(pe, bb))?;
+                let (_, xs) = crossed.iter().find(|(sec, _)| sec.holds(pe, sec.near))?;
                 let contacts: Vec<&MdExpressionMember> = b
                     .members
                     .iter()

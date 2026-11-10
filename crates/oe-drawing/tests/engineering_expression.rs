@@ -1247,24 +1247,49 @@ fn a_slot_opening_stays_open_even_under_a_text() {
     covered(&g);
 }
 
+/// A freehand curve across a plate from `y0` to `y1` at `x`: a small wave about the vertical,
+/// through both ends (a local section boundary from edge to edge).
+fn wave_across(x: f64, y0: f64, y1: f64) -> Vec<[f64; 2]> {
+    let n = ((y1 - y0) / 0.5).round() as usize;
+    (0..=n)
+        .map(|i| {
+            let y = y0 + (y1 - y0) * i as f64 / n as f64;
+            [x + 0.4 * (std::f64::consts::TAU * (y - y0) / 5.).sin(), y]
+        })
+        .collect()
+}
+
+/// A plate from x = `x0` to `x0 + 40`, y 0 to 20, cut open between two freehand curves from its
+/// bottom to its top edge at `x0 + 7` and `x0 + 13`, the band between them hatched.
+fn plate_with_band(x0: f64, hatch_id: &str) -> Vec<String> {
+    let (w1, w2) = (
+        wave_across(x0 + 7., 0., 20.),
+        wave_across(x0 + 13., 0., 20.),
+    );
+    let mut band = w1.clone();
+    band.extend(w2.iter().rev().copied());
+    vec![
+        line("B", "01", [x0, 0.], [x0 + 40., 0.]),
+        line("T", "01", [x0, 20.], [x0 + 40., 20.]),
+        line("LF", "01", [x0, 0.], [x0, 20.]),
+        line("RF", "01", [x0 + 40., 0.], [x0 + 40., 20.]),
+        lwpoly("W1", "02", &w1),
+        lwpoly("W2", "02", &w2),
+        hatch(hatch_id, "10", &band),
+    ]
+}
+
 #[test]
 fn local_section_interruption_is_bridged_but_an_unexplained_gap_is_not() {
-    let wave: Vec<[f64; 2]> = (0..21)
-        .map(|i| [56. + i as f64 * 0.4, 13. + (i as f64 * 1.2).sin() * 0.4])
-        .collect();
-    let ents = vec![
-        line("Q1", "0", [60., 0.], [60., 8.]),
-        line("Q2", "0", [60., 12.], [60., 20.]),
-        line("R1", "0", [70., 0.], [70., 8.]),
-        line("R2", "0", [70., 12.], [70., 20.]),
-        line("B", "01", [55., 0.], [75., 0.]),
-        line("T", "01", [55., 20.], [75., 20.]),
-        line("LF", "01", [55., 0.], [55., 20.]),
-        line("RF", "01", [75., 0.], [75., 20.]),
-        hatch("H1", "10", &[[57., 7.], [63., 7.], [63., 13.], [57., 13.]]),
-        lwpoly("W", "02", &wave),
+    // Q is drawn up to the region of the local section on both sides; R has a gap with no cause.
+    let mut ents = plate_with_band(55., "H1");
+    ents.extend([
+        line("Q1", "0", [55., 12.], [62., 12.]),
+        line("Q2", "0", [68., 12.], [95., 12.]),
+        line("R1", "0", [80., 0.], [80., 8.]),
+        line("R2", "0", [80., 12.], [80., 20.]),
         text("T0", "11", "scale reference", [0., -20.], 3.5, 0.),
-    ];
+    ]);
     let g = discover(&drawing(&tables(&convention_layers()), &ents)).unwrap();
     let s = implied_between(&g, "Q1", "Q2");
     assert_eq!(s.len(), 1, "{:?}", g.implied_spans);
@@ -1313,30 +1338,25 @@ fn an_imprecise_joint_is_reported_as_a_drafting_gap_and_never_bridged() {
 }
 
 #[test]
-fn local_section_profile_is_marked_only_where_inferred_outline_crosses_the_section() {
-    let wave: Vec<[f64; 2]> = (0..21)
-        .map(|i| [56. + i as f64 * 0.4, 13. + (i as f64 * 1.2).sin() * 0.4])
-        .collect();
-    let wave2: Vec<[f64; 2]> = (0..21)
-        .map(|i| [86. + i as f64 * 0.4, 13. + (i as f64 * 1.2).sin() * 0.4])
-        .collect();
-    let ents = vec![
-        line("Q1", "0", [60., 0.], [60., 8.]),
-        line("Q2", "0", [60., 12.], [60., 20.]),
-        line("SP", "0", [59., 9.], [61., 11.]),
-        line("B", "01", [55., 0.], [95., 0.]),
-        line("T", "01", [55., 20.], [95., 20.]),
-        line("LF", "01", [55., 0.], [55., 20.]),
-        line("RF", "01", [95., 0.], [95., 20.]),
-        hatch("H1", "10", &[[57., 7.], [63., 7.], [63., 13.], [57., 13.]]),
-        lwpoly("W", "02", &wave),
-        hatch("H2", "10", &[[87., 7.], [93., 7.], [93., 13.], [87., 13.]]),
-        lwpoly("W2", "02", &wave2),
-        line("SQ", "0", [89., 9.], [91., 11.]),
+fn section_only_members_are_marked_in_a_local_section_and_never_in_a_full_section() {
+    // SP is a line of the cut face inside the band of a local section; a second plate is a full
+    // section (hatch bounded by outline only) with a line SQ inside it.
+    let mut ents = plate_with_band(55., "H1");
+    ents.extend([
+        line("SP", "01", [63., 9.], [65., 11.]),
+        line("B2", "01", [105., 0.], [145., 0.]),
+        line("T2", "01", [105., 20.], [145., 20.]),
+        line("L2", "01", [105., 0.], [105., 20.]),
+        line("R2", "01", [145., 0.], [145., 20.]),
+        hatch(
+            "H2",
+            "10",
+            &[[105., 0.], [145., 0.], [145., 20.], [105., 20.]],
+        ),
+        line("SQ", "01", [124., 9.], [126., 11.]),
         text("T0", "11", "scale reference", [0., -20.], 3.5, 0.),
-    ];
+    ]);
     let g = discover(&drawing(&tables(&convention_layers()), &ents)).unwrap();
-    assert_eq!(implied_between(&g, "Q1", "Q2").len(), 1);
     let marked = |h: &str| {
         g.members.iter().any(|m| {
             m.source_handle == h
@@ -1345,10 +1365,10 @@ fn local_section_profile_is_marked_only_where_inferred_outline_crosses_the_secti
                     .any(|x| x.starts_with("section_profile:"))
         })
     };
-    for h in ["SP", "H1", "W"] {
+    for h in ["SP", "H1", "W1", "W2"] {
         assert!(marked(h), "{h} not marked");
     }
-    for h in ["Q1", "Q2", "B", "T", "H2", "W2", "SQ"] {
+    for h in ["B", "T", "LF", "RF", "B2", "T2", "L2", "R2", "H2", "SQ"] {
         assert!(!marked(h), "{h} marked");
     }
     covered(&g);
@@ -1407,15 +1427,25 @@ fn a_circle_broken_for_texts_is_bridged_along_the_circle_and_is_one_circle() {
         assert_eq!(s.cause, "text_break");
         assert!(s.arc.as_ref().is_some_and(|a| a.len() == 5), "{s:?}");
     }
-    let ss = implied_between(&g, "S1", "S1");
-    assert_eq!(ss.len(), 1, "{:?}", g.implied_spans);
-    for src in ["A1", "S1"] {
-        let l = line_of(&g, src);
-        assert_eq!(l.len(), 1, "{src}: {:?}", g.structural_lines);
-        assert_eq!(l[0].geometry, "circle", "{:?}", l[0]);
-        assert_eq!(l[0].line_type, "thick_continuous");
-        assert!(l[0].pieces.iter().any(|p| p.starts_with("implied:")));
-    }
+    // One arc broken once for a number is never joined to its own other end (card
+    // annotation_break, counter-example): its ends are explained, its gap stays.
+    assert!(
+        implied_between(&g, "S1", "S1").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
+    assert!(
+        g.structure_ends
+            .iter()
+            .filter(|e| e.source_handle == "S1")
+            .all(|e| e.cause == "text_break")
+    );
+    assert_eq!(line_of(&g, "S1")[0].geometry, "arc");
+    let l = line_of(&g, "A1");
+    assert_eq!(l.len(), 1, "{:?}", g.structural_lines);
+    assert_eq!(l[0].geometry, "circle", "{:?}", l[0]);
+    assert_eq!(l[0].line_type, "thick_continuous");
+    assert!(l[0].pieces.iter().any(|p| p.starts_with("implied:")));
     assert_eq!(line_of(&g, "A1")[0].id, line_of(&g, "A2")[0].id);
     assert_eq!(line_of(&g, "A1")[0].pieces.len(), 4);
     covered(&g);
@@ -1582,24 +1612,41 @@ fn pieces_in_different_views_are_never_one_line_or_bridged() {
 
 #[test]
 fn a_line_meeting_only_section_profile_is_cut_at_the_inferred_outline() {
-    let wave: Vec<[f64; 2]> = (0..21)
-        .map(|i| [56. + i as f64 * 0.4, 13. + (i as f64 * 1.2).sin() * 0.4])
-        .collect();
+    // A local section at the left face: a freehand curve from the face round to the face. The
+    // face line Q is drawn up to the curve on both sides; N ends inside the region on SP only.
+    let curve = [
+        [55., 7.],
+        [57., 7.2],
+        [59.5, 7.6],
+        [62., 8.4],
+        [63.6, 9.3],
+        [64., 10.],
+        [63.6, 10.7],
+        [62., 11.6],
+        [59.5, 12.4],
+        [57., 12.8],
+        [55., 13.],
+    ];
     let ents = vec![
-        line("Q1", "0", [60., 0.], [60., 8.]),
-        line("Q2", "0", [60., 12.], [60., 20.]),
+        line("Q1", "0", [60., 0.], [60., 7.76]),
+        line("Q2", "0", [60., 12.24], [60., 20.]),
         line("N", "01", [59., 10.], [75., 10.]),
         line("SP", "0", [59., 10.], [58., 9.]),
         line("B", "01", [55., 0.], [75., 0.]),
         line("T", "01", [55., 20.], [75., 20.]),
         line("LF", "01", [55., 0.], [55., 20.]),
         line("RF", "01", [75., 0.], [75., 20.]),
-        hatch("H1", "10", &[[57., 7.], [63., 7.], [63., 13.], [57., 13.]]),
-        lwpoly("W", "02", &wave),
+        hatch("H1", "10", &curve),
+        lwpoly("W", "02", &curve),
         text("T0", "11", "scale reference", [0., -20.], 3.5, 0.),
     ];
     let g = discover(&drawing(&tables(&convention_layers()), &ents)).unwrap();
-    assert_eq!(implied_between(&g, "Q1", "Q2").len(), 1);
+    assert_eq!(
+        implied_between(&g, "Q1", "Q2").len(),
+        1,
+        "{:?}",
+        g.implied_spans
+    );
     let l = line_of(&g, "N");
     assert_eq!(l.len(), 1);
     assert!(

@@ -491,6 +491,14 @@ fn outline_arc_ending_on_a_thread_circle_is_joined() {
         "{:?}",
         e.evidence_ids
     );
+    // the same end is joined for the structure topology too: no free end, no drafting gap
+    assert!(
+        !g.structure_ends
+            .iter()
+            .any(|x| x.source_handle == "TL" && x.parameter < 0.5),
+        "{:?}",
+        g.structure_ends
+    );
 }
 
 // ---------------------------------------------------------------- section_line_region

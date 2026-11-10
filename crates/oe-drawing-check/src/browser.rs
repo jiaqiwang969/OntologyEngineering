@@ -2,8 +2,10 @@
 //! embedded in the page; no answers are injected. A check that needs an element the drawing does not have (for
 //! example a bounded shared contour source) is listed under facts.not_applicable instead of failing; where the
 //! element exists the check runs unchanged. The complete structure draws each structural line once as one
-//! element (inferred spans are part of their line, never a separate overlay). Chrome runs headless with a fresh
-//! profile under a time limit; its result is read from the dumped page.
+//! element (inferred spans are part of their line, never a separate overlay). The harness loads the page twice:
+//! once to check it, once with scripting disabled, which gives the drawing as embedded (converted order,
+//! converter stroke widths, member identities) without asking the page under test. Chrome runs headless with a
+//! fresh profile under a time limit; its result is read from the dumped page.
 use anyhow::{Context, Result, ensure};
 use oe_contracts::*;
 use oe_core::SkillRoot;
@@ -55,8 +57,9 @@ fn escape_attribute(s: &str) -> String {
         .replace('\'', "&#x27;")
 }
 
-/// The harness page: the review page in a frame, checked when it has loaded. Only the page location, the
-/// display mode, the focus label and the screenshot region are substituted.
+/// The harness page: the review page in a frame, checked when it has loaded, beside a hidden copy of the same
+/// page in a frame without script execution. Only the page location, the display mode, the focus label and the
+/// screenshot region are substituted.
 pub fn harness(
     page_url: &str,
     mode: &str,
@@ -79,9 +82,9 @@ pub fn harness(
         .replace("__MODE__", mode)
         .replace("__FOCUS__", &focus)
         .replace("__BOX__", &region);
+    let url = escape_attribute(page_url);
     Ok(format!(
-        "<!doctype html><meta charset=\"utf-8\"><style>body{{margin:0}}iframe{{border:0;width:100%;height:100vh}}pre{{display:none}}</style><pre id=\"checks\">pending</pre><iframe id=\"f\" src=\"{}\"></iframe><script>{checks}</script>",
-        escape_attribute(page_url)
+        "<!doctype html><meta charset=\"utf-8\"><style>body{{margin:0}}iframe{{border:0;width:100%;height:100vh}}pre{{display:none}}</style><pre id=\"checks\">pending</pre><iframe id=\"f\" src=\"{url}\"></iframe><iframe id=\"p\" sandbox=\"allow-same-origin\" src=\"{url}\" style=\"display:none\"></iframe><script>{checks}</script>"
     ))
 }
 

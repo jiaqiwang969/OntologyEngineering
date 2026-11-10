@@ -24,9 +24,10 @@
 //! Inside the region, a thick piece that does not continue across the boundary in the same line
 //! type exists only because of the cut: the hidden edge drawn as cut (co-circular or collinear
 //! with a hidden line ending at the same points), or the profile of the cut face. With the hatch
-//! and the break curve it is section-only. Outline outside the region, a line that crosses the
-//! region unchanged and a feature drawn identically outside the region (the hole or pad of a
-//! pattern) are not.
+//! and the break curve it is section-only, and so is the same piece where it is lent to a
+//! dimension as the outline its extension line starts from. Outline outside the region, a line
+//! that crosses the region unchanged and a feature drawn identically outside the region (the hole
+//! or pad of a pattern) are not.
 use super::super::*;
 use std::f64::consts::TAU;
 
@@ -766,6 +767,8 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
     let ends = |pts: &[P]| [pts[0], pts[pts.len() - 1]];
     for s in &live {
         let mark = s.mark();
+        // outline members marked for this section: source and interval
+        let mut profile: Vec<(&str, [f64; 2])> = Vec::new();
         for (i, m) in b.members.iter().enumerate() {
             let own = match (kind(m), m.member_role.as_str()) {
                 ("section_hatch", _) => s.hatch.contains(&m.source_handle),
@@ -834,21 +837,55 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
                             .any(|e| ends(pts).iter().any(|p| dist(*e, *p) <= tol))
                 }
             });
-            out.marks.insert(
-                *i,
-                vec![
-                    mark.clone(),
-                    "card:local_section_boundary".into(),
-                    format!(
-                        "variant:{}",
-                        if revealed {
-                            "revealed_hidden_edge"
-                        } else {
-                            "cut_face_profile"
-                        }
-                    ),
-                ],
-            );
+            let ev = vec![
+                mark.clone(),
+                "card:local_section_boundary".into(),
+                format!(
+                    "variant:{}",
+                    if revealed {
+                        "revealed_hidden_edge"
+                    } else {
+                        "cut_face_profile"
+                    }
+                ),
+            ];
+            profile.push((m.source_handle.as_str(), [m.interval[0], m.interval[1]]));
+            out.marks.insert(*i, ev);
+        }
+        // The outline an extension line starts from may be lent to the dimension
+        // (`extension_origin`, same line type): that membership is the same piece of the same
+        // line, so it is section-only wherever the outline is. Only a lent span lying within
+        // the marked outline takes the mark; one that also covers a use outside it does not.
+        let eps = 1e-6;
+        for (j, m) in b.members.iter().enumerate() {
+            if m.member_role != "extension_origin" || out.marks.contains_key(&j) {
+                continue;
+            }
+            let mut ivs: Vec<[f64; 2]> = profile
+                .iter()
+                .filter(|(h, iv)| {
+                    *h == m.source_handle.as_str()
+                        && iv[1].min(m.interval[1]) - iv[0].max(m.interval[0]) > eps
+                })
+                .map(|x| x.1)
+                .collect();
+            ivs.sort_by(|a, z| a[0].total_cmp(&z[0]));
+            let mut cursor = m.interval[0];
+            for iv in &ivs {
+                if iv[0] <= cursor + eps {
+                    cursor = cursor.max(iv[1]);
+                }
+            }
+            if !ivs.is_empty() && cursor >= m.interval[1] - eps {
+                out.marks.insert(
+                    j,
+                    vec![
+                        mark.clone(),
+                        "card:local_section_boundary".into(),
+                        "variant:lent_to_dimension".into(),
+                    ],
+                );
+            }
         }
     }
     out

@@ -3,7 +3,9 @@
 //! GB/T 4458.6-2002 5.6 for local sections, GB/T 4458.4-2003 4.3.4 for lines kept clear of the
 //! number, dimension line and terminators — never from a real drawing: handles, coordinates and
 //! labels are invented; layer names are the GB/T 14665 table 6 identifiers.
-use oe_contracts::{MdEngineeringExpressionGraph, MdImpliedSpan, MdStructuralLine};
+use oe_contracts::{
+    MdEngineeringExpressionGraph, MdExpressionMember, MdImpliedSpan, MdStructuralLine,
+};
 use oe_drawing::engineering_expression::discover;
 
 fn ent(kind: &str, id: &str, layer: &str, tags: &str) -> String {
@@ -694,4 +696,103 @@ fn arcs_facing_across_a_large_gap_are_not_joined() {
             .all(|e| e.partner_end_id.is_none()),
     );
     no_self_or_long_arc_span(&g);
+}
+
+// ---------------------------------------------------------------- outline lent to a dimension
+
+/// A native linear dimension below the bay plate: origins at `x0` and `x1` on the height `y0`, the
+/// dimension line at `y`; the block draws the dimension line with its terminators, the two
+/// extension lines from the origins down to a little past it (over any outline on the way), and
+/// the value. Returns the block definition and the DIMENSION entity.
+fn below(id: &str, block: &str, x0: f64, x1: f64, y0: f64, y: f64, value: &str) -> (String, String) {
+    let children = [
+        line(&format!("{id}1"), "08", [x0, y], [x1, y]),
+        solid(&format!("{id}2"), "08", [x0, y], [x0 + 2., y]),
+        solid(&format!("{id}3"), "08", [x1, y], [x1 - 2., y]),
+        line(&format!("{id}4"), "08", [x0, y0], [x0, y - 2.]),
+        line(&format!("{id}5"), "08", [x1, y0], [x1, y - 2.]),
+        ent(
+            "MTEXT",
+            &format!("{id}T"),
+            "08",
+            &format!(
+                "1\n{value}\n10\n{}\n20\n{}\n40\n2.5\n71\n7\n",
+                (x0 + x1) / 2. - 1.,
+                y + 1.
+            ),
+        ),
+    ];
+    let blk = format!(
+        "0\nBLOCK\n2\n{block}\n10\n0\n20\n0\n{}0\nENDBLK\n",
+        children.concat()
+    );
+    let dim = ent(
+        "DIMENSION",
+        id,
+        "08",
+        &format!(
+            "2\n{block}\n10\n{x1}\n20\n{y}\n11\n{}\n21\n{}\n70\n160\n1\n<>\n13\n{x0}\n23\n{y0}\n14\n{x1}\n24\n{y0}\n42\n{}\n50\n0\n",
+            (x0 + x1) / 2.,
+            y + 1.,
+            x1 - x0
+        ),
+    );
+    (blk, dim)
+}
+
+#[test]
+fn outline_lent_to_a_dimension_inside_a_local_section_is_section_only() {
+    // the hole laid open by the section is dimensioned below the plate from the corners of its
+    // bottom: the extension lines run down over its walls, which are lent to the dimension; the
+    // plate's width is dimensioned the same way from its top corners over its sides, which lie
+    // outside the region
+    let (b1, d1) = below("DH", "*D3", 17., 23., 5., -8., "6");
+    let (b2, d2) = below("DW", "*D4", 0., 40., 20., -16., "40");
+    let blocks = format!("0\nSECTION\n2\nBLOCKS\n{b1}{b2}0\nENDSEC\n");
+    let g = run_with(&blocks, &bay(vec![d1, d2]));
+    let lent = |src: &str| -> Vec<&MdExpressionMember> {
+        g.members
+            .iter()
+            .filter(|m| m.source_handle == src && m.member_role == "extension_origin")
+            .collect()
+    };
+    for h in ["W1", "W2"] {
+        let ms = lent(h);
+        assert_eq!(
+            ms.len(),
+            1,
+            "{h}: {:?}",
+            g.members
+                .iter()
+                .filter(|m| m.source_handle == h)
+                .collect::<Vec<_>>()
+        );
+        assert!(
+            ms[0].line_type.starts_with("thick")
+                && ms[0]
+                    .evidence_ids
+                    .iter()
+                    .any(|x| x.starts_with("section_profile:"))
+                && ms[0]
+                    .evidence_ids
+                    .iter()
+                    .any(|x| x == "variant:lent_to_dimension"),
+            "{h}: {} {:?}",
+            ms[0].line_type,
+            ms[0].evidence_ids
+        );
+        // the outline itself stays the profile of the cut face
+        assert!(
+            section_marks(&g, h)
+                .iter()
+                .any(|x| x == "variant:cut_face_profile"),
+            "{h}: {:?}",
+            section_marks(&g, h)
+        );
+    }
+    // the sides outside the region are lent too, and are not section-only
+    for h in ["L", "R"] {
+        assert_eq!(lent(h).len(), 1, "{h}");
+        assert!(!marked(&g, h), "{h}: {:?}", section_marks(&g, h));
+    }
 }

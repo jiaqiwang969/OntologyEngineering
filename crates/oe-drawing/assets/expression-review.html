@@ -97,8 +97,16 @@ const pieces=new Map(),visible=new Map();
 // Masks (a wipeout's, the background behind a dimension's text) keep the paper's colour: recoloured, they would hide the text
 // drawn over them. CADCraft marks them data-mask; renderings without the mark fill them with the paper's white.
 const MARKED=svg.querySelector('[data-mask]')!==null,isMask=n=>MARKED?n.hasAttribute('data-mask'):/^(#fff|#ffffff|white)$/i.test(n.getAttribute('fill')||'');
+const ORIGINAL_INK='#27343d';
+function inheritDrawingInk(root){
+ const marked=root.querySelector('[data-mask]')!==null,isMask=n=>marked?n.hasAttribute('data-mask'):/^(#fff|#ffffff|white)$/i.test(n.getAttribute('fill')||'');
+ for(const group of root.querySelectorAll('[data-entity]'))for(const n of group.querySelectorAll('[stroke],[fill]')){
+  if(isMask(n))continue;
+  for(const attr of ['stroke','fill']){const c=n.getAttribute(attr);if(c&&c!=='none')n.setAttribute(attr,'currentColor')}
+ }
+}
 // Every group is marked with its position in the converted drawing (data-seq) before anything is moved.
-let converted=0;for(const group of svg.querySelectorAll('[data-entity]')){group.dataset.seq=converted++;const id=group.dataset.entity;if(!pieces.has(id))pieces.set(id,[]);pieces.get(id).push(group);for(const n of group.querySelectorAll('[stroke],[fill]')){if(isMask(n))continue;for(const attr of ['stroke','fill']){const c=n.getAttribute(attr);if(c&&c!=='none')n.setAttribute(attr,'currentColor')}}}
+let converted=0;for(const group of svg.querySelectorAll('[data-entity]')){group.dataset.seq=converted++;const id=group.dataset.entity;if(!pieces.has(id))pieces.set(id,[]);pieces.get(id).push(group)}inheritDrawingInk(svg);
 const overlay=document.createElementNS(NS,'g'),structural=document.createElementNS(NS,'g'),highlight=document.createElementNS(NS,'g'),markers=document.createElementNS(NS,'g');svg.append(overlay,structural,highlight,markers);highlight.style.pointerEvents='none';markers.style.pointerEvents='none';
 const presentKinds=Object.keys(KIND).filter(k=>G.expressions.some(e=>e.kind===k)),presentLines=Object.keys(LINE).filter(l=>G.members.some(m=>m.line_type===l)),presentPrims=[...new Set(G.entities.map(e=>e.kind))].sort(),presentViews=[...G.views.map(v=>v.id),...(G.expressions.some(e=>!e.view_id)?['none']:[])];
 const enabled={kind:new Set(presentKinds),line:new Set(presentLines),prim:new Set(presentPrims),view:new Set(presentViews)};
@@ -214,7 +222,7 @@ function render(){
  // The original view is the converter's rendering: its own stroke widths and its own drawing order.
  svg.classList.toggle('as-converted',raw);placeMasks(raw);
  shownLines.clear();if(completeOn())for(const l of LINES)if(lineShown(l))shownLines.add(l.id);
- for(const e of G.entities){const {ranges,chosen}=rangesFor(e),full=ranges.length===1&&ranges[0][0]===0&&ranges[0][1]===1,ink=raw?'#27343d':colorOf(chosen,e),lw=widthOf(e,chosen),nodes=pieces.get(e.id)||[],focused=focusSet.has(e.id),byMember=!raw&&full&&IDENTIFIED.has(e.id),on=byMember?new Set(chosen):null;visible.set(e.id,ranges);
+ for(const e of G.entities){const {ranges,chosen}=rangesFor(e),full=ranges.length===1&&ranges[0][0]===0&&ranges[0][1]===1,ink=raw?ORIGINAL_INK:colorOf(chosen,e),lw=widthOf(e,chosen),nodes=pieces.get(e.id)||[],focused=focusSet.has(e.id),byMember=!raw&&full&&IDENTIFIED.has(e.id),on=byMember?new Set(chosen):null;visible.set(e.id,ranges);
   // With member identity each group is shown, coloured and given its width by the passing members that claim it.
   for(const n of nodes){const cm=byMember?claims.get(n).filter(m=>on.has(m)):null,shown=byMember?cm.length>0:full,sel=focused&&(!focusExpr||claims.get(n).some(m=>m.expression_id===focusExpr)),named=!!n.dataset.member;
    n.style.display=shown?'':'none';n.style.setProperty('--ink',byMember&&shown?colorOf(cm,e,named):ink);n.style.setProperty('--lw',byMember&&shown?(THICK(topMember(cm,named).line_type)?1:.5):lw);n.style.setProperty('--op',dim&&!sel?'.2':'1');n.classList.toggle('selected',sel);n.classList.toggle('not-plotted',!raw&&notPlottedGroups.has(n));if(shown)drawn++}

@@ -20,6 +20,17 @@ if(a.drafting?.receipt.status==='written'){
  const left=d.querySelector('#canvas>svg').getBoundingClientRect(),right=$('correctedSvg').getBoundingClientRect();
  ok(left.width>0&&right.width>0&&Math.abs(left.width-right.width)<2&&right.left>=left.right,'Comparison has two adjacent populated panes of equal width');
  ok(d.querySelectorAll('#correctedSvg>g[data-entity]').length>0,'Corrected comparison pane has native drawing content');
+ const changed=new Set(a.drafting.receipt.applied.flatMap(x=>x.result_handles));
+ const groupKey=g=>JSON.stringify([g.dataset.entity,g.dataset.member||'']);
+ const paint=g=>[...g.querySelectorAll('[stroke],[fill]')].map(n=>{const s=w.getComputedStyle(n);return [n.tagName,s.stroke,s.fill,s.strokeWidth]});
+ const originalPaint=new Map();for(const g of d.querySelectorAll('#canvas>svg>g[data-entity]')){const k=groupKey(g);if(!originalPaint.has(k))originalPaint.set(k,[]);originalPaint.get(k).push(paint(g))}
+ const checkPaint=label=>{const seen=new Map();let matched=0,strokes=0,mismatch=null,wrongHighlight=null;for(const g of d.querySelectorAll('#correctedSvg>g[data-entity]')){
+  if(g.classList.contains('changed')!==changed.has(g.dataset.entity))wrongHighlight=groupKey(g);
+  if(changed.has(g.dataset.entity))continue;const k=groupKey(g),i=seen.get(k)||0;seen.set(k,i+1);const expected=originalPaint.get(k)?.[i];if(!expected)continue;
+  const actual=paint(g);if(!same(actual,expected)&&!mismatch)mismatch={source:k,occurrence:i,expected,actual};matched++;strokes+=actual.filter(x=>x[1]!=='none').length;
+ }ok(!wrongHighlight,label+' only corrected handles receive change highlighting '+(wrongHighlight||''));ok(!mismatch,label+' unchanged object stroke, fill and width match the original '+(mismatch?JSON.stringify(mismatch):''));ok(matched>0&&strokes>0,label+' checks actual unchanged stroked objects');return {unchanged_groups:matched,stroke_primitives:strokes}};
+ facts.comparison_paint=checkPaint('Comparison');a.setDrawingMode('corrected');
+ facts.corrected_only_paint=checkPaint('Corrected-only');a.setDrawingMode('compare');
  facts.initial_comparison=true;a.setDrawingMode('source');
 }else if(a.drafting)ok(a.drawingMode==='source'&&$('correctedPane').hidden,'Without corrections the default remains the original drawing');
 if($('original').checked){ok(!!a.drafting,'Only the issue review initially selects the original drawing');ok(count()===N&&[...a.visible.values()].every(full),'Initial original view keeps every source range');ok([...d.querySelectorAll('#canvas>svg>g[data-entity]')].every(g=>g.style.display!=='none'),'Initial original view shows every converted group');facts.initial_original=true;$('original').click()}

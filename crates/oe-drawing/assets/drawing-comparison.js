@@ -12,6 +12,8 @@ if(CORRECTED){
   else if(attr.value.includes('url(#'))n.setAttribute(attr.name,attr.value.replace(/url\(#([^)]*)\)/g,(m,id)=>'url(#'+(ids.get(id)||id)+')'));
  }
  correctedSvg.id='correctedSvg';correctedSvg.classList.add('as-converted');
+ inheritDrawingInk(correctedSvg);
+ for(const group of correctedSvg.querySelectorAll('[data-entity]'))group.style.setProperty('--ink',ORIGINAL_INK);
  correctedSvg.setAttribute('role','img');correctedSvg.setAttribute('aria-label','改正 DXF 重读后的矢量图');
  $('correctedPane').append(correctedSvg);bindDrawingInput(correctedSvg,true);
 }

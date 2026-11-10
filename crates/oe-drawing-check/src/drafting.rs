@@ -20,6 +20,9 @@ use std::f64::consts::PI;
 use std::fmt::Write as _;
 use std::path::Path;
 
+#[path = "drafting_constituents.rs"]
+mod constituents;
+
 pub const SCHEMA: &str = "oev2.drawing-drafting-rules/1";
 pub const REQUEST_SCHEMA: &str = "oev2.drawing-drafting-rules-request/1";
 pub const KNOWLEDGE_SCHEMA: &str = "oev2.drafting-ontology/1";
@@ -77,7 +80,7 @@ pub const CLASSES: [&str; 38] = [
     "Construction",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 30] = [
+pub const PREDICATES: [&str; 32] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -108,6 +111,8 @@ pub const PREDICATES: [&str; 30] = [
     "hatchDirectionDiffersFrom",
     "hatchSpacingDiffersFrom",
     "chainedWith",
+    "terminatorOnCarrier",
+    "boundedContinuationOf",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -2521,7 +2526,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
     let mut findings = Vec::new();
     for layer in LAYERS {
         let objs = objects(layer, &g, &d)?;
-        let rels = relations(&objs);
+        let mut rels = relations(&objs);
+        rels.extend(constituents::relations(&g, &d, &objs)?);
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2589,7 +2595,8 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
     let mut out = BTreeMap::new();
     for layer in LAYERS {
         let objs = objects(layer, graph, &d)?;
-        let rels = relations(&objs);
+        let mut rels = relations(&objs);
+        rels.extend(constituents::relations(graph, &d, &objs)?);
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);

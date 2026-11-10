@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 40] = [
+pub const USED_CARDS: [&str; 41] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -56,6 +56,7 @@ pub const USED_CARDS: [&str; 40] = [
     "section_view_type",
     "assembly_drawing",
     "not_plotted_content",
+    "annotation_constituents",
 ];
 
 /// Concept catalogue: one card per drafting representation concept, by group.

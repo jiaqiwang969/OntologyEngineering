@@ -2236,6 +2236,58 @@
     "scope": "Knowledge completeness and linkage; recognition quality is evaluated separately"
   },
   {
+    "behavior": "every_rule_has_a_violating_and_a_conforming_fixture",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_every_rule_has_a_violating_and_a_conforming_fixture",
+    "oracle": "Authored DXF and graph fixtures per rule: the violating fixture yields that rule and no other on its layer, the conforming fixture yields no finding",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing-check/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
+    "behavior": "every_rule_names_concepts_of_the_catalogue_and_a_clause",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_every_rule_names_concepts_of_the_catalogue_and_a_clause",
+    "oracle": "Every rule shape carries a rule id, concept ids that exist in the concept catalogue, a clause, a label and a message; rule ids are distinct per shape family and at least twelve",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
+    "behavior": "the_ontology_the_fact_contract_and_the_exporter_declare_the_same_vocabulary",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_the_ontology_the_fact_contract_and_the_exporter_declare_t",
+    "oracle": "Classes and properties read from the ontology document equal the allowed values of the fact contract and the constants of the exporter, in both directions; every class and property a shape references is declared",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing-check/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
+    "behavior": "the_same_shapes_are_evaluated_on_the_three_layers",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_the_same_shapes_are_evaluated_on_the_three_layers",
+    "oracle": "One authored drawing whose fault is only in the presentation layer (an inferred span) and one whose fault is only in the source (a raw text) give findings on those layers alone",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing-check/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
     "behavior": "a_converter_that_does_not_match_its_record_or_the_lock_is_refused",
     "checker": "route",
     "checkerModule": "drawing_understanding",

@@ -30,6 +30,12 @@
     "statement": "Each run records the digests of its inputs and outputs, the executable, the converter lock and the fixed environment, stops at the first failure, and the drawing is unchanged at the end"
   },
   {
+    "constraint": "md_drafting_rules",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "requirement": "req_md_drawing_route",
+    "statement": "Every route run evaluates the drafting rules of the ontology on the three fact layers and records the findings per layer; the rules are read from the compiled shapes, not from code"
+  },
+  {
     "constraint": "md_engineering_expression",
     "obligation": "ob_drawing_source_conservation",
     "requirement": "req_md_engineering_expression",
@@ -125,6 +131,27 @@
     "kind": "qualification",
     "module": "drawing_understanding",
     "obligation": "ob_drawing_recorded_run"
+  },
+  {
+    "entry": "Report validated against the generated contract before it is written",
+    "executor": "00",
+    "kind": "generated_validation",
+    "module": "drawing_understanding_check",
+    "obligation": "ob_drawing_rules_from_ontology"
+  },
+  {
+    "entry": "oev2 drawing rules; oev2 drawing route, step check-rules",
+    "executor": "01",
+    "kind": "independent_check",
+    "module": "drawing_understanding_check",
+    "obligation": "ob_drawing_rules_from_ontology"
+  },
+  {
+    "entry": "oev2 drawing route, step check-rules",
+    "executor": "02",
+    "kind": "rust_check",
+    "module": "drawing_understanding",
+    "obligation": "ob_drawing_rules_from_ontology"
   },
   {
     "entry": "Worker output deserialized into the generated contract and validated before it is checked",
@@ -231,6 +258,21 @@
   },
   {
     "executor": "00",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "symbol": "MdDraftingRuleReport"
+  },
+  {
+    "executor": "01",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "symbol": "check_rules"
+  },
+  {
+    "executor": "02",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "symbol": "route"
+  },
+  {
+    "executor": "00",
     "obligation": "ob_drawing_source_conservation",
     "symbol": "MdEngineeringExpressionGraph"
   },
@@ -314,6 +356,16 @@
   {
     "executor": "00",
     "obligation": "ob_drawing_recorded_run",
+    "rustPath": "crates/oe-drawing/src/route.rs"
+  },
+  {
+    "executor": "01",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "rustPath": "crates/oe-drawing-check/src/drafting.rs"
+  },
+  {
+    "executor": "02",
+    "obligation": "ob_drawing_rules_from_ontology",
     "rustPath": "crates/oe-drawing/src/route.rs"
   },
   {
@@ -537,7 +589,7 @@
     "minDocuments": "1",
     "obligation": "ob_drawing_recorded_run",
     "op": "equals",
-    "pointer": "/steps/11/id",
+    "pointer": "/steps/12/id",
     "valueJson": "\"verify-source\""
   },
   {
@@ -547,6 +599,83 @@
     "executor": "00",
     "minDocuments": "1",
     "obligation": "ob_drawing_recorded_run",
+    "op": "equals",
+    "pointer": "/steps/12/status",
+    "valueJson": "\"passed\""
+  },
+  {
+    "contract": "MdDraftingRuleReport",
+    "documentSchema": "oev2.drawing-drafting-rules/1",
+    "evidence": "00",
+    "executor": "01",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "equals",
+    "pointer": "/status",
+    "valueJson": "\"checked\""
+  },
+  {
+    "contract": "MdDraftingRuleReport",
+    "documentSchema": "oev2.drawing-drafting-rules/1",
+    "evidence": "01",
+    "executor": "01",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "at_least",
+    "pointer": "/rule_count",
+    "valueJson": "12"
+  },
+  {
+    "contract": "MdDraftingRuleReport",
+    "documentSchema": "oev2.drawing-drafting-rules/1",
+    "evidence": "02",
+    "executor": "01",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "equals",
+    "pointer": "/layers/0/layer",
+    "valueJson": "\"source\""
+  },
+  {
+    "contract": "MdDraftingRuleReport",
+    "documentSchema": "oev2.drawing-drafting-rules/1",
+    "evidence": "03",
+    "executor": "01",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "equals",
+    "pointer": "/layers/1/layer",
+    "valueJson": "\"recognition\""
+  },
+  {
+    "contract": "MdDraftingRuleReport",
+    "documentSchema": "oev2.drawing-drafting-rules/1",
+    "evidence": "04",
+    "executor": "01",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "equals",
+    "pointer": "/layers/2/layer",
+    "valueJson": "\"presentation\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "00",
+    "executor": "02",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
+    "op": "equals",
+    "pointer": "/steps/11/id",
+    "valueJson": "\"check-rules\""
+  },
+  {
+    "contract": "MdDrawingRouteReceipt",
+    "documentSchema": "oev2.drawing-route-receipt/1",
+    "evidence": "01",
+    "executor": "02",
+    "minDocuments": "1",
+    "obligation": "ob_drawing_rules_from_ontology",
     "op": "equals",
     "pointer": "/steps/11/status",
     "valueJson": "\"passed\""
@@ -747,5 +876,9 @@
   {
     "gap": "Byte reproduction across runs is shown by repeating the route in qualification, not checked within one run",
     "obligation": "ob_drawing_recorded_run"
+  },
+  {
+    "gap": "First batch of rules only (lines, views and sections, dimensions); rules that need cavity, projection or part knowledge are not formalized",
+    "obligation": "ob_drawing_rules_from_ontology"
   }
 ]}

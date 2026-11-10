@@ -55,6 +55,15 @@ pub enum DrawingCommand {
         #[arg(long)]
         output: PathBuf,
     },
+    /// Evaluate the drafting rules of the ontology on a discovery result: facts from the source bytes and the
+    /// frozen graph in three layers, the shapes on each, one report.
+    Rules {
+        /// Discovery request; its output directory holds graph.json.
+        #[arg(long)]
+        request: PathBuf,
+        #[arg(long)]
+        output: PathBuf,
+    },
     /// Write the review page of a frozen graph over its rendering.
     Page {
         #[arg(long)]
@@ -209,6 +218,17 @@ fn execute(root: &SkillRoot, command: DrawingCommand) -> Result<serde_json::Valu
                 output: text(&output),
             };
             Ok(serde_json::to_value(oe_drawing_check::graph::check(
+                root, &q,
+            )?)?)
+        }
+        DrawingCommand::Rules { request, output } => {
+            crate::v2::require_execution(root, "drawing_rules")?;
+            let q = oe_contracts::MdDraftingRuleRequest {
+                schema: oe_drawing_check::drafting::REQUEST_SCHEMA.into(),
+                discovery_request: text(&request),
+                output: text(&output),
+            };
+            Ok(serde_json::to_value(oe_drawing_check::drafting::check_rules(
                 root, &q,
             )?)?)
         }

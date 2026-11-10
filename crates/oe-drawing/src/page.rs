@@ -30,14 +30,19 @@ impl MdReviewPagePort for ReviewPageRenderer<'_> {
 /// Identities and active content of a neutral rendering.
 pub struct Rendering {
     pub entities: BTreeSet<String>,
+    /// Member identities: (data-entity, data-member) of every element that names a native member. The
+    /// root is empty when the element carries no data-entity.
+    pub members: BTreeSet<(String, String)>,
     pub active: Vec<String>,
 }
 
-/// Every data-entity identity of an SVG, and any script, foreign object, image, event attribute or link in it.
+/// Every data-entity identity of an SVG, every data-member identity with the root it is drawn for, and any
+/// script, foreign object, image, event attribute or link in it.
 pub fn rendering(svg: &[u8]) -> Result<Rendering> {
     let mut reader = quick_xml::Reader::from_reader(svg);
     let mut out = Rendering {
         entities: BTreeSet::new(),
+        members: BTreeSet::new(),
         active: Vec::new(),
     };
     let mut buffer = Vec::new();
@@ -52,6 +57,7 @@ pub fn rendering(svg: &[u8]) -> Result<Rendering> {
                 if ["script", "foreignObject", "image"].contains(&name.as_str()) {
                     out.active.push(format!("element:{name}"));
                 }
+                let (mut root, mut member) = (String::new(), None);
                 for a in e.attributes() {
                     let a = a.context("review_page_svg_attribute")?;
                     let key = String::from_utf8_lossy(a.key.as_ref()).into_owned();
@@ -64,9 +70,20 @@ pub fn rendering(svg: &[u8]) -> Result<Rendering> {
                             .unescape_value()
                             .context("review_page_svg_attribute_value")?;
                         if !v.is_empty() {
+                            root = v.to_string();
                             out.entities.insert(v.into_owned());
                         }
                     }
+                    if key == "data-member" {
+                        member = Some(
+                            a.unescape_value()
+                                .context("review_page_svg_attribute_value")?
+                                .into_owned(),
+                        );
+                    }
+                }
+                if let Some(member) = member {
+                    out.members.insert((root, member));
                 }
             }
             Event::Eof => break,
@@ -88,9 +105,16 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     let entities = src["entities"].as_array().context("review_page_entities")?;
     let mut roots = BTreeSet::new();
     let mut geometry = std::collections::HashMap::new();
+    // Native members nested in a root (a block reference's or a native dimension's primitives), by root.
+    let mut nested: BTreeSet<(&str, &str)> = BTreeSet::new();
     for e in entities {
         let id = e["id"].as_str().context("review_page_entity_id")?;
         roots.insert(id.to_owned());
+        for m in e["member_ids"].as_array().into_iter().flatten() {
+            if let Some(m) = m.as_str().filter(|m| *m != id) {
+                nested.insert((id, m));
+            }
+        }
         geometry.insert(
             id.to_owned(),
             e["geometry_kind"].as_str().unwrap_or_default().to_owned(),
@@ -178,6 +202,24 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
         "review_page_svg_active_content:{}",
         shown.active.join(",")
     );
+    // Member identity (data-member): the native member a group is drawn for, always a member nested in the
+    // root the group names. The page shows, colours and gives width to such a group by the members that
+    // claim it; an identity the graph does not have would be shown by no member.
+    for (root, member) in &shown.members {
+        ensure!(
+            nested.contains(&(root.as_str(), member.as_str())),
+            "review_page_svg_member_absent_from_root:{root}:{member}"
+        );
+    }
+    // Kinds of the nested native members: the page needs them to tell a text's background from other masks.
+    let mut native_kinds = Map::new();
+    for m in src["members"].as_array().into_iter().flatten() {
+        if m["block_path"].as_array().is_some_and(|p| p.len() > 1)
+            && let (Some(id), Some(kind)) = (m["id"].as_str(), m["kind"].as_str())
+        {
+            native_kinds.insert(id.to_owned(), json!(kind));
+        }
+    }
     let nonrendered: Vec<&String> = roots.difference(&shown.entities).collect();
     let graph_sha256 = sha256(graph);
     let svg_sha256 = sha256(svg.as_bytes());
@@ -196,7 +238,8 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     }
     let payload = json!({"graph":Value::Object(subset),"concepts":Value::Object(concepts),"candidate":q.candidate,"version":q.version,"title":q.title,
         "source_note":q.source_note,"status_note":q.status_note,"graph_sha256":graph_sha256,"svg_sha256":svg_sha256,
-        "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered});
+        "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
+        "native_member_kinds":Value::Object(native_kinds),"rendered_member_identities":shown.members.len()});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");
     let text = TEMPLATE.replace("@@DATA@@", &data).replace("@@SVG@@", svg);
     let result = MdReviewPage {

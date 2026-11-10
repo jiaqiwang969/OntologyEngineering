@@ -56,12 +56,34 @@ fn the_harness_carries_the_mode_focus_and_region_without_answers() {
         assert!(text.contains(&format!("const mode='{mode}'")), "{mode}");
         assert!(text.contains("\"Ø20\"") && text.contains("[0.0,1.0,2.0,3.0]"));
         assert!(text.contains("<iframe id=\"f\" src=\"file:///tmp/a%20b/page.html\"></iframe>"));
+        // The same page once more with scripting disabled: the drawing as embedded.
+        assert!(text.contains(
+            "<iframe id=\"p\" sandbox=\"allow-same-origin\" src=\"file:///tmp/a%20b/page.html\" style=\"display:none\"></iframe>"
+        ));
         assert!(
             !text.contains("__MODE__") && !text.contains("__FOCUS__") && !text.contains("__BOX__")
         );
         // Every mode checks that masks keep the paper colour and the drawing over them its own.
         assert!(text.contains("'Masks keep the paper colour'"), "{mode}");
         assert!(text.contains("'Drawing over masks keeps its own colour'"), "{mode}");
+        // Every mode checks the line widths, what a text background covers, the original view, the
+        // empty notice and the display by member; none of these labels depends on the mode.
+        for label in [
+            "'Thick and thin line widths are 2:1'",
+            "'d is one sixth of the median dimension terminator'",
+            "'Every drawn stroke has the width of its member rule'",
+            "'No mask hides ink of its own annotation except ink crossing its text'",
+            "'Original view keeps the converter stroke widths'",
+            "'Original view keeps the converted drawing order'",
+            "'The empty notice is hidden whenever something is drawn'",
+            "'Only the visible outline selected: no empty notice over drawn structural lines'",
+            "'Groups with member identity are shown exactly when a claiming member passes'",
+            "'Every data-member names a native member of its root'",
+            "'Content that never plots is drawn faint in the classified views and nothing else is'",
+            "'Expression details name every referenced view by its label'",
+        ] {
+            assert!(text.contains(label), "{mode}: {label}");
+        }
     }
     let plain = harness("file:///p.html", "kind", None, None).unwrap();
     assert!(plain.contains("const fl=\"\"") && plain.contains("const box=null"));

@@ -33,10 +33,13 @@ const OWL: &str = "http://www.w3.org/2002/07/owl#";
 const RDF_TYPE: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 const LIMIT: usize = 64 * 1024 * 1024;
 const QUAD_BUDGET: usize = 100_000;
+#[path = "drafting_sections.rs"]
+mod sections;
+
 const SCOPE: &str = "Drafting rules of the ontology evaluated on facts exported from the source bytes and the frozen graph; a finding is a deviation to review, not a correction and not engineering acceptance.";
 
 /// Every class of the fact vocabulary; the ontology and the spec declare the same set (tested).
-pub const CLASSES: [&str; 38] = [
+pub const CLASSES: [&str; 40] = [
     "Line",
     "VisibleOutline",
     "HiddenOutline",
@@ -75,9 +78,11 @@ pub const CLASSES: [&str; 38] = [
     "DatumIdentifierLetter",
     "SymbolText",
     "Construction",
+    "SectionBoundarySpan",
+    "SectionInteriorUse",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 30] = [
+pub const PREDICATES: [&str; 41] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -108,6 +113,17 @@ pub const PREDICATES: [&str; 30] = [
     "hatchDirectionDiffersFrom",
     "hatchSpacingDiffersFrom",
     "chainedWith",
+    "sectionRegion",
+    "sourceLine",
+    "boundaryCarrier",
+    "sectionOrigin",
+    "boundaryIntervalStart",
+    "boundaryIntervalEnd",
+    "boundaryParameter",
+    "crossSectionType",
+    "sectionExtent",
+    "parentOutlineContinuation",
+    "sectionGeometry",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -279,6 +295,10 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
                     _ => {}
                 }
             }
+        }
+        // Preserve legacy child-message aggregation; root-only shapes use their authored message.
+        if messages.is_empty() {
+            messages = values(&format!("{SH}message"));
         }
         let target_classes: Vec<String> = values(&format!("{SH}targetClass"))
             .into_iter()
@@ -2520,8 +2540,9 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
     let mut layers = Vec::new();
     let mut findings = Vec::new();
     for layer in LAYERS {
-        let objs = objects(layer, &g, &d)?;
-        let rels = relations(&objs);
+        let mut objs = objects(layer, &g, &d)?;
+        let mut rels = relations(&objs);
+        sections::augment(layer, &g, &d, &mut objs, &mut rels)?;
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2588,8 +2609,9 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
     let d = Dxf::new(&records)?;
     let mut out = BTreeMap::new();
     for layer in LAYERS {
-        let objs = objects(layer, graph, &d)?;
-        let rels = relations(&objs);
+        let mut objs = objects(layer, graph, &d)?;
+        let mut rels = relations(&objs);
+        sections::augment(layer, graph, &d, &mut objs, &mut rels)?;
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);

@@ -5675,6 +5675,8 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingObject", "class", "RadiusDimensionLine"),
     ("MdDraftingObject", "class", "RoughnessValue"),
     ("MdDraftingObject", "class", "ScaleText"),
+    ("MdDraftingObject", "class", "SectionBoundarySpan"),
+    ("MdDraftingObject", "class", "SectionInteriorUse"),
     ("MdDraftingObject", "class", "SectionRegion"),
     ("MdDraftingObject", "class", "SheetLine"),
     ("MdDraftingObject", "class", "SymbolLine"),
@@ -5699,9 +5701,14 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "alignedWith"),
     ("MdDraftingRelation", "predicate", "angleDeg"),
     ("MdDraftingRelation", "predicate", "angleToDimensionLineDeg"),
+    ("MdDraftingRelation", "predicate", "boundaryCarrier"),
+    ("MdDraftingRelation", "predicate", "boundaryIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "boundaryIntervalStart"),
+    ("MdDraftingRelation", "predicate", "boundaryParameter"),
     ("MdDraftingRelation", "predicate", "chainedWith"),
     ("MdDraftingRelation", "predicate", "coincidentWith"),
     ("MdDraftingRelation", "predicate", "colourIndex"),
+    ("MdDraftingRelation", "predicate", "crossSectionType"),
     ("MdDraftingRelation", "predicate", "crossedBy"),
     ("MdDraftingRelation", "predicate", "dxfLayer"),
     ("MdDraftingRelation", "predicate", "endOnOutline"),
@@ -5718,11 +5725,17 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "memberId"),
     ("MdDraftingRelation", "predicate", "onExtensionOf"),
     ("MdDraftingRelation", "predicate", "overshootUnits"),
+    ("MdDraftingRelation", "predicate", "parentOutlineContinuation"),
     ("MdDraftingRelation", "predicate", "radialTo"),
     ("MdDraftingRelation", "predicate", "rotationDeg"),
     ("MdDraftingRelation", "predicate", "sameLetterAs"),
     ("MdDraftingRelation", "predicate", "scaledBy"),
+    ("MdDraftingRelation", "predicate", "sectionExtent"),
+    ("MdDraftingRelation", "predicate", "sectionGeometry"),
+    ("MdDraftingRelation", "predicate", "sectionOrigin"),
+    ("MdDraftingRelation", "predicate", "sectionRegion"),
     ("MdDraftingRelation", "predicate", "sourceHandle"),
+    ("MdDraftingRelation", "predicate", "sourceLine"),
     ("MdDraftingRelation", "predicate", "spacingUnits"),
     ("MdDraftingRelation", "predicate", "text"),
     ("MdDraftingRelation", "predicate", "view"),
@@ -20560,7 +20573,7 @@ impl MdDraftingObject {
         if self.id.trim().is_empty() { failures.push("MdDraftingObject.id:required".into()); }
         if self.layer.trim().is_empty() { failures.push("MdDraftingObject.layer:required".into()); }
 
-        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
+        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionBoundarySpan","SectionInteriorUse","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingObject.layer:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20593,7 +20606,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundaryCarrier","boundaryIntervalEnd","boundaryIntervalStart","boundaryParameter","chainedWith","coincidentWith","colourIndex","crossSectionType","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","parentOutlineContinuation","radialTo","rotationDeg","sameLetterAs","scaledBy","sectionExtent","sectionGeometry","sectionOrigin","sectionRegion","sourceHandle","sourceLine","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

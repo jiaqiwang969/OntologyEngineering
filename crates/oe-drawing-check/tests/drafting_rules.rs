@@ -66,6 +66,9 @@ fn the_ontology_the_fact_contract_and_the_exporter_declare_the_same_vocabulary()
     }
 }
 
+#[path = "support/section_rule_fixtures.rs"]
+mod section_rule_fixtures;
+
 // ------------------------------------------------------------------------------ an original drawing builder
 
 #[derive(Default)]
@@ -437,6 +440,7 @@ fn fixture(rule: &str, violating: bool) -> Drawing {
             let t = d.text(if violating { "3.5" } else { "3.2" }, [10.0, 10.0], 3.5, 0.0);
             d.member(&t, "roughness_value", "text", "surface_roughness", "");
         }
+        other if section_rule_fixtures::RULE_IDS.contains(&other) => return section_rule_fixtures::fixture(other, violating),
         other => panic!("no fixture for rule {other}"),
     }
     d

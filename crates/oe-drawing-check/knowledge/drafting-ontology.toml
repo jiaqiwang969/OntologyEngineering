@@ -30,6 +30,8 @@ md:concept a owl:AnnotationProperty ; rdfs:label "概念目录编号"@zh .
 md:ruleId  a owl:AnnotationProperty ; rdfs:label "规定编号"@zh .
 md:clause  a owl:AnnotationProperty ; rdfs:label "标准条款"@zh .
 md:group   a owl:AnnotationProperty ; rdfs:label "概念组"@zh .
+md:confidence a owl:AnnotationProperty ; rdfs:label "把握程度：certain 确定 / likely 很可能 / needs_expert 要问专家"@zh .
+md:proposedCorrection a owl:AnnotationProperty ; rdfs:label "建议改法"@zh .
 
 # ---- 图线
 md:Line a owl:Class ; rdfs:label "图线"@zh ; rdfs:comment "线段、圆弧、圆、多段线或样条构成的一条图线。"@zh .
@@ -130,6 +132,21 @@ md:hatchSpacingDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ;
 md:chainedWith a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:DimensionLine ;
     rdfs:label "与相邻尺寸的尺寸线成链"@zh ;
     rdfs:comment "两条不同尺寸的尺寸线共线，且有一条尺寸界线同时与两者相交。"@zh .
+
+# ---- 第三批：同一条线在一个剖面区域中的使用，不继承 Line，不重复激活旧图线规则。
+md:SectionBoundarySpan a owl:Class ; rdfs:label "剖面外缘上由中心线承载的区间候选"@zh ; md:concept dc:DC-G2-028, dc:DC-G2-034 .
+md:SectionInteriorUse a owl:Class ; rdfs:label "图线在一个切面实体内部的使用"@zh ; md:concept dc:DC-G2-018, dc:DC-G2-034 .
+md:sectionRegion a owl:ObjectProperty ; rdfs:range md:SectionRegion ; rdfs:label "使用所属剖面区域"@zh .
+md:sourceLine a owl:ObjectProperty ; rdfs:range md:Line ; rdfs:label "使用所依附的本层源线对象"@zh .
+md:boundaryCarrier a owl:ObjectProperty ; rdfs:domain md:SectionBoundarySpan ; rdfs:range md:Line ; rdfs:label "完整覆盖此边界区间的承载线"@zh .
+md:sectionOrigin a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "分区来源：pre_existing、cut_formed、suppressed、unknown"@zh .
+md:boundaryIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "边界源参数起点，不舍入"@zh .
+md:boundaryIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "边界源参数终点，不舍入"@zh .
+md:boundaryParameter a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "参数域：source_line、source_arc、polyline_length"@zh .
+md:crossSectionType a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "断面配置：superimposed、removed、unknown"@zh .
+md:sectionExtent a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "范围：half、local、local_axis、cross_section、unknown"@zh ; rdfs:comment "local_axis 仅用于已知局部剖且原生外缘确实沿轴线的边界使用。未知不等于不适用。"@zh .
+md:parentOutlineContinuation a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "该线连续伸至区域两侧：true、false；单独不证明母视图身份"@zh .
+md:sectionGeometry a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "原生边界可核程度：complete、partial、unavailable"@zh ; rdfs:comment "直边、圆弧和带凸度闭合路径；实体包含按偶奇规则保留孔洞。部分边界只支持实际可读边上的重合，不支持内部判定。"@zh .
 '''
 
 [shapes]
@@ -568,4 +585,88 @@ rule:G6-073-roughness-value-in-series-p1 a sh:PropertyShape ;
     sh:path md:text ; sh:minCount 1 ;
     sh:pattern "^\\s*(Ra|Rz)?\\s*(0\\.012|0\\.025|0\\.05|0\\.1|0\\.2|0\\.4|0\\.8|1\\.6|3\\.2|6\\.3|12\\.5|25|50|100|200|400|800|1600)\\s*$" ;
     sh:message "粗糙度数值不在 Ra／Rz 的第一系列中"@zh .
+
+# ================= 第三批：断面（通用知识见 section_rule_knowledge） =================
+# 已知半剖：GB/T 4458.6-2002 5.5；轴线分界局部剖：5.6。范围未知不据此豁免。
+rule:section-boundary-permitted sh:or (
+    [ sh:property [ sh:path md:boundaryCarrier ; sh:qualifiedValueShape [ sh:class md:CentreLine ] ; sh:qualifiedMaxCount 0 ] ]
+    [ sh:property [ sh:path md:boundaryCarrier ; sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMinCount 1 ] ]
+    [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "half" ] ]
+    [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "local_axis" ] ]
+) .
+# 例外必须在形状中：螺纹细线（GB/T 4459.1-1995 3.5）；重合断面连续母视图轮廓（GB/T 4458.6-2002 7.8）。
+rule:section-interior-permitted sh:or (
+    [ sh:not [ sh:property [ sh:path md:sectionGeometry ; sh:hasValue "complete" ] ] ]
+    [ sh:property [ sh:path md:sourceLine ; sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ] ]
+    [ sh:property [ sh:path md:sourceLine ; sh:qualifiedValueShape [ sh:class md:ThreadLine ; sh:property [ sh:path md:lineType ; sh:hasValue "thin_continuous" ] ] ; sh:qualifiedMinCount 1 ] ]
+    [ sh:and (
+        [ sh:property [ sh:path md:crossSectionType ; sh:hasValue "superimposed" ] ]
+        [ sh:property [ sh:path md:parentOutlineContinuation ; sh:hasValue "true" ] ]
+        [ sh:property [ sh:path md:sectionOrigin ; sh:hasValue "pre_existing" ] ]
+    ) ]
+) .
+
+rule:G2-028-boundary-centre-only a sh:NodeShape ;
+    sh:targetClass md:SectionBoundarySpan ; md:ruleId "G2-028-boundary-centre-only" ; md:group "G2" ;
+    md:concept dc:DC-G2-028, dc:DC-G2-034 ; md:clause "GB/T 4458.6-2002 7.1、7.2、7.8；5.5、5.6 分界例外；GB/T 17452-1998 3.2" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "确认剖切范围及断面类型后，沿该段补画断面轮廓线；线型随断面类型确定，保留其余点画线；半剖或轴线分界局部剖按其规定复核。"@zh ;
+    rdfs:label "剖面外缘仅由中心线承担边界（前提已知）"@zh ;
+    sh:message "剖面外缘仅由中心线承担边界；已有断面配置依据；请复核承载线和区域来源，不自动改图。"@zh ;
+    sh:or ( rule:section-boundary-permitted [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ] ) .
+
+rule:G2-028-boundary-centre-only-unknown a sh:NodeShape ;
+    sh:targetClass md:SectionBoundarySpan ; md:ruleId "G2-028-boundary-centre-only-unknown" ; md:group "G2" ;
+    md:concept dc:DC-G2-028, dc:DC-G2-034 ; md:clause "GB/T 4458.6-2002 7.1、7.2、7.8；5.5、5.6 分界例外；GB/T 17452-1998 3.2" ;
+    md:confidence "needs_expert" ;
+    md:proposedCorrection "确认剖切范围及断面类型后，沿该段补画断面轮廓线；线型随断面类型确定，保留其余点画线；半剖或轴线分界局部剖按其规定复核。"@zh ;
+    rdfs:label "剖面外缘仅由中心线承担边界（前提未知）"@zh ;
+    sh:message "剖面外缘仅由中心线承担边界；范围未知，尚未排除半剖或轴线分界局部剖，需专家复核。"@zh ;
+    sh:or ( rule:section-boundary-permitted [ sh:not [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ] ] ) .
+
+rule:G2-018-outline-in-cut-face a sh:NodeShape ;
+    sh:targetClass md:SectionInteriorUse ; md:ruleId "G2-018-outline-in-cut-face" ; md:group "G2" ;
+    md:concept dc:DC-G2-018, dc:DC-G2-028, dc:DC-G2-034, dc:DC-G3-056 ; md:clause "GB/T 17452-1998 3.1、3.2；GB/T 4459.1-1995 3.5；GB/T 4458.6-2002 7.8" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "请专家确认断面配置、线的剖切来源及深度；保留螺纹细线和重合断面中连续的原视图轮廓，未确认前不删线、不自动改图。"@zh ;
+    rdfs:label "可见轮廓穿过剖切面实体内部（前提已知）"@zh ;
+    sh:message "可见轮廓穿过剖切面实体内部；已有断面配置依据；请复核承载线和区域来源，不自动改图。"@zh ;
+    sh:or ( rule:section-interior-permitted [ sh:property [ sh:path md:crossSectionType ; sh:hasValue "unknown" ] ] ) .
+
+rule:G2-018-outline-in-cut-face-unknown a sh:NodeShape ;
+    sh:targetClass md:SectionInteriorUse ; md:ruleId "G2-018-outline-in-cut-face-unknown" ; md:group "G2" ;
+    md:concept dc:DC-G2-018, dc:DC-G2-028, dc:DC-G2-034, dc:DC-G3-056 ; md:clause "GB/T 17452-1998 3.1、3.2；GB/T 4459.1-1995 3.5；GB/T 4458.6-2002 7.8" ;
+    md:confidence "needs_expert" ;
+    md:proposedCorrection "请专家确认断面配置、线的剖切来源及深度；保留螺纹细线和重合断面中连续的原视图轮廓，未确认前不删线、不自动改图。"@zh ;
+    rdfs:label "可见轮廓穿过剖切面实体内部（前提未知）"@zh ;
+    sh:message "可见轮廓穿过剖切面实体内部；断面类型未知，尚未排除重合断面的连续母视图轮廓，仅作专家复核线索。"@zh ;
+    sh:or ( rule:section-interior-permitted [ sh:not [ sh:property [ sh:path md:crossSectionType ; sh:hasValue "unknown" ] ] ] ) .
 '''
+
+
+[section_parameters]
+# Algorithm ratios, not tolerances prescribed by the cited standards. Text height is the median;
+# hatch spacing is a scale fallback, and absent scale leaves coverage unavailable.
+coincidence_text_height = 0.015
+sagitta_text_height = 0.003
+interior_chord_text_height = 0.3
+
+[[section_rule_knowledge]]
+id = "section_boundary_rules"
+concepts = ["DC-G2-028", "DC-G2-034"]
+clauses = ["GB/T 4458.6-2002 7.1, 7.2, 7.8; 5.5, 5.6", "GB/T 17452-1998 3.2"]
+components = ["Native hatch edge", "Centre-line source interval", "All outline carriers covering the interval", "Known section extent or explicit unknown"]
+variants = ["Straight native boundary: section_boundary_intervals_are_exact", "Circular/bulged native boundary: section_arc_and_bulge_boundaries", "Unknown extent still reported: section_unknown_context_is_not_an_exemption"]
+counter_examples = ["Half/local axis boundary: section_known_half_and_local_axis_are_exempt", "Partly/fully covered outline: section_partial_outline_cover_is_partitioned", "Point contact or arc chord: section_point_contact_and_arc_chord_are_not_boundaries", "Local pitch circle is not a straight axis: section_local_pitch_circle_is_not_an_axis_divider", "Adjacent hatch paths have no internal exterior: section_adjacent_hatch_paths_have_no_internal_boundary", "Partly shared native edge: section_partial_hatch_seam_keeps_the_unshared_boundary"]
+parameters = ["coincidence_text_height", "sagitta_text_height"]
+scale_test = "section_rules_are_scale_equivariant"
+
+[[section_rule_knowledge]]
+id = "section_interior_rules"
+concepts = ["DC-G2-018", "DC-G2-028", "DC-G2-034", "DC-G3-056"]
+clauses = ["GB/T 17452-1998 3.1, 3.2", "GB/T 4459.1-1995 3.5", "GB/T 4458.6-2002 7.8"]
+components = ["Complete native hatch boundary with holes", "Actual layer geometry crossing solid interior", "Region-scoped origin", "Cross-section configuration and continuation evidence"]
+variants = ["Visible outline in cut face: section_internal_outline_known_and_unknown", "Circular/hole boundary: section_holes_and_tangency_preserve_empty_space", "Different source/recognition interval: section_layer_intervals_are_independent"]
+counter_examples = ["Thread thin line: section_thread_exception_is_in_shape", "Continuous parent outline of superimposed section: section_parent_outline_exception_needs_region_evidence", "Partial/unavailable boundary: section_incomplete_native_geometry_is_not_a_cut_face", "Different regions keep different origins: section_origins_do_not_leak_between_regions"]
+parameters = ["coincidence_text_height", "sagitta_text_height", "interior_chord_text_height"]
+scale_test = "section_rules_are_scale_equivariant"

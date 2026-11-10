@@ -5301,11 +5301,11 @@ required = true
 format = "typed"
 meaning = "Most specific class of the object; the ontology declares exactly these classes"
 unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
-precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights); section facts use 0.015 text-height coincidence, 0.3 text-height interior chord and 0.003 text-height arc sagitta; boundary parameters are normalized source intervals, not rounded drawing-unit measures"
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction"]
+allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction", "SectionBoundarySpan", "SectionInteriorUse"]
 
 [[types.fields]]
 name = "classes"
@@ -5429,11 +5429,11 @@ required = true
 format = "typed"
 meaning = "Predicate of the fact vocabulary; the ontology declares exactly these properties"
 unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
-precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights); section facts use 0.015 text-height coincidence, 0.3 text-height interior chord and 0.003 text-height arc sagitta; boundary parameters are normalized source intervals, not rounded drawing-unit measures"
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith"]
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith", "sectionRegion", "sourceLine", "boundaryCarrier", "sectionOrigin", "boundaryIntervalStart", "boundaryIntervalEnd", "boundaryParameter", "crossSectionType", "sectionExtent", "parentOutlineContinuation", "sectionGeometry"]
 
 [[types.fields]]
 name = "object"

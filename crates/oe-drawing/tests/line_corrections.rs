@@ -1390,3 +1390,83 @@ fn outline_colour_line_from_a_view_limit_to_a_free_end_is_not_outline() {
         kinds(&g, "ZF")
     );
 }
+
+// ---------------------------------------------------------------- outline_joins: drawn a little past a view limit
+
+/// A plate broken off at a wavy view limit near x = 40 whose ends lie on the upper and lower
+/// edges; the lower edge is drawn `tail` beyond it; `more` is added.
+fn lower_edge_past_limit(tail: f64, more: Vec<String>) -> MdEngineeringExpressionGraph {
+    let wave: Vec<P> = vec![
+        [40., 20.],
+        [41., 17.],
+        [39., 14.],
+        [41., 11.],
+        [39., 8.],
+        [41., 5.],
+        [39., 2.],
+        [40., 0.],
+    ];
+    let mut ents = vec![
+        lwpoly("ZW", "02", &wave),
+        line("ZU", "01", [0., 20.], [40., 20.]),
+        line("ZS", "01", [0., 0.], [0., 20.]),
+        line("ZE", "01", [0., 0.], [40. + tail, 0.]),
+        line("ZX", "05", [-5., 10.], [45., 10.]),
+    ];
+    ents.extend(more);
+    run(&ents)
+}
+fn contour_cover(g: &MdEngineeringExpressionGraph, src: &str) -> Vec<[f64; 2]> {
+    let visible: BTreeSet<&str> = g
+        .expressions
+        .iter()
+        .filter(|e| e.kind == "visible_contour")
+        .map(|e| e.id.as_str())
+        .collect();
+    g.members
+        .iter()
+        .filter(|m| {
+            m.source_handle == src
+                && m.member_role == "contour_segment"
+                && visible.contains(m.expression_id.as_str())
+        })
+        .map(|m| [m.interval[0], m.interval[1]])
+        .collect()
+}
+
+#[test]
+fn short_free_tail_past_a_view_limit_is_the_same_outline() {
+    let g = lower_edge_past_limit(0.1, vec![]);
+    assert!(
+        kinds(&g, "ZW").contains("break_line"),
+        "{:?}",
+        kinds(&g, "ZW")
+    );
+    assert_eq!(contour_cover(&g, "ZE"), vec![[0., 1.]]);
+    assert!(!kinds(&g, "ZE").contains("unresolved"));
+    let e = expr_with(&g, "ZE", "visible_contour").unwrap();
+    assert!(
+        names(e, "outline_joins", "overshoot_past_view_limit"),
+        "{:?}",
+        e.evidence_ids
+    );
+}
+
+#[test]
+fn stub_past_a_corner_or_longer_tail_is_no_overshoot() {
+    // longer than the drafting gap
+    let g = lower_edge_past_limit(1., vec![]);
+    assert!(contour_cover(&g, "ZE").iter().all(|iv| iv[1] < 1.));
+    // a short tail whose end meets another line
+    let g = lower_edge_past_limit(0.1, vec![line("ZD", "08", [40.1, 0.], [40.1, -8.])]);
+    assert!(contour_cover(&g, "ZE").iter().all(|iv| iv[1] < 1.));
+    // a stub past an outline corner (no view limit there)
+    let g = run(&[
+        line("QB", "01", [0., 0.], [40., 0.]),
+        line("QR", "01", [40., 0.], [40., 20.]),
+        line("QT", "01", [40., 20.], [0., 20.]),
+        line("QL", "01", [0., -0.1], [0., 20.]),
+        line("QX", "05", [-5., 10.], [45., 10.]),
+    ]);
+    assert!(contour_cover(&g, "QL").iter().all(|iv| iv[0] > 0.));
+}

@@ -5980,7 +5980,13 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
                     })
             };
             let mut spans: Vec<[f64; 2]> = if ts.len() >= 2 {
-                vec![[ts[0], ts[ts.len() - 1]]]
+                // a free tail just past the view limit that cuts the line is a drafting overshoot
+                let span = [ts[0], ts[ts.len() - 1]];
+                let whole = line_evidence::overshoot(cx, h, span, &open, &breaks);
+                if whole.is_some() {
+                    ev.extend(line_evidence::naming("overshoot_past_view_limit"));
+                }
+                vec![whole.unwrap_or(span)]
             } else if *prec == 2 {
                 if by_weight {
                     ev.extend(line_evidence::naming("lineweight_classes"));

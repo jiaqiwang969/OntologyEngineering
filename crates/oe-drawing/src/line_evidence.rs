@@ -632,10 +632,45 @@ pub(super) fn lent_to_dimension(b: &Builder, h: &str) -> bool {
     })
 }
 
+/// A drafting overshoot past a view limit (card `outline_joins`, variant
+/// `overshoot_past_view_limit`): an outline line cut by a break curve (the curve's line passes
+/// through the line's outermost junction) but drawn a little beyond it, its tail ending free and
+/// no longer than the drafting gap, is the same segment. Returns the widened span.
+pub(super) fn overshoot(
+    cx: &Ctx,
+    h: &str,
+    span: [f64; 2],
+    free: &dyn Fn(f64) -> bool,
+    limits: &BTreeSet<String>,
+) -> Option<[f64; 2]> {
+    let k = join_gap(cx);
+    let (a, c) = cx.lines.get(h)?;
+    let len = dist(*a, *c);
+    let on_limit = |t: f64| {
+        let p = lerp(*a, *c, t);
+        limits.iter().any(|l| {
+            cx.polys.get(l).is_some_and(|(pts, _, _)| {
+                pts.windows(2).any(|w| lines_seg_dist(p, w[0], w[1]) <= k)
+            }) || cx
+                .lines
+                .get(l)
+                .is_some_and(|(p0, p1)| lines_seg_dist(p, *p0, *p1) <= k)
+        })
+    };
+    let mut s = span;
+    if s[0] > 0. && s[0] * len <= k && free(0.) && on_limit(s[0]) {
+        s[0] = 0.;
+    }
+    if s[1] < 1. && (1. - s[1]) * len <= k && free(1.) && on_limit(s[1]) {
+        s[1] = 1.;
+    }
+    (s != span).then_some(s)
+}
+
 /// The card and variant evidence of a variant of `line_width_evidence` or `outline_joins`.
 pub(super) fn naming(variant: &str) -> Vec<String> {
     let card = match variant {
-        "arc_to_arc_gap" | "end_on_thread_circle" => "outline_joins",
+        "arc_to_arc_gap" | "end_on_thread_circle" | "overshoot_past_view_limit" => "outline_joins",
         _ => "line_width_evidence",
     };
     vec![format!("card:{card}"), format!("variant:{variant}")]

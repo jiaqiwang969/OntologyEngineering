@@ -826,9 +826,19 @@ distinguishing = "端点落在螺纹端视图的 3/4 细实线圆弧上"
 encodings = ["loose"]
 tests = ["outline_arc_ending_on_a_thread_circle_is_joined"]
 
+[[cards.variants]]
+id = "overshoot_past_view_limit"
+title = "画过视图断裂边界一点的轮廓尾巴"
+distinguishing = "轮廓线在视图断裂边界（波浪线、双折线）处被截断，却画过了边界一点：多出的尾巴不超过绘图缝隙、末端自由（出图后看不出），是同一段轮廓的绘图误差，不另作未解释段"
+encodings = ["loose"]
+tests = ["short_free_tail_past_a_view_limit_is_the_same_outline"]
+
 [[cards.counter_examples]]
 statement = "端点间差距超过绘图缝隙的两段不按连接处理"
 test = "arcs_apart_beyond_the_drafting_gap_are_not_joined"
+[[cards.counter_examples]]
+statement = "画过轮廓角点的短头、长于绘图缝隙的自由短段、末端接在别的线上的尾段，都不按画过头处理"
+test = "stub_past_a_corner_or_longer_tail_is_no_overshoot"
 
 [[cards.parameters]]
 name = "join_gap"

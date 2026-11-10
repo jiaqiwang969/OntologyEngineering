@@ -733,7 +733,7 @@ meaning = "永不打印的层（AutoCAD 定义点层；另有图层表中打印�
 id = "outline_joins"
 expression_kind = "visible_contour"
 title = "轮廓的连接与绘图缝隙"
-meaning = "可见轮廓由首尾相接的直线和圆弧组成，在角点、T 形交点和相切处连接。CAD 作图时相接两段的端点常差一点，相切连接的两段圆弧尤其如此；差距只有字高的一小部分时，出图后小于线宽，看不出缝隙，仍是连接。轮廓线止于螺孔端视图的 3/4 细实线圆弧时，是被孔打断，这一端也是连接。"
+meaning = "可见轮廓由首尾相接的直线和圆弧组成，在角点、T 形交点和相切处连接。CAD 作图时相接两段的端点常差一点，相切连接的两段圆弧尤其如此；差距只有字高的一小部分时，出图后小于线宽，看不出缝隙，仍是连接。轮廓线止于螺孔端视图的 3/4 细实线圆弧时，是被孔打断，这一端也是连接（不是断口，也不是绘图缝隙）。"
 sources = [
   "GB/T 4457.4-2002 机械制图 图样画法 图线：粗线宽度 0.5～0.7 mm，两平行线最小间隙 0.7 mm",
   "GB/T 14665-2012 机械工程 CAD 制图规则 4.2 图线宽度",
@@ -776,21 +776,26 @@ meaning = "绘图缝隙 = 该值 × 字高（3.5 号字时约 0.14 mm，小于�
 id = "annotation_break"
 expression_kind = "visible_contour"
 title = "图线在注写处断开"
-meaning = "尺寸数字、符号不得被图线穿过；轮廓线、中心线经过数字或符号（表面结构符号、基准符号、框格等）时在该处断开。断开处两侧共线的两段仍是同一条图线，按完整结构连起来；补出的部分是推断，不是来源线。"
+meaning = "尺寸数字、符号不得被图线穿过；轮廓线、中心线经过数字或符号（表面结构符号、基准符号、框格等）时在该处断开。尺寸线和终端（箭头）处同样让开：轮廓在尺寸线或箭头穿过处留一个小缺口，缺口两端都离穿越处不过一个箭头长。断开处两侧共线的两段仍是同一条图线，按完整结构连起来；补出的部分是推断，不是来源线。圆或圆弧被断开时沿其圆补出，但只补小缺口：缺口不大于该圆上已画出的部分、不超过约四分之一圈，且两侧都是自由端；圆角弧（与两直线相切）不补成整圆，一段圆弧也不与自己的另一端相接（只断一处的圆保留缺口，断口原因照常记明）。"
 sources = [
   "GB/T 4458.4-2003 机械制图 尺寸注法：尺寸数字不可被任何图线所通过，否则应将该图线断开",
   "GB/T 131-2006 产品几何技术规范 表面结构的表示法：符号注在轮廓线上或其延长线上",
   "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法",
 ]
 knowledge_units = ["K13", "K17"]
-recognition = "一段轮廓的自由端与另一段共线轮廓的自由端隔一个缺口相对；缺口被注写文字（及其尺寸线、终端）覆盖，或被一个以图块画出的注写符号的笔画横穿、缺口不长于符号尺寸的给定倍数时，两段是同一条线，原因记为“为注写断开”，按推断连成一条结构线。"
+recognition = "一段轮廓的自由端与另一段共线轮廓的自由端隔一个缺口相对；缺口被注写文字（及其尺寸线、终端）覆盖，或被一个以图块画出的注写符号的笔画横穿、缺口不长于符号尺寸的给定倍数，或只被已识别尺寸的尺寸线或终端横穿（没有轮廓穿过，缺口两端到最外侧穿越处都不超过箭头长的给定倍数）时，两段是同一条线，原因记为“为注写断开”，按推断连成一条结构线。圆弧的自由端沿圆找对面另一段圆弧的自由端：缺口不超过给定圆心角、也不超过该圆已画出的圆心角之和时才连接；面对的是自己的另一端时不连接。"
 markers = []
 concepts = ["DC-G4-001"]
 
 [[cards.components]]
 role = "contour_segment"
-primitives = ["LINE"]
-requirement = "缺口两侧共线的同类轮廓段，相对的两端都是自由端"
+primitives = ["LINE", "ARC"]
+requirement = "缺口两侧共线（或同圆）的同类轮廓段，相对的两端都是自由端"
+
+[[cards.components]]
+role = "dimension_line"
+primitives = ["LINE", "SOLID", "DIMENSION"]
+requirement = "横穿缺口的尺寸线或终端（箭头），属于已识别的尺寸"
 
 [[cards.variants]]
 id = "broken_for_symbol"
@@ -802,6 +807,36 @@ tests = ["outline_broken_for_a_texture_symbol_is_one_line"]
 [[cards.counter_examples]]
 statement = "缺口处没有注写符号或文字时，两段不按断开连起来"
 test = "gap_without_annotation_is_not_bridged"
+
+[[cards.variants]]
+id = "broken_for_dimension_line"
+title = "轮廓在尺寸线、箭头穿过处断开"
+distinguishing = "缺口只被已识别尺寸的尺寸线或终端横穿，两端到穿越处都不超过约一个箭头长"
+encodings = ["loose", "block"]
+tests = ["outline_broken_for_a_dimension_line_is_one_line"]
+
+[[cards.variants]]
+id = "circle_broken_for_text"
+title = "圆在注写处断开"
+distinguishing = "同圆两段圆弧的自由端隔一个被文字覆盖的小缺口相对（缺口不大于已画部分、不超过约四分之一圈）"
+encodings = ["loose"]
+tests = ["circle_broken_twice_for_numbers_is_one_circle"]
+
+[[cards.counter_examples]]
+statement = "被尺寸线穿过的槽口：缺口两端接在槽壁上，不是自由端，不连"
+test = "slot_crossed_by_its_dimension_is_not_bridged"
+
+[[cards.counter_examples]]
+statement = "一段圆弧不与自己的另一端相接：只断一处的圆保留缺口，断口原因照常记明"
+test = "arc_broken_once_keeps_its_gap"
+
+[[cards.counter_examples]]
+statement = "同圆两段圆弧之间的缺口大于已画部分或超过约四分之一圈时不补"
+test = "arcs_facing_across_a_large_gap_are_not_joined"
+
+[[cards.counter_examples]]
+statement = "圆角弧（与两直线相切）有一端自由时不补成整圆"
+test = "fillet_with_one_free_end_never_closes_into_a_circle"
 
 [[cards.parameters]]
 name = "gap_to_symbol_max"
@@ -2733,15 +2768,16 @@ meaning = "上边长度上限 = 数值宽度 + 该值 × 字高"
 id = "local_section_boundary"
 expression_kind = "break_line"
 title = "局部剖视的波浪线"
-meaning = "局部剖视中剖开部分与未剖部分的分界线，用细实线徒手画的波浪线表示；剖面线画在它与轮廓之间，可以是填充对象，也可以是一根根散线。细的徒手曲线只能是波浪线，不是可见轮廓（可见轮廓是粗实线）。"
+meaning = "局部剖视中剖开部分与未剖部分的分界线，用细实线徒手画的波浪线表示；剖面线画在它与轮廓之间，可以是填充对象，也可以是一根根散线。细的徒手曲线只能是波浪线，不是可见轮廓（可见轮廓是粗实线）。局部剖视的范围是波浪线（或折线、画成波浪线的短线串）与其两端之间的轮廓围成的区域：一条波浪线两端落在同一条轮廓线或圆上；两条波浪线横跨同一对轮廓，夹住其间的一段；或波浪线从轮廓画到局部放大圈，由圈限定。范围包括剖切面遇到空腔、未画剖面线的部分，所以不是剖面线的外接范围。区域内只因剖开才画出的图线是局部剖视专属的：被剖开而显露的不可见棱线（与在区域外止于同一点的虚线共线或同圆）、剖面的轮廓（围住剖面线、在区域外不以同一线型延续的粗线），连同剖面线和波浪线，完整结构中不画；区域外的轮廓、穿过区域线型不变的线、与区域外画法相同的要素（均布的孔、凸台的同一位置画法）不是。放大圈不围成局部剖视；以 X-X 命名的视图本身是剖视图，其中没有局部剖视；轮廓止于波浪线时，波浪线是断开处或局部视图的界线。"
 sources = [
   "GB/T 4457.4-2002 机械制图 图样画法 图线（波浪线）",
-  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图（局部剖视）",
-  "GB/T 17452-1998 技术制图 图样画法 剖视图和断面图",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 5.6（局部剖视图）",
+  "GB/T 17452-1998 技术制图 图样画法 剖视图和断面图 6.3（局部剖视图）",
+  "GB/T 4458.1-2002 机械制图 图样画法 视图（局部视图、局部放大图的边界）",
   "用户 2026-11-06 截图核对：主视图 I 圈中围住散线剖面线的细徒手曲线被认成可见轮廓",
 ]
 knowledge_units = ["K12", "K13"]
-recognition = "以一条徒手曲线为锚（开口、无凸度、顶点不少于给定数、每处转角小而整体弯曲；不是粗实线层）：曲线的顶点落在剖面填充的边界上，或有两条以上互相平行的斜向细线（剖面线）一端落在曲线上或其附近，即为局部剖视的边界——判断靠上下文而不靠颜色，各图层颜色因图而异。以图纸自己的细线颜色画的徒手曲线即使连着轮廓也不归入可见轮廓。"
+recognition = "以一条徒手曲线为锚（开口、无凸度、顶点不少于给定数、每处转角小而整体弯曲；不是粗实线层）：曲线的顶点落在剖面填充的边界上，或有两条以上互相平行的斜向细线（剖面线）一端落在曲线上或其附近，即为局部剖视的边界——判断靠上下文而不靠颜色，各图层颜色因图而异。以图纸自己的细线颜色画的徒手曲线即使连着轮廓也不归入可见轮廓。范围：波浪线两端（容差为字高的给定比例）落在同一轮廓上时，与两端之间画出的那段轮廓围成；两条波浪线两端分别落在同一对轮廓上时，围住其间一段；波浪线一端在放大圈上、另一端在穿过圈的轮廓上时，由该轮廓与圈围成。围成的区域内要有剖面线，两端之间的轮廓要画出（从波浪线端点起沿边界延续、覆盖大部分），而且每个端点处的轮廓要越过波浪线向区域外延续（视图在波浪线外继续）。区域内整段落在其中、在区域外没有同线延续、也不是区域外相同要素的粗线是局部剖视专属的。"
 markers = []
 concepts = ["DC-G1-032", "DC-G2-023"]
 
@@ -2754,6 +2790,11 @@ requirement = "细实线徒手曲线"
 role = "section_lines"
 primitives = ["HATCH", "LINE"]
 requirement = "剖面填充或散线剖面线，落在曲线上"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE"]
+requirement = "区域内只因剖开才画出的粗线：剖面的轮廓、被剖开而显露的不可见棱线"
 
 [[cards.variants]]
 id = "hatch_entity"
@@ -2783,6 +2824,69 @@ tests = ["chain_of_short_lines_around_a_section_is_a_local_section_boundary"]
 [[cards.counter_examples]]
 statement = "一串首尾相接的短直线不围住剖面区域时（如细线画的台阶），不作局部剖视边界"
 test = "chain_of_lines_without_a_section_is_not_a_boundary"
+
+[[cards.variants]]
+id = "between_curve_ends"
+title = "一条波浪线与其两端之间的轮廓围成"
+distinguishing = "波浪线两端落在同一条轮廓线或同一圆上，与两端之间画出的轮廓围住剖面线；剖开的孔可在这段轮廓上开口"
+encodings = ["loose"]
+tests = ["local_section_region_between_a_break_curve_and_one_outline"]
+
+[[cards.variants]]
+id = "band_between_break_curves"
+title = "两条波浪线横跨同一对轮廓，夹住其间一段"
+distinguishing = "两条波浪线的端点分别落在同一对轮廓（直线或同心圆）上，其间一段画剖面线"
+encodings = ["loose"]
+tests = ["local_section_band_between_two_break_curves"]
+
+[[cards.variants]]
+id = "inside_detail_circle"
+title = "在局部放大圈内画的局部剖视"
+distinguishing = "波浪线一端在穿过放大圈的轮廓上、另一端在圈上，剖面线在由该轮廓、波浪线和圈围成的部分"
+encodings = ["loose"]
+tests = ["local_section_inside_a_detail_circle"]
+
+[[cards.variants]]
+id = "revealed_hidden_edge"
+title = "剖开而显露的不可见棱线（局部剖视专属）"
+distinguishing = "区域内的粗线与区域外的虚线共线或同圆、端点相同：同一棱线只因剖开才可见；完整结构中按虚线与区域外的虚线连成一条"
+encodings = ["loose"]
+tests = ["hidden_edge_laid_open_by_the_cut_is_one_hidden_line"]
+
+[[cards.variants]]
+id = "cut_face_profile"
+title = "剖面的轮廓（局部剖视专属）"
+distinguishing = "整段在区域内、在区域外不以同一线型延续的粗线（围住剖面线的轮廓、剖开的孔壁）"
+encodings = ["loose"]
+tests = ["local_section_region_between_a_break_curve_and_one_outline"]
+
+[[cards.counter_examples]]
+statement = "局部放大圈不围成局部剖视：剖视图上画放大圈而没有波浪线时，没有局部剖视专属的图线，圈内断开的轮廓也不因此连接"
+test = "detail_indicator_circle_over_a_section_bounds_nothing"
+
+[[cards.counter_examples]]
+statement = "区域外的轮廓不是局部剖视专属，即使它落在剖面线的外接范围内"
+test = "outline_outside_the_region_is_never_section_only"
+
+[[cards.counter_examples]]
+statement = "与区域外画法相同的要素（均布孔中落在区域内的那个圆）不是局部剖视专属"
+test = "feature_repeated_outside_the_region_is_not_section_only"
+
+[[cards.counter_examples]]
+statement = "穿过区域、线型不变的轮廓线属于外形，不是局部剖视专属"
+test = "local_section_band_between_two_break_curves"
+
+[[cards.counter_examples]]
+statement = "没有剖面线的波浪线是局部视图或断开画法的界线，不围成局部剖视"
+test = "break_curves_without_hatch_bound_no_section"
+
+[[cards.counter_examples]]
+statement = "轮廓止于波浪线、不越过它向外延续时（断开的剖面），波浪线不是局部剖视的边界"
+test = "section_broken_off_at_a_break_curve_is_no_local_section"
+
+[[cards.counter_examples]]
+statement = "以 X-X 命名的视图本身是剖视图，其中的剖面线和波浪线不构成局部剖视"
+test = "view_named_as_a_section_holds_no_local_section"
 
 [[cards.parameters]]
 name = "line_chain_max_turn_deg"

@@ -12,6 +12,10 @@
 //! * a local section drawn inside a detail-indicator circle: the break curve runs from the
 //!   outline to the circle, and the circle limits the hatch.
 //!
+//! The outline between the ends is drawn: it goes on from each end of the break curve along the
+//! boundary and covers most of it (where the cut opens a feature into that outline, the outline
+//! may be interrupted inside the region).
+//!
 //! Not a local section: a break curve at which the outline stops (the limit of a partial or
 //! broken view, a section broken off), a break curve with no hatch inside, and a hatch with no
 //! break curve (a view that is itself a section; an indicator circle lying over it bounds
@@ -132,8 +136,9 @@ fn area(poly: &[P]) -> f64 {
         / 2.
 }
 
-/// No two edges of the closed polygon cross each other.
-fn simple(poly: &[P]) -> bool {
+/// No two edges of the closed polygon cross each other, except within `tol` of one of the
+/// points `near` (a freehand curve may wave across the outline it ends on).
+fn simple(poly: &[P], near: &[P], tol: f64) -> bool {
     let n = poly.len();
     let side = |a: P, b: P, c: P| cross(sub(b, a), sub(c, a));
     for i in 0..n {
@@ -143,8 +148,12 @@ fn simple(poly: &[P]) -> bool {
                 continue;
             }
             let (c, d) = (poly[j], poly[(j + 1) % n]);
-            if side(a, b, c) * side(a, b, d) < 0. && side(c, d, a) * side(c, d, b) < 0. {
-                return false;
+            let (s1, s2) = (side(a, b, c), side(a, b, d));
+            if s1 * s2 < 0. && side(c, d, a) * side(c, d, b) < 0. {
+                let x = lerp(c, d, s1 / (s1 - s2));
+                if !near.iter().any(|e| dist(*e, x) <= tol) {
+                    return false;
+                }
             }
         }
     }
@@ -255,12 +264,11 @@ fn whole(a: P, way: Vec<P>, b: P) -> Vec<P> {
 struct Path {
     pts: Vec<P>,
     ids: Vec<String>,
-    closed: bool,
 }
 
 fn break_paths(cx: &Ctx, b: &Builder, tol: f64) -> Vec<Path> {
     let mut seen = BTreeSet::new();
-    let mut pieces: Vec<(Vec<P>, String, bool)> = Vec::new();
+    let mut pieces: Vec<(Vec<P>, String)> = Vec::new();
     for m in b
         .members
         .iter()
@@ -270,15 +278,16 @@ fn break_paths(cx: &Ctx, b: &Builder, tol: f64) -> Vec<Path> {
         if !seen.insert(h) {
             continue;
         }
-        let (pts, closed) = if let Some((a, c)) = cx.lines.get(h) {
-            (vec![*a, *c], false)
-        } else if let Some((p, closed, _)) = cx.polys.get(h) {
-            (p.clone(), *closed)
+        // a break curve is open: it ends on the outline
+        let pts = if let Some((a, c)) = cx.lines.get(h) {
+            vec![*a, *c]
+        } else if let Some((p, false, _)) = cx.polys.get(h) {
+            p.clone()
         } else {
             continue;
         };
         if pts.len() >= 2 {
-            pieces.push((pts, h.to_string(), closed));
+            pieces.push((pts, h.to_string()));
         }
     }
     pieces.sort_by(|x, y| x.1.cmp(&y.1));
@@ -287,25 +296,17 @@ fn break_paths(cx: &Ctx, b: &Builder, tol: f64) -> Vec<Path> {
         let p = &pieces[i].0;
         if e == 0 { p[0] } else { p[p.len() - 1] }
     };
-    // Open pieces whose end lies at `p`.
+    // Pieces whose end lies at `p`.
     let at = |p: P, own: usize| -> Vec<(usize, usize)> {
         (0..n)
-            .filter(|&j| j != own && !pieces[j].2)
+            .filter(|&j| j != own)
             .flat_map(|j| (0..2).map(move |e| (j, e)))
             .filter(|&(j, e)| dist(end(j, e), p) <= tol)
             .collect()
     };
     let mut used = vec![false; n];
     let mut out = Vec::new();
-    for (i, x) in pieces.iter().enumerate().filter(|(_, x)| x.2) {
-        used[i] = true;
-        out.push(Path {
-            pts: x.0.clone(),
-            ids: vec![x.1.clone()],
-            closed: true,
-        });
-    }
-    // Chains from their free ends first, then whatever closes on itself.
+    // Chains from their free ends first, then whatever is left (a chain closed on itself).
     for from_free_end in [true, false] {
         for i in 0..n {
             if used[i] {
@@ -336,8 +337,7 @@ fn break_paths(cx: &Ctx, b: &Builder, tol: f64) -> Vec<Path> {
                 pts.extend(q.into_iter().skip(1));
                 ids.push(pieces[j].1.clone());
             }
-            let closed = pts.len() > 3 && dist(pts[0], pts[pts.len() - 1]) <= tol;
-            out.push(Path { pts, ids, closed });
+            out.push(Path { pts, ids });
         }
     }
     out
@@ -401,11 +401,10 @@ struct Candidate {
     paths: Vec<usize>,
     circle: Option<String>,
     variant: &'static str,
-    /// Ends of the break curve(s) on the outline, where the view must go on. A break curve
-    /// closed on itself has none: the outline must cross it.
+    /// Ends of the break curve(s) on the outline, where the view must go on.
     ends: Vec<P>,
     /// The closing ways along the outline, each with its two ends: one of them at least is
-    /// drawn from end to end (the outline between the ends of the break curve).
+    /// drawn (the outline between the ends of the break curve).
     ways: Vec<Vec<P>>,
 }
 
@@ -464,19 +463,9 @@ pub(super) fn find(cx: &Ctx, b: &Builder) -> Vec<LocalSection> {
             .collect()
     };
     let open: Vec<usize> = (0..paths.len())
-        .filter(|&i| !paths[i].closed && dist(paths[i].pts[0], *paths[i].pts.last().unwrap()) > tol)
+        .filter(|&i| dist(paths[i].pts[0], *paths[i].pts.last().unwrap()) > tol)
         .collect();
     let mut cands: Vec<Candidate> = Vec::new();
-    for (i, p) in paths.iter().enumerate().filter(|(_, p)| p.closed) {
-        cands.push(Candidate {
-            poly: p.pts.clone(),
-            paths: vec![i],
-            circle: None,
-            variant: "closed_break_curve",
-            ends: vec![],
-            ways: vec![],
-        });
-    }
     for &i in &open {
         let pts = &paths[i].pts;
         let (e0, e1) = (pts[0], pts[pts.len() - 1]);
@@ -585,20 +574,27 @@ pub(super) fn find(cx: &Ctx, b: &Builder) -> Vec<LocalSection> {
     let mut found: Vec<(f64, Candidate, Vec<String>)> = Vec::new();
     for c in cands {
         let size = area(&c.poly);
-        if c.poly.len() < 3 || size <= tol * tol || !simple(&c.poly) {
+        if c.poly.len() < 3 || size <= tol * tol || !simple(&c.poly, &c.ends, tol) {
             continue;
         }
-        // the outline between the ends of the break curve is drawn
+        // the outline between the ends of the break curve is drawn: it goes on from each end along
+        // the way and covers most of it
         let drawn = |way: &Vec<P>| {
-            way.windows(2).all(|w| {
-                let n = ((dist(w[0], w[1]) / (2. * tol)).ceil() as usize).clamp(1, 400);
-                (0..=n).all(|i| {
+            let mut on: Vec<bool> = Vec::new();
+            for w in way.windows(2) {
+                let n = ((dist(w[0], w[1]) / (0.5 * tol)).ceil() as usize).clamp(1, 4000);
+                for i in 0..n {
                     let q = lerp(w[0], w[1], i as f64 / n as f64);
-                    shapes.iter().any(|s| s.dist(q) <= tol)
-                })
-            })
+                    on.push(shapes.iter().any(|s| s.dist(q) <= tol));
+                }
+            }
+            on.push(true);
+            let k = 6.min(on.len());
+            on[..k].iter().all(|x| *x)
+                && on[on.len() - k..].iter().all(|x| *x)
+                && 2 * on.iter().filter(|x| **x).count() >= on.len()
         };
-        if !c.ways.is_empty() && !c.ways.iter().any(drawn) {
+        if !c.ways.iter().any(drawn) {
             continue;
         }
         let holds = |p: P, margin: f64| inside(p, &c.poly) || edge_dist(p, &c.poly) <= margin;
@@ -629,24 +625,7 @@ pub(super) fn find(cx: &Ctx, b: &Builder) -> Vec<LocalSection> {
                     .any(|q| !holds(q, 0.5 * tol))
             })
         };
-        let crossed = || {
-            shapes.iter().any(|s| {
-                let pts = match *s {
-                    Shape::Seg(a, z) => vec![a, z],
-                    Shape::Arc(o, r, s0, sw, _) => (0..=8)
-                        .map(|i| {
-                            let x = s0 + sw * i as f64 / 8.;
-                            add(o, mul([x.cos(), x.sin()], r))
-                        })
-                        .collect(),
-                };
-                pts.iter().any(|q| !holds(*q, tol))
-                    && pts
-                        .iter()
-                        .any(|q| inside(*q, &c.poly) && edge_dist(*q, &c.poly) > tol)
-            })
-        };
-        if !c.ends.iter().all(|e| goes_on(*e)) || (c.ends.is_empty() && !crossed()) {
+        if !c.ends.iter().all(|e| goes_on(*e)) {
             continue;
         }
         found.push((size, c, filled));

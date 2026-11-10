@@ -284,7 +284,8 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
         let mut stack: Vec<String> = triples
             .iter()
             .filter(|(p, _)| p.starts_with(SH))
-            .filter_map(|(_, o)| matches!(o, Term::BlankNode(_) | Term::NamedNode(_)).then(|| o.to_string()))
+            .filter(|(_, o)| matches!(o, Term::BlankNode(_) | Term::NamedNode(_)))
+            .map(|(_, o)| o.to_string())
             .collect();
         let mut seen = BTreeSet::new();
         while let Some(node) = stack.pop() {
@@ -361,6 +362,9 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
 // ------------------------------------------------------------------------------------------------ geometry
 
 type P = (f64, f64);
+type CurveChains = (Vec<Vec<P>>, Vec<(P, f64)>);
+type StructuralChain = (Vec<P>, Vec<(P, f64)>);
+type TextBoxContent = (TextBox, Option<TextBox>, String, f64);
 const EPS_COINCIDENT: f64 = 0.15;
 const MIN_OVERLAP: f64 = 1.0;
 const END_TOLERANCE: f64 = 0.5;
@@ -492,7 +496,7 @@ fn segment_intersection(a: P, b: P, c: P, d: P) -> Option<P> {
     let t = (qp.0 * s.1 - qp.1 * s.0) / denominator;
     let u = (qp.0 * r.1 - qp.1 * r.0) / denominator;
     let inside = |x: f64| (-1e-9..=1. + 1e-9).contains(&x);
-    (inside(t) && inside(u)).then(|| (a.0 + t * r.0, a.1 + t * r.1))
+    (inside(t) && inside(u)).then_some((a.0 + t * r.0, a.1 + t * r.1))
 }
 /// Two curves cross when some pieces intersect at a point away from the ends of both curves: a corner shared by
 /// two outlines and a line ending on another are not crossings; a line through a vertex of a polyline is.
@@ -724,7 +728,7 @@ impl<'a> Dxf<'a> {
     }
 
     /// Straight chains of a curve record, in drawing coordinates plus an offset, and the arcs among them.
-    fn chains(&self, r: &dxf::Record, offset: P) -> Result<(Vec<Vec<P>>, Vec<(P, f64)>)> {
+    fn chains(&self, r: &dxf::Record, offset: P) -> Result<CurveChains> {
         let pt = |x: i64, y: i64| -> Result<P> { Ok((r.float(x)? + offset.0, r.float(y)? + offset.1)) };
         let mut arcs = Vec::new();
         let chains = match r.kind.as_str() {
@@ -825,7 +829,7 @@ impl<'a> Dxf<'a> {
     }
 
     /// Text boxes of a TEXT, MTEXT or ATTRIB record (main text and stacked part); the cleaned text and rotation.
-    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<(TextBox, Option<TextBox>, String, f64)>> {
+    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<TextBoxContent>> {
         let height = match r.float(40) {
             Ok(h) if h > 0. => h,
             _ => return Ok(None),
@@ -1783,7 +1787,7 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
 
 /// Points of a structural line or implied span: `points` [x0,y0,x1,y1] for a line, `arc` [cx,cy,r,a0,a1] otherwise;
 /// with the arc's centre and radius when it is one.
-fn structural_chain(v: &Value) -> Result<(Vec<P>, Vec<(P, f64)>)> {
+fn structural_chain(v: &Value) -> Result<StructuralChain> {
     if let Some(arc) = v.get("arc").and_then(Value::as_array)
         && arc.len() == 5
     {

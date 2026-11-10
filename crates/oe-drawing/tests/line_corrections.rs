@@ -4,7 +4,9 @@
 //! native dimensions. Fixtures are authored from card knowledge (GB/T 4457.4, 4458.4, 14665,
 //! 18229); handles, coordinates, layer names other than the GB/T 14665 table 6 identifiers and the
 //! CAD definition-point layer, and labels are invented.
-use oe_contracts::{MdEngineeringExpression, MdEngineeringExpressionGraph, MdExpressionMember};
+use oe_contracts::{
+    MdEngineeringExpression, MdEngineeringExpressionGraph, MdExpressionMember, MdLineStyle,
+};
 use oe_drawing::engineering_expression::discover;
 use std::collections::BTreeSet;
 
@@ -705,4 +707,236 @@ fn thin_extension_line_drawn_past_its_origin_stays_an_extension_line() {
     // the sides they start from are not parts of the dimension
     assert!(in_dimension(&g, "PL").is_empty());
     extension_lines_are_thin_and_off_the_outline(&g);
+}
+
+// ---------------------------------------------------------------- line_width_evidence: the width each line is plotted with
+
+fn run_with_header(
+    header: &str,
+    layers: &[Layer],
+    blocks: &str,
+    ents: &[String],
+) -> MdEngineeringExpressionGraph {
+    let bytes = format!(
+        "0\nSECTION\n2\nHEADER\n{header}0\nENDSEC\n{}{blocks}0\nSECTION\n2\nENTITIES\n{}0\nENDSEC\n0\nEOF\n",
+        tables(layers),
+        ents.concat()
+    );
+    match discover(bytes.as_bytes()) {
+        Ok(g) => g,
+        Err(e) => panic!("{e:#}"),
+    }
+}
+/// Named plot styles: the drawing does not plot by colour.
+const NAMED_PLOT_STYLES: &str = "9\n$PSTYLEMODE\n290\n0\n";
+
+fn style<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> &'a MdLineStyle {
+    g.line_styles
+        .iter()
+        .find(|s| s.source_handle == src)
+        .unwrap_or_else(|| panic!("{src}"))
+}
+fn has(v: &[String], x: &str) -> bool {
+    v.iter().any(|e| e == x)
+}
+
+/// The plate with its width dimensioned above it by loose parts (terminators and dimension line
+/// on the dimension layer, the value on the text layer); the two extension lines are drawn from
+/// the upper corners on `layer` with the entity tags `more`.
+fn loose_width(header: &str, layer: &str, more: &str) -> MdEngineeringExpressionGraph {
+    let mut ents = plate();
+    ents.extend([
+        line_with("XA", layer, more, [100., 50.], [100., 64.]),
+        line_with("XB", layer, more, [130., 50.], [130., 64.]),
+        solid("T1", "08", [100., 61.], [103., 61.]),
+        solid("T2", "08", [130., 61.], [127., 61.]),
+        line("DL", "08", [103., 61.], [127., 61.]),
+        text("DV", "11", "30", [112., 62.], 3.5),
+    ]);
+    run_with_header(header, GB, "", &ents)
+}
+
+#[test]
+fn thin_colour_line_on_the_thick_layer_is_reported_thin() {
+    // the drawing plots by colour: the thin colour of the extension lines decides, not the layer
+    let g = loose_width("", "01", "62\n3\n");
+    for h in ["XA", "XB"] {
+        let s = style(&g, h);
+        assert_eq!(s.line_type, "thin_continuous", "{h}");
+        assert_eq!(s.basis, "observed_pattern", "{h}");
+        assert!(has(&s.evidence_ids, "variant:colour_before_layer"), "{:?}", s.evidence_ids);
+        let ms = in_dimension(&g, h);
+        assert!(
+            !ms.is_empty()
+                && ms
+                    .iter()
+                    .all(|m| m.member_role == "extension_line" && m.line_type == "thin_continuous"),
+            "{h}: {ms:?}"
+        );
+    }
+    extension_lines_are_thin_and_off_the_outline(&g);
+}
+
+#[test]
+fn colour_is_no_width_evidence_with_named_plot_styles() {
+    let g = loose_width(NAMED_PLOT_STYLES, "01", "62\n3\n");
+    for h in ["XA", "XB"] {
+        // the line table keeps the layer's width
+        let s = style(&g, h);
+        assert_eq!(s.line_type, "thick_continuous", "{h}");
+        assert_eq!(s.basis, "layer_convention", "{h}");
+        // the member is thin by its role
+        let ms = in_dimension(&g, h);
+        assert!(
+            !ms.is_empty() && ms.iter().all(|m| m.line_type == "thin_continuous"),
+            "{h}: {ms:?}"
+        );
+    }
+}
+
+#[test]
+fn thick_colour_line_on_a_thin_layer_is_reported_thick() {
+    // the right side of the box is drawn on a thin layer in the outline colour
+    let g = rectangle_with_side(GB, "09");
+    assert!(kinds(&g, "NR").contains("visible_contour"), "{:?}", kinds(&g, "NR"));
+    let s = style(&g, "NR");
+    assert_eq!(s.line_type, "thick_continuous");
+    assert_eq!(s.basis, "observed_pattern");
+    assert!(has(&s.evidence_ids, "variant:colour_before_layer"), "{:?}", s.evidence_ids);
+    // a line in the outline colour on a layer that gives no width is reported thick as well
+    assert_eq!(style(&g, "NA").line_type, "thick_continuous");
+}
+
+#[test]
+fn extension_line_on_the_thick_text_layer_is_thin() {
+    // the extension lines lie on the layer whose table meaning is thick text, in a colour that is
+    // neither the outline colour nor a thin-line colour
+    let g = loose_width("", "12", "");
+    for h in ["XA", "XB"] {
+        let s = style(&g, h);
+        assert_eq!(s.line_type, "continuous", "{h}");
+        assert!(
+            has(&s.evidence_ids, "variant:text_layer_is_no_line_width"),
+            "{:?}",
+            s.evidence_ids
+        );
+        let ms = in_dimension(&g, h);
+        assert!(
+            !ms.is_empty()
+                && ms
+                    .iter()
+                    .all(|m| m.member_role == "extension_line" && m.line_type == "thin_continuous"),
+            "{h}: {ms:?}"
+        );
+    }
+}
+
+/// The plate's width dimensioned by a native dimension above it, with a root line drawn over the
+/// block's dimension line on `layer`.
+fn native_width_over(layers: &[Layer], header: &str, plate_layer: &str, layer: &str) -> MdEngineeringExpressionGraph {
+    let mut children = dimension_line("NW", [100., 62.], [130., 62.]);
+    children.push(line("NW4", "0", [100., 50.], [100., 64.]));
+    children.push(line("NW5", "0", [130., 50.], [130., 64.]));
+    let (blk, dim) = native_linear("DW", "*D2", 0., [130., 62.], [100., 50.], [130., 50.], &children);
+    let mut ents: Vec<String> = [
+        ("PB", [100., 20.], [130., 20.]),
+        ("PT", [100., 50.], [130., 50.]),
+        ("PL", [100., 20.], [100., 50.]),
+        ("PR", [130., 20.], [130., 50.]),
+    ]
+    .iter()
+    .map(|(h, a, b)| line(h, plate_layer, *a, *b))
+    .collect();
+    ents.extend([
+        line("PX", if layers == GB { "05" } else { "R" }, [115., 15.], [115., 55.]),
+        line("RD", layer, [103., 62.], [127., 62.]),
+        dim,
+    ]);
+    run_with_header(header, layers, &blk, &ents)
+}
+
+#[test]
+fn dimension_line_on_the_thick_layer_without_colour_evidence_is_thin() {
+    let g = native_width_over(GB, NAMED_PLOT_STYLES, "01", "01");
+    let ms = in_dimension(&g, "RD");
+    assert!(
+        !ms.is_empty()
+            && ms
+                .iter()
+                .all(|m| m.member_role == "dimension_line" && m.line_type == "thin_continuous"),
+        "{ms:?}"
+    );
+    assert!(has(&ms[0].evidence_ids, "variant:annotation_roles_thin"));
+    // the line table still says what the layer says
+    assert_eq!(style(&g, "RD").line_type, "thick_continuous");
+}
+
+#[test]
+fn dimension_line_drawn_with_the_thick_lineweight_is_reported_thick() {
+    // the drawing's lineweights fall into two classes: the line over the dimension line is drawn
+    // with the thick one, so the sheet shows it thick
+    let g = native_width_over(WEIGHTS, "", "P", "P");
+    let ms = in_dimension(&g, "RD");
+    assert!(
+        !ms.is_empty()
+            && ms
+                .iter()
+                .all(|m| m.member_role == "dimension_line" && m.line_type == "thick_continuous"),
+        "{ms:?}"
+    );
+    // drawn with the thin one it is thin
+    let g = native_width_over(WEIGHTS, "", "P", "Q");
+    let ms = in_dimension(&g, "RD");
+    assert!(
+        !ms.is_empty() && ms.iter().all(|m| m.line_type == "thin_continuous"),
+        "{ms:?}"
+    );
+}
+
+/// Two short strokes on `layer` above and below a view, each with the letter of a section named
+/// apart, and that section.
+fn lettered_strokes(header: &str, layer: &str) -> MdEngineeringExpressionGraph {
+    let mut ents: Vec<String> = [
+        ("V1", [0., 0.], [100., 0.]),
+        ("V2", [100., 0.], [100., 60.]),
+        ("V3", [100., 60.], [0., 60.]),
+        ("V4", [0., 60.], [0., 0.]),
+        ("W1", [200., 0.], [240., 0.]),
+        ("W2", [240., 0.], [240., 30.]),
+        ("W3", [240., 30.], [200., 30.]),
+        ("W4", [200., 30.], [200., 0.]),
+    ]
+    .iter()
+    .map(|(h, a, b)| line(h, "01", *a, *b))
+    .collect();
+    ents.extend([
+        line("K1", layer, [50., 64.], [50., 69.]),
+        line("K2", layer, [50., -4.], [50., -9.]),
+        text("E1", "11", "G", [52., 69.], 3.5),
+        text("E2", "11", "G", [52., -12.], 3.5),
+        text("EN", "11", "G-G", [212., 34.], 3.5),
+    ]);
+    run_with_header(header, GB, "", &ents)
+}
+
+#[test]
+fn cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick() {
+    let strokes = |g: &MdEngineeringExpressionGraph| -> Vec<MdExpressionMember> {
+        g.members
+            .iter()
+            .filter(|m| m.member_role == "cutting_stroke")
+            .cloned()
+            .collect()
+    };
+    // plotted by colour, the strokes on the thin reference layer are in the outline colour
+    let g = lettered_strokes("", "09");
+    let ms = strokes(&g);
+    assert_eq!(ms.len(), 2, "{ms:?}");
+    for m in &ms {
+        assert_eq!(m.line_type, "thick_continuous", "{}", m.source_handle);
+        assert!(has(&m.evidence_ids, "variant:cutting_stroke_by_outline_evidence"));
+    }
+    // without colour plotting nothing says they are thick: they keep the layer's width
+    let g = lettered_strokes(NAMED_PLOT_STYLES, "09");
+    assert!(strokes(&g).iter().all(|m| m.line_type == "thin_continuous"));
 }

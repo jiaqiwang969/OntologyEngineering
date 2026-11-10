@@ -56,6 +56,8 @@ mod line_evidence;
 mod not_plotted;
 #[path = "extension_lines.rs"]
 mod extension_lines;
+#[path = "line_widths.rs"]
+mod line_widths;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -6852,6 +6854,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     annotation_blocks::references(&b, &regions, &mut refs)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);
+    line_widths::members(&cx, &mut nb)?;
     coverage::assign(&mut nb)?;
     not_plotted::mark(&cx, &mut nb);
     let view_of: BTreeMap<String, Option<String>> = nb
@@ -6867,12 +6870,14 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         nb.members[i].evidence_ids.push(label);
     }
     let structural_lines = topology::structural_lines(&cx, &nb, &cover, &implied_spans);
+    let widths = line_evidence::Widths::of(&cx);
     let line_styles = cx
         .src
         .entities
         .iter()
         .map(|e| {
-            let (lt, basis, rule) = cx.base[&e.id].clone();
+            // the line type the sheet plots (module `line_widths`)
+            let (lt, basis, rule, plotted) = line_widths::style(&cx, &widths, &e.id);
             let st = &cx.style[&e.id];
             MdLineStyle {
                 source_handle: e.id.clone(),
@@ -6887,10 +6892,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
                 layer_rule: rule,
                 line_type: lt.into(),
                 basis: basis.into(),
-                evidence_ids: vec![
+                evidence_ids: [
                     format!("color:{}", st.color),
                     format!("byblock:{}", st.byblock),
-                ],
+                ]
+                .into_iter()
+                .chain(plotted)
+                .collect(),
             }
         })
         .collect::<Vec<_>>();

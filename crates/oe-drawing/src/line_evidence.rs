@@ -133,6 +133,24 @@ impl Widths {
     pub(super) fn weights_decide(&self) -> bool {
         !self.by_weight.is_empty()
     }
+    /// Width class of a root source by the drawing's own evidence alone, with the card variant:
+    /// its lineweight class when lineweights decide; else, when the drawing plots by colour, its
+    /// plotting colour (the thick-line layer's colour is thick, a thin-line layer's colour thin,
+    /// BYBLOCK plots in the default colour) whatever its layer. None when neither decides.
+    pub(super) fn evidence(&self, cx: &Ctx, id: &str) -> Option<(Width, &'static str)> {
+        if let Some(w) = self.weight(id) {
+            return Some((w, "lineweight_classes"));
+        }
+        let thick = self.thick_colour?;
+        let c = cx.style.get(id)?.plot_colour();
+        if c == thick {
+            Some((Width::Thick, "colour_before_layer"))
+        } else if cx.thin_colors.contains(&c) {
+            Some((Width::Thin, "colour_before_layer"))
+        } else {
+            None
+        }
+    }
     /// A continuous line drawn thick by the drawing's own evidence: its lineweight class, else the
     /// outline style of the checked layer convention, or the thick colour on any layer when the
     /// drawing plots by colour (an explicit thin colour is thin).

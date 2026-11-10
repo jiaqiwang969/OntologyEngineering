@@ -669,7 +669,7 @@ sources = [
 knowledge_units = ["K03", "K09"]
 recognition = "先读线宽：实体线宽，随层时取图层线宽；有效值分成细档与不小于其给定倍数的粗档，且点画线、虚线大多在细档时，粗档的连续线是粗线（不需要结点即为轮廓），细档的连续线是细线。没有线宽时，若图层约定已核对且按颜色出图，以粗实线层的颜色为粗线颜色（不得与细实线层、点画线层同色）。细线层上的粗线颜色连续线、粗线层上的细线颜色连续线进入候选，按连接关系确认：两端都接到轮廓或已确认的此类线（未被注写使用时也可是任意两处结点）才是可见轮廓；被尺寸用作界线的线必须两端都接到轮廓。图层名和颜色本身不决定。"
 markers = []
-concepts = ["DC-G1-016", "DC-G1-038", "DC-G1-079"]
+concepts = ["DC-G1-007", "DC-G1-016", "DC-G1-038", "DC-G1-043", "DC-G1-079"]
 
 [[cards.components]]
 role = "contour_segment"
@@ -711,6 +711,38 @@ distinguishing = "图线不在任何图块内而颜色属性为“随块”（�
 encodings = ["loose"]
 tests = ["byblock_colour_line_joined_at_both_ends_is_outline"]
 
+[[cards.variants]]
+id = "colour_before_layer"
+title = "按颜色出图时，颜色先于图层决定粗细"
+distinguishing = "全图没有线宽、按颜色出图：图线自己的颜色（随层时为图层颜色，随块时为默认颜色）与粗实线层同色即为粗线，与细实线层同色即为细线，不论它画在哪一层；线型表和成员线型都按此报告"
+encodings = ["loose"]
+tests = ["thin_colour_line_on_the_thick_layer_is_reported_thin", "thick_colour_line_on_a_thin_layer_is_reported_thick"]
+
+[[cards.variants]]
+id = "text_layer_is_no_line_width"
+title = "文本层说的是文字笔画，不是图线宽度"
+distinguishing = "表 6 的文本层（细实线文本、粗实线文本）指文字的笔画：画在这些层上的图线，粗细只由本图的颜色、线宽证据或它在表达中的角色决定"
+encodings = ["loose"]
+tests = ["extension_line_on_the_thick_text_layer_is_thin"]
+
+[[cards.variants]]
+id = "annotation_roles_thin"
+title = "尺寸线、界线、引出线等注写图线为细实线"
+distinguishing = "尺寸线、尺寸界线、引出线、框格线、表格线、投射方向箭头、放大圈和螺纹细线报告为细实线；只有本图自己的线宽或出图颜色说明它画成了粗线时才报告为粗线，图层名本身不改变它"
+encodings = ["loose", "native"]
+tests = ["dimension_line_on_the_thick_layer_without_colour_evidence_is_thin", "dimension_line_drawn_with_the_thick_lineweight_is_reported_thick"]
+
+[[cards.variants]]
+id = "cutting_stroke_by_outline_evidence"
+title = "剖切符号的短画按轮廓的证据为粗线"
+distinguishing = "剖切符号的起、迄、转折短画用粗实线：按轮廓所用的同样证据（线宽分档、出图颜色、粗实线层）确认，画在细线层上而用粗线颜色的短画也报告为粗实线"
+encodings = ["loose"]
+tests = ["cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick"]
+
+[[cards.counter_examples]]
+statement = "不按颜色出图（命名打印样式）时颜色不说明粗细：粗线层上的细线颜色线在线型表里仍按图层报告"
+test = "colour_is_no_width_evidence_with_named_plot_styles"
+
 [[cards.counter_examples]]
 statement = "颜色随块的线只有一端接在轮廓上、另一端越过尺寸线伸出（尺寸界线），不是轮廓"
 test = "byblock_colour_extension_line_stays_annotation"
@@ -731,6 +763,18 @@ test = "one_lineweight_class_does_not_decide"
 [[cards.counter_examples]]
 statement = "永不打印的层上的线不属于图面表达，即使两端接在轮廓上也不按细线颜色的轮廓读出"
 test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
+
+[[cards.lexicon]]
+concept = "DC-G1-043"
+entry = "thin_roles"
+values = ["dimension_line", "extension_line", "leader_line", "frame_cell", "table_line", "view_arrow", "detail_circle", "thread_line"]
+meaning = "细实线画的成员角色（GB/T 4457.4 表 1：尺寸线、尺寸界线、指引线、框格、螺纹牙底线等）：本图自己的证据不说明画成粗线时报告为细实线"
+
+[[cards.lexicon]]
+concept = "DC-G1-007"
+entry = "thick_roles"
+values = ["cutting_stroke"]
+meaning = "粗实线画的注写成员（GB/T 4457.4 表 1 01.2：剖切符号用线）：按轮廓所用的同样证据报告为粗实线"
 
 [[cards.parameters]]
 name = "weight_ratio_min"

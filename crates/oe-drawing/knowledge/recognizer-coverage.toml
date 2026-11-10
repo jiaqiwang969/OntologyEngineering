@@ -909,7 +909,7 @@ missing = "用线型画的虚线已识别；炸开成一段段短线的虚线未
 [[concepts]]
 id = "DC-G1-007"
 level = "partial"
-by = ["card:view_callout", "card:view_callout/cutting_plane_group"]
+by = ["card:line_width_evidence", "card:view_callout", "card:view_callout/cutting_plane_group"]
 missing = "整块剖切符号（粗短画、箭头、字母与转折）已识别；散线画的转折处短画、连接用的细点画线与无箭头的短画未识别"
 
 [[concepts]]
@@ -932,7 +932,7 @@ by = ["card:outline_joins", "card:visible_edge_line", "grouped_line_type_pieces_
 id = "DC-G1-016"
 level = "partial"
 by = ["card:line_width_evidence", "convention:member_line_width_class"]
-missing = "实体与图层线宽成两档时按线宽判定粗细；只在识别轮廓时使用，线型表（line_styles）仍按图层约定报告，线宽组别本身未核对"
+missing = "实体与图层线宽成两档时按线宽、按颜色出图时按颜色判定粗细，线型表（line_styles）与成员线型都按此报告；线宽组别本身未核对"
 
 [[concepts]]
 id = "DC-G1-018"
@@ -984,8 +984,8 @@ missing = "按线型识别细双点画线，未判断它表示相邻零件、极
 [[concepts]]
 id = "DC-G1-043"
 level = "partial"
-by = ["convention:member_line_width_class"]
-missing = "细实线由图层约定与成员作用推出，未读取实际线宽值"
+by = ["card:line_width_evidence", "convention:member_line_width_class"]
+missing = "注写成员（尺寸线、界线、引出线、框格线等）报告为细实线，本图线宽或出图颜色说明画成粗线时报告为粗线；线宽的实际数值（mm）未读取"
 
 [[concepts]]
 id = "DC-G1-044"
@@ -1035,7 +1035,7 @@ by = ["card:technical_note"]
 id = "DC-G1-079"
 level = "partial"
 by = ["card:line_width_evidence"]
-missing = "只在图层约定已核对、按颜色出图时以粗实线层颜色区分粗细；颜色—线型—线宽共现表未完整统计，企业自定义颜色映射未重建"
+missing = "只在图层约定已核对、按颜色出图时以粗实线层与细实线层的颜色区分粗细（随块按默认颜色），线型表与成员线型按颜色先于图层报告；只用于文本层或兼用于粗、细层的颜色不作证据，颜色—线型—线宽共现表未完整统计，企业自定义颜色映射未重建"
 
 [[concepts]]
 id = "DC-G1-085"

@@ -2869,7 +2869,7 @@ sources = [
 knowledge_units = ["K17", "K18"]
 recognition = "以已识别尺寸的尺寸界线为锚：同一根线上未解释的短端段（不超过给定长度）——在尺寸线一侧为超出段，在轮廓一侧为画进轮廓的起头——并入该界线；较长的未解释段若有另一尺寸的终端箭头垂直落在其上，则为两尺寸共用的界线。尺寸线终端之外从箭尖起共线延伸的细线是尺寸线的延长，沿它找数值。"
 markers = []
-concepts = ["DC-G4-058", "DC-G4-059"]
+concepts = ["DC-G4-019", "DC-G4-058", "DC-G4-059"]
 
 [[cards.components]]
 role = "extension_line"
@@ -2958,6 +2958,40 @@ test = "thin_extension_line_drawn_past_its_origin_stays_an_extension_line"
 [[cards.counter_examples]]
 statement = "同一直线上只在起点之后（不接到起点）或只在尺寸线外侧的另一段轮廓不属于这个尺寸：它是别的要素"
 test = "outline_behind_the_origin_or_beyond_the_dimension_line_is_not_lent"
+
+[[cards.variants]]
+id = "terminator_any_entity"
+title = "尺寸线终端不论用什么实体存放"
+distinguishing = "尺寸内的填充三角形——实心多边形（SOLID、TRACE）、图块、宽度渐变到零的多段线或实心填充的 HATCH——尖端落在本尺寸的尺寸线（直线或圆弧）上、轴线沿尺寸线：是这个尺寸的终端（箭头）；形状为细长三角形，长约为底宽的数倍"
+encodings = ["native"]
+tests = ["solid_hatch_triangle_in_a_dimension_block_is_its_terminator", "tapered_polyline_in_a_dimension_block_is_its_terminator"]
+
+[[cards.counter_examples]]
+statement = "尺寸块内轴线不沿尺寸线的填充三角形（如斜度、锥度符号）不是终端"
+test = "filled_triangle_across_the_dimension_line_is_not_a_terminator"
+[[cards.counter_examples]]
+statement = "尺寸块内只画文字的图块是数值的一部分（分段写出的数值与公差），不是终端"
+test = "block_drawing_only_text_in_a_dimension_is_part_of_its_value"
+
+[[cards.parameters]]
+name = "terminator_aspect_min"
+value = 2.0
+meaning = "终端三角形长度 ≥ 该值 × 底宽（GB/T 4458.4 图 9：箭头细长；CAD 常用 3:1～6:1）"
+
+[[cards.parameters]]
+name = "terminator_aspect_max"
+value = 12.0
+meaning = "终端三角形长度 ≤ 该值 × 底宽"
+
+[[cards.parameters]]
+name = "terminator_on_line"
+value = 0.1
+meaning = "终端尖端到尺寸线的距离容差 = 该值 × 终端长度"
+
+[[cards.parameters]]
+name = "terminator_axis_sin_max"
+value = 0.1
+meaning = "终端轴线与尺寸线（圆弧取切线）夹角正弦的绝对值上限"
 
 [[cards.parameters]]
 name = "overshoot_max"

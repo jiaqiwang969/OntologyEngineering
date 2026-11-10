@@ -58,6 +58,8 @@ mod not_plotted;
 mod extension_lines;
 #[path = "line_widths.rs"]
 mod line_widths;
+#[path = "terminators.rs"]
+mod terminators;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -1364,7 +1366,7 @@ fn native_dimensions(
     b: &mut Builder,
     text_anchor: &mut BTreeMap<usize, (P, f64)>,
     native_texts: &mut BTreeMap<usize, TextFact>,
-) {
+) -> Result<()> {
     for (h, r) in cx.rec.iter().filter(|(_, r)| r.kind == "DIMENSION") {
         let dtype = int(r, 70) & 7;
         let off = r.xy(12).unwrap_or([0., 0.]);
@@ -1532,6 +1534,8 @@ fn native_dimensions(
                 vec![format!("native_member:{}", m.id)],
             );
         }
+        // Terminators stored as a filled hatch or a tapered polyline (module `terminators`).
+        tips.extend(terminators::native(cx, b, e, h, off)?);
         // Angular and other non-linear dimensions: extension lines are the radial block lines.
         if u.is_none() {
             for bl in &mut block_lines {
@@ -1664,6 +1668,7 @@ fn native_dimensions(
             extension_lines::native(cx, b, e, h, u, p10, &origins, alen, tol);
         }
     }
+    Ok(())
 }
 
 /// Member roles that consume a source exclusively for annotation; such sources
@@ -6774,7 +6779,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut text_anchor = BTreeMap::new();
     let mut native_texts = BTreeMap::new();
     let mut anchors = BTreeMap::new();
-    native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts);
+    native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts)?;
     blocks(&cx, &mut b, &mut def);
     view_layout::arrows_and_letters(&cx, &mut b)?;
     let block_titles = annotation_blocks::read(&cx, &mut b, &def, &mut anchors)?;

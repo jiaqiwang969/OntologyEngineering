@@ -972,3 +972,159 @@ fn cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick() {
     let g = lettered_strokes(NAMED_PLOT_STYLES, "09");
     assert!(strokes(&g).iter().all(|m| m.line_type == "thin_continuous"));
 }
+
+// ---------------------------------------------------------------- dimension_line_parts: terminators whatever stores them
+
+/// A hatch filled solid whose boundary is the triangle with `tip` and a base of half width `half`
+/// centred at `base`.
+fn hatch_triangle(id: &str, layer: &str, tip: P, base: P, half: f64) -> String {
+    let l = ((base[0] - tip[0]).powi(2) + (base[1] - tip[1]).powi(2)).sqrt();
+    let n = [-(base[1] - tip[1]) / l * half, (base[0] - tip[0]) / l * half];
+    let (b1, b2) = ([base[0] + n[0], base[1] + n[1]], [base[0] - n[0], base[1] - n[1]]);
+    ent(
+        "HATCH",
+        id,
+        layer,
+        &format!(
+            "10\n0\n20\n0\n30\n0\n2\nSOLID\n70\n1\n71\n0\n91\n1\n92\n2\n72\n0\n73\n1\n93\n3\n10\n{}\n20\n{}\n10\n{}\n20\n{}\n10\n{}\n20\n{}\n97\n0\n75\n0\n76\n1\n98\n0\n",
+            tip[0], tip[1], b1[0], b1[1], b2[0], b2[1]
+        ),
+    )
+}
+/// A two-vertex polyline tapering from width `w` at `base` to nothing at `tip`.
+fn tapered(id: &str, layer: &str, tip: P, base: P, w: f64) -> String {
+    ent(
+        "LWPOLYLINE",
+        id,
+        layer,
+        &format!(
+            "90\n2\n70\n0\n10\n{}\n20\n{}\n40\n{w}\n41\n0\n10\n{}\n20\n{}\n",
+            base[0], base[1], tip[0], tip[1]
+        ),
+    )
+}
+fn insert(id: &str, layer: &str, name: &str, at: P) -> String {
+    ent(
+        "INSERT",
+        id,
+        layer,
+        &format!(
+            "2\n{name}\n10\n{}\n20\n{}\n41\n1\n42\n1\n50\n0\n",
+            at[0], at[1]
+        ),
+    )
+}
+fn blocks_section(defs: &[(&str, Vec<String>)]) -> String {
+    let mut s = String::from("0\nSECTION\n2\nBLOCKS\n");
+    for (name, ents) in defs {
+        s.push_str(&format!(
+            "0\nBLOCK\n2\n{name}\n10\n0\n20\n0\n{}0\nENDBLK\n",
+            ents.concat()
+        ));
+    }
+    s.push_str("0\nENDSEC\n");
+    s
+}
+/// The plate's width dimensioned above it by a native dimension whose block draws the dimension
+/// line, the extension lines and the two terminators `heads`, and `more`.
+fn width_with_heads(heads: [String; 2], more: Vec<String>, extra_blocks: &[(&str, Vec<String>)]) -> MdEngineeringExpressionGraph {
+    let mut children = vec![
+        line("HL1", "0", [100., 62.], [130., 62.]),
+        line("HL4", "0", [100., 50.], [100., 64.]),
+        line("HL5", "0", [130., 50.], [130., 64.]),
+    ];
+    children.extend(heads);
+    children.extend(more);
+    let (_, dim) = native_linear("DH", "*DT", 0., [130., 62.], [100., 50.], [130., 50.], &[]);
+    let mut defs: Vec<(&str, Vec<String>)> = vec![("*DT", children)];
+    defs.extend(extra_blocks.iter().cloned());
+    let mut ents = plate();
+    ents.push(dim);
+    run_full(GB, &blocks_section(&defs), &ents)
+}
+/// Role of the native member `id` of dimension `DH`.
+fn native_role(g: &MdEngineeringExpressionGraph, id: &str) -> (String, Vec<String>) {
+    g.members
+        .iter()
+        .find(|m| m.native_member_id.as_deref() == Some(&format!("DH/{id}")))
+        .map(|m| (m.member_role.clone(), m.evidence_ids.clone()))
+        .unwrap_or_else(|| panic!("{id}: {:?}", members(g, "DH")))
+}
+fn dimension_dh(g: &MdEngineeringExpressionGraph) -> &MdEngineeringExpression {
+    exprs_of(g, "DH")
+        .into_iter()
+        .find(|e| e.kind == "dimension_linear")
+        .unwrap()
+}
+
+#[test]
+fn solid_hatch_triangle_in_a_dimension_block_is_its_terminator() {
+    let g = width_with_heads(
+        [
+            hatch_triangle("HA1", "0", [100., 62.], [104., 62.], 0.5),
+            hatch_triangle("HA2", "0", [130., 62.], [126., 62.], 0.5),
+        ],
+        vec![],
+        &[],
+    );
+    for h in ["HA1", "HA2"] {
+        let (role, ev) = native_role(&g, h);
+        assert_eq!(role, "arrowhead", "{h}");
+        assert!(has(&ev, "variant:terminator_any_entity"), "{ev:?}");
+    }
+    let e = dimension_dh(&g);
+    assert!(names(e, "dimension_line_parts", "terminator_any_entity"));
+    assert!(e.concept_ids.contains(&"DC-G4-019".to_string()), "{:?}", e.concept_ids);
+}
+
+#[test]
+fn tapered_polyline_in_a_dimension_block_is_its_terminator() {
+    // the terminators drawn outside the extension lines, on the dimension line's continuation
+    let g = width_with_heads(
+        [
+            tapered("HT1", "0", [100., 62.], [96., 62.], 1.),
+            tapered("HT2", "0", [130., 62.], [134., 62.], 1.),
+        ],
+        vec![line("HL6", "0", [92., 62.], [100., 62.])],
+        &[],
+    );
+    for h in ["HT1", "HT2"] {
+        assert_eq!(native_role(&g, h).0, "arrowhead", "{h}");
+    }
+}
+
+#[test]
+fn filled_triangle_across_the_dimension_line_is_not_a_terminator() {
+    // two filled triangles whose tips touch the dimension line but whose axes cross it
+    let g = width_with_heads(
+        [
+            hatch_triangle("HX1", "0", [110., 62.], [110., 58.], 0.5),
+            hatch_triangle("HX2", "0", [120., 62.], [120., 66.], 0.5),
+        ],
+        vec![],
+        &[],
+    );
+    for h in ["HX1", "HX2"] {
+        assert_eq!(native_role(&g, h).0, "native_member", "{h}");
+    }
+    assert!(!dimension_dh(&g)
+        .evidence_ids
+        .contains(&"variant:terminator_any_entity".to_string()));
+}
+
+#[test]
+fn block_drawing_only_text_in_a_dimension_is_part_of_its_value() {
+    let value = vec![text("VT1", "0", "%%c8", [0., 0.], 2.5)];
+    let g = width_with_heads(
+        [
+            hatch_triangle("HB1", "0", [100., 62.], [104., 62.], 0.5),
+            hatch_triangle("HB2", "0", [130., 62.], [126., 62.], 0.5),
+        ],
+        vec![insert("HBV", "0", "VALUE", [112., 63.])],
+        &[("VALUE", value)],
+    );
+    let (role, ev) = native_role(&g, "HBV");
+    assert_eq!(role, "dimension_text");
+    assert!(has(&ev, "block_draws_only_text"), "{ev:?}");
+    assert_eq!(native_role(&g, "HB1").0, "arrowhead");
+}

@@ -130,9 +130,10 @@ function legend(){const raw=$('original').checked,basis=TERMINATORS.length?`d å
 function setFloor(){const b=svg.getBoundingClientRect(),k=Math.min(b.width/view[2],b.height/view[3]),f=k>0&&isFinite(k)?Math.max(1,Number((FLOOR_PX/(D*k)).toPrecision(6))):1;if(f!==floor){floor=f;svg.style.setProperty('--zoom',f);legend()}}
 // Text backgrounds. A text's background hides the foreign lines behind the text (GB/T 4458.4-2003 4.3.4: no line runs through a
 // dimension number), not the annotation's own dimension line, extension lines and terminators: it is painted before the other ink
-// of the annotation that holds the text. The annotation is the whole root for a DIMENSION, TEXT or MTEXT root; inside another root
-// it is known only when the background's group names a text member, and is then the block reference that directly holds that
-// text. Own ink that crosses the text's own glyphs stays behind the background (4.3.1, 4.3.3: a number written in the interruption
+// of the annotation that holds the text. The annotation is the whole root for a DIMENSION, TEXT or MTEXT root. Inside another root
+// (a block reference) it is known only when the background's group names a text member (TEXT, MTEXT, ATTRIB, ATTDEF): it is then
+// what the expressions of that text claim (the expressions with a member that claims the background's group); every other line of
+// the block stays foreign to the text and behind its background, as converted. Own ink that crosses the text's own glyphs stays behind the background (4.3.1, 4.3.3: a number written in the interruption
 // of its line keeps the interruption), as does ink that a later background of the root must keep hidden. Backgrounds without that
 // identity and wipeouts stay as converted; the original view restores the converted order.
 const ONE_ANNOTATION=new Set(['DIMENSION','TEXT','MTEXT']),TEXT_KINDS=new Set(['TEXT','MTEXT','ATTRIB','ATTDEF']),NATIVE_KIND=DATA.native_member_kinds||{},maskOrder=[],maskFacts={roots:0,masks:0,in_front:0,kept_behind:0};
@@ -144,8 +145,8 @@ const ONE_ANNOTATION=new Set(['DIMENSION','TEXT','MTEXT']),TEXT_KINDS=new Set(['
  const order=[];
  for(const [id,gs] of pieces){const one=ONE_ANNOTATION.has(entities.get(id).kind),at=[];gs.forEach((g,i)=>{if([...g.children].some(isMask))at.push(i)});if(!at.length)continue;maskFacts.roots++;maskFacts.masks+=at.length;
   if(!gs.every((g,i)=>!i||+g.dataset.seq===+gs[i-1].dataset.seq+1))continue; // a root drawn in several runs keeps the converted order
-  const masks=at.map(i=>{const M=gs[i].dataset.member,own=one||(!!M&&TEXT_KINDS.has(NATIVE_KIND[M]));if(!own)return {i,own};const parent=M?M.slice(0,M.lastIndexOf('/')):id;
-   return {i,own,scope:one?()=>true:g=>g.dataset.member?g.dataset.member.startsWith(parent+'/'):parent===id,glyphs:boxed((M?gs.filter(g=>g.dataset.member===M):gs.slice(at[at.length-1]+1)).flatMap(g=>[...g.children]).filter(n=>!isMask(n)))}});
+  const masks=at.map(i=>{const M=gs[i].dataset.member,own=one||(!!M&&TEXT_KINDS.has(NATIVE_KIND[M]));if(!own)return {i,own};const ex=new Set(claims.get(gs[i]).map(m=>m.expression_id));
+   return {i,own,scope:one?()=>true:g=>claims.get(g).some(m=>ex.has(m.expression_id)),glyphs:boxed((M?gs.filter(g=>g.dataset.member===M):gs.slice(at[at.length-1]+1)).flatMap(g=>[...g.children]).filter(n=>!isMask(n)))}});
   const last=at[at.length-1],front=[];
   for(let j=0;j<last;j++){if(at.includes(j))continue;const g=gs[j],after=masks.filter(m=>m.i>j);if(!after.some(m=>m.own&&m.scope(g)))continue;if(after.every(m=>m.own&&m.scope(g)&&!crosses(g,m.glyphs))){front.push(g);maskFacts.in_front++}else maskFacts.kept_behind++}
   if(front.length)order.push({converted:[...gs],page:[...gs.slice(0,last+1).filter(g=>!front.includes(g)),...front,...gs.slice(last+1)],end:+gs[gs.length-1].dataset.seq})}

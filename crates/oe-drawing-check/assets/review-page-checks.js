@@ -188,8 +188,9 @@ facts.widths={d:W.d,thick:W.thick,thin:W.thin,floor:W.floor,converter:W.converte
 // Member-level display and the empty notice at the screenshot state.
 facts.member_display=Object.assign(shownGroups('Screenshot state'),{roots_with_member_identity:IDENT.size});ok(true,'Groups with member identity are shown exactly when a claiming member passes');ok(true,'The empty notice is hidden whenever something is drawn');
 // Text backgrounds: the background of a text is painted before the other ink of its own annotation (the whole root for a DIMENSION,
-// TEXT or MTEXT root; the block reference that directly holds the text when the background's group names a text member), except ink
-// that crosses the text's own glyphs or that a later background of the root must keep hidden. Everything else keeps the converted order.
+// TEXT or MTEXT root; inside a block reference, when the background's group names a text member, the groups claimed by the
+// expressions that claim the background), except ink that crosses the text's own glyphs or that a later background of the root must
+// keep hidden. Everything else keeps the converted order.
 const NATIVE=JSON.parse(d.getElementById('payload').textContent).native_member_kinds||{},TEXTS=new Set(['TEXT','MTEXT','ATTRIB','ATTDEF']),ONE=new Set(['DIMENSION','TEXT','MTEXT']);
 const ownInk=()=>{const L=live(),pos=new Map(L.map((g,i)=>[g,i])),byRoot=new Map(),F={roots:0,masks:0,own_masks:0,roots_in_several_runs:0,own_before:0,in_front:0,kept_behind:0,in_front_touching_mask_box:0},moved=new Set(),P=svg0.createSVGPoint();
  for(const g of [...L].sort((x,y)=>SEQ.get(x)-SEQ.get(y))){const r=g.dataset.entity;if(!byRoot.has(r))byRoot.set(r,[]);byRoot.get(r).push(g)}
@@ -199,8 +200,8 @@ const ownInk=()=>{const L=live(),pos=new Map(L.map((g,i)=>[g,i])),byRoot=new Map
    else if(n.tagName==='circle'){if(hit(Number(n.getAttribute('cx')),Number(n.getAttribute('cy'))))return true}
    else{for(const q of pts(n.getAttribute('d')))if(hit(q[0],q[1]))return true;for(const b of B){P.x=(b[0]+b[2])/2;P.y=(b[1]+b[3])/2;if(n.isPointInFill(P))return true}}}return false};
  for(const [r,gs] of byRoot){const masks=gs.filter(g=>[...g.children].some(isMask));if(!masks.length)continue;F.roots++;F.masks+=masks.length;const one=ONE.has(ENT.get(r).kind),runs=!gs.every((g,i)=>!i||SEQ.get(g)===SEQ.get(gs[i-1])+1),lastMask=Math.max(...masks.map(g=>SEQ.get(g)));if(runs)F.roots_in_several_runs++;
-  const info=masks.map(M=>{const D=M.dataset.member,own=one||(!!D&&TEXTS.has(NATIVE[D]));if(!own)return {M,own};const parent=D?D.slice(0,D.lastIndexOf('/')):r;
-   return {M,own,scope:g=>one||(g.dataset.member?g.dataset.member.startsWith(parent+'/'):parent===r),glyphs:(D?gs.filter(g=>g.dataset.member===D):gs.filter(g=>SEQ.get(g)>lastMask)).flatMap(g=>[...g.children]).filter(n=>!isMask(n))}});
+  const info=masks.map(M=>{const D=M.dataset.member,own=one||(!!D&&TEXTS.has(NATIVE[D]));if(!own)return {M,own};const ex=new Set(claimers(M).map(m=>m.expression_id));
+   return {M,own,scope:g=>one||claimers(g).some(m=>ex.has(m.expression_id)),glyphs:(D?gs.filter(g=>g.dataset.member===D):gs.filter(g=>SEQ.get(g)>lastMask)).flatMap(g=>[...g.children]).filter(n=>!isMask(n))}});
   F.own_masks+=info.filter(m=>m.own).length;const was=gs.map(g=>g.style.display);gs.forEach(g=>g.style.display='');const boxesOf=masks.map(g=>g.getBBox());
   for(const g of gs){if(masks.includes(g))continue;const after=info.filter(m=>SEQ.get(m.M)>SEQ.get(g));if(!after.some(m=>m.own&&m.scope(g)))continue;F.own_before++;
    const free=!runs&&after.every(m=>m.own&&m.scope(g)&&!crossing(g,m.glyphs));

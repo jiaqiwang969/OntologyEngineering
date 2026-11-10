@@ -44,3 +44,28 @@ pub fn inventory(bytes: &[u8]) -> Result<Inventory> {
     }
     Ok(Inventory { entities, members })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::inventory;
+
+    /// Roots and member identities are read with the root each group is drawn for; a member identity
+    /// without a root keeps an empty root, so that the graph check refuses it.
+    #[test]
+    fn member_identities_are_read_with_their_roots() {
+        let svg = br#"<svg><g data-entity="A1"><path d="M0 0Z"/></g><g data-entity="A1" data-member="A1/B2/C3"><path d="M0 0Z"/></g><g data-member="A1/B2"></g><g data-entity="D4" data-member="D4/E5"/></svg>"#;
+        let found = inventory(svg).unwrap();
+        assert_eq!(
+            found.entities.into_iter().collect::<Vec<_>>(),
+            ["A1", "D4"]
+        );
+        assert_eq!(
+            found.members.into_iter().collect::<Vec<_>>(),
+            [
+                (String::new(), "A1/B2".to_owned()),
+                ("A1".to_owned(), "A1/B2/C3".to_owned()),
+                ("D4".to_owned(), "D4/E5".to_owned()),
+            ]
+        );
+    }
+}

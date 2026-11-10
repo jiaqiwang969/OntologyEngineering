@@ -252,8 +252,9 @@ fn the_review_page_accepts_a_member_identity_only_inside_its_own_root() {
 /// line; two native dimensions with filled terminators 9 long and a text background each (the second one's
 /// own line runs through its number); a requirement block whose nested texture symbol has a value with a
 /// background; a detail view stored as a block (outline, section lines, boundary circle); a block the
-/// rendering gives no member identity for; a note with a background; a cutting-symbol letter that names a
-/// view of another sheet; the frame; a line on a layer that never plots.
+/// rendering gives no member identity for; a leader note stored as a block, whose text background lies over
+/// its own leader and over a section line of another expression; a note with a background; a cutting-symbol
+/// letter that names a view of another sheet; the frame; a line on a layer that never plots.
 struct Synthetic {
     top: f64,
     svg: String,
@@ -668,6 +669,36 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
         &["references_view:view:B2.5:1:by_elimination"],
         &["detail_indicator"],
     );
+    // A leader note stored as a block: a section line of another expression runs through the margin of the
+    // text's background, the note's own leader starts inside it; neither touches the glyphs.
+    s.entity("B4", "INSERT", None, &[("Y1", "LINE"), ("Y2", "LINE"), ("Y3", "MTEXT")]);
+    s.stroke("B4", Some("B4/Y1"), &[(160., 111.), (186., 111.)]);
+    s.stroke("B4", Some("B4/Y2"), &[(182., 116.), (195., 130.)]);
+    s.background("B4", Some("B4/Y3"), [166., 110., 184., 122.]);
+    for b in [[170., 113., 174., 119.], [176., 113., 180., 119.]] {
+        s.fill("B4", Some("B4/Y3"), &rectangle(b));
+    }
+    s.expression(
+        "section_hatch",
+        "geometry",
+        "C · 剖面线 45° 间距 2",
+        main,
+        &[("B4", "hatch_fill", "thin_continuous", Some("B4/Y1"), WHOLE, &[])],
+        &[],
+        &[],
+    );
+    s.expression(
+        "leader_note",
+        "note",
+        "引出说明",
+        main,
+        &[
+            ("B4", "leader_line", "thin_continuous", Some("B4/Y2"), WHOLE, &[]),
+            ("B4", "note_text", "text", Some("B4/Y3"), WHOLE, &[]),
+        ],
+        &[],
+        &[],
+    );
     s.entity("T9", "MTEXT", None, &[]);
     s.background("T9", None, [20., 150., 50., 170.]);
     s.fill("T9", None, &rectangle([24., 156., 30., 164.]));
@@ -799,18 +830,21 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
         assert_eq!(facts["widths"]["d"], 1.5, "{mode}");
         assert_eq!(facts["widths"]["basis"], "terminator_length/6", "{mode}");
         assert_eq!(facts["widths"]["terminators"], 4, "{mode}");
-        // Text backgrounds of the two dimensions, the nested texture value and the note are their
-        // annotation's own; the block without member identity keeps its background as converted.
+        // Text backgrounds of the two dimensions, the nested texture value, the leader note's text and the
+        // note are their annotation's own; the block without member identity keeps its background as
+        // converted.
         let masks = &facts["masks_own"];
-        assert_eq!(masks["roots"], 5, "{mode}");
-        assert_eq!(masks["own_masks"], 4, "{mode}");
-        // In front: 5 pieces of the first dimension, 4 of the second, the two symbol strokes. Behind:
-        // the second dimension's line, which runs through its own number.
-        assert_eq!(masks["in_front"], 11, "{mode}");
+        assert_eq!(masks["roots"], 6, "{mode}");
+        assert_eq!(masks["own_masks"], 5, "{mode}");
+        // In front: 5 pieces of the first dimension, 4 of the second, the two symbol strokes, the note's
+        // leader. Behind: the second dimension's line, which runs through its own number. The section line
+        // through the leader note's background is not the note's own and is not counted: it keeps its
+        // converted place behind the background.
+        assert_eq!(masks["in_front"], 12, "{mode}");
         assert_eq!(masks["kept_behind"], 1, "{mode}");
         let shown = &facts["member_display"];
-        assert_eq!(shown["roots_with_member_identity"], 4, "{mode}");
-        assert_eq!(shown["groups_with_member"], 32, "{mode}");
+        assert_eq!(shown["roots_with_member_identity"], 5, "{mode}");
+        assert_eq!(shown["groups_with_member"], 37, "{mode}");
         // One kind at a time: of the requirement block only the texture symbol and its value; of the
         // detail view only its section lines, beside the whole block that has no member identity.
         let kinds = &facts["by_kind"];
@@ -826,7 +860,7 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
         );
         assert_eq!(
             kinds["section_hatch"],
-            json!({"groups_shown":7,"groups_with_member_shown":3}),
+            json!({"groups_shown":8,"groups_with_member_shown":4}),
             "{mode}"
         );
         // Only the outline in the complete structure: four structural lines carry the four outline
@@ -870,6 +904,12 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
             "svg.classList.toggle('as-converted',raw);placeMasks(raw);",
             "svg.classList.toggle('as-converted',raw);",
             "A text background hides ink of its own annotation that does not cross the text",
+        ),
+        // the whole block counts as the text's annotation: the foreign section line comes in front
+        (
+            "scope:one?()=>true:g=>claims.get(g).some(m=>ex.has(m.expression_id))",
+            "scope:()=>true",
+            "left its converted position",
         ),
         // own ink comes in front although it crosses its own number
         (

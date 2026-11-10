@@ -32,8 +32,10 @@ pub(super) fn layers(d: &Drawing) -> Result<BTreeMap<String, &'static str>> {
         .filter(|l| l.entry == "definition_point_layer")
         .flat_map(|l| l.values.iter().map(|v| v.to_uppercase()))
         .collect();
-    let mut out: BTreeMap<String, &'static str> =
-        named.iter().map(|n| (n.clone(), "definition_point_layer")).collect();
+    let mut out: BTreeMap<String, &'static str> = named
+        .iter()
+        .map(|n| (n.clone(), "definition_point_layer"))
+        .collect();
     for r in d.records.iter().filter(|r| r.kind == "LAYER") {
         let Some(name) = r.get(2).map(str::to_uppercase) else {
             continue;
@@ -65,13 +67,22 @@ pub(super) fn source(cx: &Ctx, id: &str) -> bool {
 /// Ends of plotted root curves (source, end at parameter 1) all of whose incidences are with
 /// curves that are not plotted: on the sheet such an end is free.
 pub(super) fn free_ends(cx: &Ctx) -> BTreeSet<(String, bool)> {
-    if cx.unplotted.is_empty() || !cx.style.values().any(|s| layer_variant(cx, &s.layer).is_some()) {
+    if cx.unplotted.is_empty()
+        || !cx
+            .style
+            .values()
+            .any(|s| layer_variant(cx, &s.layer).is_some())
+    {
         return BTreeSet::new();
     }
     // per end: (meets a plotted curve, meets a curve that is not plotted)
     let mut seen: BTreeMap<(String, bool), (bool, bool)> = BTreeMap::new();
     #[allow(clippy::manual_range_contains)]
-    let end = |t: f64| (t < 1e-6).then_some(false).or((t > 1. - 1e-6).then_some(true));
+    let end = |t: f64| {
+        (t < 1e-6)
+            .then_some(false)
+            .or((t > 1. - 1e-6).then_some(true))
+    };
     for r in &cx.src.relations {
         if r.kind != "endpoint_on_curve" {
             continue;

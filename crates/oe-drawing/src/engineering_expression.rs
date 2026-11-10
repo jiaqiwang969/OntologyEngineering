@@ -52,12 +52,14 @@ mod lines;
 mod loose_annotations;
 #[path = "line_evidence.rs"]
 mod line_evidence;
-#[path = "not_plotted.rs"]
-mod not_plotted;
+
+// lines as the sheet plots them (correction round after the expert's review)
 #[path = "extension_lines.rs"]
 mod extension_lines;
 #[path = "line_widths.rs"]
 mod line_widths;
+#[path = "not_plotted.rs"]
+mod not_plotted;
 #[path = "terminators.rs"]
 mod terminators;
 #[path = "value_fragments.rs"]
@@ -1142,7 +1144,7 @@ impl Ctx<'_> {
         st.pattern == Pattern::Continuous
             // BYBLOCK colour at sheet level: by its joins under a checked convention (module
             // `line_evidence`), like any other continuous line where no convention decides
-            && !(st.byblock && self.conv.qualified)
+            && (!st.byblock || !self.conv.qualified)
             && !not_plotted::source(self, id)
             && !st
                 .explicit_color

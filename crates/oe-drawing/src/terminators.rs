@@ -65,7 +65,10 @@ enum Carrier {
 impl Carrier {
     fn of(x: &Record, off: P) -> Option<Self> {
         match x.kind.as_str() {
-            "LINE" => Some(Carrier::Line(add(x.xy(10).ok()?, off), add(x.xy(11).ok()?, off))),
+            "LINE" => Some(Carrier::Line(
+                add(x.xy(10).ok()?, off),
+                add(x.xy(11).ok()?, off),
+            )),
             "ARC" => {
                 let s0 = x.number(50).ok()?.to_radians();
                 let s1 = x.number(51).ok()?.to_radians();
@@ -83,7 +86,8 @@ impl Carrier {
     fn ends(&self, a: &Arrow, tol: f64, sin_max: f64) -> bool {
         match self {
             Carrier::Line(p, q) => {
-                on_seg(a.tip, *p, *q, tol).is_some() && cross(a.dir, unit(sub(*q, *p))).abs() <= sin_max
+                on_seg(a.tip, *p, *q, tol).is_some()
+                    && cross(a.dir, unit(sub(*q, *p))).abs() <= sin_max
             }
             Carrier::Arc(c, r, s0, sw) => {
                 let ang = ((a.tip[1] - c[1]).atan2(a.tip[0] - c[0]) - s0)
@@ -156,7 +160,8 @@ pub(super) fn native(cx: &Ctx, b: &mut Builder, e: usize, h: &str, off: P) -> Re
             named = true;
         } else if b.members[i].member_role == "arrowhead" && x.kind == "INSERT" {
             // a block reference that draws only text is a piece of the value
-            let path = &nested[b.members[i].native_member_id.as_deref().unwrap_or_default()].block_path;
+            let path =
+                &nested[b.members[i].native_member_id.as_deref().unwrap_or_default()].block_path;
             let inside: Vec<&str> = cx
                 .src
                 .members

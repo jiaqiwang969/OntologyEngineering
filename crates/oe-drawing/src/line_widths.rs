@@ -99,10 +99,7 @@ pub(super) fn members(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 m.line_type.as_str(),
                 "continuous" | "thick_continuous" | "thin_continuous"
             )
-            || !cx
-                .rec
-                .get(h)
-                .is_some_and(|r| is_curve_kind(&r.kind))
+            || !cx.rec.get(h).is_some_and(|r| is_curve_kind(&r.kind))
         {
             continue;
         }
@@ -111,7 +108,10 @@ pub(super) fn members(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 Some((Width::Thick, v)) => ("thick_continuous", v),
                 _ => ("thin_continuous", "annotation_roles_thin"),
             };
-            (v.0, vec![format!("card:{CARD}"), format!("variant:{}", v.1)])
+            (
+                v.0,
+                vec![format!("card:{CARD}"), format!("variant:{}", v.1)],
+            )
         } else if thick.contains(&m.member_role) {
             if !continuous(cx, h) || !w.thick(cx, h) {
                 continue;

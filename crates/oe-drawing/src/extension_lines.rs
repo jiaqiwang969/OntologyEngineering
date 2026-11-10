@@ -33,10 +33,14 @@ pub(super) fn drawn_as_extension_line(b: &Builder, h: &str) -> bool {
     })
 }
 
+/// A root line under a native extension line: origin index, line, interval, relations, rule.
+type Use = (usize, String, [f64; 2], Vec<String>, String);
+
 /// Pieces of an extension line on the carrier through `o` along unit `v` (within `ptol`) that
 /// overlap or touch the interval `iv`: thin annotation lines grow the chain transitively; an
 /// outline piece (thick by the drawing's own evidence) the chain reaches is taken and ends the
 /// growth there, so nothing beyond it is reached through it.
+#[allow(clippy::too_many_arguments)]
 pub(super) fn chain(
     cx: &Ctx,
     b: &Builder,
@@ -159,7 +163,7 @@ pub(super) fn native(
         out
     };
     // root lines overlapping the span from an origin to its dimension line
-    let uses: Vec<(usize, String, [f64; 2], Vec<String>, String)> = cx
+    let uses: Vec<Use> = cx
         .src
         .uses
         .iter()
@@ -205,8 +209,7 @@ pub(super) fn native(
             // the extension line is drawn over or the terminator stands on lies in the span; an
             // outline only behind the origin or beyond the dimension line is another feature
             let (ta, tc) = (dot(sub(a, *t), v), dot(sub(c, *t), v));
-            if w.thick(cx, &lid)
-                && (ta.max(tc) < so.min(0.) - tol || ta.min(tc) > so.max(0.) + tol)
+            if w.thick(cx, &lid) && (ta.max(tc) < so.min(0.) - tol || ta.min(tc) > so.max(0.) + tol)
             {
                 continue;
             }
@@ -289,7 +292,10 @@ pub(super) fn lend_outline(cx: &Ctx, b: &mut Builder) -> Result<()> {
         // uses; a piece that only lies behind the origin adds nothing of its own
         let behind = |i: usize| b.members[i].evidence_ids.iter().any(|x| x == BEHIND);
         let mut hull = contour.get(&h).map_or([1., 0.], |x| x.1);
-        for &i in ids.iter().filter(|&&i| !behind(i) || !contour.contains_key(&h)) {
+        for &i in ids
+            .iter()
+            .filter(|&&i| !behind(i) || !contour.contains_key(&h))
+        {
             let iv = &b.members[i].interval;
             hull = [hull[0].min(iv[0]), hull[1].max(iv[1])];
         }

@@ -176,7 +176,8 @@ fn is_unplotted_construction(g: &MdEngineeringExpressionGraph, src: &str, varian
     for e in exprs_of(g, src) {
         assert!(e.qualifiers.iter().any(|q| q == "not_plotted"), "{src}");
         assert!(
-            e.evidence_ids.contains(&"card:not_plotted_content".to_string())
+            e.evidence_ids
+                .contains(&"card:not_plotted_content".to_string())
                 && e.evidence_ids.contains(&format!("variant:{variant}")),
             "{:?}",
             e.evidence_ids
@@ -185,9 +186,11 @@ fn is_unplotted_construction(g: &MdEngineeringExpressionGraph, src: &str, varian
     }
     let ids: BTreeSet<String> = ms.iter().map(|m| format!("member:{}", m.id)).collect();
     assert!(
-        !g.structural_lines
+        !g.structural_lines.iter().any(|l| l
+            .pieces
             .iter()
-            .any(|l| l.pieces.iter().chain(&l.coincident).any(|p| ids.contains(p))),
+            .chain(&l.coincident)
+            .any(|p| ids.contains(p))),
         "{src} is a piece of a structural line"
     );
 }
@@ -278,7 +281,11 @@ fn layer_whose_name_only_contains_the_definition_point_name_plots() {
         &with(&[("DEFPOINTS-B", 7, "CONTINUOUS", "")]),
         "DEFPOINTS-B",
     );
-    assert!(kinds(&g, "NR").contains("visible_contour"), "{:?}", kinds(&g, "NR"));
+    assert!(
+        kinds(&g, "NR").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "NR")
+    );
     assert!(members(&g, "NR").iter().all(|m| !marked(m)));
 }
 
@@ -341,7 +348,11 @@ fn stand_under(top: &str) -> MdEngineeringExpressionGraph {
 fn outline_joined_only_through_a_never_plotted_line_is_not_admitted() {
     // joined to the printed outline at both ends: outline
     let g = stand_under("01");
-    assert!(kinds(&g, "UM").contains("visible_contour"), "{:?}", kinds(&g, "UM"));
+    assert!(
+        kinds(&g, "UM").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "UM")
+    );
     // its upper end meets only a line that is not on the sheet: one junction is not enough
     let g = stand_under("Defpoints");
     assert!(
@@ -377,7 +388,11 @@ fn byblock_colour_line_joined_at_both_ends_is_outline() {
     );
     assert_eq!(line_type(&g, e, "BR"), "thick_continuous");
     for h in ["S1", "S3"] {
-        assert!(kinds(&g, h).contains("visible_contour"), "{h} {:?}", kinds(&g, h));
+        assert!(
+            kinds(&g, h).contains("visible_contour"),
+            "{h} {:?}",
+            kinds(&g, h)
+        );
     }
 }
 
@@ -397,8 +412,16 @@ fn byblock_colour_extension_line_stays_annotation() {
         text("DV", "11", "30", [12., 32.], 3.5),
     ]);
     for h in ["EZA", "EZB"] {
-        assert!(!kinds(&g, h).contains("visible_contour"), "{h} {:?}", kinds(&g, h));
-        assert!(kinds(&g, h).contains("dimension_linear"), "{h} {:?}", kinds(&g, h));
+        assert!(
+            !kinds(&g, h).contains("visible_contour"),
+            "{h} {:?}",
+            kinds(&g, h)
+        );
+        assert!(
+            kinds(&g, h).contains("dimension_linear"),
+            "{h} {:?}",
+            kinds(&g, h)
+        );
     }
 }
 
@@ -478,10 +501,7 @@ fn dimension_line(prefix: &str, a: P, b: P) -> Vec<String> {
     ]
 }
 /// The members a dimension-like expression holds of one source.
-fn in_dimension<'a>(
-    g: &'a MdEngineeringExpressionGraph,
-    src: &str,
-) -> Vec<&'a MdExpressionMember> {
+fn in_dimension<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> Vec<&'a MdExpressionMember> {
     let dims: BTreeSet<&str> = g
         .expressions
         .iter()
@@ -521,7 +541,11 @@ fn extension_lines_are_thin_and_off_the_outline(g: &MdEngineeringExpressionGraph
                 && visible.contains(c.expression_id.as_str())
         }) {
             let overlap = m.interval[1].min(c.interval[1]) - m.interval[0].max(c.interval[0]);
-            assert!(overlap <= 1e-6, "{} is extension line and outline", m.source_handle);
+            assert!(
+                overlap <= 1e-6,
+                "{} is extension line and outline",
+                m.source_handle
+            );
         }
     }
 }
@@ -564,7 +588,15 @@ fn outline_under_a_native_extension_line_is_lent_to_the_dimension() {
     let mut children = dimension_line("ND", [100., 30.], [130., 30.]);
     children.push(line("ND4", "0", [100., 20.], [100., 32.]));
     children.push(line("ND5", "0", [130., 20.], [130., 32.]));
-    let (blk, dim) = native_linear("DW", "*D7", 0., [130., 30.], [100., 20.], [130., 20.], &children);
+    let (blk, dim) = native_linear(
+        "DW",
+        "*D7",
+        0.,
+        [130., 30.],
+        [100., 20.],
+        [130., 20.],
+        &children,
+    );
     let mut ents = plate();
     ents.push(dim);
     let g = run_full(GB, &blk, &ents);
@@ -577,7 +609,15 @@ fn outline_under_a_native_extension_line_is_lent_to_the_dimension() {
 fn outline_the_terminators_stand_on_is_lent_to_the_dimension() {
     // the same dimension with its extension lines suppressed: the terminators stand on the sides
     let children = dimension_line("NS", [100., 30.], [130., 30.]);
-    let (blk, dim) = native_linear("DS", "*D6", 0., [130., 30.], [100., 20.], [130., 20.], &children);
+    let (blk, dim) = native_linear(
+        "DS",
+        "*D6",
+        0.,
+        [130., 30.],
+        [100., 20.],
+        [130., 20.],
+        &children,
+    );
     let mut ents = plate();
     ents.push(dim);
     let g = run_full(GB, &blk, &ents);
@@ -600,7 +640,15 @@ fn plate_dimensioned_above() -> MdEngineeringExpressionGraph {
     let mut children = dimension_line("NA", [100., 62.], [130., 62.]);
     children.push(line("NA4", "Q", [100., 50.], [100., 64.]));
     children.push(line("NA5", "Q", [130., 50.], [130., 64.]));
-    let (blk, dim) = native_linear("DA", "*D5", 0., [130., 62.], [100., 50.], [130., 50.], &children);
+    let (blk, dim) = native_linear(
+        "DA",
+        "*D5",
+        0.,
+        [130., 62.],
+        [100., 50.],
+        [130., 50.],
+        &children,
+    );
     run_full(
         WEIGHTS,
         &blk,
@@ -642,7 +690,11 @@ fn collinear_growth_stops_at_the_first_outline_piece() {
     // the second piece of the side and the thin line below it lie on the same carrier but
     // beyond the first outline piece: they are not parts of this dimension
     for h in ["WL2", "WQ"] {
-        assert!(in_dimension(&g, h).is_empty(), "{h}: {:?}", in_dimension(&g, h));
+        assert!(
+            in_dimension(&g, h).is_empty(),
+            "{h}: {:?}",
+            in_dimension(&g, h)
+        );
     }
     assert!(kinds(&g, "WL2").contains("visible_contour"));
 }
@@ -652,7 +704,15 @@ fn extension_lines_from_opposite_sides_each_stop_past_the_dimension_line() {
     // a vertical dimension line at x = 50 between two origins: one 30 to its left, one 30 to its
     // right; a thin line runs from each origin through the dimension line and 70 beyond it
     let children = dimension_line("NO", [50., 0.], [50., 10.]);
-    let (blk, dim) = native_linear("DO", "*D4", 90., [50., 10.], [20., 0.], [80., 10.], &children);
+    let (blk, dim) = native_linear(
+        "DO",
+        "*D4",
+        90.,
+        [50., 10.],
+        [20., 0.],
+        [80., 10.],
+        &children,
+    );
     let g = run_full(
         GB,
         &blk,
@@ -669,12 +729,17 @@ fn extension_lines_from_opposite_sides_each_stop_past_the_dimension_line() {
             assert_eq!(m.member_role, "extension_line", "{h}");
             // from its own origin (parameter 0) to at most two terminator lengths past the
             // dimension line (30 + 6 of 100), never the far part
-            assert!(m.interval[0] == 0. && m.interval[1] <= 0.36 + 1e-9, "{h} {:?}", m.interval);
+            assert!(
+                m.interval[0] == 0. && m.interval[1] <= 0.36 + 1e-9,
+                "{h} {:?}",
+                m.interval
+            );
         }
         assert!(
-            in_dimension(&g, h)
+            in_dimension(&g, h).iter().any(|m| m
+                .evidence_ids
                 .iter()
-                .any(|m| m.evidence_ids.iter().any(|e| e == "runs_past_the_overshoot")),
+                .any(|e| e == "runs_past_the_overshoot")),
             "{h}"
         );
     }
@@ -686,7 +751,15 @@ fn thin_extension_line_drawn_past_its_origin_stays_an_extension_line() {
     // hand-drawn thin extension lines from the upper corners; the dimension (its own extension
     // lines suppressed) takes its origins midway on them
     let children = dimension_line("NH", [100., 72.], [130., 72.]);
-    let (blk, dim) = native_linear("DH", "*D3", 0., [130., 72.], [100., 60.], [130., 60.], &children);
+    let (blk, dim) = native_linear(
+        "DH",
+        "*D3",
+        0.,
+        [130., 72.],
+        [100., 60.],
+        [130., 60.],
+        &children,
+    );
     let mut ents = plate();
     ents.extend([
         line("H1", "02", [100., 50.], [100., 74.]),
@@ -716,7 +789,15 @@ fn outline_behind_the_origin_or_beyond_the_dimension_line_is_not_lent() {
     let mut children = dimension_line("NB", [100., 62.], [130., 62.]);
     children.push(line("NB4", "0", [100., 50.], [100., 64.]));
     children.push(line("NB5", "0", [130., 50.], [130., 64.]));
-    let (blk, dim) = native_linear("DB", "*D1", 0., [130., 62.], [100., 50.], [130., 50.], &children);
+    let (blk, dim) = native_linear(
+        "DB",
+        "*D1",
+        0.,
+        [130., 62.],
+        [100., 50.],
+        [130., 50.],
+        &children,
+    );
     // drawn by lineweight, without a layer convention
     let g = run_full(
         WEIGHTS,
@@ -735,7 +816,11 @@ fn outline_behind_the_origin_or_beyond_the_dimension_line_is_not_lent() {
     );
     is_lent(&g, "BL");
     for h in ["BR", "BQ"] {
-        assert!(in_dimension(&g, h).is_empty(), "{h}: {:?}", in_dimension(&g, h));
+        assert!(
+            in_dimension(&g, h).is_empty(),
+            "{h}: {:?}",
+            in_dimension(&g, h)
+        );
         assert!(kinds(&g, h).contains("visible_contour"), "{h}");
     }
     extension_lines_are_thin_and_off_the_outline(&g);
@@ -796,7 +881,11 @@ fn thin_colour_line_on_the_thick_layer_is_reported_thin() {
         let s = style(&g, h);
         assert_eq!(s.line_type, "thin_continuous", "{h}");
         assert_eq!(s.basis, "observed_pattern", "{h}");
-        assert!(has(&s.evidence_ids, "variant:colour_before_layer"), "{:?}", s.evidence_ids);
+        assert!(
+            has(&s.evidence_ids, "variant:colour_before_layer"),
+            "{:?}",
+            s.evidence_ids
+        );
         let ms = in_dimension(&g, h);
         assert!(
             !ms.is_empty()
@@ -830,11 +919,19 @@ fn colour_is_no_width_evidence_with_named_plot_styles() {
 fn thick_colour_line_on_a_thin_layer_is_reported_thick() {
     // the right side of the box is drawn on a thin layer in the outline colour
     let g = rectangle_with_side(GB, "09");
-    assert!(kinds(&g, "NR").contains("visible_contour"), "{:?}", kinds(&g, "NR"));
+    assert!(
+        kinds(&g, "NR").contains("visible_contour"),
+        "{:?}",
+        kinds(&g, "NR")
+    );
     let s = style(&g, "NR");
     assert_eq!(s.line_type, "thick_continuous");
     assert_eq!(s.basis, "observed_pattern");
-    assert!(has(&s.evidence_ids, "variant:colour_before_layer"), "{:?}", s.evidence_ids);
+    assert!(
+        has(&s.evidence_ids, "variant:colour_before_layer"),
+        "{:?}",
+        s.evidence_ids
+    );
     // a line in the outline colour on a layer that gives no width is reported thick as well
     assert_eq!(style(&g, "NA").line_type, "thick_continuous");
 }
@@ -865,11 +962,24 @@ fn extension_line_on_the_thick_text_layer_is_thin() {
 
 /// The plate's width dimensioned by a native dimension above it, with a root line drawn over the
 /// block's dimension line on `layer`.
-fn native_width_over(layers: &[Layer], header: &str, plate_layer: &str, layer: &str) -> MdEngineeringExpressionGraph {
+fn native_width_over(
+    layers: &[Layer],
+    header: &str,
+    plate_layer: &str,
+    layer: &str,
+) -> MdEngineeringExpressionGraph {
     let mut children = dimension_line("NW", [100., 62.], [130., 62.]);
     children.push(line("NW4", "0", [100., 50.], [100., 64.]));
     children.push(line("NW5", "0", [130., 50.], [130., 64.]));
-    let (blk, dim) = native_linear("DW", "*D2", 0., [130., 62.], [100., 50.], [130., 50.], &children);
+    let (blk, dim) = native_linear(
+        "DW",
+        "*D2",
+        0.,
+        [130., 62.],
+        [100., 50.],
+        [130., 50.],
+        &children,
+    );
     let mut ents: Vec<String> = [
         ("PB", [100., 20.], [130., 20.]),
         ("PT", [100., 50.], [130., 50.]),
@@ -880,7 +990,12 @@ fn native_width_over(layers: &[Layer], header: &str, plate_layer: &str, layer: &
     .map(|(h, a, b)| line(h, plate_layer, *a, *b))
     .collect();
     ents.extend([
-        line("PX", if layers == GB { "05" } else { "R" }, [115., 15.], [115., 55.]),
+        line(
+            "PX",
+            if layers == GB { "05" } else { "R" },
+            [115., 15.],
+            [115., 55.],
+        ),
         line("RD", layer, [103., 62.], [127., 62.]),
         dim,
     ]);
@@ -966,7 +1081,10 @@ fn cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick() {
     assert_eq!(ms.len(), 2, "{ms:?}");
     for m in &ms {
         assert_eq!(m.line_type, "thick_continuous", "{}", m.source_handle);
-        assert!(has(&m.evidence_ids, "variant:cutting_stroke_by_outline_evidence"));
+        assert!(has(
+            &m.evidence_ids,
+            "variant:cutting_stroke_by_outline_evidence"
+        ));
     }
     // without colour plotting nothing says they are thick: they keep the layer's width
     let g = lettered_strokes(NAMED_PLOT_STYLES, "09");
@@ -979,8 +1097,14 @@ fn cutting_stroke_in_the_outline_colour_on_a_thin_layer_is_thick() {
 /// centred at `base`.
 fn hatch_triangle(id: &str, layer: &str, tip: P, base: P, half: f64) -> String {
     let l = ((base[0] - tip[0]).powi(2) + (base[1] - tip[1]).powi(2)).sqrt();
-    let n = [-(base[1] - tip[1]) / l * half, (base[0] - tip[0]) / l * half];
-    let (b1, b2) = ([base[0] + n[0], base[1] + n[1]], [base[0] - n[0], base[1] - n[1]]);
+    let n = [
+        -(base[1] - tip[1]) / l * half,
+        (base[0] - tip[0]) / l * half,
+    ];
+    let (b1, b2) = (
+        [base[0] + n[0], base[1] + n[1]],
+        [base[0] - n[0], base[1] - n[1]],
+    );
     ent(
         "HATCH",
         id,
@@ -1027,7 +1151,11 @@ fn blocks_section(defs: &[(&str, Vec<String>)]) -> String {
 }
 /// The plate's width dimensioned above it by a native dimension whose block draws the dimension
 /// line, the extension lines and the two terminators `heads`, and `more`.
-fn width_with_heads(heads: [String; 2], more: Vec<String>, extra_blocks: &[(&str, Vec<String>)]) -> MdEngineeringExpressionGraph {
+fn width_with_heads(
+    heads: [String; 2],
+    more: Vec<String>,
+    extra_blocks: &[(&str, Vec<String>)],
+) -> MdEngineeringExpressionGraph {
     let mut children = vec![
         line("HL1", "0", [100., 62.], [130., 62.]),
         line("HL4", "0", [100., 50.], [100., 64.]),
@@ -1074,7 +1202,11 @@ fn solid_hatch_triangle_in_a_dimension_block_is_its_terminator() {
     }
     let e = dimension_dh(&g);
     assert!(names(e, "dimension_line_parts", "terminator_any_entity"));
-    assert!(e.concept_ids.contains(&"DC-G4-019".to_string()), "{:?}", e.concept_ids);
+    assert!(
+        e.concept_ids.contains(&"DC-G4-019".to_string()),
+        "{:?}",
+        e.concept_ids
+    );
 }
 
 #[test]
@@ -1107,9 +1239,11 @@ fn filled_triangle_across_the_dimension_line_is_not_a_terminator() {
     for h in ["HX1", "HX2"] {
         assert_eq!(native_role(&g, h).0, "native_member", "{h}");
     }
-    assert!(!dimension_dh(&g)
-        .evidence_ids
-        .contains(&"variant:terminator_any_entity".to_string()));
+    assert!(
+        !dimension_dh(&g)
+            .evidence_ids
+            .contains(&"variant:terminator_any_entity".to_string())
+    );
 }
 
 #[test]

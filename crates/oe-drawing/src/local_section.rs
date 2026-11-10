@@ -326,8 +326,10 @@ fn break_paths(cx: &Ctx, b: &Builder, tol: f64) -> Vec<Path> {
             let mut ids = vec![pieces[i].1.clone()];
             loop {
                 let tail = pts[pts.len() - 1];
-                let next: Vec<(usize, usize)> =
-                    at(tail, usize::MAX).into_iter().filter(|x| !used[x.0]).collect();
+                let next: Vec<(usize, usize)> = at(tail, usize::MAX)
+                    .into_iter()
+                    .filter(|x| !used[x.0])
+                    .collect();
                 let [(j, e)] = next[..] else { break };
                 used[j] = true;
                 let mut q = pieces[j].0.clone();
@@ -488,7 +490,8 @@ pub(super) fn find(cx: &Ctx, b: &Builder) -> Vec<LocalSection> {
         for (dc, dr, id) in &circles {
             // one end on the circle, the other inside it and farther from it
             let off = |p: P| dist(p, *dc) - dr;
-            let reaches = |p: P, q: P| off(p).abs() <= tol && off(q) < 0. && off(q).abs() > off(p).abs();
+            let reaches =
+                |p: P, q: P| off(p).abs() <= tol && off(q) < 0. && off(q).abs() > off(p).abs();
             let (inner, run) = if reaches(e1, e0) {
                 (e0, pts.iter().rev().copied().collect::<Vec<P>>())
             } else if reaches(e0, e1) {
@@ -669,7 +672,13 @@ fn span_points(cx: &Ctx, m: &MdExpressionMember) -> Vec<P> {
     let h = m.source_handle.as_str();
     if let Some((a, c)) = cx.lines.get(h) {
         return (0..=4)
-            .map(|i| lerp(*a, *c, m.interval[0] + (m.interval[1] - m.interval[0]) * i as f64 / 4.))
+            .map(|i| {
+                lerp(
+                    *a,
+                    *c,
+                    m.interval[0] + (m.interval[1] - m.interval[0]) * i as f64 / 4.,
+                )
+            })
             .collect();
     }
     if let Some((c, r, s0, sw, _)) = cx.arc(h) {
@@ -713,7 +722,8 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
         .iter()
         .map(|e| (e.id.as_str(), e.kind.as_str()))
         .collect();
-    let kind = |m: &MdExpressionMember| kind_of.get(m.expression_id.as_str()).copied().unwrap_or("");
+    let kind =
+        |m: &MdExpressionMember| kind_of.get(m.expression_id.as_str()).copied().unwrap_or("");
     // A view named as a section is cut as a whole: nothing in it is a local section.
     let section_views: BTreeSet<&str> = b
         .exprs
@@ -729,7 +739,9 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
         out.live[i] = !b.members.iter().any(|m| {
             m.member_role == "break_curve"
                 && s.curves.contains(&m.source_handle)
-                && m.view_id.as_deref().is_some_and(|v| section_views.contains(v))
+                && m.view_id
+                    .as_deref()
+                    .is_some_and(|v| section_views.contains(v))
         });
     }
     let visible: Vec<(usize, &MdExpressionMember, Vec<P>)> = b
@@ -750,8 +762,7 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
         .filter(|x| *x.1)
         .map(|x| x.0)
         .collect();
-    let in_a_section =
-        |pts: &[P]| live.iter().any(|s| pts.iter().all(|p| s.holds(*p, tol)));
+    let in_a_section = |pts: &[P]| live.iter().any(|s| pts.iter().all(|p| s.holds(*p, tol)));
     let ends = |pts: &[P]| [pts[0], pts[pts.len() - 1]];
     for s in &live {
         let mark = s.mark();
@@ -776,7 +787,9 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
         }
         for (i, m, pts) in &visible {
             // A contour drawn twice is shown by its primary, which takes the mark.
-            if m.evidence_ids.iter().any(|x| x.starts_with("duplicate_of:"))
+            if m.evidence_ids
+                .iter()
+                .any(|x| x.starts_with("duplicate_of:"))
                 || pts.is_empty()
                 || !pts.iter().all(|p| s.holds(*p, tol))
             {
@@ -797,11 +810,14 @@ pub(super) fn section_only(cx: &Ctx, b: &Builder, secs: &[LocalSection]) -> Sect
                     j != i
                         && o.view_id == m.view_id
                         && !in_a_section(q)
-                        && cx.arc(&o.source_handle).is_some_and(|(d, r2, _, sw2, full2)| {
-                            full == full2
-                                && (r - r2).abs() <= band
-                                && (full || (dist(c, d) <= band && ((sw - sw2) * r).abs() <= tol))
-                        })
+                        && cx
+                            .arc(&o.source_handle)
+                            .is_some_and(|(d, r2, _, sw2, full2)| {
+                                full == full2
+                                    && (r - r2).abs() <= band
+                                    && (full
+                                        || (dist(c, d) <= band && ((sw - sw2) * r).abs() <= tol))
+                            })
                 })
             });
             if continued || repeated {

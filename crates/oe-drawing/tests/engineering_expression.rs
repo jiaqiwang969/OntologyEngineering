@@ -1262,7 +1262,10 @@ fn wave_across(x: f64, y0: f64, y1: f64) -> Vec<[f64; 2]> {
 /// A plate from x = `x0` to `x0 + 40`, y 0 to 20, cut open between two freehand curves from its
 /// bottom to its top edge at `x0 + 7` and `x0 + 13`, the band between them hatched.
 fn plate_with_band(x0: f64, hatch_id: &str) -> Vec<String> {
-    let (w1, w2) = (wave_across(x0 + 7., 0., 20.), wave_across(x0 + 13., 0., 20.));
+    let (w1, w2) = (
+        wave_across(x0 + 7., 0., 20.),
+        wave_across(x0 + 13., 0., 20.),
+    );
     let mut band = w1.clone();
     band.extend(w2.iter().rev().copied());
     vec![
@@ -1345,7 +1348,11 @@ fn section_only_members_are_marked_in_a_local_section_and_never_in_a_full_sectio
         line("T2", "01", [105., 20.], [145., 20.]),
         line("L2", "01", [105., 0.], [105., 20.]),
         line("R2", "01", [145., 0.], [145., 20.]),
-        hatch("H2", "10", &[[105., 0.], [145., 0.], [145., 20.], [105., 20.]]),
+        hatch(
+            "H2",
+            "10",
+            &[[105., 0.], [145., 0.], [145., 20.], [105., 20.]],
+        ),
         line("SQ", "01", [124., 9.], [126., 11.]),
         text("T0", "11", "scale reference", [0., -20.], 3.5, 0.),
     ]);
@@ -1422,7 +1429,11 @@ fn a_circle_broken_for_texts_is_bridged_along_the_circle_and_is_one_circle() {
     }
     // One arc broken once for a number is never joined to its own other end (card
     // annotation_break, counter-example): its ends are explained, its gap stays.
-    assert!(implied_between(&g, "S1", "S1").is_empty(), "{:?}", g.implied_spans);
+    assert!(
+        implied_between(&g, "S1", "S1").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
     assert!(
         g.structure_ends
             .iter()
@@ -1630,7 +1641,12 @@ fn a_line_meeting_only_section_profile_is_cut_at_the_inferred_outline() {
         text("T0", "11", "scale reference", [0., -20.], 3.5, 0.),
     ];
     let g = discover(&drawing(&tables(&convention_layers()), &ents)).unwrap();
-    assert_eq!(implied_between(&g, "Q1", "Q2").len(), 1, "{:?}", g.implied_spans);
+    assert_eq!(
+        implied_between(&g, "Q1", "Q2").len(),
+        1,
+        "{:?}",
+        g.implied_spans
+    );
     let l = line_of(&g, "N");
     assert_eq!(l.len(), 1);
     assert!(

@@ -165,9 +165,10 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
     {
         let h = m.source_handle.as_str();
         let stroke = match (m.member_role.as_str(), m.native_member_id.as_deref()) {
-            ("dimension_line", None) => cx.lines.get(h).map(|(a, c)| {
-                (lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1]))
-            }),
+            ("dimension_line", None) => cx
+                .lines
+                .get(h)
+                .map(|(a, c)| (lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1]))),
             ("arrowhead", None) => cx.arrow(h).map(|a| {
                 arrows.push(a.len);
                 (a.tip, sub(a.tip, mul(a.dir, a.len)))
@@ -269,9 +270,10 @@ fn dimension_break(cov: &Cover, p: P, d: P, len: f64, partners: &[Partner]) -> O
         ((0. ..=1.).contains(&t) && (0. ..=1.).contains(&u)).then_some(t * len)
     };
     let eps = 1e-6 * len.max(1.);
-    if partners.iter().any(|x| {
-        crossing(x.ends[0], x.ends[1]).is_some_and(|t| t > eps && t < len - eps)
-    }) {
+    if partners
+        .iter()
+        .any(|x| crossing(x.ends[0], x.ends[1]).is_some_and(|t| t > eps && t < len - eps))
+    {
         return None;
     }
     let hits: Vec<(f64, &str)> = cov
@@ -832,7 +834,15 @@ pub(super) fn audit(
                 Some(c)
             } else {
                 let ps_ = &partners[&(sp.class, sp.view.clone())];
-                interruption_in(cx, cov, Some(&section.live), &sp.handle, ps[k], dirs[k], ps_)
+                interruption_in(
+                    cx,
+                    cov,
+                    Some(&section.live),
+                    &sp.handle,
+                    ps[k],
+                    dirs[k],
+                    ps_,
+                )
             };
             let id = end_id(sp.class, &sp.handle, ts[k]);
             let (kind, evidence, partner) = match &cause {

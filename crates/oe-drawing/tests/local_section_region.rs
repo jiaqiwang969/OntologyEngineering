@@ -180,7 +180,12 @@ fn line_of<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> Vec<&'a MdStru
         .collect();
     g.structural_lines
         .iter()
-        .filter(|l| l.pieces.iter().chain(&l.coincident).any(|p| ids.contains(p)))
+        .filter(|l| {
+            l.pieces
+                .iter()
+                .chain(&l.coincident)
+                .any(|p| ids.contains(p))
+        })
         .collect()
 }
 fn kinds(g: &MdEngineeringExpressionGraph, src: &str) -> Vec<String> {
@@ -243,7 +248,11 @@ fn bay(extra: Vec<String>) -> Vec<String> {
 #[test]
 fn local_section_region_between_a_break_curve_and_one_outline() {
     let g = run(&bay(vec![]));
-    assert!(kinds(&g, "C").contains(&"break_line".into()), "{:?}", kinds(&g, "C"));
+    assert!(
+        kinds(&g, "C").contains(&"break_line".into()),
+        "{:?}",
+        kinds(&g, "C")
+    );
     // the profile of the cut face, the hatch and the break curve exist only because of the cut
     for h in ["W1", "W2", "WB"] {
         let ev = section_marks(&g, h);
@@ -303,12 +312,16 @@ fn view_named_as_a_section_holds_no_local_section() {
     assert!(
         g.views.iter().any(|v| v.label == "C-C"),
         "{:?}",
-        g.views.iter().map(|v| (&v.id, &v.kind, &v.label)).collect::<Vec<_>>()
+        g.views
+            .iter()
+            .map(|v| (&v.id, &v.kind, &v.label))
+            .collect::<Vec<_>>()
     );
     assert!(
-        !g.members
+        !g.members.iter().any(|m| m
+            .evidence_ids
             .iter()
-            .any(|m| m.evidence_ids.iter().any(|x| x.starts_with("section_profile:"))),
+            .any(|x| x.starts_with("section_profile:"))),
         "section-only members in a section view"
     );
     assert!(!g.structure_ends.iter().any(|e| e.cause == "local_section"));
@@ -366,7 +379,10 @@ fn hidden_edge_laid_open_by_the_cut_is_one_hidden_line() {
     );
     let s = implied_between(&g, "H1", "H2");
     assert_eq!(s.len(), 1, "{:?}", g.implied_spans);
-    assert_eq!((s[0].cause.as_str(), s[0].line_class.as_str()), ("local_section", "hidden_outline"));
+    assert_eq!(
+        (s[0].cause.as_str(), s[0].line_class.as_str()),
+        ("local_section", "hidden_outline")
+    );
     let l = line_of(&g, "H1");
     assert_eq!(l.len(), 1);
     assert_eq!(line_of(&g, "H2")[0].id, l[0].id);
@@ -378,11 +394,11 @@ fn hidden_edge_laid_open_by_the_cut_is_one_hidden_line() {
 fn break_curves_without_hatch_bound_no_section() {
     // the limits of a partial or broken view: nothing is section-only, nothing goes on across
     let g = run(&band(false, vec![]));
-    assert!(
-        !g.members
+    assert!(!g.members.iter().any(|m| {
+        m.evidence_ids
             .iter()
-            .any(|m| m.evidence_ids.iter().any(|x| x.starts_with("section_profile:"))),
-    );
+            .any(|x| x.starts_with("section_profile:"))
+    }),);
     assert!(implied_between(&g, "H1", "H2").is_empty());
     assert!(!g.structure_ends.iter().any(|e| e.cause == "local_section"));
 }
@@ -398,7 +414,11 @@ fn fillet_with_one_free_end_never_closes_into_a_circle() {
         ],
     ));
     assert!(!marked(&g, "F"));
-    assert!(implied_between(&g, "F", "F").is_empty(), "{:?}", g.implied_spans);
+    assert!(
+        implied_between(&g, "F", "F").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
     no_self_or_long_arc_span(&g);
 }
 
@@ -418,24 +438,35 @@ fn section_broken_off_at_a_break_curve_is_no_local_section() {
         lwpoly("C", "02", &curve),
         hatch("H", &region),
     ]);
-    assert!(kinds(&g, "C").contains(&"break_line".into()), "{:?}", kinds(&g, "C"));
     assert!(
-        !g.members
-            .iter()
-            .any(|m| m.evidence_ids.iter().any(|x| x.starts_with("section_profile:"))),
+        kinds(&g, "C").contains(&"break_line".into()),
+        "{:?}",
+        kinds(&g, "C")
     );
+    assert!(!g.members.iter().any(|m| {
+        m.evidence_ids
+            .iter()
+            .any(|x| x.starts_with("section_profile:"))
+    }),);
 }
 
 #[test]
 fn local_section_inside_a_detail_circle() {
     // a shoulder line G; the local section runs from G to the detail circle and the circle
     // limits it; S is a line of the cut face
-    let curve = wavy([30., 14.], [30. + 4. * 200f64.to_radians().cos(), 12. + 4. * 200f64.to_radians().sin()], 2.);
+    let curve = wavy(
+        [30., 14.],
+        [
+            30. + 4. * 200f64.to_radians().cos(),
+            12. + 4. * 200f64.to_radians().sin(),
+        ],
+        2.,
+    );
     let mut region: Vec<[f64; 2]> = curve.clone();
     region.reverse();
     region.push([30., 8.]);
-    for a in [260., 250., 240., 230., 220., 210.] {
-        let r = (a as f64).to_radians();
+    for a in [260f64, 250., 240., 230., 220., 210.] {
+        let r = a.to_radians();
         region.push([30. + 4. * r.cos(), 12. + 4. * r.sin()]);
     }
     let g = run(&[
@@ -450,9 +481,16 @@ fn local_section_inside_a_detail_circle() {
         lwpoly("C", "02", &curve),
         hatch("H", &region),
     ]);
-    assert!(kinds(&g, "D").contains(&"view_callout".into()), "{:?}", kinds(&g, "D"));
+    assert!(
+        kinds(&g, "D").contains(&"view_callout".into()),
+        "{:?}",
+        kinds(&g, "D")
+    );
     let ev = section_marks(&g, "C");
-    assert!(ev.iter().any(|x| x == "variant:inside_detail_circle"), "{ev:?}");
+    assert!(
+        ev.iter().any(|x| x == "variant:inside_detail_circle"),
+        "{ev:?}"
+    );
     assert!(marked(&g, "S") && marked(&g, "H"));
     for h in ["G", "D", "B", "T", "L", "R"] {
         assert!(!marked(&g, h), "{h} marked");
@@ -474,12 +512,16 @@ fn detail_indicator_circle_over_a_section_bounds_nothing() {
         circle("D", "02", [30., 10.], 5.),
         text("DT", "11", "II", [37., 17.], 3.5, 0.),
     ]);
-    assert!(kinds(&g, "D").contains(&"view_callout".into()), "{:?}", kinds(&g, "D"));
     assert!(
-        !g.members
-            .iter()
-            .any(|m| m.evidence_ids.iter().any(|x| x.starts_with("section_profile:"))),
+        kinds(&g, "D").contains(&"view_callout".into()),
+        "{:?}",
+        kinds(&g, "D")
     );
+    assert!(!g.members.iter().any(|m| {
+        m.evidence_ids
+            .iter()
+            .any(|x| x.starts_with("section_profile:"))
+    }),);
     assert!(!g.structure_ends.iter().any(|e| e.cause == "local_section"));
     assert!(implied_between(&g, "P1", "P2").is_empty());
 }
@@ -537,7 +579,9 @@ fn outline_broken_for_a_dimension_line_is_one_line() {
         assert_eq!(s.len(), 1, "{a}-{b}: {:?}", g.implied_spans);
         assert_eq!(s[0].cause, "text_break");
         assert!(
-            s[0].evidence_ids.iter().any(|x| x == "card:annotation_break")
+            s[0].evidence_ids
+                .iter()
+                .any(|x| x == "card:annotation_break")
                 && s[0]
                     .evidence_ids
                     .iter()
@@ -565,7 +609,11 @@ fn slot_crossed_by_its_dimension_is_not_bridged() {
             line("W3", "01", [16., 38.5], [16., 41.5]),
         ],
     );
-    assert!(implied_between(&g, "E1", "E2").is_empty(), "{:?}", g.implied_spans);
+    assert!(
+        implied_between(&g, "E1", "E2").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
 }
 
 // ---------------------------------------------------------------- arcs along their circle
@@ -582,10 +630,16 @@ fn circle_broken_twice_for_numbers_is_one_circle() {
     ]);
     let s = implied_between(&g, "A1", "A2");
     assert_eq!(s.len(), 2, "{:?}", g.implied_spans);
-    assert!(s.iter().all(|x| x.cause == "text_break" && x.arc.is_some()), "{s:?}");
+    assert!(
+        s.iter().all(|x| x.cause == "text_break" && x.arc.is_some()),
+        "{s:?}"
+    );
     let l = line_of(&g, "A1");
     assert_eq!(l.len(), 1);
-    assert_eq!((l[0].geometry.as_str(), l[0].id.as_str()), ("circle", line_of(&g, "A2")[0].id.as_str()));
+    assert_eq!(
+        (l[0].geometry.as_str(), l[0].id.as_str()),
+        ("circle", line_of(&g, "A2")[0].id.as_str())
+    );
     no_self_or_long_arc_span(&g);
 }
 
@@ -596,14 +650,22 @@ fn arc_broken_once_keeps_its_gap() {
         arc("S1", "01", [60., 50.], 6., 30., 330.),
         text("TS", "08", "R6x", [67.75, 46.43], 3.5, 90.),
     ]);
-    assert!(implied_between(&g, "S1", "S1").is_empty(), "{:?}", g.implied_spans);
+    assert!(
+        implied_between(&g, "S1", "S1").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
     let ends: Vec<_> = g
         .structure_ends
         .iter()
         .filter(|e| e.source_handle == "S1")
         .collect();
     assert_eq!(ends.len(), 2, "{ends:?}");
-    assert!(ends.iter().all(|e| e.cause == "text_break" && e.partner_end_id.is_none()), "{ends:?}");
+    assert!(
+        ends.iter()
+            .all(|e| e.cause == "text_break" && e.partner_end_id.is_none()),
+        "{ends:?}"
+    );
     let l = line_of(&g, "S1");
     assert_eq!(l.len(), 1);
     assert_eq!(l[0].geometry, "arc");
@@ -620,7 +682,11 @@ fn arcs_facing_across_a_large_gap_are_not_joined() {
         text("TA", "08", "ABCDE", [96.5, 49.9], 3.5, 0.),
         text("TB", "08", "ABCDE", [96.5, 46.6], 3.5, 0.),
     ]);
-    assert!(implied_between(&g, "A1", "A2").is_empty(), "{:?}", g.implied_spans);
+    assert!(
+        implied_between(&g, "A1", "A2").is_empty(),
+        "{:?}",
+        g.implied_spans
+    );
     assert!(
         g.structure_ends
             .iter()

@@ -483,6 +483,8 @@ meaning = "剖面线是画在剖面区域内的等距平行细实线（通常 45
 sources = [
   "专家纠正 E-2026-11-06-1（2026-11-06 经用户确认）：放大图中与剖面线近乎平行、从端面画到轴线的单根粗线是手画的剖面线，填充边界是沿它选出的",
   "GB/T 4457.5-2013 剖面区域的表示法",
+  "GB/T 4457.5-2013 4.1（同一金属零件的剖面线间隔相等、方向相同）",
+  "GB/T 17453-2005 技术制图 图样画法 剖面区域的表示法（剖面线的角度与间距）",
   "GB/T 4457.4-2002 图线（剖面线为细实线）",
   "专家纠正 E-2026-11-06-1：剖面线跟可见轮廓线识别不清，需要增加对两者区分度的理解",
 ]
@@ -576,6 +578,38 @@ meaning = "剖面区域内残段长度上限 = 该值 × 字高"
 name = "lattice_gap_max"
 value = 10.0
 meaning = "同一零件被孔或空腔隔开的几组散画剖面线，在同一间距网格上、彼此相距不超过该值 × 间距时合为一处剖面线"
+
+[[cards.variants]]
+id = "pattern_signature"
+title = "剖面线的方向与间隔是剖面区域的特征，也是它的名称"
+distinguishing = "同一金属零件的剖面线间隔相等、方向相同（GB/T 4457.5-2013 4.1；GB/T 17453-2005）：填充对象取图案定义中各线的方向与相邻线的垂直距离，一根根画出的剖面线取线本身的方向与横向偏移的中位步距；表达的名称为“视图 · 剖面线 方向° 间距 值”，CAD 存的图案名（如“用户定义”一类的厂商用词）不是名称，只留作依据；涂黑的剖面区域没有方向与间隔"
+encodings = ["hatch", "loose", "block"]
+tests = ["hatch_states_the_direction_and_spacing_of_its_pattern", "loose_section_lines_state_their_own_direction_and_spacing"]
+
+[[cards.variants]]
+id = "shared_boundary"
+title = "两个剖面区域共用一段边界线"
+distinguishing = "同一视图中两个填充区域的边界有一段重合（共线并重叠，长度不小于一个间隔）：互相记为相邻；相邻两区域是两个零件还是一个零件，按装配图知识由方向与间隔判断"
+encodings = ["hatch"]
+tests = ["hatch_regions_sharing_a_boundary_name_each_other"]
+
+[[cards.counter_examples]]
+statement = "同一视图中互不相接的两个剖面区域不记为相邻"
+test = "separate_hatch_regions_are_not_neighbours"
+
+[[cards.counter_examples]]
+statement = "实心填充（涂黑）的剖面区域不报方向与间隔"
+test = "solid_filled_section_states_no_direction"
+
+[[cards.parameters]]
+name = "shared_edge_min"
+value = 1.0
+meaning = "两个剖面区域共用边界的最小长度 = 该值 × 剖面线间隔（两者中较小的）"
+
+[[cards.parameters]]
+name = "shared_edge_tolerance"
+value = 0.02
+meaning = "判断两段边界重合的横向容差 = 该值 × 剖面线间隔"
 
 [[cards]]
 id = "detail_circle_interruption"

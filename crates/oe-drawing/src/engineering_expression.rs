@@ -61,6 +61,8 @@ pub use coverage::{concept_status, recognizer_coverage};
 mod view_layout;
 #[path = "annotation_blocks.rs"]
 mod annotation_blocks;
+#[path = "section_hatching.rs"]
+mod section_hatching;
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
@@ -2431,13 +2433,17 @@ fn hatch_and_points(cx: &Ctx, b: &mut Builder) {
     for (h, r) in &cx.rec {
         match r.kind.as_str() {
             "HATCH" => {
+                // named by view, direction and spacing once the views are known (`section_hatching`);
+                // the pattern name a CAD system stores is evidence, never the name of the hatch
                 let e = b.expr(
                     "section_hatch",
-                    r.get(2).unwrap_or("HATCH"),
+                    "剖面线",
                     "native_hatch_pattern",
                     "observed",
                     vec![],
-                    vec![format!("source:{h}")],
+                    std::iter::once(format!("source:{h}"))
+                        .chain(r.get(2).map(|n| format!("pattern_name:{}", n.trim())))
+                        .collect(),
                     vec!["Sectioned material region and cutting plane remain unresolved".into()],
                 );
                 b.member(
@@ -6855,6 +6861,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;
     annotation_blocks::references(&b, &regions, &mut refs)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
+    section_hatching::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb

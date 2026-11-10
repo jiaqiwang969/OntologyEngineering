@@ -62,11 +62,11 @@ oev2 --root ROOT --project-home HOME drawing route \
 
 ## 转换器锁定
 
-只接受 [`integrations/runtime-locks/cadcraft-source.json`](../integrations/runtime-locks/cadcraft-source.json) 锁定的 CADCraft：fork `jiaqiwang969/cadcraft`（上游 `storytold/cadcraft`）的 `fix/caxa-dwg-fidelity` 提交 `085d8c7`，版本 `cadcraft-cli 0.15.1-aixcam.8 (dev)`（acadrust 0.6.6 加一个补丁提交，取自 fork `jiaqiwang969/acadrust` 的 `aixcam/legacy-typeface-codepage`，可从干净克隆构建）。锁编译进 `oev2`。本机构建另写运行记录 `oev2.cadcraft-runtime/1`：
+只接受 [`integrations/runtime-locks/cadcraft-source.json`](../integrations/runtime-locks/cadcraft-source.json) 锁定的 CADCraft：fork `jiaqiwang969/cadcraft`（上游 `storytold/cadcraft`）的 `fix/svg-member-identity` 提交 `09fcf70`，版本 `cadcraft-cli 0.15.1-aixcam.9 (dev)`（在 aixcam.8 之上只改 SVG 输出：块参照和尺寸内部图元所画的每个组带 `data-member`，写出从根对象到该图元的句柄路径；DXF 与预览不变。acadrust 0.6.6 加一个补丁提交，取自 fork `jiaqiwang969/acadrust` 的 `aixcam/legacy-typeface-codepage`）。锁编译进 `oev2`。本机构建另写运行记录 `oev2.cadcraft-runtime/1`：
 
 ```json
 {"schema":"oev2.cadcraft-runtime/1","program_path":"/abs/cadcraft-cli","program_sha256":"…",
- "repository":"https://github.com/jiaqiwang969/cadcraft","source_commit":"085d8c7671afcc067e4b5bf22fe034109870663b",
+ "repository":"https://github.com/jiaqiwang969/cadcraft","source_commit":"09fcf709ffc29682410676916d3e9b6d90cc3ef0",
  "fonts_directory":null,"fonts_manifest_path":null,"fonts_manifest_sha256":null}
 ```
 

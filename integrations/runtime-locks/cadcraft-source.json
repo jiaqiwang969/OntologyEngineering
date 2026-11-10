@@ -3,9 +3,9 @@
   "name": "cadcraft",
   "repository": "https://github.com/jiaqiwang969/cadcraft",
   "upstream_repository": "https://github.com/storytold/cadcraft",
-  "branch": "fix/caxa-dwg-fidelity",
-  "commit": "085d8c7671afcc067e4b5bf22fe034109870663b",
-  "version": "cadcraft-cli 0.15.1-aixcam.8 (dev)",
+  "branch": "fix/svg-member-identity",
+  "commit": "09fcf709ffc29682410676916d3e9b6d90cc3ef0",
+  "version": "cadcraft-cli 0.15.1-aixcam.9 (dev)",
   "license": "MIT OR Apache-2.0",
   "build": {
     "command": "cargo build --locked --release -p cadcraft-cli",
@@ -14,12 +14,12 @@
   },
   "reference_build": {
     "target": "aarch64-apple-darwin",
-    "sha256": "15c819bbba9227cc4139e77b75e24eff0c82246b1aefb031be95d0efd770d930",
+    "sha256": "56bc5d7d5ac3bd2074b0b5fae95bc611487b3ff9a5f4a635fb2b1ecad9559700",
     "scope": "Digest of one maintainer build. Builds are not assumed to be reproducible across machines; every local build records its own digest in its runtime record (oev2.cadcraft-runtime/1)."
   },
   "use": {
     "convert": "run DWG --cmd 'saveas {\"path\": DXF, \"version\": 2018}' with a fixed environment and no SHX fonts: for justified TEXT the converter recomputes the stored baseline start (group 10) from font metrics when fonts are present, so the DXF bytes would depend on which fonts are installed. The alignment point (group 11) does not change.",
-    "render": "run DXF --cmd 'reviewplot {\"path\": PNG, \"fontDirectory\": FONTS}' --export SVG; local fonts are optional and named in the runtime record: SHX files, and with cadcraft.font-pack/2 TrueType files and declared substitutes, which the review result lists. SVG masks carry data-mask. Fonts are not distributed with this lock."
+    "render": "run DXF --cmd 'reviewplot {\"path\": PNG, \"fontDirectory\": FONTS}' --export SVG; local fonts are optional and named in the runtime record: SHX files, and with cadcraft.font-pack/2 TrueType files and declared substitutes, which the review result lists. SVG masks carry data-mask; a group drawn by an entity nested in a block reference or a dimension carries data-member, the handles from the top-level entity down to that entity joined by '/'. Fonts are not distributed with this lock."
   },
   "scope": "Source identity of the only converter the drawing route accepts. The route refuses a program whose reported version differs from this lock, or whose digest, repository or commit differ from its local runtime record. Conversion fidelity was qualified on development drawings, and for dimension text and text-style fonts against AutoCAD readings of four further drawings (two from CAXA). The commit takes acadrust 0.6.6 with one patch (legacy TrueType typeface names in the drawing code page) from https://github.com/jiaqiwang969/acadrust, branch aixcam/legacy-typeface-codepage, rev 726d3a435986c2c76de99af5328c75b30a63bcf7."
 }

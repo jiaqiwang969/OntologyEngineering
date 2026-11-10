@@ -464,7 +464,7 @@ piece = true
 kinds = ["thread_convention"]
 [[rules.concepts]]
 kind = ""
-ids = ["DC-G3-024", "DC-G3-005", "DC-G1-048"]
+ids = ["DC-G1-048"]
 
 [[rules]]
 rule = "piece:full_circle_of_three_quarter_thread_convention"
@@ -473,7 +473,7 @@ piece = true
 kinds = ["thread_convention"]
 [[rules.concepts]]
 kind = ""
-ids = ["DC-G3-024", "DC-G3-005", "DC-G1-049"]
+ids = ["DC-G1-049"]
 
 [[rules]]
 rule = "piece:coaxial_hidden_major_minor_pairs_with_thread_end"
@@ -1129,14 +1129,14 @@ missing = "“可以保留”（只注标记不画符号）的中心孔未识别
 [[concepts]]
 id = "DC-G3-005"
 level = "partial"
-by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "card:thread_representation/internal_thread_in_section", "piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "端视图与剖视画法已识别；不可见内螺纹（虚线）只按成对虚线识别，螺纹标记与画出的孔径不符时只记录不纠正"
+by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "card:thread_representation/internal_thread_in_section"]
+missing = "端视图（细 3/4 圆在粗圆之外）与剖视画法已识别并互相关联；不可见内螺纹（虚线）只按成对虚线识别，螺纹标记与画出的孔径不符时不提示"
 
 [[concepts]]
 id = "DC-G3-024"
 level = "partial"
-by = ["piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "端视图的 3/4 细圆与虚线螺纹对能识别；侧视图的大小径线与螺纹终止线未按内外螺纹分开"
+by = ["card:thread_representation"]
+missing = "端视图（细 3/4 圆在粗圆之内）已识别为外螺纹；平行于轴线的视图中外螺纹的大径粗线、小径细线与螺纹终止线未识别"
 
 [[concepts]]
 id = "DC-G3-080"

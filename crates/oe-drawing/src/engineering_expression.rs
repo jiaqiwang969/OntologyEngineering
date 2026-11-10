@@ -63,6 +63,8 @@ mod view_layout;
 mod annotation_blocks;
 #[path = "section_hatching.rs"]
 mod section_hatching;
+#[path = "thread_forms.rs"]
+mod thread_forms;
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
@@ -5209,15 +5211,18 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 .map_or((None, vec![]), |(p, ev)| (Some(p), ev)),
         };
         if let Some(p) = partner {
+            // internal or external thread by which of the two circles is the thin one
+            let form = thread_forms::end_view(rad, cx.arc(&p).map_or(rad, |x| x.1));
             let e = b.expr(
                 "thread_convention",
                 h,
                 "piece:three_quarter_thin_circle_concentric_with_full_circle",
                 "candidate",
-                vec![],
+                vec![form.qualifier.into()],
                 [format!("partner:{p}"), "GB/T 4459.1".into()]
                     .into_iter()
                     .chain(wide.iter().cloned())
+                    .chain(form.evidence.iter().cloned())
                     .collect(),
                 vec![],
             );
@@ -5230,7 +5235,7 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 member_line_type(cx.lt(h), "thread_line"),
                 "candidate",
                 vec![],
-                vec![format!("concentric:{p}")],
+                vec![format!("concentric:{p}"), form.arc.clone()],
             );
             // GB/T 4459.1 end view: the full circle is the other thread diameter of the same convention.
             let e2 = b.expr(
@@ -5238,10 +5243,11 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 &p,
                 "piece:full_circle_of_three_quarter_thread_convention",
                 "candidate",
-                vec![],
+                vec![form.qualifier.into()],
                 [format!("partner:{h}"), "GB/T 4459.1".into()]
                     .into_iter()
                     .chain(wide.iter().take(2).cloned())
+                    .chain(form.evidence.iter().cloned())
                     .collect(),
                 vec![],
             );
@@ -5260,7 +5266,7 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 },
                 "candidate",
                 vec![],
-                vec![format!("concentric:{h}")],
+                vec![format!("concentric:{h}"), form.circle.clone()],
             );
             // the same circle drawn again is the same thread diameter
             for d in line_evidence::same_circles(cx, &p) {
@@ -6469,7 +6475,12 @@ fn finalize(
         let view = vmap.get(&i).cloned();
         let piece = e.rule.strip_prefix("piece:");
         let ni = if let Some(rule) = piece {
-            let key = (e.kind.clone(), view.clone().unwrap_or_default());
+            // pieces of one form (internal or external thread end views) are a group of their own
+            let form = thread_forms::group_form(e);
+            let key = (
+                format!("{}{}", e.kind, form.join(",")),
+                view.clone().unwrap_or_default(),
+            );
             let idx = *groups.entry(key).or_insert_with(|| {
                 let label = format!(
                     "{} · {}",
@@ -6477,14 +6488,14 @@ fn finalize(
                         .get(view.as_deref().unwrap_or(""))
                         .copied()
                         .unwrap_or("未定视图"),
-                    kind_cn(&e.kind)
+                    thread_forms::group_name(&form).unwrap_or(kind_cn(&e.kind))
                 );
                 nb.expr(
                     &e.kind,
                     &label,
                     "grouped_line_type_pieces_by_view",
                     "candidate",
-                    vec![],
+                    form.clone(),
                     vec![],
                     vec!["Part feature identity of each piece requires projection evidence".into()],
                 )
@@ -6492,7 +6503,7 @@ fn finalize(
             for ev in std::iter::once(format!("rule:{rule}")).chain(
                 e.evidence_ids
                     .iter()
-                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:") || x.starts_with("card:") || x.starts_with("variant:"))
+                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:") || x.starts_with("card:") || x.starts_with("variant:") || x.starts_with("concept:"))
                     .cloned(),
             ) {
                 if !nb.exprs[idx].evidence_ids.contains(&ev) {
@@ -6862,6 +6873,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     annotation_blocks::references(&b, &regions, &mut refs)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     section_hatching::state(&cx, &mut nb, &regions)?;
+    thread_forms::state(&cx, &mut nb, &regions)?;
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb

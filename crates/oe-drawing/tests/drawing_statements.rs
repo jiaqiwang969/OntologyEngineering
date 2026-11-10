@@ -22,6 +22,30 @@ fn line(id: &str, layer: &str, a: P, b: P) -> String {
         &format!("10\n{}\n20\n{}\n11\n{}\n21\n{}\n", a[0], a[1], b[0], b[1]),
     )
 }
+fn circle(id: &str, layer: &str, c: P, r: f64) -> String {
+    ent(
+        "CIRCLE",
+        id,
+        layer,
+        &format!("10\n{}\n20\n{}\n40\n{r}\n", c[0], c[1]),
+    )
+}
+fn arc(id: &str, layer: &str, c: P, r: f64, a0: f64, a1: f64) -> String {
+    ent(
+        "ARC",
+        id,
+        layer,
+        &format!("10\n{}\n20\n{}\n40\n{r}\n50\n{a0}\n51\n{a1}\n", c[0], c[1]),
+    )
+}
+fn text(id: &str, layer: &str, s: &str, p: P, h: f64) -> String {
+    ent(
+        "TEXT",
+        id,
+        layer,
+        &format!("1\n{s}\n10\n{}\n20\n{}\n40\n{h}\n50\n0\n", p[0], p[1]),
+    )
+}
 /// A hatch with one closed polyline boundary and a pattern of line families given as (direction in
 /// degrees, spacing); `name` is the pattern name the CAD system stores.
 fn hatch(id: &str, layer: &str, name: &str, pts: &[P], families: &[(f64, f64)]) -> String {
@@ -311,4 +335,198 @@ fn solid_filled_section_states_no_direction() {
         e.label
     );
     assert!(ev(e, "hatch_solid") && ev_with(e, "hatch_angle:").is_empty());
+}
+
+// ---------------------------------------------------------------- thread_representation: names, forms, one thread in two views
+
+fn concepts(e: &MdEngineeringExpression) -> BTreeSet<&str> {
+    e.concept_ids.iter().map(String::as_str).collect()
+}
+fn view_label<'a>(g: &'a MdEngineeringExpressionGraph, e: &MdEngineeringExpression) -> &'a str {
+    g.views
+        .iter()
+        .find(|v| Some(&v.id) == e.view_id.as_ref())
+        .map_or("", |v| v.label.as_str())
+}
+
+#[test]
+fn thread_end_view_with_the_thin_arc_outside_is_internal() {
+    let mut ents = outline("P", 0., 0., 60., 40.);
+    ents.push(arc("TA", "02", [20., 20.], 6., 90., 0.));
+    ents.push(circle("TC", "01", [20., 20.], 5.1));
+    let g = run(&[], &ents);
+    let e = expr_with(&g, "TA", "thread_convention");
+    assert_eq!(e.label, "主视图 · 内螺纹（端视） 大径 12 小径 10.2");
+    assert_eq!(e.qualifiers, vec!["internal_thread".to_string()]);
+    assert!(
+        concepts(e).contains("DC-G3-005") && !concepts(e).contains("DC-G3-024"),
+        "{:?}",
+        e.concept_ids
+    );
+    assert!(ev(e, "card:thread_representation") && ev(e, "variant:internal_thread_end_view"));
+    // the thick circle is the minor diameter of the same expression
+    assert_eq!(expr_with(&g, "TC", "thread_convention").id, e.id);
+}
+
+#[test]
+fn thread_end_view_with_the_thin_arc_inside_is_external() {
+    // an external thread end view and, in the same view, an internal one: two groups
+    let mut ents = outline("P", 0., 0., 60., 40.);
+    ents.push(arc("XA", "02", [20., 20.], 5.1, 90., 0.));
+    ents.push(circle("XC", "01", [20., 20.], 6.));
+    ents.push(arc("TA", "02", [45., 20.], 4., 90., 0.));
+    ents.push(circle("TC", "01", [45., 20.], 3.4));
+    let g = run(&[], &ents);
+    let x = expr_with(&g, "XA", "thread_convention");
+    assert_eq!(x.label, "主视图 · 外螺纹（端视） 大径 12 小径 10.2");
+    assert_eq!(x.qualifiers, vec!["external_thread".to_string()]);
+    assert!(
+        concepts(x).contains("DC-G3-024") && !concepts(x).contains("DC-G3-005"),
+        "{:?}",
+        x.concept_ids
+    );
+    assert_eq!(expr_with(&g, "XC", "thread_convention").id, x.id);
+    let t = expr_with(&g, "TA", "thread_convention");
+    assert_ne!(t.id, x.id);
+    assert!(
+        t.label.contains("内螺纹（端视）") && !concepts(t).contains("DC-G3-024"),
+        "{} {:?}",
+        t.label,
+        t.concept_ids
+    );
+}
+
+/// A tapped hole in section along x from the face at `x0`: thin pair `major` apart over `thread`,
+/// thick pair `minor` apart over `drill`, the axis on `y`; ids prefixed with `p`.
+fn tapped(p: &str, x0: f64, y: f64, major: f64, minor: f64, thread: f64, drill: f64) -> Vec<String> {
+    let id = |s: &str| format!("{p}{s}");
+    vec![
+        line(&id("M1"), "02", [x0, y + major / 2.], [x0 + thread, y + major / 2.]),
+        line(&id("M2"), "02", [x0, y - major / 2.], [x0 + thread, y - major / 2.]),
+        line(&id("N1"), "01", [x0, y + minor / 2.], [x0 + drill, y + minor / 2.]),
+        line(&id("N2"), "01", [x0, y - minor / 2.], [x0 + drill, y - minor / 2.]),
+        line(&id("AX"), "05", [x0 - 3., y], [x0 + drill + 3., y]),
+    ]
+}
+
+#[test]
+fn thread_in_section_is_named_by_form_and_sizes() {
+    // through the wall between two faces
+    let mut ents = vec![
+        line("FW", "01", [0., 0.], [0., 60.]),
+        line("FZ", "01", [16., 0.], [16., 60.]),
+    ];
+    ents.extend(tapped("A", 0., 30., 12., 10.2, 16., 16.));
+    let g = run(&[], &ents);
+    let e = expr_with(&g, "AM1", "thread_convention");
+    assert_eq!(
+        e.label,
+        format!("{} · 内螺纹（剖视） 大径 12 小径 10.2 通孔", view_label(&g, e))
+    );
+    assert!(ev(e, "through_thread") && !ev(e, "blind_thread"));
+    // ending in the material: a thread end line, the drill deeper with its bottom and point
+    let mut ents = vec![line("FW", "01", [0., 0.], [0., 60.])];
+    ents.extend(tapped("B", 0., 30., 9., 7.2, 11., 15.));
+    ents.extend([
+        line("BTE", "01", [11., 25.5], [11., 34.5]),
+        line("BDB", "01", [15., 26.4], [15., 33.6]),
+        line("BP1", "01", [15., 33.6], [17.078, 30.]),
+        line("BP2", "01", [15., 26.4], [17.078, 30.]),
+    ]);
+    let g = run(&[], &ents);
+    let e = expr_with(&g, "BM1", "thread_convention");
+    assert_eq!(
+        e.label,
+        format!(
+            "{} · 内螺纹（剖视） 大径 9 小径 7.2 盲孔 螺纹深 11",
+            view_label(&g, e)
+        )
+    );
+    assert!(
+        ev(e, "blind_thread") && ev(e, "thread_depth:11.0000") && ev(e, "drill_depth:15.0000"),
+        "{:?}",
+        e.evidence_ids
+    );
+    for x in &g.expressions {
+        assert!(
+            !g.source.entities.iter().any(|s| s.id == x.label),
+            "{} is named by a handle",
+            x.id
+        );
+    }
+}
+
+/// A view with a tapped hole in section (axis on y = `y`) and, 140 to its right, a view showing
+/// an end view of radius `r` at height 30.
+fn section_and_end_view(y: f64, r: f64, extra: Vec<String>) -> MdEngineeringExpressionGraph {
+    let mut ents = outline("S", 0., y - 30., 40., y + 30.);
+    ents.push(line("SZ", "01", [16., y - 30.], [16., y + 30.]));
+    ents.extend(tapped("S", 0., y, 12., 10.2, 16., 16.));
+    ents.extend(outline("E", 140., 0., 200., 60.));
+    ents.push(arc("EA", "02", [170., 30.], r, 90., 0.));
+    ents.push(circle("EC", "01", [170., 30.], 0.85 * r));
+    ents.extend(extra);
+    run(&[], &ents)
+}
+
+#[test]
+fn thread_end_view_on_the_axis_of_its_section_is_the_same_thread() {
+    let g = section_and_end_view(30., 6., vec![]);
+    let (s, e) = (
+        expr_with(&g, "SM1", "thread_convention"),
+        expr_with(&g, "EA", "thread_convention"),
+    );
+    assert_ne!(s.view_id, e.view_id);
+    assert_eq!(ev_with(s, "same_thread_as:"), vec![e.id.as_str()]);
+    assert_eq!(ev_with(e, "same_thread_as:"), vec![s.id.as_str()]);
+    assert!(
+        ev(s, "end_view_on_section_axis") && ev(s, "end_view:EA"),
+        "{:?}",
+        s.evidence_ids
+    );
+    assert!(ev(s, "variant:same_thread_in_two_views"));
+}
+
+#[test]
+fn thread_end_view_on_the_cutting_line_of_its_section_is_the_same_thread() {
+    // the section is placed away from the projection of the end view and named R-R; the cutting
+    // symbol R stands on the vertical line through the end view
+    let symbol = vec![
+        line("K1", "01", [170., 64.], [170., 69.]),
+        line("K2", "01", [170., -4.], [170., -9.]),
+        text("R1", "11", "R", [172., 69.], 3.5),
+        text("R2", "11", "R", [172., -12.], 3.5),
+        text("RN", "11", "R-R", [12., 174.], 3.5),
+    ];
+    let g = section_and_end_view(140., 6., symbol);
+    let (s, e) = (
+        expr_with(&g, "SM1", "thread_convention"),
+        expr_with(&g, "EA", "thread_convention"),
+    );
+    let k = expr_with(&g, "K1", "view_callout");
+    assert!(
+        ev(k, &format!("references_view:{}", s.view_id.as_deref().unwrap())),
+        "{:?} {:?}",
+        k.evidence_ids,
+        s.view_id
+    );
+    assert_eq!(ev_with(s, "same_thread_as:"), vec![e.id.as_str()]);
+    assert_eq!(
+        ev_with(s, "end_view_on_cutting_line:"),
+        vec![k.id.as_str()],
+        "{:?}",
+        s.evidence_ids
+    );
+    assert_eq!(ev_with(e, "same_thread_as:"), vec![s.id.as_str()]);
+}
+
+#[test]
+fn thread_end_view_of_another_diameter_is_not_the_same_thread() {
+    let g = section_and_end_view(30., 8., vec![]);
+    let (s, e) = (
+        expr_with(&g, "SM1", "thread_convention"),
+        expr_with(&g, "EA", "thread_convention"),
+    );
+    assert!(ev_with(s, "same_thread_as:").is_empty(), "{:?}", s.evidence_ids);
+    assert!(ev_with(e, "same_thread_as:").is_empty(), "{:?}", e.evidence_ids);
 }

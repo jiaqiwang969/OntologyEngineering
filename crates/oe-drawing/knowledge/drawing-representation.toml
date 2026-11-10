@@ -912,7 +912,7 @@ sources = [
 knowledge_units = ["K13", "K34"]
 recognition = "端视图：一段细实线圆弧，包角在给定范围内（约 3/4 圈），与一个整圆同心；两者半径比在常用窗口内时直接读出（现有规则）；比值低于常用窗口而不低于宽窗口下限时，弧须按本图证据为细线，且没有横跨该孔的普通直径尺寸；横跨该孔、写有螺纹标记的标注记作旁证。整圆按螺纹约定为粗实线轮廓，不论图层与颜色。剖视：一对按本图证据为细线的平行线，其内侧一对粗线关于同一中线对称、沿中线互相重叠，粗细间距比在给定范围内；中线上有孔的轴线、或细线对的一端有横跨大径的粗终止线、或剖面线边界沿粗线，三者有一即读出。粗线对比细线对更深时，为不穿通螺孔，钻孔底线与锥顶线并入。"
 markers = []
-concepts = ["DC-G3-005", "DC-G3-002", "DC-G3-094", "DC-G1-048", "DC-G1-049"]
+concepts = ["DC-G3-005", "DC-G3-002", "DC-G3-094", "DC-G1-048", "DC-G1-049", "DC-G3-024"]
 
 [[cards.components]]
 role = "thread_line"
@@ -994,6 +994,43 @@ meaning = "钻孔锥顶线与轴线夹角余弦的下限（锥顶角约 145°）
 name = "drill_point_cos_max"
 value = 0.7
 meaning = "钻孔锥顶线与轴线夹角余弦的上限（锥顶角约 90°；标准约 118°～120°，余弦约 0.5）"
+
+[[cards.variants]]
+id = "internal_thread_end_view"
+title = "端视图：细实线 3/4 圆在粗实线圆之外是内螺纹"
+distinguishing = "牙底用细实线表示（GB/T 4459.1-1995 3.1）：约 3/4 圈的细实线圆弧半径大于同心的粗实线整圆时，细弧是大径（牙底）、粗圆是小径（牙顶），即内螺纹（螺孔）；只带内螺纹画法的概念"
+encodings = ["loose"]
+tests = ["thread_end_view_with_the_thin_arc_outside_is_internal"]
+
+[[cards.variants]]
+id = "external_thread_end_view"
+title = "端视图：细实线 3/4 圆在粗实线圆之内是外螺纹"
+distinguishing = "约 3/4 圈的细实线圆弧半径小于同心的粗实线整圆时，粗圆是大径（牙顶）、细弧是小径（牙底），即外螺纹；只带外螺纹画法的概念。同一视图中内、外螺纹的端视图各自成组"
+encodings = ["loose"]
+tests = ["thread_end_view_with_the_thin_arc_inside_is_external"]
+
+[[cards.variants]]
+id = "thread_named_by_form"
+title = "螺纹表达的名称写它是什么"
+distinguishing = "名称由所在视图、内螺纹或外螺纹、端视或剖视、大径与小径组成；剖视再写通孔（大径细线两端都止于端面、没有终止线）或盲孔与螺纹深度（大径细线的长度）；图元句柄不是名称"
+encodings = ["loose"]
+tests = ["thread_in_section_is_named_by_form_and_sizes", "thread_end_view_with_the_thin_arc_outside_is_internal"]
+
+[[cards.variants]]
+id = "same_thread_in_two_views"
+title = "同一螺纹的端视图与剖视"
+distinguishing = "同一张图纸的两个视图中，端视图细实线圆弧的直径与剖视中细实线对的间距（大径）相同，且端视图圆心落在剖视螺纹的轴线上（两视图按投影关系配置），或落在指向该剖视图的剖切符号的剖切线上：两处是同一螺纹，互相记为依据。小径是约定画法（约 0.85 倍大径），两处画得不同不妨碍"
+encodings = ["inferred"]
+tests = ["thread_end_view_on_the_axis_of_its_section_is_the_same_thread", "thread_end_view_on_the_cutting_line_of_its_section_is_the_same_thread"]
+
+[[cards.counter_examples]]
+statement = "轴线上另一直径的螺纹端视图不是这处剖视螺纹"
+test = "thread_end_view_of_another_diameter_is_not_the_same_thread"
+
+[[cards.parameters]]
+name = "same_thread_tolerance"
+value = 0.02
+meaning = "同一螺纹的端视图与剖视：大径之差、圆心到轴线（或剖切线）距离的上限 = 该值 × 大径"
 
 [[cards]]
 id = "dimension_text"

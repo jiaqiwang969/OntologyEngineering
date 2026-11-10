@@ -1468,9 +1468,22 @@ pub(super) fn thread_sections(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     ev.push(format!("thread_end_line:{x}"));
                 }
             }
+            // what the lines say besides the diameters: the thread runs through (both ends of the
+            // major lines on faces, no end line) or ends in the material at its depth
+            let depth = hi - lo;
+            if deep_end.is_some() || end_line.is_some() {
+                ev.push("blind_thread".into());
+                ev.push(format!("thread_depth:{depth:.4}"));
+            } else {
+                ev.push("through_thread".into());
+            }
+            if deep_end.is_some() {
+                ev.push(format!("drill_depth:{:.4}", k_hi - k_lo));
+            }
+            // named by view, form and sizes once the views are known (`thread_forms`)
             let e = b.expr(
                 "thread_convention",
-                t1,
+                "内螺纹（剖视）",
                 &format!("card:thread_representation/{variant}"),
                 "candidate",
                 vec![],

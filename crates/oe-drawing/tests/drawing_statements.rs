@@ -1755,3 +1755,133 @@ fn annealing_ageing_and_blasting_items_take_their_topics() {
     assert_eq!(kind_of("QB/Q4"), "material_heat");
     assert_eq!(kind_of("QB/Q5"), "technical_general");
 }
+
+// ---------------------------------------------------------------- thread_representation: a thread in section without widths
+
+/// A drawing whose layers follow no checked convention and carry no lineweights: layer P for all
+/// continuous lines, R (dash-dot) for centre lines.
+fn run_plain(ents: &[String]) -> MdEngineeringExpressionGraph {
+    let tables = "0\nSECTION\n2\nTABLES\n0\nLTYPE\n2\nCONTINUOUS\n73\n0\n0\nLTYPE\n2\nAXISX\n73\n4\n49\n8\n49\n-1\n49\n1\n49\n-1\n0\nLAYER\n2\n0\n62\n7\n6\nCONTINUOUS\n0\nLAYER\n2\nP\n62\n7\n6\nCONTINUOUS\n0\nLAYER\n2\nR\n62\n1\n6\nAXISX\n0\nENDSEC\n";
+    let bytes = format!(
+        "{tables}0\nSECTION\n2\nENTITIES\n{}0\nENDSEC\n0\nEOF\n",
+        ents.concat()
+    );
+    match discover(bytes.as_bytes()) {
+        Ok(g) => g,
+        Err(e) => panic!("{e:#}"),
+    }
+}
+/// A hatch of several closed polyline loops with one line family.
+fn hatch_loops(id: &str, loops: &[Vec<P>], angle: f64, spacing: f64) -> String {
+    let mut t = format!(
+        "10\n0\n20\n0\n30\n0\n2\nQQPAT\n70\n0\n71\n0\n91\n{}\n",
+        loops.len()
+    );
+    for pts in loops {
+        t.push_str(&format!("92\n2\n72\n0\n73\n1\n93\n{}\n", pts.len()));
+        for p in pts {
+            t.push_str(&format!("10\n{}\n20\n{}\n", p[0], p[1]));
+        }
+        t.push_str("97\n0\n");
+    }
+    let (sin, cos) = angle.to_radians().sin_cos();
+    t.push_str(&format!(
+        "75\n0\n76\n1\n52\n{angle}\n41\n1\n77\n0\n78\n1\n53\n{angle}\n43\n0\n44\n0\n45\n{}\n46\n{}\n79\n0\n98\n0\n",
+        -sin * spacing,
+        cos * spacing
+    ));
+    ent("HATCH", id, "P", &t)
+}
+/// A wall 16 wide cut along a tapped through hole on y = 0: root lines at ±6, crest lines at
+/// ±5.1, faces, outline and the centre line; `hatches` the section hatches.
+fn wall_section(hatches: Vec<String>) -> MdEngineeringExpressionGraph {
+    let mut ents = vec![
+        line("FA", "P", [0., -20.], [0., 20.]),
+        line("FB", "P", [16., -20.], [16., 20.]),
+        line("FC", "P", [0., 20.], [16., 20.]),
+        line("FD", "P", [0., -20.], [16., -20.]),
+        line("M1", "P", [0., 6.], [16., 6.]),
+        line("M2", "P", [0., -6.], [16., -6.]),
+        line("N1", "P", [0., 5.1], [16., 5.1]),
+        line("N2", "P", [0., -5.1], [16., -5.1]),
+        line("AX", "R", [-3., 0.], [19., 0.]),
+    ];
+    ents.extend(hatches);
+    run_plain(&ents)
+}
+fn band(y0: f64, y1: f64) -> Vec<P> {
+    rect_pts(0., y0, 16., y1)
+}
+
+#[test]
+fn thread_in_section_without_widths_is_read_from_the_hatch() {
+    // one hatch through the root lines (both sides) up to the crest lines
+    let g = wall_section(vec![hatch_loops(
+        "HW",
+        &[
+            band(6., 20.),
+            band(5.1, 6.),
+            band(-6., -5.1),
+            band(-20., -6.),
+        ],
+        45.,
+        2.,
+    )]);
+    let e = expr_with(&g, "M1", "thread_convention");
+    assert!(
+        ev(e, "variant:root_inside_hatch") && ev(e, "major:12.0000") && ev(e, "minor:10.2000"),
+        "{:?}",
+        e.evidence_ids
+    );
+    assert!(
+        e.label.ends_with("内螺纹（剖视） 大径 12 小径 10.2 通孔"),
+        "{}",
+        e.label
+    );
+    let role = |h: &str| {
+        g.members
+            .iter()
+            .find(|m| m.expression_id == e.id && m.source_handle == h)
+            .map(|m| m.member_role.clone())
+    };
+    assert_eq!(role("M2").as_deref(), Some("thread_line"));
+    assert_eq!(role("N1").as_deref(), Some("contour_segment"));
+    assert!(
+        !exprs(&g, "M1").iter().any(|x| x.kind == "visible_contour"),
+        "the root line is no outline"
+    );
+}
+
+#[test]
+fn stepped_hole_without_widths_is_not_a_thread() {
+    // the hatch ends on the outer pair: the band between the pairs is open
+    let g = wall_section(vec![hatch_loops(
+        "HW",
+        &[band(6., 20.), band(-20., -6.)],
+        45.,
+        2.,
+    )]);
+    assert!(
+        !exprs(&g, "M1")
+            .iter()
+            .any(|x| x.kind == "thread_convention"),
+        "{:?}",
+        exprs(&g, "M1").iter().map(|x| &x.kind).collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn bush_hatched_apart_without_widths_is_not_a_thread() {
+    // the band between the pairs is another part, hatched in the other direction
+    let g = wall_section(vec![
+        hatch_loops("HW", &[band(6., 20.), band(-20., -6.)], 45., 2.),
+        hatch_loops("HB", &[band(5.1, 6.), band(-6., -5.1)], 135., 1.),
+    ]);
+    assert!(
+        !exprs(&g, "M1")
+            .iter()
+            .any(|x| x.kind == "thread_convention"),
+        "{:?}",
+        exprs(&g, "M1").iter().map(|x| &x.kind).collect::<Vec<_>>()
+    );
+}

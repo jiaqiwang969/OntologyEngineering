@@ -1027,6 +1027,26 @@ tests = ["thread_end_view_on_the_axis_of_its_section_is_the_same_thread", "threa
 statement = "轴线上另一直径的螺纹端视图不是这处剖视螺纹"
 test = "thread_end_view_of_another_diameter_is_not_the_same_thread"
 
+[[cards.variants]]
+id = "root_inside_hatch"
+title = "图上没有线宽时由剖面线认出剖视中的内螺纹"
+distinguishing = "剖视中剖面线画到粗实线为止（GB/T 4459.1-1995 3.5）：关于同一中线对称、沿中线重叠的两对平行线，中线上有点画线；外侧一对两边都在同一剖面线区域内（剖面线穿过它），是牙底（大径）；内侧一对外边有剖面线、朝中线一边没有（孔），是牙顶（小径）。只在图上没有线宽证据（没有线宽分级、图层约定未经核验）时使用"
+encodings = ["loose"]
+tests = ["thread_in_section_without_widths_is_read_from_the_hatch"]
+
+[[cards.counter_examples]]
+statement = "外侧一对也是剖面线的边界（只一边有剖面线）的两对平行线是阶梯孔或沉孔，不是螺纹"
+test = "stepped_hole_without_widths_is_not_a_thread"
+
+[[cards.counter_examples]]
+statement = "两对线之间的带状区域用另一剖面线（方向或间隔不同）或不画剖面线时是衬套、套筒等另一零件，不是螺纹"
+test = "bush_hatched_apart_without_widths_is_not_a_thread"
+
+[[cards.parameters]]
+name = "hatch_probe"
+value = 0.25
+meaning = "判断线两侧有无剖面线的探点离线的距离 = 该值 × 牙底线与牙顶线的间距"
+
 [[cards.parameters]]
 name = "same_thread_tolerance"
 value = 0.02

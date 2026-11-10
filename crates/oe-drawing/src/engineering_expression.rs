@@ -6856,6 +6856,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::cutting_strokes(&cx, &mut b)?;
     view_layout::cutting_paths(&cx, &mut b)?;
     line_evidence::thread_sections(&cx, &mut b)?;
+    thread_forms::sections_by_hatch(&cx, &mut b)?;
     line_kinds(&cx, &mut b);
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);

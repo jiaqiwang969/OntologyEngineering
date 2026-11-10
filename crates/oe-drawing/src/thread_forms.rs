@@ -326,3 +326,226 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, regions: &[Region]) -> Result<()>
     }
     Ok(())
 }
+
+// ---------------------------------------------------------------- a thread in section without line widths
+
+/// Which sides of a stretch of line a section hatch covers: the stretch starts at `start` and runs
+/// `length` along `u`; returns (the hatch covering the side at +n, the hatch covering the side at
+/// −n), n = u turned left, each only when one and the same hatch covers it at every probe.
+fn hatched_sides(
+    start: P,
+    u: P,
+    length: f64,
+    probe: f64,
+    hatches: &[Vec<(P, P)>],
+) -> [Option<usize>; 2] {
+    let n = [-u[1], u[0]];
+    let side = |s: f64| -> Option<usize> {
+        let mut found: Option<usize> = None;
+        for t in [0.25, 0.5, 0.75] {
+            let p = add(add(start, mul(u, t * length)), mul(n, s * probe));
+            let hit = hatches
+                .iter()
+                .position(|segs| representation::inside_segments(p, segs))?;
+            if found.is_some_and(|f| f != hit) {
+                return None;
+            }
+            found = Some(hit);
+        }
+        found
+    };
+    [side(1.), side(-1.)]
+}
+
+/// An internal thread in section when the drawing gives no line widths (card
+/// `thread_representation`, variant `root_inside_hatch`; GB/T 4459.1-1995 3.5: in a section the
+/// hatch is drawn to the thick line, whether the thread is external or internal). Of two pairs of
+/// parallel lines symmetric about one axis (on which a centre line runs) and overlapping along it,
+/// the outer pair lying inside one continuous hatched area of one hatch (hatched on both sides) is
+/// the root, the major diameter; the inner pair bounding that area (hatched on the outer side, the
+/// hole open on the inner side) is the crest, the minor diameter. Only when no width evidence
+/// decides thick and thin (no lineweight classes, no checked layer convention).
+pub(super) fn sections_by_hatch(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let w = line_evidence::Widths::of(cx);
+    if w.weights_decide() || cx.conv.qualified {
+        return Ok(());
+    }
+    let card = representation::card_ref("thread_representation")?;
+    let rmin = representation::param(card, "section_ratio_min")?;
+    let rmax = representation::param(card, "section_ratio_max")?;
+    let probe = representation::param(card, "hatch_probe")?;
+    let hatches: Vec<Vec<(P, P)>> = cx
+        .rec
+        .values()
+        .filter(|r| r.kind == "HATCH" && int(r, 70) == 0)
+        .map(|r| representation::hatch_boundary(r))
+        .filter(|s| s.len() >= 3)
+        .collect();
+    if hatches.is_empty() {
+        return Ok(());
+    }
+    let lines: Vec<(String, P, P)> = cx
+        .lines
+        .iter()
+        .filter(|(h, (a, z))| {
+            dist(*a, *z) > 1e-6
+                && !b.used(h)
+                && cx
+                    .style
+                    .get(*h)
+                    .is_some_and(|s| s.pattern == Pattern::Continuous)
+        })
+        .map(|(h, (a, z))| (h.clone(), *a, *z))
+        .collect();
+    let axes: Vec<(P, P)> = cx
+        .lines
+        .iter()
+        .filter(|(h, _)| {
+            cx.style
+                .get(*h)
+                .is_some_and(|s| s.pattern == Pattern::DashDot)
+        })
+        .map(|(_, l)| *l)
+        .collect();
+    let mut taken: BTreeSet<String> = BTreeSet::new();
+    for (i, (t1, a1, z1)) in lines.iter().enumerate() {
+        let u = unit(sub(*z1, *a1));
+        let off = |p: P| cross(u, sub(p, *a1));
+        let along = |p: P| dot(sub(p, *a1), u);
+        let parallel = |a: P, z: P| cross(unit(sub(z, a)), u).abs() < 0.01;
+        let span = |a: P, z: P| {
+            let (s0, s1) = (along(a), along(z));
+            (s0.min(s1), s0.max(s1))
+        };
+        let s1 = span(*a1, *z1);
+        for (t2, a2, z2) in &lines[i + 1..] {
+            if taken.contains(t1) || taken.contains(t2) || !parallel(*a2, *z2) {
+                continue;
+            }
+            let big = off(*a2);
+            if big.abs() < 1e-6 || (off(*z2) - big).abs() > 1e-3 * big.abs() {
+                continue;
+            }
+            let s2 = span(*a2, *z2);
+            let (lo, hi) = (s1.0.max(s2.0), s1.1.min(s2.1));
+            if hi - lo < 0.5 * (s1.1 - s1.0).min(s2.1 - s2.0) {
+                continue;
+            }
+            let mid = big / 2.;
+            let tol = (0.02 * big.abs()).min(0.05 * cx.scale.max(1.));
+            // a centre line on the middle line
+            let Some(_) = axes.iter().find(|(p, q)| {
+                parallel(*p, *q)
+                    && (off(*p) - mid).abs() <= tol
+                    && (off(*q) - mid).abs() <= tol
+                    && span(*p, *q).1.min(hi) - span(*p, *q).0.max(lo) > 0.
+            }) else {
+                continue;
+            };
+            // the crest pair inside, symmetric about the middle line, in the card's ratio window
+            let inner: Vec<&(String, P, P)> = lines
+                .iter()
+                .filter(|(k, p, q)| {
+                    k != t1
+                        && k != t2
+                        && !taken.contains(k)
+                        && parallel(*p, *q)
+                        && (off(*q) - off(*p)).abs() <= tol
+                        && (off(*p) - mid).abs() < big.abs() / 2. - tol
+                        && span(*p, *q).1.min(hi) - span(*p, *q).0.max(lo) > 0.5 * (hi - lo)
+                })
+                .collect();
+            let pair = inner.iter().find_map(|x| {
+                inner.iter().find_map(|y| {
+                    let (ox, oy) = (off(x.1) - mid, off(y.1) - mid);
+                    let d = (ox - oy).abs();
+                    (x.0 < y.0
+                        && (ox + oy).abs() <= tol
+                        && (rmin..=rmax).contains(&(d / big.abs())))
+                    .then_some((*x, *y, d))
+                })
+            });
+            let Some((k1, k2, d)) = pair else { continue };
+            let gap = (big.abs() - d) / 2.;
+            let probe_at = probe * gap;
+            // the stretch of each line over the common span, probed on both sides (index 0 = the
+            // side of larger offset)
+            let sides = |a: P| {
+                let start = add(*a1, add(mul(u, lo), mul([-u[1], u[0]], off(a))));
+                hatched_sides(start, u, hi - lo, probe_at, &hatches)
+            };
+            let root = |a: P| match sides(a) {
+                [Some(x), Some(y)] if x == y => Some(x),
+                _ => None,
+            };
+            // the crest is hatched on the side away from the axis and open towards it
+            let crest = |a: P| {
+                let s = sides(a);
+                let (outside, inside) = if off(a) > mid {
+                    (s[0], s[1])
+                } else {
+                    (s[1], s[0])
+                };
+                outside.filter(|_| inside.is_none())
+            };
+            let (Some(h1), Some(h2)) = (root(*a1), root(*a2)) else {
+                continue;
+            };
+            let (Some(c1), Some(c2)) = (crest(k1.1), crest(k2.1)) else {
+                continue;
+            };
+            // one hatch: the area through the root is the area the crest bounds
+            if !(h1 == c1 && h2 == c2) {
+                continue;
+            }
+            let e = b.expr(
+                "thread_convention",
+                "内螺纹（剖视）",
+                "card:thread_representation/internal_thread_in_section",
+                "candidate",
+                vec![],
+                vec![
+                    "card:thread_representation".into(),
+                    "variant:internal_thread_in_section".into(),
+                    "variant:root_inside_hatch".into(),
+                    format!("major:{:.4}", big.abs()),
+                    format!("minor:{d:.4}"),
+                    "GB/T 4459.1".into(),
+                    "section_hatch_stops_at_minor".into(),
+                    "through_thread".into(),
+                ],
+                vec!["Thread designation and depth of the hole are read from its callout, not from these lines".into()],
+            );
+            for h in [t1, t2] {
+                b.member(
+                    e,
+                    h,
+                    None,
+                    [0., 1.],
+                    "thread_line",
+                    "thin_continuous",
+                    "candidate",
+                    vec![],
+                    vec![],
+                );
+            }
+            for h in [&k1.0, &k2.0] {
+                b.member(
+                    e,
+                    h,
+                    None,
+                    [0., 1.],
+                    "contour_segment",
+                    "thick_continuous",
+                    "candidate",
+                    vec![],
+                    vec![],
+                );
+            }
+            for h in [t1, t2, &k1.0, &k2.0] {
+                taken.insert(h.clone());
+            }
+        }
+    }
+    Ok(())
+}

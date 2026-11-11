@@ -65,7 +65,7 @@ async function showDraftingIssue(id,display){
  chooseSource(source);
  const applied=REVIEW.receipt.applied.find(a=>a.issue_id===id);
  correctedSelection=applied?.result_handles.find(h=>correctedEntities.has(h))||(correctedEntities.has(source)?source:null);
- render();focus();return true;
+ render();focus();sourceView.highlightOccurrences(item.source_occurrences);if(correctedView)correctedView.highlightOccurrences(item.source_occurrences);return true;
 }
 if(REVIEW){
  $('draftingPanel').hidden=false;
@@ -73,9 +73,9 @@ if(REVIEW){
  $('showCorrectedDrawing').onclick=()=>setDrawingMode('corrected');$('showComparison').onclick=()=>setDrawingMode('compare');
  $('showCorrectedDrawing').disabled=!correctedSvg;$('showComparison').disabled=!correctedSvg;$('downloadCorrected').hidden=!correctedSvg;
  $('correctionStatus').textContent=REVIEW.receipt.status==='written'?`已写出 ${REVIEW.receipt.applied.length} 处改正，${REVIEW.receipt.remaining_issue_ids.length} 条保留待核。`:(REVIEW.issues.some(i=>i.confidence==='certain'&&i.classification==='source_deviation_candidate')?'确定条目无可执行的安全操作、未写改正件。':'无确定条目、未写改正件。');
- for(const [kind,name] of [['source_deviation_candidate','原图偏离候选'],['recognition_deviation','识别偏离'],['revision_difference','版本差别']]){
-  const items=REVIEW.issues.filter(i=>i.classification===kind),group=document.createElement('details');group.dataset.issueClass=kind;group.open=kind==='source_deviation_candidate';const title=document.createElement('summary');title.textContent=name+' '+items.length+' 条';group.append(title);
-  for(const i of items){const row=document.createElement('details');row.dataset.issueId=i.id;const title=document.createElement('summary');title.textContent=({'certain':'确定','likely':'很可能','needs_expert':'要问专家'}[i.confidence]||i.confidence)+' · '+i.rule+' · '+i.location;title.onclick=()=>showDraftingIssue(i.id);row.append(title);const description=document.createElement('p');description.textContent=i.id+'；命中层：'+i.layers.join('、')+'；事实：'+i.observed.join('；')+'；条款：'+i.clause+'；建议：'+i.proposed_correction;row.append(description);const b=document.createElement('button');b.textContent=correctedSvg?'定位对照':'查看原图位置';b.onclick=()=>showDraftingIssue(i.id);row.append(b);group.append(row)}$('draftingIssues').append(group)
+ const groups=new Map();for(const i of REVIEW.issues){if(!groups.has(i.rule))groups.set(i.rule,[]);groups.get(i.rule).push(i)}
+ for(const [rule,items] of groups){const first=items[0],group=document.createElement('details');group.dataset.ruleId=rule;group.open=true;const title=document.createElement('summary');title.textContent=(first.rule_label||rule)+'（'+rule+'） · '+items.length+' 条';group.append(title);
+  for(const i of items){const row=document.createElement('details');row.dataset.issueId=i.id;const title=document.createElement('summary');title.textContent=({'certain':'确定','likely':'很可能','needs_expert':'要问专家'}[i.confidence]||i.confidence)+' · '+({'source_deviation_candidate':'原图偏离候选','recognition_deviation':'识别偏离','revision_difference':'版本差别'}[i.classification]||i.classification)+' · '+i.location;title.onclick=()=>showDraftingIssue(i.id);row.append(title);const description=document.createElement('p');description.textContent=i.id+'；规则：'+(i.rule_label||rule)+'（'+rule+'）；命中层：'+i.layers.join('、')+'；事实：'+i.observed.join('；')+'；条款：'+i.clause+'；建议：'+i.proposed_correction;row.append(description);const b=document.createElement('button');b.textContent=correctedSvg?'定位对照':'查看原图位置';b.onclick=()=>showDraftingIssue(i.id);row.append(b);group.append(row)}$('draftingIssues').append(group)
  }
  $('exportDraftingIssues').onclick=()=>{const u=URL.createObjectURL(new Blob([REVIEW.text],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='drafting-issues.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),0)};
 }

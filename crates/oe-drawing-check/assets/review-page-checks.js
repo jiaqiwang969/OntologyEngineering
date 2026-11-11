@@ -87,6 +87,8 @@ if(G.revisions?.identities.length){const revs=G.revisions.identities.flatMap(i=>
 if(a.drafting){
  const review=a.drafting,items=review.issues,receipt=review.receipt,view=a.view,raw=$('original').checked;
  ok(!$('draftingPanel').hidden&&d.querySelectorAll('[data-issue-id]').length===items.length,'Every drafting item appears in the review panel');
+ const hasCertain=items.some(i=>i.confidence==='certain'),groups=[...d.querySelectorAll('#draftingIssues>details')];
+ if(hasCertain){const firstItems=[...groups[0]?.querySelectorAll(':scope>details[data-issue-id]')||[]];ok(firstItems.some(row=>row.querySelector('summary')?.textContent.startsWith('确定 ·')),'First drafting group contains a certain item');facts.drafting_group_order={groups:groups.length,first_contains_certain:true}}
  for(const i of items){ok(review.text.includes(i.id)&&review.text.includes(i.clause),'Plain text export keeps item and clause '+i.id);ok(i.classification!=='source_deviation_candidate'||i.layers.includes('source'),'Source candidates have source findings '+i.id);ok(i.classification!=='recognition_deviation'||!i.layers.includes('source'),'Reading-only deviations remain separate '+i.id)}
  if(receipt.status==='written'){
   ok(!receipt.corrected_path.startsWith('/')&&receipt.source_sha256===G.source_sha256,'Correction receipt is portable and bound to the original source');

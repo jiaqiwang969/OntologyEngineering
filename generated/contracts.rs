@@ -2809,6 +2809,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDraftingIssue", "observed", "Vec<String>"),
     ("MdDraftingIssue", "proposed_correction", "String"),
     ("MdDraftingIssue", "rule", "String"),
+    ("MdDraftingIssue", "rule_label", "String"),
     ("MdDraftingIssue", "source_occurrences", "Vec<String>"),
     ("MdDraftingLayer", "facts_file", "String"),
     ("MdDraftingLayer", "finding_count", "u64"),
@@ -20704,6 +20705,8 @@ pub struct MdDraftingIssue {
     pub proposed_correction: String,
     /// rule
     pub rule: String,
+    /// Chinese name of the rule from the ontology
+    pub rule_label: String,
     /// source occurrences
     pub source_occurrences: Vec<String>,
 }
@@ -20718,6 +20721,7 @@ impl MdDraftingIssue {
         if self.location.trim().is_empty() { failures.push("MdDraftingIssue.location:required".into()); }
         if self.proposed_correction.trim().is_empty() { failures.push("MdDraftingIssue.proposed_correction:required".into()); }
         if self.rule.trim().is_empty() { failures.push("MdDraftingIssue.rule:required".into()); }
+        if self.rule_label.trim().is_empty() { failures.push("MdDraftingIssue.rule_label:required".into()); }
 
         if !["recognition_deviation","revision_difference","source_deviation_candidate",].contains(&self.classification.as_str()) { failures.push("MdDraftingIssue.classification:allowed_values".into()); }
         if !["certain","likely","needs_expert",].contains(&self.confidence.as_str()) { failures.push("MdDraftingIssue.confidence:allowed_values".into()); }

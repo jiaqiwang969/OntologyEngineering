@@ -65,6 +65,10 @@ fn repeated_issues_plan_drawing_and_receipt_are_byte_identical() {
     );
     assert_eq!(first[0].layers.len(), 3);
     assert_eq!(first[0].confidence, "certain");
+    assert!(!first[0].rule_label.is_empty());
+    let listing = drafting_issues::text(&first);
+    assert!(listing.contains(&first[0].rule_label));
+    assert!(listing.contains(&format!("（{}）", first[0].rule)));
     let plan = drafting_issues::plan(&source, first.clone()).unwrap();
     assert_eq!(plan.operations.len(), 1);
     let (drawing, receipt) = correction::rewrite(&source, &plan).unwrap();

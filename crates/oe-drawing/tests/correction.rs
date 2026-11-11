@@ -22,6 +22,7 @@ fn issue(id: &str, confidence: &str) -> MdDraftingIssue {
         confidence: confidence.into(),
         alternatives: vec![],
         proposed_correction: "test the declared byte operation".into(),
+        rule_label: "合成执行夹具规则".into(),
     }
 }
 fn op(bytes: &[u8], id: &str, kind: &str, path: &[&str]) -> MdDrawingCorrectionOperation {

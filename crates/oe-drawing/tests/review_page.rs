@@ -150,6 +150,30 @@ fn the_review_page_template_takes_widths_from_line_types_and_reads_member_identi
     ] {
         assert!(template.contains(kept), "{kept}");
     }
+    for kept in [
+        "function highlightOccurrences(occurrences)",
+        "id=\"complete\" checked",
+        "id=\"original\">原图对照",
+    ] {
+        assert!(template.contains(kept), "{kept}");
+    }
+}
+
+#[test]
+fn drafting_issue_panel_groups_by_rule_and_keeps_interval_highlight() {
+    let comparison = String::from_utf8(
+        std::fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join("assets/drawing-comparison.js"))
+            .unwrap(),
+    )
+    .unwrap();
+    for kept in [
+        "group.dataset.ruleId=rule",
+        "first.rule_label||rule",
+        "sourceView.highlightOccurrences(item.source_occurrences)",
+        "i.rule_label||rule",
+    ] {
+        assert!(comparison.contains(kept), "{kept}");
+    }
 }
 
 /// A group drawn for a primitive nested in a block reference or a native dimension may name its native

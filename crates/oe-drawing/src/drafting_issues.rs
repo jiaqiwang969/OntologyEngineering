@@ -7,14 +7,73 @@ use std::collections::{BTreeMap, BTreeSet};
 
 pub const CUTTING_RULE: &str = "G2-043-cutting-letter-required";
 
-fn location(f: &MdDraftingFinding, graph: &Value) -> Vec<String> {
-    let focus = f.focus.split_once(':').map_or(f.focus.as_str(), |(_, v)| v);
+#[derive(Clone, Debug)]
+struct Span {
+    path: String,
+    start: f64,
+    end: f64,
+}
+
+fn curve_boundary_intervals(member: &Value) -> Vec<(f64, f64)> {
+    member["evidence_ids"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .filter_map(|e| e.strip_prefix("section_boundary:"))
+        .filter_map(|json| serde_json::from_str::<Value>(json).ok())
+        .filter_map(|e| {
+            let a = e["interval"][0].as_f64()?;
+            let b = e["interval"][1].as_f64()?;
+            Some((a.clamp(0., 1.), b.clamp(0., 1.)))
+        })
+        .filter(|(a, b)| b > a)
+        .collect()
+}
+
+fn geometry_kind<'a>(graph: &'a Value, handle: &str) -> Option<&'a str> {
+    graph["source"]["entities"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .find(|e| e["id"] == handle || e["handle"] == handle)
+        .and_then(|e| e["geometry_kind"].as_str())
+}
+
+fn focused_member_id(focus: &str, members: &[&Value]) -> Option<String> {
+    members
+        .iter()
+        .filter_map(|m| m["id"].as_str())
+        .filter(|id| focus.contains(id))
+        .max_by_key(|id| id.len())
+        .map(str::to_owned)
+}
+
+fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
+    lines
+        .as_array()
+        .into_iter()
+        .flatten()
+        .enumerate()
+        .find(|(_, line)| line["id"].as_str().is_some_and(|id| focus.contains(id)))
+        .map(|(index, _)| index)
+        .or_else(|| {
+            focus
+                .rsplit_once("line:")
+                .and_then(|(_, rest)| rest.split(':').next())
+                .and_then(|n| n.parse::<usize>().ok())
+        })
+}
+
+fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
     let all: Vec<_> = graph["members"].as_array().into_iter().flatten().collect();
-    let mut members: Vec<_> = all.iter().copied().filter(|m| m["id"] == focus).collect();
-    if let Some(index) = focus
-        .strip_prefix("line:")
-        .and_then(|n| n.parse::<usize>().ok())
-    {
+    let focus_member = focused_member_id(&f.focus, &all);
+    let mut members: Vec<_> = focus_member
+        .as_deref()
+        .into_iter()
+        .flat_map(|id| all.iter().copied().filter(move |m| m["id"] == id))
+        .collect();
+    if let Some(index) = focused_line_index(&f.focus, &graph["structural_lines"]) {
         for part in graph["structural_lines"][index]["pieces"]
             .as_array()
             .into_iter()
@@ -28,16 +87,22 @@ fn location(f: &MdDraftingFinding, graph: &Value) -> Vec<String> {
     let mut spans: BTreeMap<String, Vec<(f64, f64)>> = BTreeMap::new();
     for m in members {
         let h = m["source_handle"].as_str().unwrap_or_default();
-        let path = match m["native_member_id"].as_str() {
-            Some(n) if n.starts_with(&format!("{h}/")) => n.to_owned(),
-            Some(n) => format!("{h}/{n}"),
-            None => h.to_owned(),
+        let curve_intervals = if matches!(geometry_kind(graph, h), Some("circle" | "arc")) {
+            curve_boundary_intervals(m)
+        } else {
+            vec![]
         };
-        let interval = (
-            m["interval"][0].as_f64().unwrap_or(0.),
-            m["interval"][1].as_f64().unwrap_or(1.),
-        );
-        spans.entry(path).or_default().push(interval);
+        let intervals = if curve_intervals.is_empty() {
+            vec![(
+                m["interval"][0].as_f64().unwrap_or(0.).clamp(0., 1.),
+                m["interval"][1].as_f64().unwrap_or(1.).clamp(0., 1.),
+            )]
+        } else {
+            curve_intervals
+        };
+        // The source handle is the physical identity used for issue merging. Native member paths
+        // remain available in the finding details, but must not split one source occurrence.
+        spans.entry(h.to_owned()).or_default().extend(intervals);
     }
     if spans.is_empty() {
         for h in &f.source_handles {
@@ -58,17 +123,66 @@ fn location(f: &MdDraftingFinding, graph: &Value) -> Vec<String> {
             }
         }
         for (start, end) in merged {
+            positions.push(Span {
+                path: path.clone(),
+                start,
+                end,
+            });
+        }
+    }
+    if positions.is_empty() {
+        positions.push(Span {
+            path: format!("derived:{}", f.focus),
+            start: 0.,
+            end: 1.,
+        });
+    }
+    positions
+}
+
+fn render_spans(spans: &[Span]) -> Vec<String> {
+    let mut grouped: BTreeMap<&str, Vec<(f64, f64)>> = BTreeMap::new();
+    for span in spans {
+        grouped
+            .entry(span.path.as_str())
+            .or_default()
+            .push((span.start, span.end));
+    }
+    let mut positions = Vec::new();
+    for (path, mut intervals) in grouped {
+        intervals.sort_by(|a, b| a.0.total_cmp(&b.0).then(a.1.total_cmp(&b.1)));
+        let mut merged: Vec<(f64, f64)> = Vec::new();
+        for (start, end) in intervals {
+            if let Some(last) = merged.last_mut()
+                && start <= last.1 + 1e-9
+            {
+                last.1 = last.1.max(end);
+            } else {
+                merged.push((start, end));
+            }
+        }
+        for (start, end) in merged {
             positions.push(if start.abs() < 1e-9 && (end - 1.).abs() < 1e-9 {
-                path.clone()
+                path.to_owned()
             } else {
                 format!("{path}#[{start},{end}]")
             });
         }
     }
-    if positions.is_empty() {
-        positions.push(format!("derived:{focus}"));
-    }
     positions
+}
+
+fn same_position(a: &[Span], b: &[Span]) -> bool {
+    // A source handle is the physical identity. Interval overlap is therefore included whenever
+    // two findings point to the same handle, including a whole-source span and a sub-interval.
+    a.iter()
+        .any(|left| b.iter().any(|right| left.path == right.path))
+}
+
+struct FindingGroup<'a> {
+    rule: String,
+    spans: Vec<Span>,
+    findings: Vec<&'a MdDraftingFinding>,
 }
 
 pub fn collect(
@@ -82,15 +196,33 @@ pub fn collect(
     );
     let rules: BTreeMap<_, _> = report.rules.iter().map(|r| (r.id.as_str(), r)).collect();
     let sites = oe_drawing_check::drafting::cutting_sites(source, graph)?;
-    let mut groups: BTreeMap<(String, Vec<String>), Vec<&MdDraftingFinding>> = BTreeMap::new();
-    for finding in &report.findings {
-        groups
-            .entry((finding.rule_id.clone(), location(finding, graph)))
-            .or_default()
-            .push(finding);
+    let mut ordered: Vec<&MdDraftingFinding> = report.findings.iter().collect();
+    ordered.sort_by_cached_key(|f| serde_json::to_string(f).unwrap_or_default());
+    let mut groups: Vec<FindingGroup<'_>> = Vec::new();
+    for finding in ordered {
+        let current_spans = spans(finding, graph);
+        let mut combined = FindingGroup {
+            rule: finding.rule_id.clone(),
+            spans: current_spans.clone(),
+            findings: vec![finding],
+        };
+        let mut retained = Vec::with_capacity(groups.len());
+        for group in groups {
+            if group.rule == combined.rule && same_position(&group.spans, &current_spans) {
+                combined.spans.extend(group.spans);
+                combined.findings.extend(group.findings);
+            } else {
+                retained.push(group);
+            }
+        }
+        retained.push(combined);
+        groups = retained;
     }
     let mut issues = Vec::new();
-    for ((rule, positions), mut found) in groups {
+    for group in groups {
+        let rule = group.rule;
+        let positions = render_spans(&group.spans);
+        let mut found = group.findings;
         found.sort_by_cached_key(|f| serde_json::to_string(f).unwrap_or_default());
         let meta = rules
             .get(rule.as_str())
@@ -163,6 +295,7 @@ pub fn collect(
             confidence: meta.confidence.clone(),
             alternatives: vec![],
             proposed_correction: meta.proposed_correction.clone(),
+            rule_label: meta.label.clone(),
             classification: classification.into(),
             layers: layers.into_iter().collect(),
             details,
@@ -205,6 +338,7 @@ pub fn collect(
                 confidence: "needs_expert".into(),
                 alternatives: vec![],
                 proposed_correction: "请专家确认版本差别及现行候选".into(),
+                rule_label: "版本比较".into(),
                 classification: "revision_difference".into(),
                 layers: vec![],
                 details: change.clone(),
@@ -270,29 +404,40 @@ pub fn plan(source: &[u8], issues: Vec<MdDraftingIssue>) -> Result<MdDrawingCorr
 
 pub fn text(issues: &[MdDraftingIssue]) -> String {
     let mut out = String::from("制图不一致与版本比较清单（候选，供复核）\n");
+    let mut by_rule: BTreeMap<(&str, &str), Vec<&MdDraftingIssue>> = BTreeMap::new();
     for item in issues {
-        let class = match item.classification.as_str() {
-            "source_deviation_candidate" => "原图偏离候选",
-            "recognition_deviation" => "识别偏离",
-            _ => "版本差别",
-        };
-        let confidence = match item.confidence.as_str() {
-            "certain" => "确定",
-            "likely" => "很可能",
-            _ => "要问专家",
-        };
-        out.push_str(&format!(
-            "\n{} · {} · {}\n位置：{}\n命中层：{}\n事实：{}\n规则：{}\n条款：{}\n建议：{}\n",
-            item.id,
-            class,
-            confidence,
-            item.location,
-            item.layers.join("、"),
-            item.observed.join("；"),
-            item.rule,
-            item.clause,
-            item.proposed_correction
-        ));
+        by_rule
+            .entry((&item.rule, &item.rule_label))
+            .or_default()
+            .push(item);
+    }
+    for ((rule, label), items) in by_rule {
+        out.push_str(&format!("\n规则：{label}（{rule}） · {} 条\n", items.len()));
+        for item in items {
+            let class = match item.classification.as_str() {
+                "source_deviation_candidate" => "原图偏离候选",
+                "recognition_deviation" => "识别偏离",
+                _ => "版本差别",
+            };
+            let confidence = match item.confidence.as_str() {
+                "certain" => "确定",
+                "likely" => "很可能",
+                _ => "要问专家",
+            };
+            out.push_str(&format!(
+                "编号：{} · {} · {}\n位置：{}\n命中层：{}\n事实：{}\n规则：{}（{}）\n条款：{}\n建议：{}\n",
+                item.id,
+                class,
+                confidence,
+                item.location,
+                item.layers.join("、"),
+                item.observed.join("；"),
+                item.rule_label,
+                item.rule,
+                item.clause,
+                item.proposed_correction
+            ));
+        }
     }
     out
 }
@@ -309,7 +454,7 @@ mod tests {
             {"id":"m4","source_handle":"B2","native_member_id":"B2/A1","interval":[0.,1.]}
         ],"structural_lines":[{"pieces":["member:m2","member:m1"]},{"pieces":["member:m1","member:m3"]}]});
         let at = |focus: &str| {
-            location(
+            render_spans(&spans(
                 &MdDraftingFinding {
                     layer: "source".into(),
                     rule_id: "fixture".into(),
@@ -322,12 +467,43 @@ mod tests {
                     severity: "violation".into(),
                 },
                 &graph,
-            )
+            ))
         };
         assert_eq!(at("source:m1"), at("recognition:m1"));
         assert_ne!(at("source:m1"), at("source:m2"));
         assert_eq!(at("presentation:line:0"), vec!["B2#[0,0.4]", "B2#[0.6,1]"]);
         assert_eq!(at("presentation:line:1"), at("source:m3"));
-        assert_eq!(at("source:m4"), vec!["B2/A1"]);
+        assert_eq!(at("source:m4"), vec!["B2"]);
+    }
+
+    #[test]
+    fn whole_curve_uses_the_boundary_evidence_interval() {
+        let boundary = serde_json::to_string(&json!({
+            "interval": [0.2, 0.3],
+            "parameter": "source_curve"
+        }))
+        .unwrap();
+        let graph = json!({
+            "source": {"entities": [{"id": "C1", "geometry_kind": "circle"}]},
+            "members": [{
+                "id": "member:C1",
+                "source_handle": "C1",
+                "interval": [0., 1.],
+                "evidence_ids": [format!("section_boundary:{boundary}")]
+            }],
+            "structural_lines": []
+        });
+        let finding = MdDraftingFinding {
+            layer: "source".into(),
+            rule_id: "fixture".into(),
+            focus: "source:member:C1".into(),
+            focus_classes: vec![],
+            source_handles: vec!["C1".into()],
+            expression_ids: vec![],
+            value: None,
+            message: "whole circle boundary violation".into(),
+            severity: "violation".into(),
+        };
+        assert_eq!(render_spans(&spans(&finding, &graph)), vec!["C1#[0.2,0.3]"]);
     }
 }

@@ -4333,6 +4333,13 @@ fn leader_annotations(
             }
         } else {
             add_leader(cx, b, e, &segs, &arrows, "leader_shoulder");
+            if kind == "dimension_radius"
+                && b.members.iter().any(|m| {
+                    m.expression_id == b.exprs[e].id && m.member_role == "leader_line"
+                })
+            {
+                annotation_constituents::tag_radius_leader(b, e);
+            }
         }
         if let Some(p) = arrows
             .first()
@@ -6847,6 +6854,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     exploded_dimensions(&cx, &mut b, &mut anchors);
     annotation_constituents::chained_angles(&cx, &mut b)?;
     exploded_angles(&cx, &mut b);
+    annotation_constituents::taken_angle_sectors(&cx, &mut b)?;
     let lined = loose_annotations::line_frames(&cx, &b)?;
     let mut loose = representation::loose_glyphs(&cx, &b, &lined)?;
     loose.extend(symbols::text_glyphs(&cx, &b)?);

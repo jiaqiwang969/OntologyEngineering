@@ -19,6 +19,13 @@ fn evidence(variant: &str, concept: &str) -> Vec<String> {
 type Branch = (Vec<String>, Vec<String>, Vec<P>);
 type RadiusFrontier = (P, Vec<String>, Option<(String, P, f64)>);
 
+struct SelectedAngle {
+    owner: usize,
+    score: f64,
+    shared: Vec<String>,
+    arrows: Vec<String>,
+}
+
 /// A radius head may be at an inner vertex of the carrier rather than its end.
 /// Follow the text's shoulder to that head, then only toward its arc centre.
 /// In particular, a second radius sharing the centre is not another branch.
@@ -109,6 +116,16 @@ pub(super) fn tag_radius(b: &mut Builder, e: usize) {
     b.exprs[e]
         .evidence_ids
         .extend(evidence("radius_internal_head", "DC-G4-006"));
+}
+
+/// A radius written on a leader-style shoulder still has one radius terminal.
+/// Keep the line as a leader in the graph, but mark the composition so the
+/// checker can apply the radius-terminal relation without promoting every
+/// leader to a dimension line.
+pub(super) fn tag_radius_leader(b: &mut Builder, e: usize) {
+    b.exprs[e]
+        .evidence_ids
+        .extend(evidence("radius_leader_carrier", "DC-G4-006"));
 }
 
 fn part(b: &mut Builder, cx: &Ctx, e: usize, id: &str, role: &str, ev: Vec<String>) {
@@ -202,7 +219,28 @@ pub(super) fn chained_angles(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     at > 1e-6 && at < sweep - 1e-6
                 })
                 .collect();
-            let [value] = values.as_slice() else { continue };
+            let value = if values.len() == 1 {
+                values[0]
+            } else {
+                // If one value is in a rendered arc and one is in the gap
+                // between two pieces, keep the supported value here and let
+                // `taken_angle_sectors` recover the swallowed one. Two values
+                // in the same rendered piece remain ambiguous.
+                let in_arc: Vec<_> = values
+                    .iter()
+                    .filter(|t| {
+                        let at = phase(t.center, c);
+                        arcs.iter()
+                            .any(|(_, start, sweep)| on_arc_phase(at, *start, *sweep, 1e-6))
+                    })
+                    .collect();
+                let in_gap = values.len().saturating_sub(in_arc.len());
+                if in_arc.len() == 1 && in_gap == 1 {
+                    in_arc[0]
+                } else {
+                    continue;
+                }
+            };
             let pick = |at: f64, sign: f64| {
                 let matches: Vec<_> = heads
                     .iter()
@@ -242,7 +280,7 @@ pub(super) fn chained_angles(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 })
             };
             if supported(&cx.arrows[&first]) && supported(&cx.arrows[&last]) {
-                sectors.push((**value, pieces, first, last));
+                sectors.push(((*value).clone(), pieces, first, last));
             }
         }
         if sectors.len() < 2 {
@@ -275,6 +313,161 @@ pub(super) fn chained_angles(cx: &Ctx, b: &mut Builder) -> Result<()> {
                 part(b, cx, e, &id, "arrowhead", vec![]);
                 angular_side(cx, b, e, c, &cx.arrows[&id])?;
             }
+        }
+    }
+    Ok(())
+}
+
+fn on_arc_phase(at: f64, start: f64, sweep: f64, tolerance: f64) -> bool {
+    (at - start).rem_euclid(std::f64::consts::TAU) <= sweep + tolerance
+}
+
+fn between_phases(at: f64, start: f64, end: f64, tolerance: f64) -> bool {
+    let sweep = (end - start).rem_euclid(std::f64::consts::TAU);
+    sweep > tolerance
+        && sweep < std::f64::consts::PI + 0.25
+        && (at - start).rem_euclid(std::f64::consts::TAU) > tolerance
+        && (at - start).rem_euclid(std::f64::consts::TAU) < sweep - tolerance
+}
+
+/// Recover an angle value left in a gap after a neighbouring dimension has
+/// claimed the arc and its two terminators.  A value already inside a claimed
+/// arc is intentionally left alone: two values in one sector are ambiguous.
+pub(super) fn taken_angle_sectors(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let reach = parameter("angular_text_height")?;
+    let near = parameter("angular_circle_arrow")?;
+    let texts: Vec<_> = cx
+        .texts
+        .values()
+        .filter(|t| !b.used(&t.id) && t.lex == Lex::Angle)
+        .cloned()
+        .collect();
+    for text in texts {
+        let mut selected: Option<SelectedAngle> = None;
+        for (ei, expr) in b.exprs.iter().enumerate() {
+            if expr.kind != "dimension_angle" {
+                continue;
+            }
+            let member_ids: Vec<_> = b
+                .members
+                .iter()
+                .filter(|m| m.expression_id == expr.id)
+                .collect();
+            let arcs: Vec<(String, P, f64, f64, f64)> = member_ids
+                .iter()
+                .filter(|m| m.member_role == "dimension_line")
+                .filter_map(|m| {
+                    let (c, r, start, sweep, _) = cx.arc(&m.source_handle)?;
+                    Some((m.source_handle.clone(), c, r, start, sweep))
+                })
+                .collect();
+            let Some((_, centre, radius, _, _)) = arcs.first() else {
+                continue;
+            };
+            if arcs
+                .iter()
+                .any(|(_, c, r, _, _)| dist(*c, *centre) > 1e-3 || (r - radius).abs() > 1e-3)
+                || (dist(text.center, *centre) - radius).abs() > reach * text.height
+            {
+                continue;
+            }
+            let arrows: Vec<String> = member_ids
+                .iter()
+                .filter(|m| m.member_role == "arrowhead")
+                .filter(|m| cx.arrow(&m.source_handle).is_some())
+                .map(|m| m.source_handle.clone())
+                .collect();
+            if arrows.len() < 2 {
+                continue;
+            }
+            let at = phase(text.center, *centre);
+            let gap = near
+                * arrows
+                    .iter()
+                    .filter_map(|id| cx.arrow(id).map(|a| a.len))
+                    .fold(0., f64::max)
+                / radius.max(1e-9);
+            // A value in an already claimed arc competes with that value; it is
+            // not safe to choose one from source order.
+            if arcs
+                .iter()
+                .any(|(_, _, _, start, sweep)| on_arc_phase(at, *start, *sweep, gap))
+            {
+                continue;
+            }
+            let phases: Vec<(String, f64)> = arrows
+                .iter()
+                .filter_map(|id| cx.arrow(id).map(|a| (id.clone(), phase(a.tip, *centre))))
+                .collect();
+            let mut bounds = None;
+            'pairs: for (first, start) in &phases {
+                for (last, end) in &phases {
+                    if first == last || !between_phases(at, *start, *end, gap) {
+                        continue;
+                    }
+                    let before = arcs.iter().any(|(_, _, _, s, sw)| {
+                        let p = (*s + *sw).rem_euclid(std::f64::consts::TAU);
+                        between_phases(p, *start, at, gap)
+                    });
+                    let after = arcs
+                        .iter()
+                        .any(|(_, _, _, s, _)| between_phases(*s, at, *end, gap));
+                    if before && after {
+                        bounds = Some((first.clone(), last.clone()));
+                        break 'pairs;
+                    }
+                }
+            }
+            let Some((first, last)) = bounds else {
+                continue;
+            };
+            let mut shared: Vec<String> = member_ids
+                .iter()
+                .filter(|m| m.member_role == "dimension_line")
+                .map(|m| m.source_handle.clone())
+                .collect();
+            shared.sort();
+            shared.dedup();
+            let score = (dist(text.center, *centre) - radius).abs();
+            if selected.as_ref().is_none_or(|old| score < old.score) {
+                selected = Some(SelectedAngle {
+                    owner: ei,
+                    score,
+                    shared,
+                    arrows: vec![first, last],
+                });
+            }
+        }
+        let Some(SelectedAngle {
+            owner,
+            shared,
+            arrows,
+            ..
+        }) = selected
+        else {
+            continue;
+        };
+        let ev = evidence("chained_angle_sector_shared", "DC-G4-032");
+        let e = b.expr(
+            "dimension_angle",
+            &text.dec.text,
+            "concentric_arc_tangent_terminators_and_text",
+            "candidate",
+            tx::qualifiers(&text.dec),
+            ev.clone(),
+            vec!["Angle sector is shared with a neighbouring dimension; side projection remains unknown".into()],
+        );
+        part(b, cx, e, &text.id, "dimension_text", ev.clone());
+        for id in shared {
+            if b.members
+                .iter()
+                .any(|m| m.expression_id == b.exprs[owner].id && m.source_handle == id)
+            {
+                part(b, cx, e, &id, "dimension_line", ev.clone());
+            }
+        }
+        for id in arrows {
+            part(b, cx, e, &id, "arrowhead", ev.clone());
         }
     }
     Ok(())

@@ -86,6 +86,18 @@ impl Drawing {
             ),
         )
     }
+    fn stacked_text(&mut self, p: [f64; 2]) -> String {
+        let q = self.point(p);
+        self.entity(
+            "MTEXT",
+            format!(
+                "10\n{}\n20\n{}\n40\n{}\n71\n7\n1\n17.5\\S+0.5^-0.5;\n",
+                q[0],
+                q[1],
+                2. * self.scale
+            ),
+        )
+    }
     fn expression(&mut self, kind: &str) -> String {
         let id = format!("expression:{}", self.expressions.len());
         self.expressions
@@ -163,6 +175,15 @@ impl Drawing {
             "{all:#?}"
         );
     }
+    fn assert_source_hit(&self, rule: &str, handle: &str) {
+        let all = drafting::evaluate_bytes(&self.bytes(), &self.graph()).unwrap();
+        assert!(
+            all.values()
+                .flatten()
+                .any(|f| { f.rule_id == rule && f.source_handles.iter().any(|h| h == handle) }),
+            "{all:#?}"
+        );
+    }
 }
 
 fn terminal_fixture(
@@ -207,16 +228,82 @@ fn outside_text_continuation() {
     d.assert_hit(CONTINUATION, &h, &m, &t);
 }
 
+fn continuation_fixture_with_gap(gap: f64) -> (Drawing, String) {
+    let mut d = Drawing::new(1., 0.);
+    let l = d.line([0., 0.], [24., 0.]);
+    let (_, target) = d.dimension("dimension_linear", &l, [30., gap]);
+    let h = d.triangle([26., 0.], [24., 0.], false);
+    let e = d.expressions.last().unwrap()["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([26., 0.], [32., 0.]);
+    d.unknown(&piece);
+    (d, target)
+}
+
+#[test]
+fn outside_text_normal_gap_uses_standard_height_ratio() {
+    let (d, _) = continuation_fixture_with_gap(1.1);
+    let piece = d
+        .members
+        .iter()
+        .find(|m| m["member_role"] == "unresolved_source")
+        .unwrap()["source_handle"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    d.assert_source_hit(CONTINUATION, &piece);
+}
+
+#[test]
+fn outside_text_gap_beyond_standard_ratio_stays_unknown() {
+    let (d, _) = continuation_fixture_with_gap(2.2);
+    d.assert_clear();
+}
+
+fn stacked_continuation_fixture(piece_end: [f64; 2]) -> (Drawing, String) {
+    let mut d = Drawing::new(1., 0.);
+    let carrier = d.line([0., 0.], [24., 0.]);
+    let e = d.expression("dimension_linear");
+    d.member(&e, &carrier, "dimension_line");
+    // The stack drops below the main text.  The candidate is one unit below
+    // the main box, but only at the supported gap from the stack's bottom.
+    let text = d.stacked_text([30., 1.3]);
+    d.member(&e, &text, "dimension_text");
+    let h = d.triangle([26., 0.], [24., 0.], false);
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([26., 0.], piece_end);
+    d.unknown(&piece);
+    (d, piece)
+}
+
+#[test]
+fn outside_text_with_stacked_tolerance_uses_full_annotation_span() {
+    let (d, piece) = stacked_continuation_fixture([41.5, 0.]);
+    d.assert_source_hit(CONTINUATION, &piece);
+}
+
+#[test]
+fn outside_text_stacked_tolerance_beyond_end_stays_unknown() {
+    let (d, _) = stacked_continuation_fixture([43., 0.]);
+    d.assert_clear();
+}
+
 fn radius_fixture(support: bool) -> (Drawing, String, String, String) {
+    radius_fixture_with_role(support.then_some("contour_segment"))
+}
+fn radius_fixture_with_role(role: Option<&str>) -> (Drawing, String, String, String) {
     let mut d = Drawing::new(1., 0.);
     let l = d.line([0., 0.], [35., 0.]);
     let (_, t) = d.dimension("dimension_radius", &l, [15., 1.]);
     let h = d.triangle([29., 0.], [27., 0.], false);
     let m = d.unknown(&h);
-    if support {
+    if let Some(role) = role {
         let a = d.arc(29., -35., 35.);
         let e = d.expression("visible_contour");
-        d.member(&e, &a, "contour_segment");
+        d.member(&e, &a, role);
     }
     (d, h, m, t)
 }
@@ -225,10 +312,86 @@ fn radius_internal_terminal() {
     let (d, h, m, t) = radius_fixture(true);
     d.assert_hit(TERMINAL, &h, &m, &t);
 }
+
+#[test]
+fn radius_hidden_outline_support_is_accepted() {
+    let (d, h, m, t) = radius_fixture_with_role(Some("hidden_segment"));
+    d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn radius_leader_carrier_accepts_a_radius_terminal() {
+    let mut d = Drawing::new(1., 0.);
+    let l = d.line([0., 0.], [35., 0.]);
+    let (e, target) = d.dimension("dimension_radius", &l, [15., 1.]);
+    d.members
+        .iter_mut()
+        .find(|m| m["expression_id"] == e && m["member_role"] == "dimension_line")
+        .unwrap()["member_role"] = json!("leader_line");
+    let a = d.arc(29., -35., 35.);
+    let outline = d.expression("visible_contour");
+    d.member(&outline, &a, "contour_segment");
+    let h = d.triangle([29., 0.], [27., 0.], false);
+    let m = d.unknown(&h);
+    d.assert_hit(TERMINAL, &h, &m, &target);
+}
+
+/// A leader-style radius keeps both physical segments as leader lines.  They
+/// remain carriers for recognition-layer relations, but the radial
+/// dimension-line rule must not run on either segment.
+#[test]
+fn radius_leader_segments_are_not_radial_dimension_lines() {
+    let mut d = Drawing::new(1., 0.);
+    let arc = d.arc(10., 0., 90.);
+    let outline = d.expression("visible_contour");
+    d.member(&outline, &arc, "contour_segment");
+    let e = d.expression("dimension_radius");
+    let inclined = d.line([7.0710678, 7.0710678], [3., 3.]);
+    d.member(&e, &inclined, "leader_line");
+    let shoulder = d.line([3., 3.], [13., 3.]);
+    d.member(&e, &shoulder, "leader_line");
+    let findings = drafting::evaluate_bytes(&d.bytes(), &d.graph()).unwrap();
+    assert!(
+        findings
+            .values()
+            .flatten()
+            .all(|f| f.rule_id != "G4-006-radius-dimension-line-through-centre"),
+        "{findings:#?}"
+    );
+}
+
 #[test]
 fn radius_without_arc_support_remains_unknown() {
     radius_fixture(false).0.assert_clear();
 }
+
+#[test]
+fn radius_centreline_arc_support_is_accepted() {
+    let (d, h, m, t) = radius_fixture_with_role(Some("center_line"));
+    d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn radius_annotation_arc_support_is_rejected() {
+    radius_fixture_with_role(Some("leader_line"))
+        .0
+        .assert_clear();
+}
+
+#[test]
+fn dimension_line_through_mid_arrow_uses_existing_head_rule() {
+    let mut d = Drawing::new(1., 0.);
+    // The dimension line comes from far away and reaches the arrow's base
+    // midpoint.  The existing head rule already recognizes this member.
+    let carrier = d.line([0., 0.], [26., 0.]);
+    let (e, target) = d.dimension("dimension_linear", &carrier, [30., 0.3]);
+    let h = d.triangle([24., 0.], [26., 0.], false);
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([24., 0.], [32., 0.]);
+    let member = d.unknown(&piece);
+    d.assert_hit(CONTINUATION, &piece, &member, &target);
+}
+
 #[test]
 fn angular_terminal() {
     let mut d = Drawing::new(1., 0.);
@@ -237,6 +400,19 @@ fn angular_terminal() {
     let h = d.triangle([29., 0.], [29., 2.], false);
     let m = d.unknown(&h);
     d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn terminal_base_and_tail_components_are_related() {
+    let (mut d, _, _, _) = terminal_fixture(1., 0., false);
+    let base = d.line([24., -0.32], [24., 0.32]);
+    d.unknown(&base);
+    d.assert_source_hit(TERMINAL, &base);
+
+    let (mut d, _, _, _) = terminal_fixture(1., 0., false);
+    let tail = d.line([26., 0.], [28., 0.]);
+    d.unknown(&tail);
+    d.assert_source_hit(TERMINAL, &tail);
 }
 #[test]
 fn native_head_root_interval() {

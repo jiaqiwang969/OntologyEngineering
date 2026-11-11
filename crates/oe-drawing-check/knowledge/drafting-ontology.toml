@@ -132,12 +132,12 @@ md:hatchSpacingDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ;
 md:chainedWith a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:DimensionLine ;
     rdfs:label "与相邻尺寸的尺寸线成链"@zh ;
     rdfs:comment "两条不同尺寸的尺寸线共线，且有一条尺寸界线同时与两者相交。"@zh .
-md:terminatorOnCarrier a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:DimensionLine ;
+md:terminatorOnCarrier a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "终端连接尺寸承载线"@zh ;
-    rdfs:comment "源三角终端尖端或底边与本尺寸有限直线相接且共轴；角度终端在本尺寸弧端且沿切向；半径内接终端另核有限轮廓圆弧。要求同一已知视图、尺寸数值语境及唯一尺寸候选；不改变未知成员的身份。参数见constituents.parameters。"@zh .
-md:boundedContinuationOf a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:DimensionLine ;
+    rdfs:comment "源三角终端尖端或底边与本尺寸有限直线相接且共轴；承载对象是本尺寸的尺寸线或半径尺寸的指引线，由关系生成时核对承载身份。角度终端在本尺寸弧端且沿切向；半径内接终端另核同视图的有限轮廓或中心线圆弧，尺寸线、引线和剖面线不作支撑。要求同一已知视图、尺寸数值语境及唯一尺寸候选；不改变未知成员的身份。参数见constituents.parameters。"@zh .
+md:boundedContinuationOf a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "尺寸线的有界接续"@zh ;
-    rdfs:comment "源LINE剩余区间与同一尺寸的尺寸线共轴，并在自身终端尖端至底边的足迹内连接，或从本终端接至外置数值的有限承载段；止于另一终端或分支。已归属的同源区间不重复报出；视图不足和多尺寸竞争保留未知。参数见constituents.parameters。"@zh .
+    rdfs:comment "源LINE剩余区间与同一尺寸的尺寸线或半径尺寸指引线共轴，并在自身终端尖端至底边的足迹内连接，或从本终端接至外置数值的有限承载段；止于另一终端或分支。承载身份由关系生成时核对；已归属的同源区间不重复报出；视图不足和多尺寸竞争保留未知。参数见constituents.parameters。"@zh .
 
 # ---- 第三批：同一条线在一个剖面区域中的使用，不继承 Line，不重复激活旧图线规则。
 md:SectionBoundarySpan a owl:Class ; rdfs:label "剖面外缘上由中心线承载的区间候选"@zh ; md:concept dc:DC-G2-028, dc:DC-G2-034 .
@@ -624,7 +624,7 @@ rule:G4-059-unresolved-terminator-on-carrier a sh:NodeShape ;
     sh:property rule:G4-059-unresolved-terminator-on-carrier-p1 .
 rule:G4-059-unresolved-terminator-on-carrier-p1 a sh:PropertyShape ;
     sh:path md:terminatorOnCarrier ;
-    sh:qualifiedValueShape [ sh:class md:DimensionLine ;
+    sh:qualifiedValueShape [ sh:class md:Line ;
         sh:property [ sh:path md:layer ; sh:hasValue "recognition" ] ] ;
     sh:qualifiedMaxCount 0 ;
     sh:message "识别偏离：未解释终端的尖端、方向和本尺寸承载几何吻合"@zh .
@@ -644,7 +644,7 @@ rule:G4-059-unresolved-dimension-continuation a sh:NodeShape ;
     sh:property rule:G4-059-unresolved-dimension-continuation-p1 .
 rule:G4-059-unresolved-dimension-continuation-p1 a sh:PropertyShape ;
     sh:path md:boundedContinuationOf ;
-    sh:qualifiedValueShape [ sh:class md:DimensionLine ;
+    sh:qualifiedValueShape [ sh:class md:Line ;
         sh:property [ sh:path md:layer ; sh:hasValue "recognition" ] ] ;
     sh:qualifiedMaxCount 0 ;
     sh:message "识别偏离：未解释区间在本尺寸终端足迹或外置数值承载范围内有界接续"@zh .
@@ -735,6 +735,10 @@ base_min_arrow = 8e-2
 base_max_arrow = 0.9
 base_symmetry_arrow = 0.15
 text_band_height = 0.3
+# GB/T 14665-2012 5.7 表4 gives a 1 mm minimum gap to a reference/baseline;
+# Table 3 gives 3.5 mm alphanumeric height on A2--A4.  Use that supported
+# worst-case ratio (1 / 3.5 = 2/7), rather than the former unsupported 0.5.
+text_carrier_gap_height = 0.2857142857142857
 text_end_height = 0.5
 text_gap_height = 3.0
 arc_end_arrow = 1.2
@@ -752,12 +756,24 @@ test = "radius_internal_terminal"
 meaning = "半径内部终端且有轮廓圆弧支撑"
 
 [[constituents.variants]]
+test = "radius_hidden_outline_support_is_accepted"
+meaning = "不可见轮廓圆弧仍可作半径终端的有限支撑"
+
+[[constituents.variants]]
 test = "angular_terminal"
 meaning = "角度弧端切向终端"
 
 [[constituents.variants]]
 test = "outside_text_continuation"
 meaning = "尺寸自身外置数值的有限承载段"
+
+[[constituents.variants]]
+test = "dimension_line_through_mid_arrow_uses_existing_head_rule"
+meaning = "尺寸线从远处到达箭头底边中点，既有箭头判法已成立，不新增端点放宽"
+
+[[constituents.variants]]
+test = "outside_text_with_stacked_tolerance_uses_full_annotation_span"
+meaning = "外置数值含上下偏差时，承载跨度按整段注写宽度、间隙按整段最低处判断；依据 GB/T 4458.5-2003 4.1.2"
 
 [[constituents.variants]]
 test = "native_head_root_interval"
@@ -802,6 +818,22 @@ meaning = "已归属正常成员不重复报告"
 [[constituents.counter_examples]]
 test = "radius_without_arc_support_remains_unknown"
 meaning = "无轮廓圆弧支撑不推定半径终端"
+
+[[constituents.counter_examples]]
+test = "radius_annotation_arc_support_is_rejected"
+meaning = "尺寸线、引线等标注线或剖面线上的圆弧不能充当半径轮廓支撑"
+
+[[constituents.variants]]
+test = "radius_centreline_arc_support_is_accepted"
+meaning = "中心线（点画线）上的圆弧可以充当半径轮廓支撑"
+
+[[constituents.variants]]
+test = "radius_leader_segments_are_not_radial_dimension_lines"
+meaning = "引线式半径的斜段和水平肩线保持指引线，只作两条读漏关系的承载线，不触发半径尺寸线沿径向规则；径向适用待专家确认"
+
+[[constituents.counter_examples]]
+test = "outside_text_stacked_tolerance_beyond_end_stays_unknown"
+meaning = "含上下偏差的整段注写之外，承载线超出整段末端多于半个字高时不接续"
 
 [[constituents.counter_examples]]
 test = "continuation_stops_at_branch"

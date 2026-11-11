@@ -560,6 +560,30 @@ fn chained_small_dimensions_are_not_a_coincidence_fault() {
     assert_eq!(d.rule_ids(), BTreeSet::from(["G4-059-dimension-line-not-coincident".to_owned()]));
 }
 
+/// A leader-style radius has two physical segments, but neither segment is a
+/// RadiusDimensionLine.  The recognition layer keeps them as leader lines;
+/// the radial dimension-line rule must not run on the inclined segment or its
+/// horizontal shoulder.
+#[test]
+fn radius_leader_segments_are_not_radial_dimension_lines() {
+    let mut d = Drawing::default();
+    let arc = d.arc([0.0, 0.0], 10.0, 0.0, 90.0);
+    d.member(&arc, "contour_segment", "thick_continuous", "visible_contour", "");
+    let e = d.expression("dimension_radius", "R10");
+    let inclined = d.line([7.0710678, 7.0710678], [3.0, 3.0]);
+    d.member_in(&e, &inclined, "leader_line", "thin_continuous");
+    let shoulder = d.line([3.0, 3.0], [13.0, 3.0]);
+    d.member_in(&e, &shoulder, "leader_line", "thin_continuous");
+    let findings = d.findings();
+    assert!(
+        findings
+            .values()
+            .flatten()
+            .all(|f| f.rule_id != "G4-006-radius-dimension-line-through-centre"),
+        "{findings:#?}"
+    );
+}
+
 /// Pieces of one line are measured as one line: a centre line broken at a text and a dimension line broken
 /// at its number keep their outer ends; the inner ends of the pieces are not ends of the line.
 #[test]

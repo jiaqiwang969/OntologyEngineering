@@ -101,6 +101,11 @@ fn concentric_radius_paths_stop_at_their_common_centre() {
     let outer = owner(&g, "OUTTEXT", "dimension_radius");
     let inner = owner(&g, "SMALLVALUE", "dimension_radius");
     assert!(owns(&g, outer, "OUTRAD") && owns(&g, outer, "OUTHEAD"));
+    assert!(
+        outer
+            .evidence_ids
+            .contains(&"variant:radius_leader_carrier".into())
+    );
     assert!(owns(&g, inner, "INRAD") && owns(&g, inner, "INHEAD"));
     assert!(!owns(&g, outer, "INRAD") && !owns(&g, outer, "INHEAD"));
     assert!(!owns(&g, inner, "OUTRAD") && !owns(&g, inner, "OUTHEAD"));
@@ -147,13 +152,19 @@ fn angular_head(id: &str, angle: f64, start: bool) -> String {
         [p[0] - sign * 4. * t.sin(), p[1] + sign * 4. * t.cos()],
     )
 }
-fn chained(ambiguous: bool) -> MdEngineeringExpressionGraph {
+fn chained(ambiguous: bool, taken: bool) -> MdEngineeringExpressionGraph {
     let mut entities = vec![
         entity(
             "ARC",
             "FIRSTARC",
             false,
-            "10\n40\n20\n40\n40\n25\n50\n12\n51\n60\n",
+            "10\n40\n20\n40\n40\n25\n50\n12\n51\n30\n",
+        ),
+        entity(
+            "ARC",
+            "FIRSTARC_GAP",
+            false,
+            "10\n40\n20\n40\n40\n25\n50\n50\n51\n62\n",
         ),
         entity(
             "ARC",
@@ -165,21 +176,24 @@ fn chained(ambiguous: bool) -> MdEngineeringExpressionGraph {
         angular_head("FIRSTEND", 62., false),
         angular_head("SECONDSTART", 62., true),
         angular_head("SECONDEND", 99., false),
-        text("FIRSTVALUE", "52%%d", polar(36., 25.)),
+        text("FIRSTVALUE", "52%%d", polar(20., 25.)),
         text("SECONDVALUE", "37%%d", polar(81., 25.)),
         line("SIDESTART", [40., 40.], polar(10., 28.)),
         line("SIDESHARED", [40., 40.], polar(62., 28.)),
         line("DISTANTSIDE", polar(99., 100.), polar(99., 120.)),
     ];
     if ambiguous {
-        entities.push(text("COMPETINGVALUE", "53%%d", polar(40., 25.)));
+        entities.push(text("COMPETINGVALUE", "53%%d", polar(25., 25.)));
+    }
+    if taken {
+        entities.push(text("TAKENVALUE", "41%%d", polar(40., 25.)));
     }
     run(entities)
 }
 
 #[test]
 fn adjacent_angle_values_own_separate_arcs_and_opposed_heads() {
-    let g = chained(false);
+    let g = chained(false, false);
     let first = owner(&g, "FIRSTVALUE", "dimension_angle");
     let second = owner(&g, "SECONDVALUE", "dimension_angle");
     assert_ne!(first.id, second.id);
@@ -196,17 +210,28 @@ fn adjacent_angle_values_own_separate_arcs_and_opposed_heads() {
 
 #[test]
 fn ambiguous_angular_values_and_distant_side_are_not_claimed() {
-    let g = chained(false);
+    let g = chained(false, false);
     assert!(
         !g.members
             .iter()
             .any(|m| m.source_handle == "DISTANTSIDE" && m.member_role == "extension_line")
     );
-    let g = chained(true);
+    let g = chained(true, false);
     assert!(!g.expressions.iter().any(|e| {
         e.evidence_ids
             .contains(&"variant:chained_angle_sectors".into())
     }));
+}
+
+#[test]
+fn angle_value_in_a_gap_taken_by_a_neighbour_is_recovered() {
+    let g = chained(false, true);
+    let e = owner(&g, "TAKENVALUE", "dimension_angle");
+    assert!(
+        e.evidence_ids
+            .contains(&"variant:chained_angle_sector_shared".into())
+    );
+    assert!(owns(&g, e, "FIRSTARC") && owns(&g, e, "FIRSTSTART"));
 }
 
 fn outside_value(extra_head: bool) -> MdEngineeringExpressionGraph {

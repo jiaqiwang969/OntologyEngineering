@@ -5064,19 +5064,24 @@ title = "剖面线应留在边界轮廓内"
 meaning = "剖面线画在剖面区域内；剖面线穿过所在区域的边界轮廓而伸到区域外，是图样偏离候选。剖面线在轮廓处终止或与边界相接不构成越界。"
 sources = ["GB/T 17453-2005 5、4.3；GB/T 4457.5-2013 4.4"]
 knowledge_units = ["K11", "K13"]
-recognition = "以原生闭合剖面边界和同一视图的散画剖面线为输入；线与轮廓内部相交才记越界，端点落在轮廓上的相接保留为合规。边界不完整、曲线或块引用不能确证时保留未知。"
+recognition = "以原生闭合剖面边界、同一视图的散画剖面线和可见轮廓为输入；线与轮廓内部相交才记越界，端点落在轮廓上的相接保留为合规。若一条可见轮廓或首尾相接轮廓链两端落在原生边界、在区域内切出小块且只有一侧实体证据，则将该轮廓视作剖切面的真边界，并由剖面区域承担越界关系；切块过大或两侧都有实体证据时保留内部轮廓候选。边界不完整、曲线或块引用不能确证时保留未知。"
 markers = []
 concepts = ["DC-G2-019", "DC-G2-028"]
 
 [[cards.components]]
 role = "hatch_fill"
 primitives = ["LINE", "HATCH"]
-requirement = "剖面线或原生剖面区域"
+requirement = "剖面线或原生剖面区域（SectionRegion）"
 
 [[cards.components]]
 role = "contour_segment"
 primitives = ["LINE", "ARC", "LWPOLYLINE"]
 requirement = "所在剖面区域的边界轮廓"
+
+[[cards.components]]
+role = "boundary_cut_chain"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "一条或首尾相接的一串可见轮廓；两端落在同一原生剖面边界，内部切出小块"
 
 [[cards.variants]]
 id = "crossing"
@@ -5092,9 +5097,24 @@ distinguishing = "剖面线端点落在边界轮廓，未穿过轮廓继续向�
 encodings = ["loose"]
 tests = ["section_hatch_boundary_touch_is_not_reported"]
 
+[[cards.variants]]
+id = "native_small_cut"
+title = "原生剖面区域中的小边界切块"
+distinguishing = "可见轮廓或首尾相接轮廓链两端落在原生 SectionRegion 边界，链条在区域内切出小块；由 SectionRegion 直接承载越界关系，source 层同样可核查"
+encodings = ["native", "inferred"]
+tests = ["section_native_boundary_chain_is_reported_source_layer", "section_native_boundary_slot_chain_is_reported"]
+
 [[cards.counter_examples]]
 statement = "轮廓边界本身、孔边界和只在一点相接的剖面线不属于剖面线越界"
 test = "section_hatch_boundary_touch_is_not_reported"
+
+[[cards.counter_examples]]
+statement = "切下区域超过比例上限时，不能把内部轮廓提升为剖切面边界"
+test = "section_large_boundary_cut_remains_interior"
+
+[[cards.counter_examples]]
+statement = "切块两侧都有实体线证据时，不能把内部轮廓提升为剖切面边界"
+test = "section_two_sided_boundary_cut_remains_interior"
 
 [[cards]]
 id = "drawing_revision"

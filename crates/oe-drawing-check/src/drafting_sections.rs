@@ -131,6 +131,11 @@ struct Face {
     /// source line coincident with any such edge is a section boundary even when parity removes
     /// the seam from the exterior polygon.
     boundary_edges: Vec<(P, P)>,
+    /// Native path order is retained for the small cut-off-area test.  The exterior parity list
+    /// intentionally loses this order, while a boundary chain must be compared with a nearby
+    /// path before it can be promoted from an interior use to a section boundary.
+    boundary_loops: Vec<Vec<Edge>>,
+    boundary_area: f64,
     complete: bool,
 }
 
@@ -289,6 +294,9 @@ fn face(r: &dxf::Record, tol: f64, sagitta: f64) -> Face {
                 out.complete = false;
             }
         }
+        if !edges.is_empty() {
+            out.boundary_loops.push(edges.clone());
+        }
         out.edges.extend(edges);
     }
     if out.edges.len() > 4096 {
@@ -304,6 +312,12 @@ fn face(r: &dxf::Record, tol: f64, sagitta: f64) -> Face {
         }
     }
     out.boundary_edges = all_boundary_edges;
+    out.boundary_area = out
+        .boundary_loops
+        .iter()
+        .filter_map(|loop_edges| sampled_loop(loop_edges, sagitta))
+        .map(|points| polygon_area(&points).abs())
+        .sum();
     let mut exterior = Vec::new();
     for (i, &edge) in out.edges.iter().enumerate() {
         let overlaps: Vec<(usize, [f64; 2])> = out
@@ -364,6 +378,379 @@ fn inside(p: P, edges: &[(P, P)], tol: f64) -> bool {
         % 2
         == 1
 }
+
+fn sampled_loop(edges: &[Edge], sagitta: f64) -> Option<Vec<P>> {
+    let mut points = Vec::new();
+    for edge in edges {
+        let samples = edge.sample(sagitta)?;
+        if points.is_empty() {
+            points.extend(samples);
+        } else {
+            points.extend(samples.into_iter().skip(1));
+        }
+    }
+    if points.len() < 3 {
+        return None;
+    }
+    if dist(*points.first()?, *points.last()?) > 1e-7 {
+        points.push(*points.first()?);
+    }
+    Some(points)
+}
+
+fn polygon_area(points: &[P]) -> f64 {
+    points
+        .windows(2)
+        .map(|w| w[0].0 * w[1].1 - w[1].0 * w[0].1)
+        .sum::<f64>()
+        / 2.
+}
+
+fn point_in_polygon(p: P, polygon: &[P], tol: f64) -> bool {
+    if polygon.windows(2).any(|w| point_segment(p, w[0], w[1]).0 <= tol) {
+        return false;
+    }
+    polygon
+        .windows(2)
+        .filter(|w| {
+            (w[0].1 > p.1) != (w[1].1 > p.1)
+                && p.0
+                    < (w[1].0 - w[0].0) * (p.1 - w[0].1) / (w[1].1 - w[0].1) + w[0].0
+        })
+        .count()
+        % 2
+        == 1
+}
+
+fn boundary_route(face: &Face, start: P, end: P, tol: f64) -> Option<Vec<P>> {
+    let mut nodes: Vec<P> = Vec::new();
+    let mut graph: Vec<Vec<(usize, f64)>> = Vec::new();
+    let add_node = |p: P, nodes: &mut Vec<P>, graph: &mut Vec<Vec<(usize, f64)>>| {
+        if let Some(i) = nodes.iter().position(|q| dist(*q, p) <= tol) {
+            i
+        } else {
+            let i = nodes.len();
+            nodes.push(p);
+            graph.push(Vec::new());
+            i
+        }
+    };
+    add_node(start, &mut nodes, &mut graph);
+    add_node(end, &mut nodes, &mut graph);
+    for edge in &face.boundary_edges {
+        let mut pieces = vec![(0., edge.0), (1., edge.1)];
+        for p in [start, end] {
+            let (_, u) = point_segment(p, edge.0, edge.1);
+            if point_segment(p, edge.0, edge.1).0 <= tol {
+                pieces.push((u.clamp(0., 1.), p));
+            }
+        }
+        pieces.sort_by(|a, b| a.0.total_cmp(&b.0));
+        pieces.dedup_by(|a, b| (a.0 - b.0).abs() < 1e-10 && dist(a.1, b.1) <= tol);
+        for pair in pieces.windows(2) {
+            let a = add_node(pair[0].1, &mut nodes, &mut graph);
+            let b = add_node(pair[1].1, &mut nodes, &mut graph);
+            if a == b {
+                continue;
+            }
+            let length = dist(pair[0].1, pair[1].1);
+            graph[a].push((b, length));
+            graph[b].push((a, length));
+        }
+    }
+    // The endpoint nodes may have merged with a sampled boundary point.  Locate them again so
+    // the route starts and ends at the exact visible-outline endpoints.
+    let start_i = nodes.iter().position(|p| dist(*p, start) <= tol)?;
+    let end_i = nodes.iter().position(|p| dist(*p, end) <= tol)?;
+    let mut distances = vec![f64::INFINITY; nodes.len()];
+    let mut previous = vec![None; nodes.len()];
+    let mut used = vec![false; nodes.len()];
+    distances[start_i] = 0.;
+    for _ in 0..nodes.len() {
+        let Some(current) = (0..nodes.len())
+            .filter(|i| !used[*i])
+            .min_by(|a, b| distances[*a].total_cmp(&distances[*b]))
+        else {
+            break;
+        };
+        if !distances[current].is_finite() {
+            break;
+        }
+        used[current] = true;
+        for &(next, weight) in &graph[current] {
+            let candidate = distances[current] + weight;
+            if candidate < distances[next] {
+                distances[next] = candidate;
+                previous[next] = Some(current);
+            }
+        }
+    }
+    if !distances[end_i].is_finite() {
+        return None;
+    }
+    let mut route = Vec::new();
+    let mut current = end_i;
+    route.push(nodes[current]);
+    while current != start_i {
+        current = previous[current]?;
+        route.push(nodes[current]);
+    }
+    route.reverse();
+    Some(route)
+}
+
+#[derive(Clone)]
+struct BoundaryCut {
+    members: Vec<usize>,
+}
+
+#[derive(Clone, Copy)]
+struct CutSegment {
+    object: usize,
+    edge: Edge,
+    nodes: [usize; 2],
+}
+
+fn collect_boundary_paths(
+    current: usize,
+    target: usize,
+    component: &BTreeSet<usize>,
+    adjacency: &[Vec<usize>],
+    segments: &[CutSegment],
+    visited_nodes: &mut BTreeSet<usize>,
+    used_segments: &mut BTreeSet<usize>,
+    path: &mut Vec<usize>,
+    paths: &mut Vec<Vec<usize>>,
+    limit: usize,
+) {
+    if paths.len() >= 128 || path.len() > limit {
+        return;
+    }
+    if current == target {
+        if !path.is_empty() {
+            paths.push(path.clone());
+        }
+        return;
+    }
+    for &segment in &adjacency[current] {
+        if !component.contains(&segment) || used_segments.contains(&segment) {
+            continue;
+        }
+        let data = segments[segment];
+        let next = if data.nodes[0] == current {
+            data.nodes[1]
+        } else if data.nodes[1] == current {
+            data.nodes[0]
+        } else {
+            continue;
+        };
+        if visited_nodes.contains(&next) {
+            continue;
+        }
+        visited_nodes.insert(next);
+        used_segments.insert(segment);
+        path.push(segment);
+        collect_boundary_paths(
+            next,
+            target,
+            component,
+            adjacency,
+            segments,
+            visited_nodes,
+            used_segments,
+            path,
+            paths,
+            limit,
+        );
+        path.pop();
+        used_segments.remove(&segment);
+        visited_nodes.remove(&next);
+    }
+}
+
+fn boundary_cut_chains(
+    face: &Face,
+    outlines: &[usize],
+    curves: &[Vec<Piece>],
+    interior: &[usize],
+    tol: f64,
+    sagitta: f64,
+    cutoff_ratio: f64,
+) -> Vec<BoundaryCut> {
+    if !face.complete || face.boundary_area <= 0. {
+        return Vec::new();
+    }
+    let mut nodes: Vec<P> = Vec::new();
+    let add_node = |p: P, nodes: &mut Vec<P>| {
+        if let Some(i) = nodes.iter().position(|q| dist(*q, p) <= tol) {
+            i
+        } else {
+            let i = nodes.len();
+            nodes.push(p);
+            i
+        }
+    };
+    let mut segments = Vec::new();
+    for &object in outlines {
+        for piece in &curves[object] {
+            if piece.edge.length() > tol {
+                let a = add_node(piece.edge.at(0.), &mut nodes);
+                let b = add_node(piece.edge.at(1.), &mut nodes);
+                if a != b {
+                    segments.push(CutSegment {
+                        object,
+                        edge: piece.edge,
+                        nodes: [a, b],
+                    });
+                }
+            }
+        }
+    }
+    let mut adjacency = vec![Vec::<usize>::new(); nodes.len()];
+    for (i, segment) in segments.iter().enumerate() {
+        adjacency[segment.nodes[0]].push(i);
+        adjacency[segment.nodes[1]].push(i);
+    }
+    let mut visited = vec![false; segments.len()];
+    let mut cuts: Vec<BoundaryCut> = Vec::new();
+    for first in 0..segments.len() {
+        if visited[first] {
+            continue;
+        }
+        let mut component = Vec::new();
+        let mut stack = vec![first];
+        visited[first] = true;
+        while let Some(segment) = stack.pop() {
+            component.push(segment);
+            for node in segments[segment].nodes {
+                for &next in &adjacency[node] {
+                    if !visited[next] {
+                        visited[next] = true;
+                        stack.push(next);
+                    }
+                }
+            }
+        }
+        let component_set: BTreeSet<usize> = component.iter().copied().collect();
+        let boundary_nodes: Vec<usize> = component
+            .iter()
+            .flat_map(|i| segments[*i].nodes)
+            .filter(|i| point_on_boundary(nodes[*i], face, tol))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect();
+        if boundary_nodes.len() < 2 {
+            continue;
+        }
+        for (left, &start_node) in boundary_nodes.iter().enumerate() {
+            for &end_node in &boundary_nodes[left + 1..] {
+                let mut paths = Vec::new();
+                let mut visited_nodes = BTreeSet::from([start_node]);
+                let mut used_segments = BTreeSet::new();
+                collect_boundary_paths(
+                    start_node,
+                    end_node,
+                    &component_set,
+                    &adjacency,
+                    &segments,
+                    &mut visited_nodes,
+                    &mut used_segments,
+                    &mut Vec::new(),
+                    &mut paths,
+                    8,
+                );
+                for path in paths {
+                    let mut current = start_node;
+                    let mut ordered = Vec::new();
+                    let mut member_set = BTreeSet::new();
+                    for &segment in &path {
+                        let data = segments[segment];
+                        let forward = data.nodes[0] == current;
+                        ordered.push(if forward {
+                            data.edge
+                        } else {
+                            data.edge.slice(1., 0.)
+                        });
+                        current = if forward { data.nodes[1] } else { data.nodes[0] };
+                        member_set.insert(data.object);
+                    }
+                    if current != end_node {
+                        continue;
+                    }
+                    let mut chain_points = Vec::new();
+                    let mut interior_length_sum = 0.;
+                    let mut valid = true;
+                    for edge in &ordered {
+                        let Some(samples) = edge.sample(sagitta) else {
+                            valid = false;
+                            break;
+                        };
+                        if chain_points.is_empty() {
+                            chain_points.extend(samples.iter().copied());
+                        } else {
+                            chain_points.extend(samples.iter().copied().skip(1));
+                        }
+                        interior_length_sum += samples
+                            .windows(2)
+                            .map(|w| interior_length(w[0], w[1], face, tol))
+                            .sum::<f64>();
+                    }
+                    if !valid || chain_points.len() < 2 || interior_length_sum <= tol {
+                        continue;
+                    }
+                    let start = *chain_points.first().unwrap();
+                    let end = *chain_points.last().unwrap();
+                    let Some(route) = boundary_route(face, start, end, tol) else {
+                        continue;
+                    };
+                    let mut polygon = chain_points;
+                    polygon.extend(route.into_iter().rev().skip(1));
+                    if polygon.len() < 3 {
+                        continue;
+                    }
+                    let area_ratio = polygon_area(&polygon).abs() / face.boundary_area;
+                    if !area_ratio.is_finite() || area_ratio <= 0. || area_ratio > cutoff_ratio {
+                        continue;
+                    }
+                    let mut cut_side = false;
+                    let mut remaining_side = false;
+                    for &object in interior {
+                        if member_set.contains(&object) {
+                            continue;
+                        }
+                        for piece in &curves[object] {
+                            let midpoint = piece.edge.at(0.5);
+                            if !inside(midpoint, &face.polygon_edges, tol) {
+                                continue;
+                            }
+                            if point_in_polygon(midpoint, &polygon, tol) {
+                                cut_side = true;
+                            } else {
+                                remaining_side = true;
+                            }
+                        }
+                    }
+                    if cut_side && remaining_side {
+                        continue;
+                    }
+                    let members: Vec<usize> = member_set.into_iter().collect();
+                    if cuts.iter().any(|cut| cut.members == members) {
+                        continue;
+                    }
+                    cuts.push(BoundaryCut { members });
+                }
+            }
+        }
+    }
+    cuts
+}
+
+fn point_on_boundary(point: P, face: &Face, tol: f64) -> bool {
+    face.boundary_edges
+        .iter()
+        .any(|(a, b)| point_segment(point, *a, *b).0 <= tol)
+}
+
 fn inside_with_boundary(p: P, exterior: &[(P, P)], boundary: &[(P, P)], tol: f64) -> bool {
     if boundary.iter().any(|(a, b)| {
         Edge::Line(*a, *b)
@@ -670,10 +1057,11 @@ pub(super) fn augment(
     let Some(scale) = median(&mut heights) else {
         return Ok(());
     };
-    let (tol, sagitta, min_chord) = (
+    let (tol, sagitta, min_chord, cutoff_ratio) = (
         scale * param("coincidence_text_height")?,
         scale * param("sagitta_text_height")?,
         scale * param("interior_chord_text_height")?,
+        param("section_cutoff_area_ratio_max")?,
     );
     let members: BTreeMap<&str, &Value> = list(g, "members")?
         .iter()
@@ -743,6 +1131,26 @@ pub(super) fn augment(
                 (objects[*i].is("VisibleOutline") || objects[*i].is("ThreadLine")) && same_view(*i)
             })
             .collect();
+        let boundary_cuts = boundary_cut_chains(
+            &face,
+            &outlines,
+            &curves,
+            &interior,
+            tol,
+            sagitta,
+            cutoff_ratio,
+        );
+        let cut_outline_indices: BTreeSet<usize> = boundary_cuts
+            .iter()
+            .flat_map(|cut| cut.members.iter().copied())
+            .collect();
+        // Native HATCH has no loose HatchLine object.  Reuse the approved crossedBy relation on
+        // SectionRegion so a boundary chain is visible to the source-layer shape as well.
+        for cut in &boundary_cuts {
+            for &outline in &cut.members {
+                relations.push(Relation::node(ri, "crossedBy", outline));
+            }
+        }
         let region_id = region.expression_id.as_deref().unwrap_or("");
         let mut serial = 0;
         for si in centers {
@@ -854,6 +1262,9 @@ pub(super) fn augment(
             continue;
         }
         for &si in &interior {
+            if cut_outline_indices.contains(&si) {
+                continue;
+            }
             let samples: Option<Vec<Vec<P>>> =
                 curves[si].iter().map(|p| p.edge.sample(sagitta)).collect();
             let Some(samples) = samples else {

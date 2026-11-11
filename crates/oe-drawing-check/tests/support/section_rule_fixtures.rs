@@ -41,6 +41,24 @@ fn drawing(kind: &str, extent: &str, scale: f64) -> (Drawing, String) {
     let e = face(&mut d, &[rectangle()], kind, extent, scale);
     (d, e)
 }
+fn large_rectangle() -> Vec<[f64; 3]> {
+    vec![
+        [0., 0., 0.],
+        [100., 0., 0.],
+        [100., 100., 0.],
+        [0., 100., 0.],
+    ]
+}
+fn native_boundary_chain_drawing(chain: &[[[f64; 2]; 2]]) -> Drawing {
+    let mut d = Drawing::default();
+    let t = d.text("QZ", [140., 130.], 4., 0.);
+    d.member(&t, "note_text", "thin_continuous", "note", "");
+    face(&mut d, &[large_rectangle()], "removed", "unknown", 1.);
+    for [a, b] in chain {
+        outline(&mut d, *a, *b);
+    }
+    d
+}
 fn axis(d: &mut Drawing, a: [f64; 2], b: [f64; 2]) -> String {
     let h = d.line(a, b);
     d.member(&h, "center_line", "thin_dash_dot", "center_axis", "");
@@ -459,6 +477,66 @@ fn section_hatch_boundary_touch_is_not_reported() {
     let d = fixture("G2-019-section-hatch-crosses-outline", false);
     let fs = new_findings(&d);
     assert!(fs.is_empty(), "{fs:?}");
+}
+
+#[test]
+fn section_native_boundary_chain_is_reported_source_layer() {
+    let d = native_boundary_chain_drawing(&[[[0., 10.], [10., 0.]]]);
+    let fs = new_findings(&d);
+    assert!(
+        fs.iter().all(|f| f.rule_id != "G2-018-outline-in-cut-face"
+            && f.rule_id != "G2-018-outline-in-cut-face-unknown"),
+        "{fs:?}"
+    );
+    assert!(
+        fs.iter().any(|f| {
+            f.rule_id == "G2-019-section-hatch-crosses-outline" && f.layer == "source"
+        }),
+        "native HATCH boundary chain must be visible to source layer: {fs:?}"
+    );
+}
+
+#[test]
+fn section_native_boundary_slot_chain_is_reported() {
+    let d = native_boundary_chain_drawing(&[
+        [[0., 20.], [6., 20.]],
+        [[6., 20.], [6., 30.]],
+        [[6., 30.], [0., 30.]],
+    ]);
+    let fs = new_findings(&d);
+    assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-018")), "{fs:?}");
+    assert!(
+        fs.iter()
+            .filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline")
+            .any(|f| f.layer == "source"),
+        "{fs:?}"
+    );
+}
+
+#[test]
+fn section_large_boundary_cut_remains_interior() {
+    let d = native_boundary_chain_drawing(&[[[0., 0.], [100., 100.]]]);
+    let fs = new_findings(&d);
+    assert!(
+        fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
+            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        "large cut-off area must not be promoted: {fs:?}"
+    );
+}
+
+#[test]
+fn section_two_sided_boundary_cut_remains_interior() {
+    let d = native_boundary_chain_drawing(&[
+        [[0., 10.], [10., 0.]],
+        [[1., 1.], [2., 2.]],
+        [[50., 50.], [60., 60.]],
+    ]);
+    let fs = new_findings(&d);
+    assert!(
+        fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
+            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        "two-sided entity evidence must not be promoted: {fs:?}"
+    );
 }
 
 #[test]

@@ -670,6 +670,8 @@ struct Dxf<'a> {
     style_width: HashMap<&'a str, f64>,
     /// Colour index of each layer (LAYER group 62), the colour of entities drawn BYLAYER.
     layer_colour: HashMap<&'a str, i64>,
+    /// Explicit lineweight of each layer (LAYER group 370), in drawing units (mm).
+    layer_lineweight: HashMap<&'a str, f64>,
 }
 impl<'a> Dxf<'a> {
     fn new(records: &'a [dxf::Record]) -> Result<Self> {
@@ -680,6 +682,7 @@ impl<'a> Dxf<'a> {
             dim_text_height: HashMap::new(),
             style_width: HashMap::new(),
             layer_colour: HashMap::new(),
+            layer_lineweight: HashMap::new(),
         };
         let mut block: Option<&'a str> = None;
         let mut polyline: Option<&'a str> = None;
@@ -695,6 +698,12 @@ impl<'a> Dxf<'a> {
                         && let Ok(c) = c.trim().parse::<i64>()
                     {
                         d.layer_colour.insert(name, c.abs());
+                    }
+                    if let (Some(name), Some(width)) = (r.tag(2), r.tag(370))
+                        && let Ok(width) = width.trim().parse::<f64>()
+                        && width > 0.
+                    {
+                        d.layer_lineweight.insert(name, width / 100.);
                     }
                 }
                 "DIMSTYLE" => {
@@ -1147,6 +1156,10 @@ struct Object {
     dxf_layer: Option<String>,
     colour: Option<i64>,
     layer_colour: Option<i64>,
+    /// Presentation geometry contains a span inferred by the reader rather than drawn in the
+    /// source.  Section-boundary checks must keep that provenance even though the public fact
+    /// contract has no extra field for it.
+    inferred_geometry: bool,
     geometry: Geometry,
 }
 impl Object {
@@ -1521,6 +1534,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             dxf_layer,
             colour,
             layer_colour,
+            inferred_geometry: false,
             geometry,
         });
     }
@@ -1542,9 +1556,14 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 "hidden_outline" => "HiddenOutline",
                 _ => "OtherLine",
             };
-            let pieces: Vec<&str> = list(line, "pieces")?
+            let source_pieces: Vec<&str> = list(line, "pieces")?
                 .iter()
-                .filter_map(|p| p.as_str()?.strip_prefix("member:"))
+                .filter_map(Value::as_str)
+                .collect();
+            let inferred_geometry = source_pieces.iter().any(|piece| piece.starts_with("implied:"));
+            let pieces: Vec<&str> = source_pieces
+                .iter()
+                .filter_map(|piece| piece.strip_prefix("member:"))
                 .collect();
             let mut handles: Vec<String> = pieces
                 .iter()
@@ -1571,6 +1590,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 dxf_layer: None,
                 colour: None,
                 layer_colour: None,
+                inferred_geometry,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1607,6 +1627,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 dxf_layer: None,
                 colour: None,
                 layer_colour: None,
+                inferred_geometry: true,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1671,6 +1692,7 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
             dxf_layer: first.dxf_layer.clone(),
             colour: first.colour,
             layer_colour: first.layer_colour,
+            inferred_geometry: false,
             geometry: Geometry::default(),
         });
     }
@@ -1767,6 +1789,8 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
                 dxf_layer: first.dxf_layer.clone(),
                 colour: first.colour,
                 layer_colour: first.layer_colour,
+                inferred_geometry: first.inferred_geometry
+                    || members.iter().any(|i| objects[*i].inferred_geometry),
                 geometry: Geometry {
                     chains: vec![chain],
                     ..Geometry::default()
@@ -2761,6 +2785,7 @@ mod tests {
             dxf_layer: None,
             colour: None,
             layer_colour: None,
+            inferred_geometry: false,
             geometry: Geometry { chains: vec![vec![(0., 0.), (10., 0.)]], ..Geometry::default() },
         };
         let objects = vec![object];

@@ -55,7 +55,12 @@ fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
         .into_iter()
         .flatten()
         .enumerate()
-        .find(|(_, line)| line["id"].as_str().is_some_and(|id| focus.contains(id)))
+        .find(|(_, line)| {
+            line["id"].as_str().is_some_and(|id| {
+                let marker = format!("{id}:");
+                focus.contains(&marker) || focus.ends_with(id)
+            })
+        })
         .map(|(index, _)| index)
         .or_else(|| {
             focus
@@ -67,13 +72,22 @@ fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
 
 fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
     let all: Vec<_> = graph["members"].as_array().into_iter().flatten().collect();
-    let focus_member = focused_member_id(&f.focus, &all);
-    let mut members: Vec<_> = focus_member
-        .as_deref()
-        .into_iter()
-        .flat_map(|id| all.iter().copied().filter(move |m| m["id"] == id))
-        .collect();
-    if let Some(index) = focused_line_index(&f.focus, &graph["structural_lines"]) {
+    let line_index = focused_line_index(&f.focus, &graph["structural_lines"]);
+    // A structural-line focus names the concrete carrier line after an enclosing
+    // region/member context.  Including that context here would make every line
+    // in one section share the region's source handle and would merge distinct
+    // physical positions.  For non-line findings the most specific focused
+    // member remains the source identity.
+    let mut members: Vec<_> = if line_index.is_none() {
+        focused_member_id(&f.focus, &all)
+            .as_deref()
+            .into_iter()
+            .flat_map(|id| all.iter().copied().filter(move |m| m["id"] == id))
+            .collect()
+    } else {
+        Vec::new()
+    };
+    if let Some(index) = line_index {
         for part in graph["structural_lines"][index]["pieces"]
             .as_array()
             .into_iter()
@@ -474,6 +488,39 @@ mod tests {
         assert_eq!(at("presentation:line:0"), vec!["B2#[0,0.4]", "B2#[0.6,1]"]);
         assert_eq!(at("presentation:line:1"), at("source:m3"));
         assert_eq!(at("source:m4"), vec!["B2"]);
+    }
+
+    #[test]
+    fn structural_line_focus_does_not_merge_distinct_lines_in_one_region() {
+        let graph = json!({
+            "members": [
+                {"id":"expression:region:m0","source_handle":"REGION","interval":[0.,1.]},
+                {"id":"expression:line:m1","source_handle":"LINE-A","interval":[0.,1.]},
+                {"id":"expression:line:m2","source_handle":"LINE-B","interval":[0.,1.]}
+            ],
+            "structural_lines": [
+                {"id":"line:16","pieces":["member:expression:line:m1"]},
+                {"id":"line:162","pieces":["member:expression:line:m2"]}
+            ]
+        });
+        let finding = |line: usize| MdDraftingFinding {
+            layer: "presentation".into(),
+            rule_id: "fixture".into(),
+            focus: format!(
+                "presentation:Section:presentation:expression:region:m0:presentation:line:{line}:3"
+            ),
+            focus_classes: vec![],
+            source_handles: vec![],
+            expression_ids: vec![],
+            value: None,
+            message: String::new(),
+            severity: "violation".into(),
+        };
+        let first = spans(&finding(16), &graph);
+        let second = spans(&finding(162), &graph);
+        assert_eq!(render_spans(&first), vec!["LINE-A"]);
+        assert_eq!(render_spans(&second), vec!["LINE-B"]);
+        assert!(!same_position(&first, &second));
     }
 
     #[test]

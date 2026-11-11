@@ -480,7 +480,7 @@ fn section_hatch_boundary_touch_is_not_reported() {
 }
 
 #[test]
-fn section_native_boundary_chain_is_reported_source_layer() {
+fn section_chamfer_corner_cut_is_reported_source_layer() {
     let d = native_boundary_chain_drawing(&[[[0., 10.], [10., 0.]]]);
     let fs = new_findings(&d);
     assert!(
@@ -536,6 +536,21 @@ fn section_two_sided_boundary_cut_remains_interior() {
         fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
             && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "two-sided entity evidence must not be promoted: {fs:?}"
+    );
+}
+
+#[test]
+fn section_spoke_crossing_superimposed_remains_interior() {
+    let mut d = native_boundary_chain_drawing(&[[[0., 10.], [10., 0.]]]);
+    // This outline starts and ends on the native face boundary, crosses the small corner
+    // region, and continues through the retained solid.  Its midpoint is on the retained
+    // side, so the two-sided check must split the piece at the candidate boundary.
+    outline(&mut d, [0., 6.], [100., 100.]);
+    let fs = new_findings(&d);
+    assert!(
+        fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
+            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        "a spoke crossing both sides remains an interior use: {fs:?}"
     );
 }
 

@@ -5102,7 +5102,7 @@ id = "native_small_cut"
 title = "原生剖面区域中的小边界切块"
 distinguishing = "可见轮廓或首尾相接轮廓链两端落在原生 SectionRegion 边界，链条在区域内切出小块；由 SectionRegion 直接承载越界关系，source 层同样可核查"
 encodings = ["native", "inferred"]
-tests = ["section_native_boundary_chain_is_reported_source_layer", "section_native_boundary_slot_chain_is_reported"]
+tests = ["section_chamfer_corner_cut_is_reported_source_layer", "section_native_boundary_slot_chain_is_reported"]
 
 [[cards.counter_examples]]
 statement = "轮廓边界本身、孔边界和只在一点相接的剖面线不属于剖面线越界"

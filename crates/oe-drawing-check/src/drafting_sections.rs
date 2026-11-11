@@ -568,6 +568,57 @@ fn collect_boundary_paths(
     }
 }
 
+/// Classify every interior portion of an outline piece against a candidate cut polygon.  A
+/// single midpoint is not enough here: a spoke or a circular hole can cross a small cut-off
+/// corner while its midpoint remains on the retained side.  Split sampled pieces at polygon
+/// crossings, then use interval midpoints so both sides of the same entity are visible.
+fn cut_side_evidence(
+    edge: Edge,
+    polygon: &[P],
+    face: &Face,
+    tol: f64,
+    sagitta: f64,
+) -> (bool, bool) {
+    let Some(samples) = edge.sample(sagitta) else {
+        return (false, false);
+    };
+    let mut cut_side = false;
+    let mut remaining_side = false;
+    for window in samples.windows(2) {
+        let segment = Edge::Line(window[0], window[1]);
+        let mut cuts = vec![0., 1.];
+        for boundary in polygon.windows(2) {
+            if let Some(point) = segment_intersection(
+                window[0],
+                window[1],
+                boundary[0],
+                boundary[1],
+            ) {
+                cuts.extend(
+                    segment
+                        .parameters(point)
+                        .into_iter()
+                        .filter(|t| *t > 0. && *t < 1.),
+                );
+            }
+        }
+        cuts.sort_by(f64::total_cmp);
+        cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
+        for interval in cuts.windows(2) {
+            let midpoint = segment.at((interval[0] + interval[1]) / 2.);
+            if !inside(midpoint, &face.polygon_edges, tol) {
+                continue;
+            }
+            if point_in_polygon(midpoint, polygon, tol) {
+                cut_side = true;
+            } else {
+                remaining_side = true;
+            }
+        }
+    }
+    (cut_side, remaining_side)
+}
+
 fn boundary_cut_chains(
     face: &Face,
     outlines: &[usize],
@@ -719,15 +770,10 @@ fn boundary_cut_chains(
                             continue;
                         }
                         for piece in &curves[object] {
-                            let midpoint = piece.edge.at(0.5);
-                            if !inside(midpoint, &face.polygon_edges, tol) {
-                                continue;
-                            }
-                            if point_in_polygon(midpoint, &polygon, tol) {
-                                cut_side = true;
-                            } else {
-                                remaining_side = true;
-                            }
+                            let (piece_cut_side, piece_remaining_side) =
+                                cut_side_evidence(piece.edge, &polygon, face, tol, sagitta);
+                            cut_side |= piece_cut_side;
+                            remaining_side |= piece_remaining_side;
                         }
                     }
                     if cut_side && remaining_side {
@@ -751,21 +797,10 @@ fn point_on_boundary(point: P, face: &Face, tol: f64) -> bool {
         .any(|(a, b)| point_segment(point, *a, *b).0 <= tol)
 }
 
-fn inside_with_boundary(p: P, exterior: &[(P, P)], boundary: &[(P, P)], tol: f64) -> bool {
-    if boundary.iter().any(|(a, b)| {
-        Edge::Line(*a, *b)
-            .parameters(p)
-            .iter()
-            .any(|t| dist(Edge::Line(*a, *b).at(t.clamp(0., 1.)), p) <= tol)
-    }) {
-        return false;
-    }
-    inside(p, exterior, tol)
-}
 fn interior_length(a: P, b: P, face: &Face, tol: f64) -> f64 {
     let e = Edge::Line(a, b);
     let mut cuts = vec![0., 1.];
-    for (p, q) in &face.boundary_edges {
+    for (p, q) in &face.polygon_edges {
         if let Some(x) = segment_intersection(a, b, *p, *q) {
             cuts.extend(e.parameters(x).into_iter().filter(|t| *t > 0. && *t < 1.));
         }
@@ -773,14 +808,7 @@ fn interior_length(a: P, b: P, face: &Face, tol: f64) -> f64 {
     cuts.sort_by(f64::total_cmp);
     cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
     cuts.windows(2)
-        .filter(|w| {
-            inside_with_boundary(
-                e.at((w[0] + w[1]) / 2.),
-                &face.polygon_edges,
-                &face.boundary_edges,
-                tol,
-            )
-        })
+        .filter(|w| inside(e.at((w[0] + w[1]) / 2.), &face.polygon_edges, tol))
         .map(|w| (w[1] - w[0]) * e.length())
         .sum()
 }
@@ -1123,19 +1151,46 @@ pub(super) fn augment(
         let centers: Vec<usize> = (0..original_count)
             .filter(|i| objects[*i].is("CentreLine") && same_view(*i))
             .collect();
+        // Only the source drawing's contour expression may form a section boundary.  A
+        // dimension's extension member can share the VisibleOutline class when it reuses a
+        // native line, but it is annotation geometry rather than part geometry; admitting it
+        // here would turn a keyway boundary into a cut and suppress its independent unknown
+        // finding.  The same distinction is used for side evidence below.
+        let is_part_outline = |o: &Object| {
+            o.is("VisibleOutline")
+                && o.expression_kind
+                    .as_deref()
+                    .is_none_or(|kind| kind == "visible_contour")
+        };
+        let is_part_curve = |o: &Object| {
+            is_part_outline(o)
+                || (o.is("ThreadLine")
+                    && o.expression_kind
+                        .as_deref()
+                        .is_none_or(|kind| kind == "thread_line"))
+        };
         let outlines: Vec<usize> = (0..original_count)
-            .filter(|i| objects[*i].is("VisibleOutline") && same_view(*i))
+            .filter(|i| is_part_outline(&objects[*i]) && same_view(*i))
             .collect();
         let interior: Vec<usize> = (0..original_count)
             .filter(|i| {
-                (objects[*i].is("VisibleOutline") || objects[*i].is("ThreadLine")) && same_view(*i)
+                (objects[*i].is("VisibleOutline") || objects[*i].is("ThreadLine"))
+                    && same_view(*i)
             })
+            .collect();
+        // Boundary promotion uses only independent part geometry for its two-sided test.  The
+        // full interior list is retained below so an annotation alias that is not eligible to
+        // form a boundary still receives the original G2-018 unknown finding.
+        let boundary_evidence: Vec<usize> = interior
+            .iter()
+            .copied()
+            .filter(|i| is_part_curve(&objects[*i]))
             .collect();
         let boundary_cuts = boundary_cut_chains(
             &face,
             &outlines,
             &curves,
-            &interior,
+            &boundary_evidence,
             tol,
             sagitta,
             cutoff_ratio,

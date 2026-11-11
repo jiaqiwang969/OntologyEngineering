@@ -855,8 +855,8 @@ id = "section_hatch_boundary_rules"
 concepts = ["DC-G2-019", "DC-G2-028"]
 clauses = ["GB/T 17453-2005 5、4.3", "GB/T 4457.5-2013 4.4"]
 components = ["Loose hatch line or native SectionRegion", "Single visible outline or connected outline chain", "Internal crossing versus endpoint contact", "Small cut-off area and one-sided entity evidence"]
-variants = ["Loose crossing: section_hatch_boundary_crossing_is_reported", "Boundary contact: section_hatch_boundary_touch_is_not_reported", "Native small boundary chain: section_native_boundary_chain_is_reported_source_layer", "Connected native slot chain: section_native_boundary_slot_chain_is_reported"]
-counter_examples = ["A hatch line ending on the outline is not an overrun: section_hatch_boundary_touch_is_not_reported", "A large cut-off region remains an interior use: section_large_boundary_cut_remains_interior", "Entity evidence on both sides keeps the chain an interior use: section_two_sided_boundary_cut_remains_interior"]
+variants = ["Loose crossing: section_hatch_boundary_crossing_is_reported", "Boundary contact: section_hatch_boundary_touch_is_not_reported", "Chamfer corner cut: section_chamfer_corner_cut_is_reported_source_layer", "Connected native slot chain: section_native_boundary_slot_chain_is_reported", "Spoke crossing both sides: section_spoke_crossing_superimposed_remains_interior"]
+counter_examples = ["A hatch line ending on the outline is not an overrun: section_hatch_boundary_touch_is_not_reported", "A large cut-off region remains an interior use: section_large_boundary_cut_remains_interior", "Entity evidence on both sides keeps the chain an interior use: section_two_sided_boundary_cut_remains_interior", "A spoke crossing the candidate cut is split at the boundary before side classification: section_spoke_crossing_superimposed_remains_interior"]
 parameters = ["section_cutoff_area_ratio_max", "coincidence_text_height", "sagitta_text_height"]
 scale_test = "section_rules_are_scale_equivariant"
 

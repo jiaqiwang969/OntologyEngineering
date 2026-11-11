@@ -124,6 +124,56 @@ fn new_findings(d: &Drawing) -> Vec<oe_contracts::MdDraftingFinding> {
         .filter(|f| RULE_IDS.contains(&f.rule_id.as_str()))
         .collect()
 }
+fn layer_rule_count(d: &Drawing, layer: &str, prefix: &str) -> usize {
+    d.findings()
+        .get(layer)
+        .into_iter()
+        .flatten()
+        .filter(|f| f.rule_id.starts_with(prefix))
+        .count()
+}
+
+fn partial_structural_drawing(hatch_x: f64) -> Drawing {
+    let mut d = Drawing::default();
+    let t = d.text("QZ", [80., 70.], 4., 0.);
+    d.member(&t, "note_text", "thin_continuous", "note", "");
+    let region = face(&mut d, &[rectangle()], "removed", "unknown", 1.);
+    let hatch = d.line([hatch_x, -3.], [hatch_x, 3.]);
+    d.member_in(&region, &hatch, "hatch_fill", "thin_continuous");
+
+    let left = d.line([0., 0.], [10., 0.]);
+    let left_expression = d.expression("visible_contour", "left");
+    d.member_in(
+        &left_expression,
+        &left,
+        "contour_segment",
+        "thick_continuous",
+    );
+    let right = d.line([14., 0.], [24., 0.]);
+    let right_expression = d.expression("visible_contour", "right");
+    d.member_in(
+        &right_expression,
+        &right,
+        "contour_segment",
+        "thick_continuous",
+    );
+    d.implied_span("I0", "I1", [10., 0.], [14., 0.]);
+    d.structural.push(json!({
+        "id": "line:split",
+        "line_class": "visible_outline",
+        "line_type": "thick_continuous",
+        "geometry": "line",
+        "pieces": [
+            format!("member:{left_expression}:m0"),
+            "implied:0",
+            format!("member:{right_expression}:m0")
+        ],
+        "points": [0., 0., 24., 0.],
+        "arc": null,
+        "view_id": "view:main"
+    }));
+    d
+}
 pub(super) fn fixture(rule: &str, violating: bool) -> Drawing {
     if rule == "G2-019-section-hatch-crosses-outline" {
         let mut d = Drawing::default();
@@ -360,7 +410,14 @@ fn section_native_line_alias_boundary_is_not_interior() {
     d.members.last_mut().unwrap()["view_id"] = json!("view:main");
     let fs = new_findings(&d);
     assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-018")), "{fs:?}");
-    assert!(fs.iter().any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"));
+    for layer in ["source", "recognition", "presentation"] {
+        assert_eq!(layer_rule_count(&d, layer, "G2-018"), 0, "{layer}");
+        assert_eq!(
+            layer_rule_count(&d, layer, "G2-019-section-hatch-crosses-outline"),
+            1,
+            "{layer}"
+        );
+    }
 }
 
 #[test]
@@ -377,6 +434,40 @@ fn section_native_line_alias_two_sided_remains_interior() {
     let fs = new_findings(&d);
     assert!(fs.iter().any(|f| f.rule_id.starts_with("G2-018")), "{fs:?}");
     assert!(fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"));
+    for layer in ["source", "recognition", "presentation"] {
+        assert!(layer_rule_count(&d, layer, "G2-018") >= 1, "{layer}");
+        assert_eq!(
+            layer_rule_count(&d, layer, "G2-019-section-hatch-crosses-outline"),
+            0,
+            "{layer}"
+        );
+    }
+}
+
+#[test]
+fn section_partial_structural_original_span_is_reported_on_all_layers() {
+    let d = partial_structural_drawing(8.);
+    for layer in ["source", "recognition", "presentation"] {
+        assert_eq!(layer_rule_count(&d, layer, "G2-018"), 0, "{layer}");
+        assert_eq!(
+            layer_rule_count(&d, layer, "G2-019-section-hatch-crosses-outline"),
+            1,
+            "{layer}"
+        );
+    }
+}
+
+#[test]
+fn section_partial_structural_inferred_span_is_ignored_on_all_layers() {
+    let d = partial_structural_drawing(12.);
+    for layer in ["source", "recognition", "presentation"] {
+        assert_eq!(layer_rule_count(&d, layer, "G2-018"), 0, "{layer}");
+        assert_eq!(
+            layer_rule_count(&d, layer, "G2-019-section-hatch-crosses-outline"),
+            0,
+            "{layer}"
+        );
+    }
 }
 #[test]
 fn section_thread_exception_is_in_shape() {

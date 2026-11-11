@@ -1350,6 +1350,154 @@ fn pieces(o: &Object, d: &Dxf<'_>, layer: &str, members: &BTreeMap<&str, &Value>
     }
     out
 }
+
+/// The presentation exporter merges source members into one structural line.  When a local
+/// section interrupts that line, the `implied:<n>` piece is a reader-inferred span rather than
+/// an original contour.  Return the inferred spans in the structural line's normalized
+/// parameter so G2-019 can retain the native pieces on either side.
+fn structural_implied_intervals(g: &Value, o: &Object, tol: f64) -> Option<Vec<[f64; 2]>> {
+    let index =
+        o.id.strip_prefix("presentation:line:")
+            .and_then(|s| s.parse::<usize>().ok())?;
+    let line = g.get("structural_lines")?.as_array()?.get(index)?;
+    let pieces = line.get("pieces")?.as_array()?;
+    let implied: Vec<usize> = pieces
+        .iter()
+        .filter_map(Value::as_str)
+        .filter_map(|piece| piece.strip_prefix("implied:"))
+        .filter_map(|n| n.parse::<usize>().ok())
+        .collect();
+    if implied.is_empty() {
+        return None;
+    }
+    let points = line.get("points")?.as_array()?;
+    if points.len() != 4 {
+        // Arc structural lines cannot be partitioned by a straight parameter here.  Keeping
+        // the whole inferred object out is safer than treating an unknown interval as native.
+        return None;
+    }
+    let a = (points[0].as_f64()?, points[1].as_f64()?);
+    let b = (points[2].as_f64()?, points[3].as_f64()?);
+    if dist(a, b) <= 1e-9 {
+        return None;
+    }
+    let spans = g.get("implied_spans")?.as_array()?;
+    let mut out = Vec::new();
+    for span_index in implied {
+        let span = spans.get(span_index)?;
+        let span_points = span.get("points")?.as_array()?;
+        if span_points.len() != 4 || span.get("arc").is_some_and(|arc| !arc.is_null()) {
+            return None;
+        }
+        let p = (span_points[0].as_f64()?, span_points[1].as_f64()?);
+        let q = (span_points[2].as_f64()?, span_points[3].as_f64()?);
+        let (off_p, t_p) = point_line(p, a, b);
+        let (off_q, t_q) = point_line(q, a, b);
+        if off_p > tol || off_q > tol || !t_p.is_finite() || !t_q.is_finite() {
+            return None;
+        }
+        let lo = t_p.min(t_q).clamp(0., 1.);
+        let hi = t_p.max(t_q).clamp(0., 1.);
+        if hi > lo + 1e-10 {
+            out.push([lo, hi]);
+        }
+    }
+    if out.is_empty() {
+        return None;
+    }
+    out.sort_by(|a, b| a[0].total_cmp(&b[0]));
+    let mut merged: Vec<[f64; 2]> = Vec::with_capacity(out.len());
+    for span in out {
+        if let Some(last) = merged.last_mut()
+            && span[0] <= last[1] + 1e-10
+        {
+            last[1] = last[1].max(span[1]);
+        } else {
+            merged.push(span);
+        }
+    }
+    Some(merged)
+}
+
+/// Whether a presentation structural line still contains at least one original member.  An
+/// all-`implied:` line is wholly reader-generated and must stay out of section-boundary facts.
+fn has_native_structural_piece(g: &Value, o: &Object) -> bool {
+    if !o.inferred_geometry {
+        return true;
+    }
+    let Some(index) =
+        o.id.strip_prefix("presentation:line:")
+            .and_then(|s| s.parse::<usize>().ok())
+    else {
+        return false;
+    };
+    g.get("structural_lines")
+        .and_then(Value::as_array)
+        .and_then(|lines| lines.get(index))
+        .and_then(|line| line.get("pieces"))
+        .and_then(Value::as_array)
+        .is_some_and(|pieces| {
+            pieces
+                .iter()
+                .filter_map(Value::as_str)
+                .any(|piece| piece.starts_with("member:"))
+        })
+}
+
+/// Curves belonging to a target outline after removing only its inferred structural spans.
+/// Non-presentation and wholly inferred objects retain their existing behavior.
+fn native_outline_pieces(
+    g: &Value,
+    o: &Object,
+    index: usize,
+    curves: &[Vec<Piece>],
+    tol: f64,
+) -> Vec<Piece> {
+    if !o.inferred_geometry {
+        return curves[index].clone();
+    }
+    if !has_native_structural_piece(g, o) {
+        return Vec::new();
+    }
+    let Some(implied) = structural_implied_intervals(g, o, tol) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for piece in &curves[index] {
+        let mut cuts = vec![piece.lo, piece.hi];
+        for [lo, hi] in &implied {
+            let lo = lo.max(piece.lo);
+            let hi = hi.min(piece.hi);
+            if hi > lo + 1e-10 {
+                cuts.extend([lo, hi]);
+            }
+        }
+        cuts.sort_by(f64::total_cmp);
+        cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
+        for window in cuts.windows(2) {
+            let (lo, hi) = (window[0], window[1]);
+            if hi <= lo + 1e-10 {
+                continue;
+            }
+            let midpoint = (lo + hi) / 2.;
+            if implied.iter().any(|[inferred_lo, inferred_hi]| {
+                midpoint > *inferred_lo && midpoint < *inferred_hi
+            }) {
+                continue;
+            }
+            let span = (piece.hi - piece.lo).max(1e-12);
+            out.push(Piece {
+                edge: piece
+                    .edge
+                    .slice((lo - piece.lo) / span, (hi - piece.lo) / span),
+                lo,
+                hi,
+                parameter: piece.parameter,
+            });
+        }
+    }
+    out
+}
 fn evidence(v: &Value) -> Vec<&str> {
     v.get("evidence_ids")
         .or_else(|| v.get("evidence"))
@@ -1492,7 +1640,9 @@ pub(super) fn augment(
         let Some(target) = r.object.and_then(|i| objects.get(i)) else {
             return true;
         };
-        if source.inferred_geometry || target.inferred_geometry {
+        if source.inferred_geometry
+            || (target.inferred_geometry && !has_native_structural_piece(g, target))
+        {
             return false;
         }
         !target.is("VisibleOutline") || source.view == target.view
@@ -1610,7 +1760,12 @@ pub(super) fn augment(
             {
                 return true;
             }
-            if source.inferred_geometry || target.inferred_geometry {
+            if source.inferred_geometry {
+                return false;
+            }
+            let outline_pieces =
+                native_outline_pieces(g, target, r.object.unwrap_or(r.subject), &curves, tol);
+            if outline_pieces.is_empty() {
                 return false;
             }
             let Some(threshold) = visible_overrun_threshold(
@@ -1627,7 +1782,7 @@ pub(super) fn augment(
             };
             let mut max_overrun: f64 = 0.;
             for hatch in &curves[r.subject] {
-                for outline in &curves[r.object.unwrap_or(r.subject)] {
+                for outline in &outline_pieces {
                     let overrun = if face.complete {
                         overrun_outside_face(hatch.edge, outline.edge, &face, tol, sagitta)
                     } else {

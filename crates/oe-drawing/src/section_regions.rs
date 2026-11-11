@@ -336,6 +336,7 @@ fn curve_member(m: &MdExpressionMember) -> bool {
 }
 
 fn origin(b: &mut Builder, i: usize, region: &str, class: &str, basis: &str) {
+    b.members[i].section_origin = Some(class.to_owned());
     let ev = &mut b.members[i].evidence_ids;
     push(ev, format!("section_region:{region}"));
     push(
@@ -491,6 +492,27 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[Region]) -> Result<()> {
                 "placement_width_or_cut_depth_not_established",
             )
         };
+        let extent = if view.is_some_and(|v| v.evidence.iter().any(|s| s == "section_type:half")) {
+            "half"
+        } else if profile {
+            "local"
+        } else if ctype == "unknown" {
+            "unknown"
+        } else {
+            "cross_section"
+        };
+        let geometry = if incomplete {
+            if edges.is_empty() {
+                "unavailable"
+            } else {
+                "partial"
+            }
+        } else {
+            "complete"
+        };
+        b.exprs[h.expr].cross_section_type = Some(ctype.to_owned());
+        b.exprs[h.expr].section_extent = Some(extent.to_owned());
+        b.exprs[h.expr].section_geometry = Some(geometry.to_owned());
         let ev = &mut b.exprs[h.expr].evidence_ids;
         for card in [
             "section_region_boundary",
@@ -616,6 +638,9 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[Region]) -> Result<()> {
             .filter_map(|v| v["class"].as_str().map(str::to_owned))
             .collect();
         if !classes.is_empty() {
+            if classes.len() != 1 {
+                m.section_origin = Some("unknown".into());
+            }
             push(
                 &mut m.evidence_ids,
                 format!(
@@ -628,6 +653,83 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[Region]) -> Result<()> {
                 ),
             );
         }
+    }
+    type SectionFormal = (Option<String>, Option<String>, Option<String>);
+    let section_values: BTreeMap<String, SectionFormal> = b
+        .exprs
+        .iter()
+        .filter(|e| e.kind == "section_hatch")
+        .map(|e| {
+            (
+                e.id.clone(),
+                (
+                    e.cross_section_type.clone(),
+                    e.section_extent.clone(),
+                    e.section_geometry.clone(),
+                ),
+            )
+        })
+        .collect();
+    for m in &mut b.members {
+        let regions: BTreeSet<String> = m
+            .evidence_ids
+            .iter()
+            .filter_map(|s| s.strip_prefix("section_region:"))
+            .map(str::to_owned)
+            .collect();
+        if regions.is_empty() {
+            continue;
+        }
+        // A member can carry more than one region reference. Preserve a value only
+        // when all referenced regions agree; otherwise the typed value is unknown.
+        // Detail regions without a hatch expression are also explicit unknowns.
+        let mut cross_section_types = BTreeSet::new();
+        let mut extents = BTreeSet::new();
+        let mut geometries = BTreeSet::new();
+        for region in regions {
+            if let Some((ct, extent, geometry)) = section_values.get(&region) {
+                cross_section_types.insert(ct.as_deref().unwrap_or("unknown"));
+                extents.insert(extent.as_deref().unwrap_or("unknown"));
+                geometries.insert(geometry.as_deref().unwrap_or("unavailable"));
+            } else {
+                cross_section_types.insert("unknown");
+                extents.insert("unknown");
+                geometries.insert("unavailable");
+            }
+        }
+        let one_or_unknown = |values: BTreeSet<&str>| {
+            if values.len() == 1 {
+                values.into_iter().next().unwrap().to_owned()
+            } else {
+                "unknown".to_owned()
+            }
+        };
+        m.cross_section_type = Some(one_or_unknown(cross_section_types));
+        m.section_extent = Some(one_or_unknown(extents));
+        m.section_geometry = Some(if geometries.len() == 1 {
+            geometries.into_iter().next().unwrap().to_owned()
+        } else {
+            "unavailable".to_owned()
+        });
+        if m.section_origin.is_none() {
+            m.section_origin = Some("unknown".into());
+        }
+    }
+    for e in &mut b.exprs {
+        if e.kind != "section_hatch" {
+            continue;
+        }
+        let origins: BTreeSet<String> = e
+            .member_ids
+            .iter()
+            .filter_map(|id| b.members.iter().find(|m| &m.id == id))
+            .filter_map(|m| m.section_origin.clone())
+            .collect();
+        e.section_origin = Some(if origins.len() == 1 {
+            origins.into_iter().next().unwrap()
+        } else {
+            "unknown".into()
+        });
     }
     Ok(())
 }

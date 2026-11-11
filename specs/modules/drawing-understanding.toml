@@ -1302,6 +1302,58 @@ write="ggen contract; Rust expression assembler from source bytes only; no old a
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
+[[types.fields]]
+name="cross_section_type"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal cross-section configuration for a section expression or member"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained cross_section_type evidence string"
+allowed_values=["superimposed", "removed", "unknown"]
+
+[[types.fields]]
+name="section_extent"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal extent of the section"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained section context evidence"
+allowed_values=["half", "local", "local_axis", "cross_section", "unknown"]
+
+[[types.fields]]
+name="section_origin"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal origin of a line relative to the section cut"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section members and their owning section expressions"
+acceptance="Matches the retained section origin evidence; conflicts remain unknown"
+allowed_values=["pre_existing", "cut_formed", "suppressed", "unknown"]
+
+[[types.fields]]
+name="section_geometry"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal completeness of the section region face boundary"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="Complete, partial or unavailable native boundary coverage"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained section boundary geometry evidence"
+allowed_values=["complete", "partial", "unavailable"]
+
 [[types]]
 name="MdEngineeringExpression"
 contract_group="engineering"
@@ -1478,6 +1530,58 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
+
+[[types.fields]]
+name="cross_section_type"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal cross-section configuration for a section expression or member"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained cross_section_type evidence string"
+allowed_values=["superimposed", "removed", "unknown"]
+
+[[types.fields]]
+name="section_extent"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal extent of the section"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained section context evidence"
+allowed_values=["half", "local", "local_axis", "cross_section", "unknown"]
+
+[[types.fields]]
+name="section_origin"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal origin of a line relative to the section cut"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One of the typed values when section evidence is present; absent for unrelated objects"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section members and their owning section expressions"
+acceptance="Matches the retained section origin evidence; conflicts remain unknown"
+allowed_values=["pre_existing", "cut_formed", "suppressed", "unknown"]
+
+[[types.fields]]
+name="section_geometry"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Formal completeness of the section region face boundary"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="Complete, partial or unavailable native boundary coverage"
+write="Locked ggen contract; source-only section recognizer"
+applicability="Section regions and members carrying section evidence"
+acceptance="Matches the retained section boundary geometry evidence"
+allowed_values=["complete", "partial", "unavailable"]
 
 [[types]]
 name="MdStructuralEnd"

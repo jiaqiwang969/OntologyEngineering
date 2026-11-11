@@ -143,6 +143,10 @@ fn superimposed_thin_face_retains_parent_outline() {
         "{:?}",
         face(&g).evidence_ids
     );
+    assert_eq!(face(&g).cross_section_type.as_deref(), Some("superimposed"));
+    assert_eq!(face(&g).section_extent.as_deref(), Some("cross_section"));
+    assert_eq!(face(&g).section_origin.as_deref(), Some("cut_formed"));
+    assert_eq!(face(&g).section_geometry.as_deref(), Some("complete"));
     assert!(face(&g).concept_ids.iter().any(|s| s == "DC-G2-034"));
     for m in g.members.iter().filter(|m| m.source_handle == "crossing") {
         assert_eq!(
@@ -158,6 +162,7 @@ fn superimposed_thin_face_retains_parent_outline() {
                 .iter()
                 .any(|s| s == "section_origin:pre_existing")
         );
+        assert_eq!(m.section_origin.as_deref(), Some("pre_existing"));
     }
 }
 
@@ -165,6 +170,10 @@ fn superimposed_thin_face_retains_parent_outline() {
 fn ambiguous_width_never_suppresses_a_crossing() {
     let g = run(embedded(60));
     assert!(has(face(&g), "cross_section_type:unknown"));
+    assert_eq!(face(&g).cross_section_type.as_deref(), Some("unknown"));
+    assert_eq!(face(&g).section_extent.as_deref(), Some("unknown"));
+    assert_eq!(face(&g).section_origin.as_deref(), Some("cut_formed"));
+    assert_eq!(face(&g).section_geometry.as_deref(), Some("complete"));
     assert!(!face(&g).concept_ids.iter().any(|s| s == "DC-G2-033"));
     for m in g.members.iter().filter(|m| m.source_handle == "crossing") {
         assert!(m.evidence_ids.iter().any(|s| s == "section_origin:unknown"));
@@ -173,6 +182,7 @@ fn ambiguous_width_never_suppresses_a_crossing() {
                 .iter()
                 .any(|s| s == "section_origin:suppressed")
         );
+        assert_eq!(m.section_origin.as_deref(), Some("unknown"));
     }
 }
 
@@ -251,17 +261,66 @@ fn all_hatch_regions_have_scoped_origins() {
         .collect();
     assert_eq!(hs.len(), 2);
     for h in hs {
+        assert!(h.cross_section_type.is_some());
+        assert!(h.section_extent.is_some());
+        assert!(h.section_origin.is_some());
+        assert!(h.section_geometry.is_some());
         assert!(
             g.members
                 .iter()
                 .any(|m| m.evidence_ids.contains(&format!("section_region:{}", h.id)))
         );
-        for m in g.members.iter().filter(|m| m.expression_id == h.id) {
+        for m in g.members.iter().filter(|m| {
+            m.evidence_ids
+                .iter()
+                .any(|s| s == &format!("section_region:{}", h.id))
+        }) {
             assert!(
                 m.evidence_ids
                     .iter()
                     .any(|s| s.starts_with("section_origin:"))
             );
+            let refs: Vec<_> = m
+                .evidence_ids
+                .iter()
+                .filter_map(|s| s.strip_prefix("section_region:"))
+                .filter_map(|id| g.expressions.iter().find(|e| e.id == id))
+                .filter(|e| e.kind == "section_hatch")
+                .collect();
+            let types: std::collections::BTreeSet<_> = refs
+                .iter()
+                .filter_map(|e| e.cross_section_type.as_deref())
+                .collect();
+            let extents: std::collections::BTreeSet<_> = refs
+                .iter()
+                .filter_map(|e| e.section_extent.as_deref())
+                .collect();
+            let geometries: std::collections::BTreeSet<_> = refs
+                .iter()
+                .filter_map(|e| e.section_geometry.as_deref())
+                .collect();
+            assert_eq!(
+                m.cross_section_type.as_deref(),
+                (types.len() == 1)
+                    .then(|| types.iter().next().copied())
+                    .flatten()
+                    .or(Some("unknown"))
+            );
+            assert_eq!(
+                m.section_extent.as_deref(),
+                (extents.len() == 1)
+                    .then(|| extents.iter().next().copied())
+                    .flatten()
+                    .or(Some("unknown"))
+            );
+            assert_eq!(
+                m.section_geometry.as_deref(),
+                (geometries.len() == 1)
+                    .then(|| geometries.iter().next().copied())
+                    .flatten()
+                    .or(Some("unavailable"))
+            );
+            assert!(m.section_origin.is_some());
         }
     }
 }
@@ -296,6 +355,12 @@ fn unhatched_detail_keeps_unknown_origins() {
         ms.iter()
             .all(|m| m.evidence_ids.iter().any(|s| s == "section_origin:unknown"))
     );
+    assert!(ms.iter().all(|m| {
+        m.cross_section_type.as_deref() == Some("unknown")
+            && m.section_extent.as_deref() == Some("unknown")
+            && m.section_origin.as_deref() == Some("unknown")
+            && m.section_geometry.as_deref() == Some("unavailable")
+    }));
 }
 
 #[test]

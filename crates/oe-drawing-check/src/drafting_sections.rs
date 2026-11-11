@@ -494,10 +494,23 @@ fn single<'a>(v: &'a Value, prefix: &str, allowed: &[&str]) -> &'a str {
         "unknown"
     }
 }
+fn formal<'a>(v: &'a Value, name: &str, allowed: &[&str]) -> Option<&'a str> {
+    v.get(name)
+        .and_then(Value::as_str)
+        .filter(|value| allowed.contains(value))
+}
 fn origin(o: &Object, region: &str, members: &BTreeMap<&str, &Value>) -> String {
     let mut found = BTreeSet::new();
     for id in &o.member_ids {
         if let Some(m) = members.get(id.as_str()) {
+            if let Some(c) = formal(
+                m,
+                "section_origin",
+                &["pre_existing", "cut_formed", "suppressed", "unknown"],
+            ) {
+                found.insert(c.to_owned());
+                continue;
+            }
             for s in evidence(m)
                 .into_iter()
                 .filter_map(|s| s.strip_prefix("section_origin_region:"))
@@ -573,14 +586,26 @@ fn context(
         .and_then(|id| views.get(id))
         .copied()
         .unwrap_or(&empty);
-    let ct = single(
+    let ct = formal(
         expression,
-        "cross_section_type:",
+        "cross_section_type",
         &["superimposed", "removed", "unknown"],
-    );
+    )
+    .unwrap_or_else(|| {
+        single(
+            expression,
+            "cross_section_type:",
+            &["superimposed", "removed", "unknown"],
+        )
+    });
     let ev = evidence(view);
     let ee = evidence(expression);
-    let extent =
+    let extent = formal(
+        expression,
+        "section_extent",
+        &["half", "local", "local_axis", "cross_section", "unknown"],
+    )
+    .unwrap_or_else(|| {
         if ev.contains(&"section_type:half") || ee.contains(&"section_context:section_type:half") {
             "half"
         } else if ee.contains(&"section_context:local") {
@@ -589,7 +614,11 @@ fn context(
             "cross_section"
         } else {
             "unknown"
-        };
+        }
+    });
+    // `section_geometry` remains a graph fact, but the v7 rules exporter
+    // derives its fact from the native HATCH boundary below. The two sources
+    // are intentionally kept separate until a later unification decision.
     (ct.into(), extent.into())
 }
 
@@ -662,13 +691,14 @@ pub(super) fn augment(
             .filter(|r| r.kind == "HATCH")
             .map(|r| face(r, tol, sagitta))
             .unwrap_or_default();
-        let geometry = if face.complete {
+        let inferred_geometry = if face.complete {
             "complete"
         } else if face.edges.is_empty() {
             "unavailable"
         } else {
             "partial"
         };
+        let geometry = inferred_geometry;
         literal(relations, ri, "crossSectionType", &ctype);
         literal(relations, ri, "sectionExtent", &extent);
         literal(relations, ri, "sectionGeometry", geometry);

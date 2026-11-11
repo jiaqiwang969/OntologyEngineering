@@ -2962,6 +2962,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDxfStyleEdit", "code", "i64"),
     ("MdDxfStyleEdit", "value", "String"),
     ("MdEngineeringExpression", "concept_ids", "Vec<String>"),
+    ("MdEngineeringExpression", "cross_section_type", "Option<String>"),
     ("MdEngineeringExpression", "engineering_target", "Option<String>"),
     ("MdEngineeringExpression", "evidence_ids", "Vec<String>"),
     ("MdEngineeringExpression", "family", "String"),
@@ -2972,6 +2973,9 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "member_ids", "Vec<String>"),
     ("MdEngineeringExpression", "qualifiers", "Vec<String>"),
     ("MdEngineeringExpression", "rule", "String"),
+    ("MdEngineeringExpression", "section_extent", "Option<String>"),
+    ("MdEngineeringExpression", "section_geometry", "Option<String>"),
+    ("MdEngineeringExpression", "section_origin", "Option<String>"),
     ("MdEngineeringExpression", "state", "String"),
     ("MdEngineeringExpression", "unknowns", "Vec<String>"),
     ("MdEngineeringExpression", "view_id", "Option<String>"),
@@ -3010,6 +3014,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdExpressionGraphCheckRequest", "schema", "String"),
     ("MdExpressionGraphCheckRequest", "svg", "String"),
     ("MdExpressionGraphCheckRequest", "worker_executable", "String"),
+    ("MdExpressionMember", "cross_section_type", "Option<String>"),
     ("MdExpressionMember", "evidence_ids", "Vec<String>"),
     ("MdExpressionMember", "expression_id", "String"),
     ("MdExpressionMember", "id", "String"),
@@ -3018,6 +3023,9 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "member_role", "String"),
     ("MdExpressionMember", "native_member_id", "Option<String>"),
     ("MdExpressionMember", "relation_ids", "Vec<String>"),
+    ("MdExpressionMember", "section_extent", "Option<String>"),
+    ("MdExpressionMember", "section_geometry", "Option<String>"),
+    ("MdExpressionMember", "section_origin", "Option<String>"),
     ("MdExpressionMember", "source_handle", "String"),
     ("MdExpressionMember", "state", "String"),
     ("MdExpressionMember", "unknowns", "Vec<String>"),
@@ -5904,6 +5912,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingView", "state", "candidate"),
     ("MdDrawingView", "state", "observed"),
     ("MdDrawingView", "state", "unknown"),
+    ("MdEngineeringExpression", "cross_section_type", "removed"),
+    ("MdEngineeringExpression", "cross_section_type", "superimposed"),
+    ("MdEngineeringExpression", "cross_section_type", "unknown"),
     ("MdEngineeringExpression", "family", "construction"),
     ("MdEngineeringExpression", "family", "dimension"),
     ("MdEngineeringExpression", "family", "geometry"),
@@ -5960,6 +5971,18 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "kind", "unresolved"),
     ("MdEngineeringExpression", "kind", "view_callout"),
     ("MdEngineeringExpression", "kind", "visible_contour"),
+    ("MdEngineeringExpression", "section_extent", "cross_section"),
+    ("MdEngineeringExpression", "section_extent", "half"),
+    ("MdEngineeringExpression", "section_extent", "local"),
+    ("MdEngineeringExpression", "section_extent", "local_axis"),
+    ("MdEngineeringExpression", "section_extent", "unknown"),
+    ("MdEngineeringExpression", "section_geometry", "complete"),
+    ("MdEngineeringExpression", "section_geometry", "partial"),
+    ("MdEngineeringExpression", "section_geometry", "unavailable"),
+    ("MdEngineeringExpression", "section_origin", "cut_formed"),
+    ("MdEngineeringExpression", "section_origin", "pre_existing"),
+    ("MdEngineeringExpression", "section_origin", "suppressed"),
+    ("MdEngineeringExpression", "section_origin", "unknown"),
     ("MdEngineeringExpression", "state", "candidate"),
     ("MdEngineeringExpression", "state", "observed"),
     ("MdEngineeringExpression", "state", "unknown"),
@@ -5975,6 +5998,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEntityDifference", "category", "style_changed"),
     ("MdEntityDifference", "category", "text_changed"),
     ("MdExpressionGraphCheck", "status", "passed"),
+    ("MdExpressionMember", "cross_section_type", "removed"),
+    ("MdExpressionMember", "cross_section_type", "superimposed"),
+    ("MdExpressionMember", "cross_section_type", "unknown"),
     ("MdExpressionMember", "line_type", "block"),
     ("MdExpressionMember", "line_type", "continuous"),
     ("MdExpressionMember", "line_type", "dimension"),
@@ -6031,6 +6057,18 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "member_role", "view_arrow"),
     ("MdExpressionMember", "member_role", "view_letter"),
     ("MdExpressionMember", "member_role", "view_title"),
+    ("MdExpressionMember", "section_extent", "cross_section"),
+    ("MdExpressionMember", "section_extent", "half"),
+    ("MdExpressionMember", "section_extent", "local"),
+    ("MdExpressionMember", "section_extent", "local_axis"),
+    ("MdExpressionMember", "section_extent", "unknown"),
+    ("MdExpressionMember", "section_geometry", "complete"),
+    ("MdExpressionMember", "section_geometry", "partial"),
+    ("MdExpressionMember", "section_geometry", "unavailable"),
+    ("MdExpressionMember", "section_origin", "cut_formed"),
+    ("MdExpressionMember", "section_origin", "pre_existing"),
+    ("MdExpressionMember", "section_origin", "suppressed"),
+    ("MdExpressionMember", "section_origin", "unknown"),
     ("MdExpressionMember", "state", "candidate"),
     ("MdExpressionMember", "state", "observed"),
     ("MdExpressionMember", "state", "unknown"),
@@ -21428,6 +21466,8 @@ impl MdDxfStyleEdit {
 pub struct MdEngineeringExpression {
     /// Drafting concept ids of the catalogue this expression is an instance of
     pub concept_ids: Vec<String>,
+    /// Formal cross-section configuration for a section expression or member
+    pub cross_section_type: Option<String>,
     /// Part feature, face or requirement target; absent unless separately and uniquely supported
     pub engineering_target: Option<String>,
     /// Evidence for the composition
@@ -21448,6 +21488,12 @@ pub struct MdEngineeringExpression {
     pub qualifiers: Vec<String>,
     /// Generic rule that formed the expression
     pub rule: String,
+    /// Formal extent of the section
+    pub section_extent: Option<String>,
+    /// Formal completeness of the section region face boundary
+    pub section_geometry: Option<String>,
+    /// Formal origin of a line relative to the section cut
+    pub section_origin: Option<String>,
     /// Evidence state
     pub state: String,
     /// Expression limitations and unresolved links
@@ -21466,8 +21512,12 @@ impl MdEngineeringExpression {
         if self.rule.trim().is_empty() { failures.push("MdEngineeringExpression.rule:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdEngineeringExpression.state:required".into()); }
 
+        if let Some(value) = &self.cross_section_type { if !["removed","superimposed","unknown",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.cross_section_type:allowed_values".into()); } }
         if !["construction","dimension","geometry","note","sheet","surface","tolerance","unresolved","view",].contains(&self.family.as_str()) { failures.push("MdEngineeringExpression.family:allowed_values".into()); }
         if !["break_line","center_axis","center_hole","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_angularity","gps_circularity","gps_coaxiality","gps_cylindricity","gps_direction","gps_flatness","gps_line_profile","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_straightness","gps_surface_profile","gps_symmetry","gps_total_runout","hidden_contour","item_number","leader","leader_note","material_heat","parts_list","phantom_line","process_requirement","protection_requirement","section_hatch","series_table","sheet_frame","standard_part","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
+        if let Some(value) = &self.section_extent { if !["cross_section","half","local","local_axis","unknown",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.section_extent:allowed_values".into()); } }
+        if let Some(value) = &self.section_geometry { if !["complete","partial","unavailable",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.section_geometry:allowed_values".into()); } }
+        if let Some(value) = &self.section_origin { if !["cut_formed","pre_existing","suppressed","unknown",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.section_origin:allowed_values".into()); } }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdEngineeringExpression.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -21624,6 +21674,8 @@ impl MdExpressionGraphCheckRequest {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdExpressionMember {
+    /// Formal cross-section configuration for a section expression or member
+    pub cross_section_type: Option<String>,
     /// Evidence for this assignment
     pub evidence_ids: Vec<String>,
     /// Owning expression
@@ -21640,6 +21692,12 @@ pub struct MdExpressionMember {
     pub native_member_id: Option<String>,
     /// Source relations used as evidence
     pub relation_ids: Vec<String>,
+    /// Formal extent of the section
+    pub section_extent: Option<String>,
+    /// Formal completeness of the section region face boundary
+    pub section_geometry: Option<String>,
+    /// Formal origin of a line relative to the section cut
+    pub section_origin: Option<String>,
     /// Root source handle
     pub source_handle: String,
     /// Evidence state
@@ -21660,8 +21718,12 @@ impl MdExpressionMember {
         if self.source_handle.trim().is_empty() { failures.push("MdExpressionMember.source_handle:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdExpressionMember.state:required".into()); }
 
+        if let Some(value) = &self.cross_section_type { if !["removed","superimposed","unknown",].contains(&value.as_str()) { failures.push("MdExpressionMember.cross_section_type:allowed_values".into()); } }
         if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdExpressionMember.line_type:allowed_values".into()); }
         if !["arrowhead","break_curve","center_line","coincident_source","contour_segment","cutting_stroke","datum_frame","datum_letter","datum_reference","datum_terminal","definition_point","detail_circle","dimension_line","dimension_text","extension_line","extension_origin","frame_border","frame_cell","hatch_fill","hidden_segment","leader_line","native_block","native_dimension","native_member","note_text","phantom_segment","roughness_symbol","roughness_value","scale_text","special_mark","symbol_glyph","table_line","table_text","thread_line","tolerance_text","tolerance_value","unresolved_source","view_arrow","view_letter","view_title",].contains(&self.member_role.as_str()) { failures.push("MdExpressionMember.member_role:allowed_values".into()); }
+        if let Some(value) = &self.section_extent { if !["cross_section","half","local","local_axis","unknown",].contains(&value.as_str()) { failures.push("MdExpressionMember.section_extent:allowed_values".into()); } }
+        if let Some(value) = &self.section_geometry { if !["complete","partial","unavailable",].contains(&value.as_str()) { failures.push("MdExpressionMember.section_geometry:allowed_values".into()); } }
+        if let Some(value) = &self.section_origin { if !["cut_formed","pre_existing","suppressed","unknown",].contains(&value.as_str()) { failures.push("MdExpressionMember.section_origin:allowed_values".into()); } }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdExpressionMember.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }

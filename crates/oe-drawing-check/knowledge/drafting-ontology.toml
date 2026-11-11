@@ -829,6 +829,12 @@ coincidence_text_height = 0.015
 sagitta_text_height = 0.003
 interior_chord_text_height = 0.3
 section_cutoff_area_ratio_max = 0.20
+# A contour with no explicit DXF width uses the drawing text height as the nominal thick stroke
+# witness.  The companion arrow rule is six arrow lengths per thick stroke, per the cited standard.
+section_nominal_thick_stroke_text_height_ratio = 0.142857
+section_arrow_length_in_thick_strokes = 6.0
+# The visible continuation must expose at least half the contour stroke width.
+section_visible_overrun_stroke_ratio = 0.50
 
 [[section_rule_knowledge]]
 id = "section_boundary_rules"
@@ -845,8 +851,8 @@ id = "section_interior_rules"
 concepts = ["DC-G2-018", "DC-G2-028", "DC-G2-034", "DC-G3-056"]
 clauses = ["GB/T 17452-1998 3.1, 3.2", "GB/T 4459.1-1995 3.5", "GB/T 4458.6-2002 7.8"]
 components = ["Complete native hatch boundary with holes", "Actual layer geometry crossing solid interior", "Region-scoped origin", "Cross-section configuration and continuation evidence"]
-variants = ["Visible outline in cut face: section_internal_outline_known_and_unknown", "Circular/hole boundary: section_holes_and_tangency_preserve_empty_space", "Different source/recognition interval: section_layer_intervals_are_independent"]
-counter_examples = ["Thread thin line: section_thread_exception_is_in_shape", "Continuous parent outline of superimposed section: section_parent_outline_exception_needs_region_evidence", "Partial/unavailable boundary: section_incomplete_native_geometry_is_not_a_cut_face", "Different regions keep different origins: section_origins_do_not_leak_between_regions"]
+variants = ["Visible outline in cut face: section_internal_outline_known_and_unknown", "Circular/hole boundary: section_holes_and_tangency_preserve_empty_space", "Different source/recognition interval: section_layer_intervals_are_independent", "Native line reused by a dimension at a cut boundary: section_native_line_alias_boundary_is_not_interior"]
+counter_examples = ["Thread thin line: section_thread_exception_is_in_shape", "Continuous parent outline of superimposed section: section_parent_outline_exception_needs_region_evidence", "Partial/unavailable boundary: section_incomplete_native_geometry_is_not_a_cut_face", "Different regions keep different origins: section_origins_do_not_leak_between_regions", "The same reused line with two-sided solid evidence remains interior: section_native_line_alias_two_sided_remains_interior"]
 parameters = ["coincidence_text_height", "sagitta_text_height", "interior_chord_text_height"]
 scale_test = "section_rules_are_scale_equivariant"
 
@@ -855,9 +861,9 @@ id = "section_hatch_boundary_rules"
 concepts = ["DC-G2-019", "DC-G2-028"]
 clauses = ["GB/T 17453-2005 5、4.3", "GB/T 4457.5-2013 4.4"]
 components = ["Loose hatch line or native SectionRegion", "Single visible outline or connected outline chain", "Internal crossing versus endpoint contact", "Small cut-off area and one-sided entity evidence"]
-variants = ["Loose crossing: section_hatch_boundary_crossing_is_reported", "Boundary contact: section_hatch_boundary_touch_is_not_reported", "Chamfer corner cut: section_chamfer_corner_cut_is_reported_source_layer", "Connected native slot chain: section_native_boundary_slot_chain_is_reported", "Spoke crossing both sides: section_spoke_crossing_superimposed_remains_interior"]
-counter_examples = ["A hatch line ending on the outline is not an overrun: section_hatch_boundary_touch_is_not_reported", "A large cut-off region remains an interior use: section_large_boundary_cut_remains_interior", "Entity evidence on both sides keeps the chain an interior use: section_two_sided_boundary_cut_remains_interior", "A spoke crossing the candidate cut is split at the boundary before side classification: section_spoke_crossing_superimposed_remains_interior"]
-parameters = ["section_cutoff_area_ratio_max", "coincidence_text_height", "sagitta_text_height"]
+variants = ["Loose crossing: section_hatch_boundary_crossing_is_reported", "Boundary contact: section_hatch_boundary_touch_is_not_reported", "Chamfer corner cut: section_chamfer_corner_cut_is_reported_source_layer", "Connected native slot chain: section_native_boundary_slot_chain_is_reported", "Spoke crossing both sides: section_spoke_crossing_superimposed_remains_interior", "Native pattern line with visible continuation: section_native_pattern_visible_overrun_is_reported", "Inferred local-section span is not an original contour: section_inferred_local_span_is_ignored", "Contour lineweight controls the visible threshold: section_contour_lineweight_controls_visible_overrun", "Text height is the fallback scale: section_text_height_sets_fallback_and_hatch_spacing_does_not", "Arrow length is the second fallback: section_arrow_length_is_the_second_fallback"]
+counter_examples = ["A hatch line ending on the outline is not an overrun: section_hatch_boundary_touch_is_not_reported", "A large cut-off region remains an interior use: section_large_boundary_cut_remains_interior", "Entity evidence on both sides keeps the chain an interior use: section_two_sided_boundary_cut_remains_interior", "A spoke crossing the candidate cut is split at the boundary before side classification: section_spoke_crossing_superimposed_remains_interior", "A small continuation hidden by the thick outline is not visible: section_tiny_overrun_under_stroke_is_ignored", "A contour tangent point is contact, not an overrun: section_tangent_endpoint_is_ignored", "A native boundary without pattern lines has no visible overrun: section_native_boundary_without_pattern_is_ignored", "No contour width or scale witness means no judgment: section_missing_contour_width_scale_is_not_judged"]
+parameters = ["section_cutoff_area_ratio_max", "coincidence_text_height", "sagitta_text_height", "section_nominal_thick_stroke_text_height_ratio", "section_arrow_length_in_thick_strokes", "section_visible_overrun_stroke_ratio"]
 scale_test = "section_rules_are_scale_equivariant"
 
 [[section_rule_knowledge]]

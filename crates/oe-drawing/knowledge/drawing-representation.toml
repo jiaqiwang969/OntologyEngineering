@@ -5058,15 +5058,29 @@ test = "unhatched_shaft_has_no_invented_section"
 
 [[cards]]
 id = "section_hatch_boundary"
-parameters = []
 expression_kind = "section_hatch"
 title = "剖面线应留在边界轮廓内"
-meaning = "剖面线画在剖面区域内；剖面线穿过所在区域的边界轮廓而伸到区域外，是图样偏离候选。剖面线在轮廓处终止或与边界相接不构成越界。"
-sources = ["GB/T 17453-2005 5、4.3；GB/T 4457.5-2013 4.4"]
+meaning = "剖面线画在剖面区域内；剖面线穿过所在区域的边界轮廓而伸到区域外，是图样偏离候选。只有越过被越轮廓中心线后露出至少半个该轮廓粗实线宽的可见长度才算越边；端点、连接点和切点的接触，以及被轮廓线覆盖的短段，不算越边。宽度优先取被越轮廓或其图层的有效线宽；源图没有线宽时按同图文字高度或箭头长度换算，不能取剖面线宽度或剖面线间距，二者都缺失则不判。原生 HATCH 按源图元自己的图案线、角度、间距和基点判断，缺图案线不凭区域多边形报错。"
+sources = ["GB/T 17453-2005 5、4.3；GB/T 4457.5-2013 4.4；GB/T 14665-2012 图线组别与字高；GB/T 4458.4-2003 图9（箭头长不小于6倍粗线宽）"]
 knowledge_units = ["K11", "K13"]
-recognition = "以原生闭合剖面边界、同一视图的散画剖面线和可见轮廓为输入；线与轮廓内部相交才记越界，端点落在轮廓上的相接保留为合规。若一条可见轮廓或首尾相接轮廓链两端落在原生边界、在区域内切出小块且只有一侧实体证据，则将该轮廓视作剖切面的真边界，并由剖面区域承担越界关系；切块过大或两侧都有实体证据时保留内部轮廓候选。边界不完整、曲线或块引用不能确证时保留未知。"
+recognition = "以原生闭合剖面边界、同一视图的散画剖面线和原图可见轮廓为输入；线与轮廓内部相交且越出量超过被越轮廓的粗实线半宽才记越界。宽度证据按被越轮廓自身 group 370、其图层线宽或常宽取值；均缺失时以同图文字高度乘1/7，或箭头长除以6换算，均取不到则保留未判。GB/T 14665-2012 的线宽组别与字高配套，GB/T 4458.4-2003 图9规定箭头长不小于6倍粗线宽；不得用剖面线宽度或剖面线间距代替。端点、连接点或切点的相接保留为合规。原生 HATCH 只读取其自身图案线，不用边界多边形代替可见性。程序按局部剖补出的 InferredSpan 及含推断段的结构线不作为原图轮廓。若一条可见轮廓或首尾相接轮廓链两端落在原生边界、在区域内切出小块且只有一侧实体证据，则将该轮廓视作剖切面的真边界，并由剖面区域承担越界关系；切块过大或两侧都有实体证据时保留内部轮廓候选。边界不完整、曲线或块引用不能确证时保留未知。"
 markers = []
 concepts = ["DC-G2-019", "DC-G2-028"]
+
+[[cards.parameters]]
+name = "section_nominal_thick_stroke_text_height_ratio"
+value = 0.142857
+meaning = "源图没有轮廓线宽时，粗实线宽取同图文字高度的1/7；依据 GB/T 14665-2012 图线组别与字高配套规定"
+
+[[cards.parameters]]
+name = "section_arrow_length_in_thick_strokes"
+value = 6.0
+meaning = "源图没有轮廓线宽和文字高度时，粗实线宽取箭头长度的1/6；依据 GB/T 4458.4-2003 图9"
+
+[[cards.parameters]]
+name = "section_visible_overrun_stroke_ratio"
+value = 0.5
+meaning = "剖面线中心线越过轮廓后，至少露出被越轮廓粗实线宽的一半才算可见越出"
 
 [[cards.components]]
 role = "hatch_fill"
@@ -5115,6 +5129,50 @@ test = "section_large_boundary_cut_remains_interior"
 [[cards.counter_examples]]
 statement = "切块两侧都有实体线证据时，不能把内部轮廓提升为剖切面边界"
 test = "section_two_sided_boundary_cut_remains_interior"
+
+[[cards.variants]]
+id = "visible_native_pattern_overrun"
+title = "原生图案线有可见越出量"
+distinguishing = "原生 HATCH 的图案线穿过候选轮廓，超过半个粗实线宽后仍露在轮廓外"
+encodings = ["native"]
+tests = ["section_native_pattern_visible_overrun_is_reported"]
+
+[[cards.variants]]
+id = "inferred_local_section_span"
+title = "局部剖推断段不算原图轮廓"
+distinguishing = "程序补出的局部剖轮廓段与剖面线相交，但源图没有对应轮廓"
+encodings = ["inferred"]
+tests = ["section_inferred_local_span_is_ignored"]
+
+[[cards.variants]]
+id = "contour_lineweight_visibility"
+title = "按被越轮廓线宽判可见越出"
+distinguishing = "同一越出量在窄轮廓外可见、在宽轮廓线覆盖下不可见；剖面线宽度和间距不改变判定"
+encodings = ["loose", "native"]
+tests = ["section_contour_lineweight_controls_visible_overrun", "section_text_height_sets_fallback_and_hatch_spacing_does_not"]
+
+[[cards.variants]]
+id = "arrow_length_fallback"
+title = "缺线宽时用箭头长度换算"
+distinguishing = "源图没有轮廓线宽和文字高度时，以同图箭头长度按六倍关系取得粗线宽"
+encodings = ["loose"]
+tests = ["section_arrow_length_is_the_second_fallback"]
+
+[[cards.counter_examples]]
+statement = "越出量不到半个粗实线宽、只在切点接触或原生填充没有图案线时，不报剖面线越边"
+test = "section_tiny_overrun_under_stroke_is_ignored"
+
+[[cards.counter_examples]]
+statement = "切点处的端点接触不是越边"
+test = "section_tangent_endpoint_is_ignored"
+
+[[cards.counter_examples]]
+statement = "只有边界多边形而没有源图案线时，不凭空推定越边"
+test = "section_native_boundary_without_pattern_is_ignored"
+
+[[cards.counter_examples]]
+statement = "轮廓没有有效线宽、同图文字高度或箭头长度证据时不判越边"
+test = "section_missing_contour_width_scale_is_not_judged"
 
 [[cards]]
 id = "drawing_revision"

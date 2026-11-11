@@ -309,6 +309,7 @@ pub(super) fn append(
             dxf_layer: None,
             colour: None,
             layer_colour: None,
+            inferred_geometry: false,
             geometry: Geometry::default(),
         });
         relations.push(Relation::number(

@@ -4681,7 +4681,7 @@ id = "annotation_constituents"
 expression_kind = "annotation_constituents"
 title = "标注组成要素按局部几何归属"
 meaning = "按自身文字、承载线、终端与界线的几何组合确定标注归属；同心半径、连续角度、外置数值、原生终端填充和视向标记各有独立条件。精确重合的剩余源区间可归已确定轮廓；没有证据的短线仍待解释。"
-sources = ["GB/T 14665-2012 4.3；重合图线优先顺序，原实体保留为来源别名", "GB/T 4458.1-2002 图2；向视配置的局部视图", "GB/T 4458.4-2003 4.2.1、4.3.1；尺寸线终端与外置尺寸数值", "GB/T 4458.4-2003 4.1.5、4.3.3 图22、23；连续角度尺寸", "GB/T 4458.4-2003 4.2.3 图12；圆的直径和圆弧半径，未限定线型", "GB/T 4458.4-2003 4.2.6 图16、5.2；半径线、箭头和外置数值", "GB/T 14665-2012 5.6 表3、5.7 表4；字高与基准线最小间距（外置数值比例由 1 mm / 3.5 mm = 2/7 推出）", "《AutoCAD 2014 机械设计入门》（清华大学出版社）第1章 §1.1.3 5.(4)，印刷页8；原文为“尽量避免在虚线处标注尺寸”，是清晰度建议而非禁止", "GB/T 4458.4-2003 3.1；所注尺寸数值与绘图比例分开"]
+sources = ["GB/T 14665-2012 4.3；重合图线优先顺序，原实体保留为来源别名", "GB/T 4458.1-2002 图2；向视配置的局部视图", "GB/T 4458.4-2003 4.2.1、4.3.1；尺寸线终端与外置尺寸数值", "GB/T 4458.4-2003 4.1.5、4.3.3 图22、23；连续角度尺寸", "GB/T 4458.4-2003 4.2.3 图12；圆的直径和圆弧半径，未限定圆弧线型", "GB/T 4458.4-2003 4.2.6 图16、5.2；半径线、箭头和外置数值", "GB/T 14665-2012 5.6 表3、5.7 表4；字高与基准线最小间距（外置数值比例由 1 mm / 3.5 mm = 2/7 推出）", "《机械制图》（高等教育出版社，第7版）§7-2 一、印刷页225；细虚线过多或重叠影响清晰读图和标注尺寸时常用剖视图表达，是清晰度建议", "GB/T 16675.1-2012 4.2.2；在不致引起误解时应避免用虚线表示不可见结构", "GB/T 4458.4-2003 3.1；所注尺寸数值与绘图比例分开"]
 knowledge_units = ["K17", "K18", "K20"]
 recognition = "半径路径在自身圆心停止；连续角度按定向终端分区；外置线需本尺寸数值和终端相接；原生终端仅补其填充区间；散视向标记需独立视图名和唯一箭杆；轮廓别名需整个未覆盖区间与确定轮廓精确重合。图面参数不是产品尺寸公差，也不证明工程对象相同。"
 markers = []
@@ -4721,7 +4721,7 @@ tests = ["radius_leader_carrier_accepts_a_radius_terminal"]
 [[cards.variants]]
 id = "radius_hidden_outline_support"
 title = "不可见轮廓圆弧作为半径支撑"
-distinguishing = "半径终端尖端沿径向落在与圆心同视图的可见、不可见轮廓或中心线圆弧上，尖端到圆心的距离与圆弧半径相符；尺寸线、引线等标注线和剖面线圆弧不计入。GB/T 4458.4-2003 4.2.3 只规定圆的直径和圆弧半径而未限定线型；教材只建议尽量避免在虚线处标注，并未把它规定为禁止。"
+distinguishing = "半径终端尖端沿径向落在与圆心同视图的可见、不可见轮廓或中心线圆弧上，尖端到圆心的距离与圆弧半径相符；尺寸线、引线等标注线和剖面线圆弧不计入。GB/T 4458.4-2003 4.2.3 规定圆的直径和圆弧半径尺寸线终端画成箭头，条文未限定圆弧线型；《机械制图》（高等教育出版社，第7版）§7-2 一、印刷页225说明细虚线过多或重叠影响清晰读图和标注尺寸时常用剖视图表达；GB/T 16675.1-2012 4.2.2规定在不致引起误解时应避免用虚线表示不可见结构。三者均为清晰度或表示方法条件，不把不可见轮廓圆弧规定为禁止支撑。"
 encodings = ["loose"]
 tests = ["radius_hidden_outline_support_is_accepted"]
 [[cards.counter_examples]]
@@ -4795,11 +4795,17 @@ distinguishing = "外置数值仍按尺寸数字与尺寸线的标准字高比�
 encodings = ["loose"]
 tests = ["outside_text_normal_gap_uses_standard_height_ratio"]
 [[cards.variants]]
-id = "mid_arrow_endpoint_continuation"
-title = "同轴箭头内端点的外置接续"
-distinguishing = "尺寸线与箭头同轴且其有限端点落在箭头尖端与底边之间（含两端）时，沿现有箭头足迹挂接外置承载线；不新增距离参数"
+id = "outside_value_stacked_tolerance_span"
+title = "带上下偏差的整段外置数值"
+distinguishing = "外置数值含上下偏差时，承载线跨度和字高间隙按基本尺寸与偏差堆叠的整体框；跨度取整体右端，间隙取整体最低处。GB/T 4458.5-2003 4.1.2规定上偏差注在基本尺寸右上方、下偏差与基本尺寸同一底线，偏差数字比基本尺寸小一号"
 encodings = ["loose"]
-tests = ["mid_arrow_endpoint_accepts_outside_carrier"]
+tests = ["outside_text_with_stacked_tolerance_uses_full_annotation_span"]
+[[cards.variants]]
+id = "existing_mid_arrow_head"
+title = "尺寸线通过箭头中部的既有接续"
+distinguishing = "尺寸线从远处到达箭头的现有底边中点，既有终端判法即可确认；不增加箭头内端点放宽条件"
+encodings = ["loose"]
+tests = ["dimension_line_through_mid_arrow_uses_existing_head_rule"]
 [[cards.counter_examples]]
 statement = "仅邻近尺寸、没有该尺寸文字，或继续跨过其他终端的线段，不因共线而收入"
 test = "outside_carrier_does_not_cross_another_terminator"
@@ -4807,11 +4813,8 @@ test = "outside_carrier_does_not_cross_another_terminator"
 statement = "文字与承载线的间隔明显超过标准字高比例时，不以外置数值接续解释"
 test = "outside_text_gap_beyond_standard_ratio_stays_unknown"
 [[cards.counter_examples]]
-statement = "尺寸线端点在箭头之外且超出既有容差时，不接续外置承载线"
-test = "mid_arrow_endpoint_beyond_arrow_stays_unknown"
-[[cards.counter_examples]]
-statement = "尺寸线端点与箭头不同轴时，不接续外置承载线"
-test = "non_coaxial_mid_arrow_stays_unknown"
+statement = "带上下偏差的整段注写之外，承载线超出整段末端多于半个字高时，不接续外置承载线"
+test = "outside_text_stacked_tolerance_beyond_end_stays_unknown"
 
 [[cards.variants]]
 id = "terminal_base_or_tail_component"

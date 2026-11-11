@@ -86,6 +86,18 @@ impl Drawing {
             ),
         )
     }
+    fn stacked_text(&mut self, p: [f64; 2]) -> String {
+        let q = self.point(p);
+        self.entity(
+            "MTEXT",
+            format!(
+                "10\n{}\n20\n{}\n40\n{}\n71\n7\n1\n17.5\\S+0.5^-0.5;\n",
+                q[0],
+                q[1],
+                2. * self.scale
+            ),
+        )
+    }
     fn expression(&mut self, kind: &str) -> String {
         let id = format!("expression:{}", self.expressions.len());
         self.expressions
@@ -251,6 +263,34 @@ fn outside_text_gap_beyond_standard_ratio_stays_unknown() {
     d.assert_clear();
 }
 
+fn stacked_continuation_fixture(piece_end: [f64; 2]) -> (Drawing, String) {
+    let mut d = Drawing::new(1., 0.);
+    let carrier = d.line([0., 0.], [24., 0.]);
+    let e = d.expression("dimension_linear");
+    d.member(&e, &carrier, "dimension_line");
+    // The stack drops below the main text.  The candidate is one unit below
+    // the main box, but only at the supported gap from the stack's bottom.
+    let text = d.stacked_text([30., 1.3]);
+    d.member(&e, &text, "dimension_text");
+    let h = d.triangle([26., 0.], [24., 0.], false);
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([26., 0.], piece_end);
+    d.unknown(&piece);
+    (d, piece)
+}
+
+#[test]
+fn outside_text_with_stacked_tolerance_uses_full_annotation_span() {
+    let (d, piece) = stacked_continuation_fixture([41.5, 0.]);
+    d.assert_source_hit(CONTINUATION, &piece);
+}
+
+#[test]
+fn outside_text_stacked_tolerance_beyond_end_stays_unknown() {
+    let (d, _) = stacked_continuation_fixture([43., 0.]);
+    d.assert_clear();
+}
+
 fn radius_fixture(support: bool) -> (Drawing, String, String, String) {
     radius_fixture_with_role(support.then_some("contour_segment"))
 }
@@ -313,58 +353,20 @@ fn radius_annotation_arc_support_is_rejected() {
         .assert_clear();
 }
 
-fn mid_arrow_fixture(
-    carrier: ([f64; 2], [f64; 2]),
-    tip: [f64; 2],
-    base: [f64; 2],
-    piece: ([f64; 2], [f64; 2]),
-    text: [f64; 2],
-) -> (Drawing, String, String, String) {
-    let mut d = Drawing::new(1., 0.);
-    let line = d.line(carrier.0, carrier.1);
-    let (e, target) = d.dimension("dimension_linear", &line, text);
-    let h = d.triangle(tip, base, false);
-    d.member(&e, &h, "arrowhead");
-    let outside = d.line(piece.0, piece.1);
-    let member = d.unknown(&outside);
-    (d, outside, member, target)
-}
-
 #[test]
-fn mid_arrow_endpoint_accepts_outside_carrier() {
-    let (d, piece, member, target) = mid_arrow_fixture(
-        ([25., 0.], [27., 0.]),
-        [24., 0.],
-        [28., 0.],
-        ([24., 0.], [29., 0.]),
-        [27., 0.3],
-    );
+fn dimension_line_through_mid_arrow_uses_existing_head_rule() {
+    let mut d = Drawing::new(1., 0.);
+    // The dimension line comes from far away and reaches the arrow's base
+    // midpoint.  The existing head rule already recognizes this member.
+    let carrier = d.line([0., 0.], [26., 0.]);
+    let (e, target) = d.dimension("dimension_linear", &carrier, [30., 0.3]);
+    let h = d.triangle([24., 0.], [26., 0.], false);
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([24., 0.], [32., 0.]);
+    let member = d.unknown(&piece);
     d.assert_hit(CONTINUATION, &piece, &member, &target);
 }
 
-#[test]
-fn mid_arrow_endpoint_beyond_arrow_stays_unknown() {
-    let (d, _, _, _) = mid_arrow_fixture(
-        ([29., 0.], [31., 0.]),
-        [24., 0.],
-        [28., 0.],
-        ([28., 0.], [34., 0.]),
-        [31., 0.3],
-    );
-    d.assert_clear();
-}
-
-#[test]
-fn non_coaxial_mid_arrow_stays_unknown() {
-    let (d, _, _, _) = mid_arrow_fixture(
-        ([25., 0.], [27., 0.]),
-        [24., 1.],
-        [28., 1.],
-        ([28., 0.], [34., 0.]),
-        [31., 0.3],
-    );
-    d.assert_clear();
-}
 #[test]
 fn angular_terminal() {
     let mut d = Drawing::new(1., 0.);

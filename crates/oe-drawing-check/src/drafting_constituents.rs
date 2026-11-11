@@ -52,6 +52,12 @@ struct Head {
     length: f64,
 }
 
+#[derive(Clone, Copy)]
+struct TextSpan {
+    main: TextBox,
+    stack: Option<TextBox>,
+}
+
 fn sub(a: P, b: P) -> P {
     (a.0 - b.0, a.1 - b.1)
 }
@@ -232,16 +238,9 @@ fn head_fits(h: Head, carrier: &Object, objects: &[Object], p: &Parameters) -> b
         return false;
     };
     let endpoint_near = point_segment(h.tip, a, b).0 <= tol || point_segment(h.base, a, b).0 <= tol;
-    let endpoint_inside_arrow = [a, b].iter().any(|q| {
-        let (off, t) = point_line(*q, h.tip, h.base);
-        off <= tol && t >= -tol / h.length && t <= 1. + tol / h.length
-    });
     parallel(a, b, h.base, h.tip, p.direction)
         && point_line(h.tip, a, b).0 <= tol
-        // CAD dimensions may stop inside the filled arrow.  The endpoint is
-        // accepted only on the existing arrow axis and within its tip/base
-        // interval; no additional distance parameter is introduced.
-        && (endpoint_near || endpoint_inside_arrow)
+        && endpoint_near
         && (carrier.expression_kind.as_deref() != Some("dimension_radius")
             || radial_support(h, carrier, objects, p))
 }
@@ -285,20 +284,34 @@ fn covered(candidate: &Object, carriers: &[usize], objects: &[Object], tol: f64)
     end >= 1. - tol / length
 }
 
-fn text_span(a: P, b: P, tb: TextBox, p: &Parameters) -> bool {
-    let (a, b) = (tb.local(a), tb.local(b));
+fn text_span(a: P, b: P, text: TextSpan, p: &Parameters) -> bool {
+    let main = text.main;
+    let (a, b) = (main.local(a), main.local(b));
     let (lo, hi) = (a.0.min(b.0), a.0.max(b.0));
+    // A stacked tolerance follows the main text in the same local axis. Use
+    // the union's right edge for the span and its lowest edge for the gap.
+    let (full_width, lowest) = text
+        .stack
+        .map(|stack| {
+            let origin = main.local(stack.origin);
+            (
+                main.width.max(origin.0 + stack.width),
+                0.0_f64.min(origin.1),
+            )
+        })
+        .unwrap_or((main.width, 0.));
+    let lower = (p.text_band + p.text_carrier_gap) * main.height;
     (a.1 - b.1).abs() <= p.direction * dist(a, b)
         // GB/T 14665-2012 5.7 表4 gives a 1 mm minimum to a reference or
         // baseline; with the 3.5 mm A2--A4 alphanumeric height from Table 3,
         // the supported ratio is 2/7. The text box's lower band is not the
         // glyph edge, so add that ratio to the measured 0.3h band.
-        && a.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
-        && b.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
+        && (a.1 - lowest).abs() <= lower
+        && (b.1 - lowest).abs() <= lower
         && lo <= 0.
-        && hi >= tb.width
-        && lo >= -p.text_gap * tb.height
-        && hi <= tb.width + p.text_end * tb.height
+        && hi >= full_width
+        && lo >= -p.text_gap * main.height
+        && hi <= full_width + p.text_end * main.height
 }
 
 fn crosses_stop(
@@ -331,7 +344,7 @@ fn continuation(
     candidate: &Object,
     carrier: &Object,
     own_heads: &[Head],
-    texts: &[TextBox],
+    texts: &[TextSpan],
     p: &Parameters,
 ) -> bool {
     let (Some((a, b)), Some((c, d))) = (candidate.segment(), carrier.segment()) else {
@@ -401,14 +414,19 @@ pub(super) fn relations(g: &Value, d: &Dxf, objects: &[Object]) -> Result<Vec<Re
             if !same_view(candidate, first) {
                 continue;
             }
-            let texts: Vec<TextBox> = objects
+            let texts: Vec<TextSpan> = objects
                 .iter()
                 .filter(|o| {
                     o.expression_id.as_deref() == Some(expression)
                         && same_view(o, first)
                         && o.is("DimensionText")
                 })
-                .filter_map(|o| o.geometry.text_box)
+                .filter_map(|o| {
+                    o.geometry.text_box.map(|main| TextSpan {
+                        main,
+                        stack: o.geometry.stack_box,
+                    })
+                })
                 .collect();
             if texts.is_empty() {
                 continue;

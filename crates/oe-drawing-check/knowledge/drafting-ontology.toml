@@ -752,8 +752,12 @@ test = "outside_text_continuation"
 meaning = "尺寸自身外置数值的有限承载段"
 
 [[constituents.variants]]
-test = "mid_arrow_endpoint_accepts_outside_carrier"
-meaning = "尺寸线端点落在同轴箭头尖端与底边之间时接续外置承载线"
+test = "dimension_line_through_mid_arrow_uses_existing_head_rule"
+meaning = "尺寸线从远处到达箭头底边中点，既有箭头判法已成立，不新增端点放宽"
+
+[[constituents.variants]]
+test = "outside_text_with_stacked_tolerance_uses_full_annotation_span"
+meaning = "外置数值含上下偏差时，承载跨度按整段注写宽度、间隙按整段最低处判断；依据 GB/T 4458.5-2003 4.1.2"
 
 [[constituents.variants]]
 test = "native_head_root_interval"
@@ -808,12 +812,8 @@ test = "radius_centreline_arc_support_is_accepted"
 meaning = "中心线（点画线）上的圆弧可以充当半径轮廓支撑"
 
 [[constituents.counter_examples]]
-test = "mid_arrow_endpoint_beyond_arrow_stays_unknown"
-meaning = "尺寸线端点越过箭头且超出既有容差时不接续"
-
-[[constituents.counter_examples]]
-test = "non_coaxial_mid_arrow_stays_unknown"
-meaning = "与箭头不同轴的尺寸线端点不接续"
+test = "outside_text_stacked_tolerance_beyond_end_stays_unknown"
+meaning = "含上下偏差的整段注写之外，承载线超出整段末端多于半个字高时不接续"
 
 [[constituents.counter_examples]]
 test = "continuation_stops_at_branch"

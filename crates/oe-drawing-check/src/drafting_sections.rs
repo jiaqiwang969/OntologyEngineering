@@ -127,6 +127,10 @@ impl Edge {
 struct Face {
     edges: Vec<Edge>,
     polygon_edges: Vec<(P, P)>,
+    /// Every native path edge, including seams between adjacent paths and hole boundaries.  A
+    /// source line coincident with any such edge is a section boundary even when parity removes
+    /// the seam from the exterior polygon.
+    boundary_edges: Vec<(P, P)>,
     complete: bool,
 }
 
@@ -290,9 +294,16 @@ fn face(r: &dxf::Record, tol: f64, sagitta: f64) -> Face {
     if out.edges.len() > 4096 {
         return Face::default();
     }
-    // A native hatch may partition one filled face into adjacent closed paths. Their coincident
+    // Keep all native path edges for boundary tests.  A native hatch may partition one filled face into adjacent closed paths. Their coincident
     // seams are not the face's exterior. Normal hatch filling uses parity, including hole paths.
     // Split overlaps before cancelling even coverage, so a partly shared edge keeps its exterior.
+    let mut all_boundary_edges = Vec::new();
+    for edge in &out.edges {
+        if let Some(ps) = edge.sample(sagitta) {
+            all_boundary_edges.extend(ps.windows(2).map(|w| (w[0], w[1])));
+        }
+    }
+    out.boundary_edges = all_boundary_edges;
     let mut exterior = Vec::new();
     for (i, &edge) in out.edges.iter().enumerate() {
         let overlaps: Vec<(usize, [f64; 2])> = out
@@ -353,10 +364,21 @@ fn inside(p: P, edges: &[(P, P)], tol: f64) -> bool {
         % 2
         == 1
 }
+fn inside_with_boundary(p: P, exterior: &[(P, P)], boundary: &[(P, P)], tol: f64) -> bool {
+    if boundary.iter().any(|(a, b)| {
+        Edge::Line(*a, *b)
+            .parameters(p)
+            .iter()
+            .any(|t| dist(Edge::Line(*a, *b).at(t.clamp(0., 1.)), p) <= tol)
+    }) {
+        return false;
+    }
+    inside(p, exterior, tol)
+}
 fn interior_length(a: P, b: P, face: &Face, tol: f64) -> f64 {
     let e = Edge::Line(a, b);
     let mut cuts = vec![0., 1.];
-    for (p, q) in &face.polygon_edges {
+    for (p, q) in &face.boundary_edges {
         if let Some(x) = segment_intersection(a, b, *p, *q) {
             cuts.extend(e.parameters(x).into_iter().filter(|t| *t > 0. && *t < 1.));
         }
@@ -364,7 +386,14 @@ fn interior_length(a: P, b: P, face: &Face, tol: f64) -> f64 {
     cuts.sort_by(f64::total_cmp);
     cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
     cuts.windows(2)
-        .filter(|w| inside(e.at((w[0] + w[1]) / 2.), &face.polygon_edges, tol))
+        .filter(|w| {
+            inside_with_boundary(
+                e.at((w[0] + w[1]) / 2.),
+                &face.polygon_edges,
+                &face.boundary_edges,
+                tol,
+            )
+        })
         .map(|w| (w[1] - w[0]) * e.length())
         .sum()
 }
@@ -600,6 +629,24 @@ pub(super) fn augment(
     objects: &mut Vec<Object>,
     relations: &mut Vec<Relation>,
 ) -> Result<()> {
+    // Generic geometry relations are intentionally drawing-wide because they serve annotation
+    // rules.  A hatch boundary, however, can only be crossed by an outline in the same view;
+    // discard cross-view pairs before the section-specific shape consumes `crossedBy`.
+    relations.retain(|r| {
+        if r.predicate != "crossedBy" {
+            return true;
+        }
+        let Some(source) = objects.get(r.subject) else {
+            return true;
+        };
+        if !source.is("HatchLine") {
+            return true;
+        }
+        let Some(target) = r.object.and_then(|i| objects.get(i)) else {
+            return true;
+        };
+        !target.is("VisibleOutline") || source.view == target.view
+    });
     let knowledge: toml::Value = toml::from_str(KNOWLEDGE)?;
     let param = |key: &str| -> Result<f64> {
         knowledge["section_parameters"][key]
@@ -669,6 +716,18 @@ pub(super) fn augment(
         } else {
             "partial"
         };
+        // A complete hatch in an explicitly named detail view can carry a local
+        // symmetric half boundary on its centre axis.  This is the narrow
+        // geometry-only exception covered by GB/T 4458.6 5.5/5.6 and GB/T
+        // 16675.1 5.2; a general unknown view remains unknown.
+        let detail_axis_exception = extent == "unknown"
+            && face.complete
+            && region
+                .view
+                .as_deref()
+                .and_then(|id| views.get(id))
+                .and_then(|v| v["kind"].as_str())
+                == Some("detail_view");
         literal(relations, ri, "crossSectionType", &ctype);
         literal(relations, ri, "sectionExtent", &extent);
         literal(relations, ri, "sectionGeometry", geometry);
@@ -688,6 +747,12 @@ pub(super) fn augment(
         let mut serial = 0;
         for si in centers {
             for p in &curves[si] {
+                // In a local section a dash-dot circular/arc centreline is a
+                // pitch/distribution circle, not a section outer edge.  Keep
+                // straight axis spans eligible for the symmetric-half exception.
+                if extent == "local" && matches!(p.edge, Edge::Arc { .. }) {
+                    continue;
+                }
                 let mut spans: Vec<[f64; 2]> = face
                     .edges
                     .iter()
@@ -769,7 +834,7 @@ pub(super) fn augment(
                             relations,
                             id,
                             "sectionExtent",
-                            if extent == "local" && matches!(p.edge, Edge::Line(_, _)) {
+                            if detail_axis_exception || extent == "local" {
                                 "local_axis"
                             } else {
                                 &extent

@@ -1,10 +1,11 @@
 //! Authored section examples. No production drawing or review material is read here.
 use super::*;
-pub(super) const RULE_IDS: [&str; 4] = [
+pub(super) const RULE_IDS: [&str; 5] = [
     "G2-028-boundary-centre-only",
     "G2-028-boundary-centre-only-unknown",
     "G2-018-outline-in-cut-face",
     "G2-018-outline-in-cut-face-unknown",
+    "G2-019-section-hatch-crosses-outline",
 ];
 fn face(d: &mut Drawing, loops: &[Vec<[f64; 3]>], kind: &str, extent: &str, scale: f64) -> String {
     let mut body = format!("2\nANSI31\n70\n0\n52\n45\n91\n{}\n", loops.len());
@@ -60,6 +61,19 @@ fn new_findings(d: &Drawing) -> Vec<oe_contracts::MdDraftingFinding> {
         .collect()
 }
 pub(super) fn fixture(rule: &str, violating: bool) -> Drawing {
+    if rule == "G2-019-section-hatch-crosses-outline" {
+        let mut d = Drawing::default();
+        let e = face(&mut d, &[rectangle()], "removed", "unknown", 1.);
+        let hatch = d.line(
+            if violating { [8., -3.] } else { [8., 0.] },
+            if violating { [14., 3.] } else { [14., 6.] },
+        );
+        d.member_in(&e, &hatch, "hatch_fill", "thin_continuous");
+        // The line is the lower boundary of the filled region.  A hatch line that
+        // ends at it is conforming; one that continues through it is the deviation.
+        outline(&mut d, [0., 0.], [24., 0.]);
+        return d;
+    }
     let unknown = rule.ends_with("-unknown");
     let (mut d, _) = drawing(if unknown { "unknown" } else { "removed" }, "unknown", 1.);
     if rule.starts_with("G2-028") {
@@ -156,6 +170,17 @@ fn section_known_half_and_local_axis_are_exempt() {
     }
 }
 #[test]
+fn detail_axis_boundary_is_exempt() {
+    let (mut d, _) = drawing("unknown", "unknown", 1.);
+    axis(&mut d, [-12., 0.], [36., 0.]);
+    d.views.push(json!({
+        "id":"view:main",
+        "kind":"detail_view",
+        "label":"I 2:1"
+    }));
+    assert!(new_findings(&d).is_empty(), "{:?}", new_findings(&d));
+}
+#[test]
 fn section_unknown_context_is_not_an_exemption() {
     assert_eq!(new_findings(&fixture(RULE_IDS[1], true)).len(), 3);
 }
@@ -206,6 +231,27 @@ fn section_arc_and_bulge_boundaries() {
     assert_eq!(new_findings(&d).len(), 3);
 }
 #[test]
+fn pitch_circle_is_not_section_boundary() {
+    let mut d = Drawing::default();
+    let t = d.text("QZ", [80., 70.], 4., 0.);
+    d.member(&t, "note_text", "thin_continuous", "note", "");
+    let h = d.entity(
+        "HATCH",
+        "2\nANSI31\n70\n0\n52\n45\n91\n1\n92\n1\n72\n2\n10\n12\n20\n8\n40\n8\n50\n0\n51\n360\n73\n0\n93\n1\n97\n0\n75\n0\n",
+    );
+    let e = d.expression("section_hatch", "");
+    d.member_in(&e, &h, "hatch_fill", "thin_continuous");
+    d.expressions.last_mut().unwrap()["evidence_ids"] =
+        json!(["section_context:local"]);
+    let circle = d.arc([12., 8.], 8., 0., 360.);
+    d.member(&circle, "center_line", "thin_dash_dot", "center_axis", "");
+    let fs = new_findings(&d);
+    assert!(
+        fs.iter().all(|f| !f.rule_id.starts_with("G2-028")),
+        "{fs:?}"
+    );
+}
+#[test]
 fn section_point_contact_and_arc_chord_are_not_boundaries() {
     let (mut d, _) = drawing("unknown", "unknown", 1.);
     axis(&mut d, [-12., -12.], [0., 0.]);
@@ -225,7 +271,7 @@ fn section_point_contact_and_arc_chord_are_not_boundaries() {
 }
 #[test]
 fn section_internal_outline_known_and_unknown() {
-    for id in &RULE_IDS[2..] {
+    for id in &RULE_IDS[2..4] {
         let fs = new_findings(&fixture(id, true));
         assert_eq!(fs.len(), 3);
         assert!(fs.iter().all(|f| f.rule_id == *id));
@@ -398,6 +444,24 @@ fn section_thread_alias_must_cover_the_same_interval() {
 }
 
 #[test]
+fn section_hatch_boundary_crossing_is_reported() {
+    let d = fixture("G2-019-section-hatch-crosses-outline", true);
+    let fs = new_findings(&d);
+    assert_eq!(fs.len(), 3);
+    assert!(
+        fs.iter()
+            .all(|f| f.rule_id == "G2-019-section-hatch-crosses-outline")
+    );
+}
+
+#[test]
+fn section_hatch_boundary_touch_is_not_reported() {
+    let d = fixture("G2-019-section-hatch-crosses-outline", false);
+    let fs = new_findings(&d);
+    assert!(fs.is_empty(), "{fs:?}");
+}
+
+#[test]
 fn section_local_pitch_circle_is_not_an_axis_divider() {
     let mut d = Drawing::default();
     let t = d.text("QZ", [80., 70.], 4., 0.);
@@ -412,8 +476,7 @@ fn section_local_pitch_circle_is_not_an_axis_divider() {
     let h = d.circle([12., 0.], 12.);
     d.member(&h, "center_line", "thin_dash_dot", "center_axis", "");
     let fs = new_findings(&d);
-    assert_eq!(fs.len(), 3);
-    assert!(fs.iter().all(|f| f.rule_id == RULE_IDS[0]));
+    assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-028")), "{fs:?}");
 }
 
 #[test]
@@ -426,7 +489,7 @@ fn section_adjacent_hatch_paths_have_no_internal_boundary() {
     face(&mut d, &[left, right], "removed", "unknown", 1.);
     axis(&mut d, [12., -8.], [12., 24.]);
     assert!(new_findings(&d).is_empty());
-    outline(&mut d, [12., 2.], [12., 14.]);
+    outline(&mut d, [6., 2.], [6., 14.]);
     let fs = new_findings(&d);
     assert_eq!(fs.len(), 3);
     assert!(fs.iter().all(|f| f.rule_id == RULE_IDS[2]));

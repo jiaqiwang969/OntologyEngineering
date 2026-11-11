@@ -4875,8 +4875,8 @@ test = "ambiguous_width_never_suppresses_a_crossing"
 id = "section_region_boundary"
 expression_kind = "section_hatch"
 title = "断面边界与源图线区间"
-meaning = "原生剖面边界与图线重合的区间是边界承担证据。中心线兼作边界不改变源线型，其余区间不算边界。"
-sources = ["GB/T 4458.6-2002 7.1、7.8；GB/T 17452-1998 3.2"]
+meaning = "原生剖面边界与图线重合的区间是边界承担证据。中心线兼作边界不改变源线型；完整剖面的局部放大轴线可按对称半剖例外处理；圆弧点画分布圆不算剖面外缘。"
+sources = ["GB/T 4458.6-2002 5.5、5.6、7.1、7.8；GB/T 16675.1-2012 5.2；GB/T 17452-1998 3.2"]
 knowledge_units = ["K11", "K13"]
 recognition = "按字高比例的误差求同一直线上的非零重叠；有凸度的多段线弦、圆弧采样弦不能冒充直边；圆弧以同圆的角度交集记源区间。椭圆、样条或散画边界未确认时明确记录缺口。"
 markers = []
@@ -4913,9 +4913,27 @@ distinguishing = "同圆的角度区间重合；顺时针 HATCH 角度先归一�
 encodings = ["native"]
 tests = ["circular_boundary_uses_exact_angular_span"]
 
+[[cards.variants]]
+id = "detail_axis_exception"
+title = "局部放大图的对称轴边界例外"
+distinguishing = "完整剖面位于明确局部放大视图，直线中心轴作为剖面外缘；按对称半剖/轴线分界例外保留"
+encodings = ["inferred"]
+tests = ["detail_axis_boundary_is_exempt"]
+
+[[cards.variants]]
+id = "pitch_circle_exclusion"
+title = "孔分布圆不作剖面外缘"
+distinguishing = "圆弧或圆形点画中心线与剖面边界重合时，按分布圆保留为轴线，不生成剖面外缘候选"
+encodings = ["native"]
+tests = ["pitch_circle_is_not_section_boundary"]
+
 [[cards.counter_examples]]
 statement = "仅在一点碰到剖面边界不构成边界承担"
 test = "point_contact_is_not_a_boundary"
+
+[[cards.counter_examples]]
+statement = "普通未知视图中的直线中心线仍需保留边界复核，局部放大例外不能外推"
+test = "section_unknown_context_is_not_an_exemption"
 
 [[cards.parameters]]
 name = "coincidence_tolerance"
@@ -5037,6 +5055,46 @@ tests = ["unhatched_shaft_has_no_invented_section"]
 [[cards.counter_examples]]
 statement = "空白带也可能是孔或凹槽，不能凭空白强判纵剖肋板"
 test = "unhatched_shaft_has_no_invented_section"
+
+[[cards]]
+id = "section_hatch_boundary"
+parameters = []
+expression_kind = "section_hatch"
+title = "剖面线应留在边界轮廓内"
+meaning = "剖面线画在剖面区域内；剖面线穿过所在区域的边界轮廓而伸到区域外，是图样偏离候选。剖面线在轮廓处终止或与边界相接不构成越界。"
+sources = ["GB/T 17453-2005 5、4.3；GB/T 4457.5-2013 4.4"]
+knowledge_units = ["K11", "K13"]
+recognition = "以原生闭合剖面边界和同一视图的散画剖面线为输入；线与轮廓内部相交才记越界，端点落在轮廓上的相接保留为合规。边界不完整、曲线或块引用不能确证时保留未知。"
+markers = []
+concepts = ["DC-G2-019", "DC-G2-028"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["LINE", "HATCH"]
+requirement = "剖面线或原生剖面区域"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE"]
+requirement = "所在剖面区域的边界轮廓"
+
+[[cards.variants]]
+id = "crossing"
+title = "剖面线在轮廓内部相交并伸到区域外"
+distinguishing = "剖面线与边界轮廓在两条线的内部相交，剖面线还有一段落在区域外"
+encodings = ["loose"]
+tests = ["section_hatch_boundary_crossing_is_reported"]
+
+[[cards.variants]]
+id = "endpoint_contact"
+title = "剖面线端点与边界轮廓相接"
+distinguishing = "剖面线端点落在边界轮廓，未穿过轮廓继续向外"
+encodings = ["loose"]
+tests = ["section_hatch_boundary_touch_is_not_reported"]
+
+[[cards.counter_examples]]
+statement = "轮廓边界本身、孔边界和只在一点相接的剖面线不属于剖面线越界"
+test = "section_hatch_boundary_touch_is_not_reported"
 
 [[cards]]
 id = "drawing_revision"

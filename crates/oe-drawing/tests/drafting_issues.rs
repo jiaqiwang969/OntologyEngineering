@@ -128,6 +128,7 @@ fn old_rule_metadata_defaults_and_source_occurrences_merge_without_expression_id
         ("G2-028-boundary-centre-only-unknown", "needs_expert"),
         ("G2-018-outline-in-cut-face", "likely"),
         ("G2-018-outline-in-cut-face-unknown", "needs_expert"),
+        ("G2-019-section-hatch-crosses-outline", "likely"),
     ];
     let mut defaults = 0;
     for r in &rules {

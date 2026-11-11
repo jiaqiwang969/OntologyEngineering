@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 47] = [
+pub const USED_CARDS: [&str; 48] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -62,6 +62,7 @@ pub const USED_CARDS: [&str; 47] = [
     "section_line_origin",
     "section_extent_context",
     "section_line_exceptions",
+    "section_hatch_boundary",
 
     "drawing_revision",
 ];

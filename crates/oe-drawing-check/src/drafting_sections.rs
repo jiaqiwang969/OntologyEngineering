@@ -1191,13 +1191,36 @@ fn visible_overrun_threshold(
     Some((thick * visible_ratio).max(1e-9))
 }
 
-fn same_source_interval(objects: &[Object], curves: &[Vec<Piece>], a: usize, b: usize) -> bool {
-    !objects[a].source_handles.is_empty()
-        && objects[a]
+fn same_source_interval(
+    objects: &[Object],
+    curves: &[Vec<Piece>],
+    a: usize,
+    b: usize,
+    tol: f64,
+) -> bool {
+    if objects[a].source_handles.is_empty()
+        || !objects[a]
             .source_handles
             .iter()
             .any(|h| objects[b].source_handles.contains(h))
-        && curves[a] == curves[b]
+    {
+        return false;
+    }
+    let length_a: f64 = curves[a].iter().map(|piece| piece.edge.length()).sum();
+    let length_b: f64 = curves[b].iter().map(|piece| piece.edge.length()).sum();
+    if length_a <= tol || length_b <= tol {
+        return false;
+    }
+    let overlap: f64 = curves[a]
+        .iter()
+        .flat_map(|left| {
+            curves[b]
+                .iter()
+                .flat_map(move |right| left.edge.overlaps(right.edge, tol))
+                .map(move |span| (span[1] - span[0]) * left.edge.length())
+        })
+        .sum();
+    overlap + tol >= length_a && overlap + tol >= length_b
 }
 
 fn point_on_boundary(point: P, face: &Face, tol: f64) -> bool {
@@ -1812,7 +1835,7 @@ pub(super) fn augment(
             if cut_outline_indices.contains(&si)
                 || cut_outline_indices
                     .iter()
-                    .any(|boundary| same_source_interval(objects, &curves, si, *boundary))
+                    .any(|boundary| same_source_interval(objects, &curves, si, *boundary, tol))
             {
                 continue;
             }

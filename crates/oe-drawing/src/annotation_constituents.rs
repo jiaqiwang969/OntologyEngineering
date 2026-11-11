@@ -19,6 +19,13 @@ fn evidence(variant: &str, concept: &str) -> Vec<String> {
 type Branch = (Vec<String>, Vec<String>, Vec<P>);
 type RadiusFrontier = (P, Vec<String>, Option<(String, P, f64)>);
 
+struct SelectedAngle {
+    owner: usize,
+    score: f64,
+    shared: Vec<String>,
+    arrows: Vec<String>,
+}
+
 /// A radius head may be at an inner vertex of the carrier rather than its end.
 /// Follow the text's shoulder to that head, then only toward its arc centre.
 /// In particular, a second radius sharing the centre is not another branch.
@@ -336,7 +343,7 @@ pub(super) fn taken_angle_sectors(cx: &Ctx, b: &mut Builder) -> Result<()> {
         .cloned()
         .collect();
     for text in texts {
-        let mut selected: Option<(usize, P, f64, Vec<String>, Vec<String>)> = None;
+        let mut selected: Option<SelectedAngle> = None;
         for (ei, expr) in b.exprs.iter().enumerate() {
             if expr.kind != "dimension_angle" {
                 continue;
@@ -422,11 +429,22 @@ pub(super) fn taken_angle_sectors(cx: &Ctx, b: &mut Builder) -> Result<()> {
             shared.sort();
             shared.dedup();
             let score = (dist(text.center, *centre) - radius).abs();
-            if selected.as_ref().is_none_or(|old| score < old.2) {
-                selected = Some((ei, *centre, score, shared, vec![first, last]));
+            if selected.as_ref().is_none_or(|old| score < old.score) {
+                selected = Some(SelectedAngle {
+                    owner: ei,
+                    score,
+                    shared,
+                    arrows: vec![first, last],
+                });
             }
         }
-        let Some((owner, _centre, _score, shared, arrows)) = selected else {
+        let Some(SelectedAngle {
+            owner,
+            shared,
+            arrows,
+            ..
+        }) = selected
+        else {
             continue;
         };
         let ev = evidence("chained_angle_sector_shared", "DC-G4-032");

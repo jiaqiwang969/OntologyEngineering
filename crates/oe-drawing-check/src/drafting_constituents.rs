@@ -190,7 +190,13 @@ fn radial_support(h: Head, carrier: &Object, objects: &[Object], p: &Parameters)
     let tol = p.incidence * h.length;
     objects
         .iter()
-        .filter(|o| o.is("VisibleOutline") && same_view(o, carrier))
+        // A radius may be dimensioned on visible, hidden, or centre-line
+        // circles/arcs.  Annotation lines and section/hatch lines are not
+        // finite profile support.
+        .filter(|o| {
+            (o.is("VisibleOutline") || o.is("HiddenOutline") || o.is("CentreLine"))
+                && same_view(o, carrier)
+        })
         .any(|o| {
             o.geometry.arcs.iter().any(|(centre, radius)| {
                 (dist(h.tip, *centre) - radius).abs() <= tol
@@ -225,9 +231,17 @@ fn head_fits(h: Head, carrier: &Object, objects: &[Object], p: &Parameters) -> b
     let Some((a, b)) = carrier.segment() else {
         return false;
     };
+    let endpoint_near = point_segment(h.tip, a, b).0 <= tol || point_segment(h.base, a, b).0 <= tol;
+    let endpoint_inside_arrow = [a, b].iter().any(|q| {
+        let (off, t) = point_line(*q, h.tip, h.base);
+        off <= tol && t >= -tol / h.length && t <= 1. + tol / h.length
+    });
     parallel(a, b, h.base, h.tip, p.direction)
         && point_line(h.tip, a, b).0 <= tol
-        && (point_segment(h.tip, a, b).0 <= tol || point_segment(h.base, a, b).0 <= tol)
+        // CAD dimensions may stop inside the filled arrow.  The endpoint is
+        // accepted only on the existing arrow axis and within its tip/base
+        // interval; no additional distance parameter is introduced.
+        && (endpoint_near || endpoint_inside_arrow)
         && (carrier.expression_kind.as_deref() != Some("dimension_radius")
             || radial_support(h, carrier, objects, p))
 }
@@ -275,9 +289,10 @@ fn text_span(a: P, b: P, tb: TextBox, p: &Parameters) -> bool {
     let (a, b) = (tb.local(a), tb.local(b));
     let (lo, hi) = (a.0.min(b.0), a.0.max(b.0));
     (a.1 - b.1).abs() <= p.direction * dist(a, b)
-        // GB/T 4458.4-2003 4.3.1 requires a small clear gap above the
-        // dimension line. The text box's lower band is not the glyph edge;
-        // allow the standard 0.5h gap in addition to that 0.3h band.
+        // GB/T 14665-2012 5.7 表4 gives a 1 mm minimum to a reference or
+        // baseline; with the 3.5 mm A2--A4 alphanumeric height from Table 3,
+        // the supported ratio is 2/7. The text box's lower band is not the
+        // glyph edge, so add that ratio to the measured 0.3h band.
         && a.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
         && b.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
         && lo <= 0.

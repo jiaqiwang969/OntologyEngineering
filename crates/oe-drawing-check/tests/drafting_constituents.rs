@@ -233,7 +233,7 @@ fn continuation_fixture_with_gap(gap: f64) -> (Drawing, String) {
 
 #[test]
 fn outside_text_normal_gap_uses_standard_height_ratio() {
-    let (d, _) = continuation_fixture_with_gap(1.2);
+    let (d, _) = continuation_fixture_with_gap(1.1);
     let piece = d
         .members
         .iter()
@@ -252,21 +252,30 @@ fn outside_text_gap_beyond_standard_ratio_stays_unknown() {
 }
 
 fn radius_fixture(support: bool) -> (Drawing, String, String, String) {
+    radius_fixture_with_role(support.then_some("contour_segment"))
+}
+fn radius_fixture_with_role(role: Option<&str>) -> (Drawing, String, String, String) {
     let mut d = Drawing::new(1., 0.);
     let l = d.line([0., 0.], [35., 0.]);
     let (_, t) = d.dimension("dimension_radius", &l, [15., 1.]);
     let h = d.triangle([29., 0.], [27., 0.], false);
     let m = d.unknown(&h);
-    if support {
+    if let Some(role) = role {
         let a = d.arc(29., -35., 35.);
         let e = d.expression("visible_contour");
-        d.member(&e, &a, "contour_segment");
+        d.member(&e, &a, role);
     }
     (d, h, m, t)
 }
 #[test]
 fn radius_internal_terminal() {
     let (d, h, m, t) = radius_fixture(true);
+    d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn radius_hidden_outline_support_is_accepted() {
+    let (d, h, m, t) = radius_fixture_with_role(Some("hidden_segment"));
     d.assert_hit(TERMINAL, &h, &m, &t);
 }
 
@@ -289,6 +298,72 @@ fn radius_leader_carrier_accepts_a_radius_terminal() {
 #[test]
 fn radius_without_arc_support_remains_unknown() {
     radius_fixture(false).0.assert_clear();
+}
+
+#[test]
+fn radius_centreline_arc_support_is_accepted() {
+    let (d, h, m, t) = radius_fixture_with_role(Some("center_line"));
+    d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn radius_annotation_arc_support_is_rejected() {
+    radius_fixture_with_role(Some("leader_line"))
+        .0
+        .assert_clear();
+}
+
+fn mid_arrow_fixture(
+    carrier: ([f64; 2], [f64; 2]),
+    tip: [f64; 2],
+    base: [f64; 2],
+    piece: ([f64; 2], [f64; 2]),
+    text: [f64; 2],
+) -> (Drawing, String, String, String) {
+    let mut d = Drawing::new(1., 0.);
+    let line = d.line(carrier.0, carrier.1);
+    let (e, target) = d.dimension("dimension_linear", &line, text);
+    let h = d.triangle(tip, base, false);
+    d.member(&e, &h, "arrowhead");
+    let outside = d.line(piece.0, piece.1);
+    let member = d.unknown(&outside);
+    (d, outside, member, target)
+}
+
+#[test]
+fn mid_arrow_endpoint_accepts_outside_carrier() {
+    let (d, piece, member, target) = mid_arrow_fixture(
+        ([25., 0.], [27., 0.]),
+        [24., 0.],
+        [28., 0.],
+        ([24., 0.], [29., 0.]),
+        [27., 0.3],
+    );
+    d.assert_hit(CONTINUATION, &piece, &member, &target);
+}
+
+#[test]
+fn mid_arrow_endpoint_beyond_arrow_stays_unknown() {
+    let (d, _, _, _) = mid_arrow_fixture(
+        ([29., 0.], [31., 0.]),
+        [24., 0.],
+        [28., 0.],
+        ([28., 0.], [34., 0.]),
+        [31., 0.3],
+    );
+    d.assert_clear();
+}
+
+#[test]
+fn non_coaxial_mid_arrow_stays_unknown() {
+    let (d, _, _, _) = mid_arrow_fixture(
+        ([25., 0.], [27., 0.]),
+        [24., 1.],
+        [28., 1.],
+        ([28., 0.], [34., 0.]),
+        [31., 0.3],
+    );
+    d.assert_clear();
 }
 #[test]
 fn angular_terminal() {

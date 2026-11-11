@@ -13,6 +13,7 @@ struct Parameters {
     base_max: f64,
     symmetry: f64,
     text_band: f64,
+    text_carrier_gap: f64,
     text_end: f64,
     text_gap: f64,
     arc_end: f64,
@@ -36,6 +37,7 @@ impl Parameters {
             base_max: value("base_max_arrow")?,
             symmetry: value("base_symmetry_arrow")?,
             text_band: value("text_band_height")?,
+            text_carrier_gap: value("text_carrier_gap_height")?,
             text_end: value("text_end_height")?,
             text_gap: value("text_gap_height")?,
             arc_end: value("arc_end_arrow")?,
@@ -52,6 +54,9 @@ struct Head {
 
 fn sub(a: P, b: P) -> P {
     (a.0 - b.0, a.1 - b.1)
+}
+fn dot(a: P, b: P) -> f64 {
+    a.0 * b.0 + a.1 * b.1
 }
 fn cross(a: P, b: P) -> f64 {
     a.0 * b.1 - a.1 * b.0
@@ -137,6 +142,47 @@ fn head(o: &Object, members: &BTreeMap<&str, &Value>, d: &Dxf, p: &Parameters) -
         _ => return None,
     };
     triangle(points, p)
+}
+
+/// A missing terminal may be stored as one of its straight base/tail pieces
+/// instead of a filled triangle. Reuse the nearby triangle's geometry only
+/// when the candidate is a short, attached component; an arbitrary line is
+/// never promoted to a terminal.
+fn component_head(
+    candidate: &Object,
+    candidate_head: Option<Head>,
+    heads: &BTreeMap<usize, Head>,
+    objects: &[Object],
+    p: &Parameters,
+) -> Option<Head> {
+    if candidate_head.is_some() {
+        return candidate_head;
+    }
+    let (a, b) = candidate.segment()?;
+    heads.iter().find_map(|(i, h)| {
+        let other = &objects[*i];
+        if !same_view(candidate, other) {
+            return None;
+        }
+        let tol = p.incidence * h.length;
+        let length = dist(a, b);
+        if length <= 0. || length > 2.5 * h.length {
+            return None;
+        }
+        // A base edge crosses the head axis at its midpoint; a tail follows
+        // that axis from the tip. Both forms are finite terminal components.
+        let base_edge = length <= p.base_max * h.length
+            && point_segment(h.base, a, b).0 <= tol
+            && !parallel(a, b, h.base, h.tip, p.direction);
+        let tail = [a, b].iter().any(|q| dist(*q, h.tip) <= tol)
+            && parallel(a, b, h.base, h.tip, p.direction)
+            && dot(sub(mid(a, b), h.tip), sub(h.tip, h.base)) >= -tol;
+        (base_edge || tail).then_some(*h)
+    })
+}
+
+fn mid(a: P, b: P) -> P {
+    ((a.0 + b.0) / 2., (a.1 + b.1) / 2.)
 }
 
 /// Finite circle/arc support at the tip, on the radial axis of this head.
@@ -229,8 +275,11 @@ fn text_span(a: P, b: P, tb: TextBox, p: &Parameters) -> bool {
     let (a, b) = (tb.local(a), tb.local(b));
     let (lo, hi) = (a.0.min(b.0), a.0.max(b.0));
     (a.1 - b.1).abs() <= p.direction * dist(a, b)
-        && a.1.abs() <= p.text_band * tb.height
-        && b.1.abs() <= p.text_band * tb.height
+        // GB/T 4458.4-2003 4.3.1 requires a small clear gap above the
+        // dimension line. The text box's lower band is not the glyph edge;
+        // allow the standard 0.5h gap in addition to that 0.3h band.
+        && a.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
+        && b.1.abs() <= (p.text_band + p.text_carrier_gap) * tb.height
         && lo <= 0.
         && hi >= tb.width
         && lo >= -p.text_gap * tb.height
@@ -309,7 +358,9 @@ pub(super) fn relations(g: &Value, d: &Dxf, objects: &[Object]) -> Result<Vec<Re
         .collect();
     let mut dimensions: BTreeMap<(&str, &str), Vec<usize>> = BTreeMap::new();
     for (i, o) in objects.iter().enumerate() {
-        if o.is("DimensionLine")
+        let radius_leader =
+            o.is("LeaderLine") && o.expression_kind.as_deref() == Some("dimension_radius");
+        if (o.is("DimensionLine") || radius_leader)
             && let (Some(e), Some(v)) = (o.expression_id.as_deref(), o.view.as_deref())
             && !v.is_empty()
             && o.expression_kind
@@ -347,10 +398,12 @@ pub(super) fn relations(g: &Value, d: &Dxf, objects: &[Object]) -> Result<Vec<Re
             if texts.is_empty() {
                 continue;
             }
-            if let Some(h) = heads.get(&i)
+            let candidate_head =
+                component_head(candidate, heads.get(&i).copied(), &heads, objects, &p);
+            if let Some(h) = candidate_head
                 && let Some(&target) = carriers
                     .iter()
-                    .find(|&&j| head_fits(*h, &objects[j], objects, &p))
+                    .find(|&&j| head_fits(h, &objects[j], objects, &p))
             {
                 terminal_targets.push(target);
             }

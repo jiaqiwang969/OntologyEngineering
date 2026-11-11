@@ -4685,7 +4685,7 @@ sources = ["GB/T 14665-2012 4.3；重合图线优先顺序，原实体保留为�
 knowledge_units = ["K17", "K18", "K20"]
 recognition = "半径路径在自身圆心停止；连续角度按定向终端分区；外置线需本尺寸数值和终端相接；原生终端仅补其填充区间；散视向标记需独立视图名和唯一箭杆；轮廓别名需整个未覆盖区间与确定轮廓精确重合。图面参数不是产品尺寸公差，也不证明工程对象相同。"
 markers = []
-concepts = ["DC-G4-006", "DC-G4-032", "DC-G4-058", "DC-G4-059", "DC-G2-072", "DC-G1-055"]
+concepts = ["DC-G4-006", "DC-G4-032", "DC-G4-058", "DC-G4-059", "DC-G4-101", "DC-G2-072", "DC-G1-055"]
 [[cards.components]]
 role = "dimension_text"
 primitives = ["TEXT", "MTEXT"]
@@ -4698,12 +4698,26 @@ requirement = "半径终端沿径向、角度终端沿圆弧切向、直线尺�
 role = "dimension_line"
 primitives = ["LINE", "ARC", "LWPOLYLINE"]
 requirement = "半径路径不跨入另一半径，角度圆弧段不跨入邻角，外置线和填充下区间仅归对应尺寸"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "半径引线保持引线身份；其径向终端仍只归同一半径尺寸，不把普通引线泛化为尺寸线"
+[[cards.components]]
+role = "terminal_component"
+primitives = ["LINE"]
+requirement = "终端底边或沿箭轴从尖端延出的短尾线可作为三角终端的组成线段，需与唯一承载线同视图、同轴且有界"
 [[cards.variants]]
 id = "radius_internal_head"
 title = "半径箭头在尺寸线内接点"
 distinguishing = "箭头位于引线台与圆心之间，路径在圆心止住；允许相同圆心的其他半径，也不要求图面半径等于标注数值"
 encodings = ["loose"]
 tests = ["concentric_radius_paths_stop_at_their_common_centre", "internal_radius_head_uses_arc_geometry_not_nominal_scale"]
+[[cards.variants]]
+id = "radius_leader_carrier"
+title = "引线式半径承载"
+distinguishing = "半径文字由折线或非共线肩线承载时，承载线保留 leader_line；只在表达 kind 为半径且终端径向支撑成立时挂接终端"
+encodings = ["loose"]
+tests = ["radius_leader_carrier_accepts_a_radius_terminal"]
 [[cards.counter_examples]]
 statement = "没有支撑圆弧的内接箭头不能仅凭邻近半径文字并入该尺寸"
 test = "internal_head_without_a_supporting_arc_is_not_invented"
@@ -4721,6 +4735,12 @@ title = "同圆周的连续角度"
 distinguishing = "每一数值位于自身两个定向终端之间，原始圆弧段完整落在该角区内；共用边上相反朝向的两个箭头各归一侧"
 encodings = ["loose"]
 tests = ["adjacent_angle_values_own_separate_arcs_and_opposed_heads"]
+[[cards.variants]]
+id = "chained_angle_sector_shared"
+title = "相邻角度吞并的角区"
+distinguishing = "角度值落在邻尺寸已占用终端之间、且位于相邻弧段的真实缺口；共享弧和终端只作来源证据，不按源顺序强行分配"
+encodings = ["loose", "native"]
+tests = ["angle_value_in_a_gap_taken_by_a_neighbour_is_recovered"]
 [[cards.variants]]
 id = "bounded_angular_side"
 title = "角度界线只取抵达箭尖的有界线段"
@@ -4753,9 +4773,25 @@ title = "成对终端外的数值承载线"
 distinguishing = "数值位于该尺寸箭尖之外的独立尺寸线段上，线段与自身终端连通，且没有越过另一标注的终端"
 encodings = ["loose"]
 tests = ["outside_value_carrier_joins_its_existing_dimension"]
+[[cards.variants]]
+id = "outside_value_normal_gap"
+title = "外置数值与承载线的标准间隙"
+distinguishing = "外置数值仍按尺寸数字与尺寸线的标准字高比例间隙配对；参数来自 GB/T 4458.4-2003 4.3.1，不从单张图的绝对距离反推"
+encodings = ["loose"]
+tests = ["outside_text_normal_gap_uses_standard_height_ratio"]
 [[cards.counter_examples]]
 statement = "仅邻近尺寸、没有该尺寸文字，或继续跨过其他终端的线段，不因共线而收入"
 test = "outside_carrier_does_not_cross_another_terminator"
+[[cards.counter_examples]]
+statement = "文字与承载线的间隔明显超过标准字高比例时，不以外置数值接续解释"
+test = "outside_text_gap_beyond_standard_ratio_stays_unknown"
+
+[[cards.variants]]
+id = "terminal_base_or_tail_component"
+title = "终端底边或尾线组成段"
+distinguishing = "未解释的短 LINE 若落在已识别箭头底边或从尖端沿箭轴延出，且长度和方向满足终端几何，作为该终端的组成证据"
+encodings = ["loose"]
+tests = ["terminal_base_and_tail_components_are_related"]
 
 [[cards.variants]]
 id = "native_terminator_footprint"

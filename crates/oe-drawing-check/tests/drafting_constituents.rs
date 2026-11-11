@@ -163,6 +163,15 @@ impl Drawing {
             "{all:#?}"
         );
     }
+    fn assert_source_hit(&self, rule: &str, handle: &str) {
+        let all = drafting::evaluate_bytes(&self.bytes(), &self.graph()).unwrap();
+        assert!(
+            all.values()
+                .flatten()
+                .any(|f| { f.rule_id == rule && f.source_handles.iter().any(|h| h == handle) }),
+            "{all:#?}"
+        );
+    }
 }
 
 fn terminal_fixture(
@@ -207,6 +216,41 @@ fn outside_text_continuation() {
     d.assert_hit(CONTINUATION, &h, &m, &t);
 }
 
+fn continuation_fixture_with_gap(gap: f64) -> (Drawing, String) {
+    let mut d = Drawing::new(1., 0.);
+    let l = d.line([0., 0.], [24., 0.]);
+    let (_, target) = d.dimension("dimension_linear", &l, [30., gap]);
+    let h = d.triangle([26., 0.], [24., 0.], false);
+    let e = d.expressions.last().unwrap()["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    d.member(&e, &h, "arrowhead");
+    let piece = d.line([26., 0.], [32., 0.]);
+    d.unknown(&piece);
+    (d, target)
+}
+
+#[test]
+fn outside_text_normal_gap_uses_standard_height_ratio() {
+    let (d, _) = continuation_fixture_with_gap(1.2);
+    let piece = d
+        .members
+        .iter()
+        .find(|m| m["member_role"] == "unresolved_source")
+        .unwrap()["source_handle"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    d.assert_source_hit(CONTINUATION, &piece);
+}
+
+#[test]
+fn outside_text_gap_beyond_standard_ratio_stays_unknown() {
+    let (d, _) = continuation_fixture_with_gap(2.2);
+    d.assert_clear();
+}
+
 fn radius_fixture(support: bool) -> (Drawing, String, String, String) {
     let mut d = Drawing::new(1., 0.);
     let l = d.line([0., 0.], [35., 0.]);
@@ -225,6 +269,23 @@ fn radius_internal_terminal() {
     let (d, h, m, t) = radius_fixture(true);
     d.assert_hit(TERMINAL, &h, &m, &t);
 }
+
+#[test]
+fn radius_leader_carrier_accepts_a_radius_terminal() {
+    let mut d = Drawing::new(1., 0.);
+    let l = d.line([0., 0.], [35., 0.]);
+    let (e, target) = d.dimension("dimension_radius", &l, [15., 1.]);
+    d.members
+        .iter_mut()
+        .find(|m| m["expression_id"] == e && m["member_role"] == "dimension_line")
+        .unwrap()["member_role"] = json!("leader_line");
+    let a = d.arc(29., -35., 35.);
+    let outline = d.expression("visible_contour");
+    d.member(&outline, &a, "contour_segment");
+    let h = d.triangle([29., 0.], [27., 0.], false);
+    let m = d.unknown(&h);
+    d.assert_hit(TERMINAL, &h, &m, &target);
+}
 #[test]
 fn radius_without_arc_support_remains_unknown() {
     radius_fixture(false).0.assert_clear();
@@ -237,6 +298,19 @@ fn angular_terminal() {
     let h = d.triangle([29., 0.], [29., 2.], false);
     let m = d.unknown(&h);
     d.assert_hit(TERMINAL, &h, &m, &t);
+}
+
+#[test]
+fn terminal_base_and_tail_components_are_related() {
+    let (mut d, _, _, _) = terminal_fixture(1., 0., false);
+    let base = d.line([24., -0.32], [24., 0.32]);
+    d.unknown(&base);
+    d.assert_source_hit(TERMINAL, &base);
+
+    let (mut d, _, _, _) = terminal_fixture(1., 0., false);
+    let tail = d.line([26., 0.], [28., 0.]);
+    d.unknown(&tail);
+    d.assert_source_hit(TERMINAL, &tail);
 }
 #[test]
 fn native_head_root_interval() {

@@ -132,12 +132,12 @@ md:hatchSpacingDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ;
 md:chainedWith a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:DimensionLine ;
     rdfs:label "与相邻尺寸的尺寸线成链"@zh ;
     rdfs:comment "两条不同尺寸的尺寸线共线，且有一条尺寸界线同时与两者相交。"@zh .
-md:terminatorOnCarrier a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:DimensionLine ;
+md:terminatorOnCarrier a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "终端连接尺寸承载线"@zh ;
-    rdfs:comment "源三角终端尖端或底边与本尺寸有限直线相接且共轴；角度终端在本尺寸弧端且沿切向；半径内接终端另核同视图的有限轮廓或中心线圆弧，尺寸线、引线和剖面线不作支撑。要求同一已知视图、尺寸数值语境及唯一尺寸候选；不改变未知成员的身份。参数见constituents.parameters。"@zh .
-md:boundedContinuationOf a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:DimensionLine ;
+    rdfs:comment "源三角终端尖端或底边与本尺寸有限直线相接且共轴；承载对象是本尺寸的尺寸线或半径尺寸的指引线，由关系生成时核对承载身份。角度终端在本尺寸弧端且沿切向；半径内接终端另核同视图的有限轮廓或中心线圆弧，尺寸线、引线和剖面线不作支撑。要求同一已知视图、尺寸数值语境及唯一尺寸候选；不改变未知成员的身份。参数见constituents.parameters。"@zh .
+md:boundedContinuationOf a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "尺寸线的有界接续"@zh ;
-    rdfs:comment "源LINE剩余区间与同一尺寸的尺寸线共轴，并在自身终端尖端至底边的足迹内连接，或从本终端接至外置数值的有限承载段；止于另一终端或分支。已归属的同源区间不重复报出；视图不足和多尺寸竞争保留未知。参数见constituents.parameters。"@zh .
+    rdfs:comment "源LINE剩余区间与同一尺寸的尺寸线或半径尺寸指引线共轴，并在自身终端尖端至底边的足迹内连接，或从本终端接至外置数值的有限承载段；止于另一终端或分支。承载身份由关系生成时核对；已归属的同源区间不重复报出；视图不足和多尺寸竞争保留未知。参数见constituents.parameters。"@zh .
 
 # ---- 第三批：同一条线在一个剖面区域中的使用，不继承 Line，不重复激活旧图线规则。
 md:SectionBoundarySpan a owl:Class ; rdfs:label "剖面外缘上由中心线承载的区间候选"@zh ; md:concept dc:DC-G2-028, dc:DC-G2-034 .
@@ -609,7 +609,7 @@ rule:G4-059-unresolved-terminator-on-carrier a sh:NodeShape ;
     sh:property rule:G4-059-unresolved-terminator-on-carrier-p1 .
 rule:G4-059-unresolved-terminator-on-carrier-p1 a sh:PropertyShape ;
     sh:path md:terminatorOnCarrier ;
-    sh:qualifiedValueShape [ sh:class md:DimensionLine ;
+    sh:qualifiedValueShape [ sh:class md:Line ;
         sh:property [ sh:path md:layer ; sh:hasValue "recognition" ] ] ;
     sh:qualifiedMaxCount 0 ;
     sh:message "识别偏离：未解释终端的尖端、方向和本尺寸承载几何吻合"@zh .
@@ -629,7 +629,7 @@ rule:G4-059-unresolved-dimension-continuation a sh:NodeShape ;
     sh:property rule:G4-059-unresolved-dimension-continuation-p1 .
 rule:G4-059-unresolved-dimension-continuation-p1 a sh:PropertyShape ;
     sh:path md:boundedContinuationOf ;
-    sh:qualifiedValueShape [ sh:class md:DimensionLine ;
+    sh:qualifiedValueShape [ sh:class md:Line ;
         sh:property [ sh:path md:layer ; sh:hasValue "recognition" ] ] ;
     sh:qualifiedMaxCount 0 ;
     sh:message "识别偏离：未解释区间在本尺寸终端足迹或外置数值承载范围内有界接续"@zh .
@@ -810,6 +810,10 @@ meaning = "尺寸线、引线等标注线或剖面线上的圆弧不能充当半
 [[constituents.variants]]
 test = "radius_centreline_arc_support_is_accepted"
 meaning = "中心线（点画线）上的圆弧可以充当半径轮廓支撑"
+
+[[constituents.variants]]
+test = "radius_leader_segments_are_not_radial_dimension_lines"
+meaning = "引线式半径的斜段和水平肩线保持指引线，只作两条读漏关系的承载线，不触发半径尺寸线沿径向规则；径向适用待专家确认"
 
 [[constituents.counter_examples]]
 test = "outside_text_stacked_tolerance_beyond_end_stays_unknown"

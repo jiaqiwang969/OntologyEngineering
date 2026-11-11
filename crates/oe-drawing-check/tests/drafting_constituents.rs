@@ -335,6 +335,31 @@ fn radius_leader_carrier_accepts_a_radius_terminal() {
     let m = d.unknown(&h);
     d.assert_hit(TERMINAL, &h, &m, &target);
 }
+
+/// A leader-style radius keeps both physical segments as leader lines.  They
+/// remain carriers for recognition-layer relations, but the radial
+/// dimension-line rule must not run on either segment.
+#[test]
+fn radius_leader_segments_are_not_radial_dimension_lines() {
+    let mut d = Drawing::new(1., 0.);
+    let arc = d.arc(10., 0., 90.);
+    let outline = d.expression("visible_contour");
+    d.member(&outline, &arc, "contour_segment");
+    let e = d.expression("dimension_radius");
+    let inclined = d.line([7.0710678, 7.0710678], [3., 3.]);
+    d.member(&e, &inclined, "leader_line");
+    let shoulder = d.line([3., 3.], [13., 3.]);
+    d.member(&e, &shoulder, "leader_line");
+    let findings = drafting::evaluate_bytes(&d.bytes(), &d.graph()).unwrap();
+    assert!(
+        findings
+            .values()
+            .flatten()
+            .all(|f| f.rule_id != "G4-006-radius-dimension-line-through-centre"),
+        "{findings:#?}"
+    );
+}
+
 #[test]
 fn radius_without_arc_support_remains_unknown() {
     radius_fixture(false).0.assert_clear();

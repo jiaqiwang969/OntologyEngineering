@@ -4701,7 +4701,7 @@ requirement = "半径路径不跨入另一半径，角度圆弧段不跨入邻�
 [[cards.components]]
 role = "leader_line"
 primitives = ["LINE", "LWPOLYLINE"]
-requirement = "半径引线保持引线身份；其径向终端仍只归同一半径尺寸，不把普通引线泛化为尺寸线"
+requirement = "半径引线保持指引线身份，只作读漏核查的承载线，不把普通引线泛化为尺寸线；径向要求是否适用留待专家确认"
 [[cards.components]]
 role = "terminal_component"
 primitives = ["LINE"]
@@ -4715,9 +4715,9 @@ tests = ["concentric_radius_paths_stop_at_their_common_centre", "internal_radius
 [[cards.variants]]
 id = "radius_leader_carrier"
 title = "引线式半径承载"
-distinguishing = "半径文字由折线或非共线肩线承载时，承载线保留 leader_line；只在表达 kind 为半径且终端径向支撑成立时挂接终端"
+distinguishing = "半径文字由折线或非共线肩线承载时，承载线保持 leader_line，只作读漏核查的承载线；终端在承载线上和有界接续由关系生成时核对身份，半径尺寸线沿径向规则不作用于普通指引线，径向要求是否适用于引线式半径留待专家确认"
 encodings = ["loose"]
-tests = ["radius_leader_carrier_accepts_a_radius_terminal"]
+tests = ["radius_leader_carrier_accepts_a_radius_terminal", "radius_leader_segments_are_not_radial_dimension_lines"]
 [[cards.variants]]
 id = "radius_hidden_outline_support"
 title = "不可见轮廓圆弧作为半径支撑"

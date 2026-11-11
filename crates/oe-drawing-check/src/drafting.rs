@@ -1221,9 +1221,6 @@ fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &
         },
         "extension_line" | "extension_origin" => line("ExtensionLine"),
         "arrowhead" | "datum_terminal" => vec!["Arrowhead"],
-        "leader_line" if expression_kind == "dimension_radius" => {
-            vec!["Line", "LeaderLine", "DimensionLine", "RadiusDimensionLine"]
-        }
         "leader_line" => line("LeaderLine"),
         "center_line" => line("CentreLine"),
         "contour_segment" => line("VisibleOutline"),

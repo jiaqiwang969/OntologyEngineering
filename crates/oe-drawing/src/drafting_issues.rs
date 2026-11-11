@@ -40,13 +40,27 @@ fn geometry_kind<'a>(graph: &'a Value, handle: &str) -> Option<&'a str> {
         .and_then(|e| e["geometry_kind"].as_str())
 }
 
-fn focused_member_id(focus: &str, members: &[&Value]) -> Option<String> {
+fn focused_members<'a>(
+    focus: &str,
+    members: &[&'a Value],
+    source_handles: &[String],
+) -> Vec<&'a Value> {
     members
         .iter()
-        .filter_map(|m| m["id"].as_str())
-        .filter(|id| focus.contains(id))
-        .max_by_key(|id| id.len())
-        .map(str::to_owned)
+        .copied()
+        .filter(|member| {
+            let Some(id) = member["id"].as_str() else {
+                return false;
+            };
+            if id.is_empty() || !focus.contains(id) {
+                return false;
+            }
+            let Some(handle) = member["source_handle"].as_str() else {
+                return false;
+            };
+            source_handles.iter().any(|source| source == handle)
+        })
+        .collect()
 }
 
 fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
@@ -76,14 +90,11 @@ fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
     // A structural-line focus names the concrete carrier line after an enclosing
     // region/member context.  Including that context here would make every line
     // in one section share the region's source handle and would merge distinct
-    // physical positions.  For non-line findings the most specific focused
-    // member remains the source identity.
+    // physical positions.  For non-line findings, select every focused member
+    // whose source handle is named by this finding; member-id length is not a
+    // physical identity and must not decide the location.
     let mut members: Vec<_> = if line_index.is_none() {
-        focused_member_id(&f.focus, &all)
-            .as_deref()
-            .into_iter()
-            .flat_map(|id| all.iter().copied().filter(move |m| m["id"] == id))
-            .collect()
+        focused_members(&f.focus, &all, &f.source_handles)
     } else {
         Vec::new()
     };
@@ -585,6 +596,46 @@ mod tests {
         assert_eq!(render_spans(&first), vec!["LINE-A"]);
         assert_eq!(render_spans(&second), vec!["LINE-B"]);
         assert!(!same_position(&first, &second));
+    }
+
+    #[test]
+    fn focused_position_uses_named_source_handle_not_member_id_length_or_order() {
+        let finding = |focus: &str, source_handle: &str| MdDraftingFinding {
+            layer: "source".into(),
+            rule_id: "fixture".into(),
+            focus: focus.into(),
+            focus_classes: vec![],
+            source_handles: vec![source_handle.into()],
+            expression_ids: vec![],
+            value: None,
+            message: String::new(),
+            severity: "violation".into(),
+        };
+        let graph = json!({
+            "members": [
+                {"id":"region_member_with_long_id","source_handle":"REGION-A","interval":[0.,1.]},
+                {"id":"line_member","source_handle":"LINE-A","interval":[0.2,0.8]},
+                {"id":"memberbbbb","source_handle":"LINE-B","interval":[0.3,0.7]},
+                {"id":"memberaaaa","source_handle":"REGION-B","interval":[0.,1.]}
+            ],
+            "structural_lines": []
+        });
+        let longer_region = finding(
+            "source:region_member_with_long_id:source:line_member",
+            "LINE-A",
+        );
+        assert_eq!(
+            render_spans(&spans(&longer_region, &graph)),
+            vec!["LINE-A#[0.2,0.8]"]
+        );
+
+        // These IDs have equal length and the non-matching region member is later
+        // in the graph, so neither length nor iteration order may affect location.
+        let equal_length = finding("source:memberbbbb:source:memberaaaa", "LINE-B");
+        assert_eq!(
+            render_spans(&spans(&equal_length, &graph)),
+            vec!["LINE-B#[0.3,0.7]"]
+        );
     }
 
     #[test]

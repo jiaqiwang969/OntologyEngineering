@@ -156,3 +156,64 @@ fn old_rule_metadata_defaults_and_source_occurrences_merge_without_expression_id
     assert_eq!(issues.len(), 1);
     assert_eq!(issues[0].details["findings"].as_array().unwrap().len(), 4);
 }
+
+#[test]
+fn same_rule_same_native_line_through_contour_and_borrowed_member_merges() {
+    let (source, mut graph) = fixture();
+    let mut r = report(&source, &graph);
+    graph["members"].as_array_mut().unwrap().extend([
+        json!({
+            "id":"region-long-synthetic-member",
+            "expression_id":"synthetic-expression",
+            "source_handle":"REGION-SYNTHETIC",
+            "native_member_id":null,
+            "member_role":"section_region",
+            "line_type":"continuous",
+            "interval":[0.,1.],
+            "evidence_ids":[]
+        }),
+        json!({
+            "id":"contour-synthetic-member",
+            "expression_id":"synthetic-expression",
+            "source_handle":"LINE-SYNTHETIC",
+            "native_member_id":null,
+            "member_role":"visible_outline",
+            "line_type":"continuous",
+            "interval":[0.25,0.75],
+            "evidence_ids":[]
+        }),
+        json!({
+            "id":"dimension-borrowed-synthetic-member",
+            "expression_id":"synthetic-expression",
+            "source_handle":"LINE-SYNTHETIC",
+            "native_member_id":null,
+            "member_role":"dimension_line",
+            "line_type":"continuous",
+            "interval":[0.25,0.75],
+            "evidence_ids":[]
+        }),
+    ]);
+    let finding = |focus: &str| MdDraftingFinding {
+        layer: "source".into(),
+        rule_id: "G1-021-centre-line-beyond-outline".into(),
+        focus: focus.into(),
+        focus_classes: vec!["Line".into()],
+        source_handles: vec!["LINE-SYNTHETIC".into()],
+        expression_ids: vec![],
+        value: None,
+        message: "synthetic same-line finding".into(),
+        severity: "warning".into(),
+    };
+    r.findings = vec![
+        finding("source:region-long-synthetic-member:source:contour-synthetic-member"),
+        finding("source:dimension-borrowed-synthetic-member"),
+    ];
+
+    let issues = drafting_issues::collect(&r, &graph, &source).unwrap();
+    assert_eq!(issues.len(), 1, "{issues:?}");
+    assert_eq!(
+        issues[0].source_occurrences,
+        vec!["LINE-SYNTHETIC#[0.25,0.75]"]
+    );
+    assert_eq!(issues[0].details["findings"].as_array().unwrap().len(), 2);
+}

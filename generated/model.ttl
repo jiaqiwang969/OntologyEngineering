@@ -46910,6 +46910,23 @@
 <urn:oev2:design:field_MdEngineeringExpression_concept_ids> <urn:oev2:design:rustType> "Vec<String>" .
 <urn:oev2:design:field_MdEngineeringExpression_concept_ids> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
 <urn:oev2:design:field_MdEngineeringExpression_concept_ids> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:acceptance> "Matches the retained cross_section_type evidence string" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:allowedValueRust> "\"removed\"" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:allowedValueRust> "\"superimposed\"" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:meaning> "Formal cross-section configuration for a section expression or member" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:name> "cross_section_type" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpression> .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdEngineeringExpression_cross_section_type> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
 <urn:oev2:design:field_MdEngineeringExpression_engineering_target> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdEngineeringExpression_engineering_target> <urn:oev2:design:applicability> "DXF source expression candidates under the finite dxf-expression-rules/2 profile" .
 <urn:oev2:design:field_MdEngineeringExpression_engineering_target> <urn:oev2:design:format> "typed" .
@@ -47106,6 +47123,60 @@
 <urn:oev2:design:field_MdEngineeringExpression_rule> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdEngineeringExpression_rule> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
 <urn:oev2:design:field_MdEngineeringExpression_rule> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:acceptance> "Matches the retained section context evidence" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:allowedValueRust> "\"cross_section\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:allowedValueRust> "\"half\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:allowedValueRust> "\"local\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:allowedValueRust> "\"local_axis\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:meaning> "Formal extent of the section" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:name> "section_extent" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpression> .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdEngineeringExpression_section_extent> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:acceptance> "Matches the retained section boundary geometry evidence" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:allowedValueRust> "\"complete\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:allowedValueRust> "\"partial\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:allowedValueRust> "\"unavailable\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:meaning> "Formal completeness of the section region face boundary" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:name> "section_geometry" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpression> .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:precision> "Complete, partial or unavailable native boundary coverage" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdEngineeringExpression_section_geometry> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:acceptance> "Matches the retained section origin evidence; conflicts remain unknown" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:allowedValueRust> "\"cut_formed\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:allowedValueRust> "\"pre_existing\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:allowedValueRust> "\"suppressed\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:applicability> "Section members and their owning section expressions" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:meaning> "Formal origin of a line relative to the section cut" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:name> "section_origin" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpression> .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdEngineeringExpression_section_origin> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
 <urn:oev2:design:field_MdEngineeringExpression_state> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdEngineeringExpression_state> <urn:oev2:design:allowedValueRust> "\"candidate\"" .
 <urn:oev2:design:field_MdEngineeringExpression_state> <urn:oev2:design:allowedValueRust> "\"observed\"" .
@@ -47440,6 +47511,23 @@
 <urn:oev2:design:field_MdExpressionGraphCheck_worker_sha256> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdExpressionGraphCheck_worker_sha256> <urn:oev2:design:unit> "Files by path and SHA-256, byte counts, seconds and UTC times; drawing coordinates only inside the graph" .
 <urn:oev2:design:field_MdExpressionGraphCheck_worker_sha256> <urn:oev2:design:write> "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:acceptance> "Matches the retained cross_section_type evidence string" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:allowedValueRust> "\"removed\"" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:allowedValueRust> "\"superimposed\"" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:meaning> "Formal cross-section configuration for a section expression or member" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:name> "cross_section_type" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:owner> <urn:oev2:design:type_MdExpressionMember> .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdExpressionMember_cross_section_type> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
 <urn:oev2:design:field_MdExpressionMember_evidence_ids> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdExpressionMember_evidence_ids> <urn:oev2:design:applicability> "DXF source expression candidates under the finite dxf-expression-rules/2 profile" .
 <urn:oev2:design:field_MdExpressionMember_evidence_ids> <urn:oev2:design:format> "typed" .
@@ -47608,6 +47696,60 @@
 <urn:oev2:design:field_MdExpressionMember_relation_ids> <urn:oev2:design:rustType> "Vec<String>" .
 <urn:oev2:design:field_MdExpressionMember_relation_ids> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
 <urn:oev2:design:field_MdExpressionMember_relation_ids> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:acceptance> "Matches the retained section context evidence" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:allowedValueRust> "\"cross_section\"" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:allowedValueRust> "\"half\"" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:allowedValueRust> "\"local\"" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:allowedValueRust> "\"local_axis\"" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:meaning> "Formal extent of the section" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:name> "section_extent" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:owner> <urn:oev2:design:type_MdExpressionMember> .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdExpressionMember_section_extent> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:acceptance> "Matches the retained section boundary geometry evidence" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:allowedValueRust> "\"complete\"" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:allowedValueRust> "\"partial\"" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:allowedValueRust> "\"unavailable\"" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:applicability> "Section regions and members carrying section evidence" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:meaning> "Formal completeness of the section region face boundary" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:name> "section_geometry" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:owner> <urn:oev2:design:type_MdExpressionMember> .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:precision> "Complete, partial or unavailable native boundary coverage" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdExpressionMember_section_geometry> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:acceptance> "Matches the retained section origin evidence; conflicts remain unknown" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:allowedValueRust> "\"cut_formed\"" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:allowedValueRust> "\"pre_existing\"" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:allowedValueRust> "\"suppressed\"" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:applicability> "Section members and their owning section expressions" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:meaning> "Formal origin of a line relative to the section cut" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:name> "section_origin" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:owner> <urn:oev2:design:type_MdExpressionMember> .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:precision> "One of the typed values when section evidence is present; absent for unrelated objects" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:unit> "Drawing-domain categorical fact; no product tolerance" .
+<urn:oev2:design:field_MdExpressionMember_section_origin> <urn:oev2:design:write> "Locked ggen contract; source-only section recognizer" .
 <urn:oev2:design:field_MdExpressionMember_source_handle> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdExpressionMember_source_handle> <urn:oev2:design:applicability> "DXF source expression candidates under the finite dxf-expression-rules/2 profile" .
 <urn:oev2:design:field_MdExpressionMember_source_handle> <urn:oev2:design:format> "typed" .
@@ -127699,6 +127841,7 @@
 <urn:oev2:design:type_MdDxfStyleEdit> <urn:oev2:design:name> "MdDxfStyleEdit" .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_concept_ids> .
+<urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_cross_section_type> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_engineering_target> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_evidence_ids> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_family> .
@@ -127709,6 +127852,9 @@
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_member_ids> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_qualifiers> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_rule> .
+<urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_section_extent> .
+<urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_section_geometry> .
+<urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_section_origin> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_state> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_unknowns> .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpression_view_id> .
@@ -127772,6 +127918,7 @@
 <urn:oev2:design:type_MdExpressionGraphCheckRequest> <urn:oev2:design:meaning> "Independent check of one expression graph against the bytes of its source" .
 <urn:oev2:design:type_MdExpressionGraphCheckRequest> <urn:oev2:design:name> "MdExpressionGraphCheckRequest" .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_cross_section_type> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_evidence_ids> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_expression_id> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_id> .
@@ -127780,6 +127927,9 @@
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_member_role> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_native_member_id> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_relation_ids> .
+<urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_section_extent> .
+<urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_section_geometry> .
+<urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_section_origin> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_source_handle> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_state> .
 <urn:oev2:design:type_MdExpressionMember> <urn:oev2:design:field> <urn:oev2:design:field_MdExpressionMember_unknowns> .
@@ -193561,6 +193711,7 @@ code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "evidence" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "f64::from" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "face" .
+code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "formal" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "get" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "inside" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:calls "interior_length" .
@@ -193583,7 +193734,7 @@ code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:kind "R
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:module <urn:oev2:design:drawing_understanding_check> .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:path "crates/oe-drawing-check/src/drafting_sections.rs" .
 code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:production true .
-code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:sha256 "2c45fff038490b7a6b88c218d06ce5aa4fd668e1ff1cf4fb62c63976a65f88d6" .
+code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d sp:sha256 "9f17d41f3b2d3a37c5b7af7b763766e0e9338c5380e80bd60eb014a645283b7c" .
 code:75c01859f1fd63c036ea6cfd86f6d3dda8c050c761af54ec1a07b7e15a88f6b7 sp:calls "File::open" .
 code:75c01859f1fd63c036ea6cfd86f6d3dda8c050c761af54ec1a07b7e15a88f6b7 sp:calls "NQuadsRecognizer::new_parser" .
 code:75c01859f1fd63c036ea6cfd86f6d3dda8c050c761af54ec1a07b7e15a88f6b7 sp:calls "Ok" .
@@ -207329,7 +207480,7 @@ code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:kind "R
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:module <urn:oev2:design:drawing_understanding> .
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:path "crates/oe-drawing/tests/section_regions.rs" .
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:production false .
-code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:sha256 "a82cd56f8ea8cbb2e2a45cc789d2e0f7fef3131b795ada5bfdb670541c3386ab" .
+code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:sha256 "b5be7002849b43c6a94c8f53d13ea6ce655d8270d0db0badc590391fc4e75efb" .
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:test "all_hatch_regions_have_scoped_origins" .
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:test "ambiguous_width_never_suppresses_a_crossing" .
 code:cca7e921b8bfeb45b0a6ea0dd171f6bc0658b0d444a69b5b6d49f283a1478f08 sp:test "axis_boundary_is_bounded_and_keeps_line_type" .
@@ -211162,6 +211313,7 @@ code:e516e2b6fb754343b464fb8ed96938dcd25b5efda3301639b7d0bf617e96aaaf sp:test "r
 code:e516e2b6fb754343b464fb8ed96938dcd25b5efda3301639b7d0bf617e96aaaf sp:test "vol1_real_select_uses_isolated_negative_branch_and_same_instance_receipt" .
 code:e516e2b6fb754343b464fb8ed96938dcd25b5efda3301639b7d0bf617e96aaaf sp:test "vol1_real_shacl_checks_positive_and_single_fault_negative" .
 code:e516e2b6fb754343b464fb8ed96938dcd25b5efda3301639b7d0bf617e96aaaf sp:test "vol2_real_steps_exact_multiset_and_compact_shacl_branches" .
+code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "BTreeSet::new" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "Ok" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "Some" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "Vec::new" .
@@ -211181,6 +211333,7 @@ code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "mul" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "not_plotted::source" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "num" .
+code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "one_or_unknown" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "origin" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "overlap" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:calls "param" .
@@ -211200,7 +211353,7 @@ code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:kind "R
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:module <urn:oev2:design:drawing_understanding> .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:path "crates/oe-drawing/src/section_regions.rs" .
 code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:production true .
-code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:sha256 "ba6c8bce1b77f9ebd181425f0878544339683e28801474822eeaa46c688fae46" .
+code:e5cd437f4f08b226e8c7ed6943999e47901a0e01a12a48dbabf7f08fd104ec0c sp:sha256 "fe5a128a0d78163dc90fa8308efb59966652dabb1caa59ee67f2442b2c9bda43" .
 code:e604142d3d9c95db181e95eb10fccab16888c94e5fd301b4b2377330c8fdccd1 sp:calls "BTreeMap::new" .
 code:e604142d3d9c95db181e95eb10fccab16888c94e5fd301b4b2377330c8fdccd1 sp:calls "Duration::days" .
 code:e604142d3d9c95db181e95eb10fccab16888c94e5fd301b4b2377330c8fdccd1 sp:calls "Duration::weeks" .
@@ -214315,7 +214468,7 @@ code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:module 
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:path "crates/oe-drawing/src/engineering_expression.rs" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:production true .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:publicType "Pattern" .
-code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "a97833293fe45ec26df50d25216df255b1c8d0443aa101a456c8c2991edce18f" .
+code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "d0116cf6408c2b0217b0558903f87729acdfd056ef1e54c46506e4f4f722a1e8" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_millis" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_secs" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Err" .
@@ -224397,6 +224550,9 @@ function:36f859c6e8622af28ec9d2aceb52f38532a0898805d5af2f988deaa74fd76157 sp:nam
 function:36fadf4b69dd009697e9c334b15e0351ba3d06d54a10a7360dae387a09f623f2 sp:file code:58a2c44ee4eb5b22feb0f38f64734c30294ec4522e1caa09cd68e96c1e89089a .
 function:36fadf4b69dd009697e9c334b15e0351ba3d06d54a10a7360dae387a09f623f2 sp:kind "RustFunction" .
 function:36fadf4b69dd009697e9c334b15e0351ba3d06d54a10a7360dae387a09f623f2 sp:name "arm" .
+function:36fc4593f08f4ad7fb03e0ede94860fe654da7d68a1a11501f1faa323e461c1c sp:file code:7551d0f672e7b136b47a66ac608b2093a01be0c0375d02a5b40946ec743d682d .
+function:36fc4593f08f4ad7fb03e0ede94860fe654da7d68a1a11501f1faa323e461c1c sp:kind "RustFunction" .
+function:36fc4593f08f4ad7fb03e0ede94860fe654da7d68a1a11501f1faa323e461c1c sp:name "formal" .
 function:36fd3fef4b4e5f5aeacdedd7a7bc26c94c3a3c8744fd6e2aeee989f7ad02f744 sp:file code:38c01c00483c5e5e993ed76afa275d15246d6e8caa6d3ad28dbef944916f6640 .
 function:36fd3fef4b4e5f5aeacdedd7a7bc26c94c3a3c8744fd6e2aeee989f7ad02f744 sp:kind "RustFunction" .
 function:36fd3fef4b4e5f5aeacdedd7a7bc26c94c3a3c8744fd6e2aeee989f7ad02f744 sp:name "row_json" .

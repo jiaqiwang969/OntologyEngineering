@@ -903,6 +903,10 @@ impl Builder {
             rule: rule.into(),
             evidence_ids: evidence,
             unknowns,
+            cross_section_type: None,
+            section_extent: None,
+            section_origin: None,
+            section_geometry: None,
         });
         self.exprs.len() - 1
     }
@@ -966,6 +970,10 @@ impl Builder {
             relation_ids: relations,
             evidence_ids: evidence,
             unknowns: vec![],
+            cross_section_type: None,
+            section_extent: None,
+            section_origin: None,
+            section_geometry: None,
         });
     }
     fn used(&self, src: &str) -> bool {

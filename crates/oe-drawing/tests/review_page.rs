@@ -1248,3 +1248,86 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
         assert!(error.contains(caught), "{from}: {error}");
     }
 }
+
+#[test]
+fn the_browser_check_requires_the_first_drafting_group_to_contain_certain() {
+    if !Path::new(CHROME).is_file() {
+        eprintln!("skipped: no Chrome at {CHROME}");
+        return;
+    }
+    let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .unwrap();
+    let scratch = Scratch::new(&source);
+    let root = oe_core::SkillRoot::new(&source)
+        .unwrap()
+        .with_project_data_root(&scratch.0)
+        .unwrap();
+    let (graph, svg) = synthetic(true);
+    let graph_value: Value = serde_json::from_slice(&graph).unwrap();
+    let source_handle = graph_value["source"]["entities"][0]["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let issue = |id: &str, rule: &str, label: &str, confidence: &str| {
+        json!({
+            "id": id,
+            "location": source_handle.clone(),
+            "source_occurrences": [source_handle.clone()],
+            "observed": [label],
+            "rule": rule,
+            "clause": format!("clause:{rule}"),
+            "concept_ids": [],
+            "confidence": confidence,
+            "alternatives": [],
+            "proposed_correction": "请复核",
+            "rule_label": label,
+            "classification": "source_deviation_candidate",
+            "layers": ["source"],
+            "details": {"findings": [{"source_handles": [source_handle.clone()]}]}
+        })
+    };
+    // This is the order produced by the route sorter: a later-numbered certain rule precedes an
+    // earlier-numbered likely rule, while the browser check verifies the visible first group.
+    let issues = vec![
+        issue("certain-id", "G4-043-certain", "确定规则", "certain"),
+        issue("likely-id", "G1-028-likely", "很可能规则", "likely"),
+    ];
+    let text = issues
+        .iter()
+        .map(|issue| format!("{} {}", issue["id"], issue["clause"]))
+        .collect::<Vec<_>>()
+        .join("\n");
+    let review = json!({
+        "issues": issues,
+        "text": text,
+        "receipt": {"status": "not_needed", "corrected_sha256": null, "applied": [], "remaining_issue_ids": ["certain-id", "likely-id"]}
+    });
+    let (page, _) = oe_drawing::page::page_with_review(
+        &graph,
+        &svg,
+        &request(),
+        Some(&review),
+    )
+    .unwrap();
+    std::fs::write(scratch.0.join("drafting-order-page.html"), page).unwrap();
+    let result = oe_drawing_check::browser::check_page(
+        &root,
+        &oe_contracts::MdReviewPageCheckRequest {
+            schema: oe_drawing_check::browser::REQUEST_SCHEMA.into(),
+            page: "drafting-order-page.html".into(),
+            output_directory: "drafting-order-check".into(),
+            chrome: CHROME.into(),
+            mode: "kind".into(),
+            region: None,
+            focus_label: None,
+        },
+    )
+    .unwrap();
+    assert_eq!(result.facts["drafting_group_order"]["groups"], 2);
+    assert_eq!(
+        result.facts["drafting_group_order"]["first_contains_certain"],
+        true
+    );
+}

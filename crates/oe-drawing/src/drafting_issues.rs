@@ -199,6 +199,89 @@ struct FindingGroup<'a> {
     findings: Vec<&'a MdDraftingFinding>,
 }
 
+fn confidence_rank(confidence: &str) -> u8 {
+    match confidence {
+        "certain" => 0,
+        "likely" => 1,
+        _ => 2,
+    }
+}
+
+fn rule_number(rule: &str) -> (u32, u32) {
+    let Some(rest) = rule.strip_prefix('G') else {
+        return (u32::MAX, u32::MAX);
+    };
+    let Some((group, number)) = rest.split_once('-') else {
+        return (u32::MAX, u32::MAX);
+    };
+    (
+        group.parse().unwrap_or(u32::MAX),
+        number
+            .split('-')
+            .next()
+            .and_then(|n| n.parse().ok())
+            .unwrap_or(u32::MAX),
+    )
+}
+
+/// Presentation groups are ordered by their strongest item.  Revision differences are evidence
+/// for comparison rather than drafting deviations, so they stay after every ordinary rule group.
+fn group_order_key<'a>(
+    rule: &'a str,
+    items: &[&'a MdDraftingIssue],
+) -> (u8, u8, (u32, u32), &'a str) {
+    let revision = items
+        .iter()
+        .any(|item| item.classification == "revision_difference");
+    let confidence = items
+        .iter()
+        .map(|item| confidence_rank(&item.confidence))
+        .min()
+        .unwrap_or(2);
+    (
+        if revision { 1 } else { 0 },
+        confidence,
+        rule_number(rule),
+        rule,
+    )
+}
+
+fn ordered_rule_groups<'a>(
+    issues: &'a [MdDraftingIssue],
+) -> Vec<(&'a str, Vec<&'a MdDraftingIssue>)> {
+    let mut by_rule: BTreeMap<&str, Vec<&MdDraftingIssue>> = BTreeMap::new();
+    for issue in issues {
+        by_rule.entry(issue.rule.as_str()).or_default().push(issue);
+    }
+    let mut groups: Vec<_> = by_rule.into_iter().collect();
+    groups.sort_by(|(left_rule, left_items), (right_rule, right_items)| {
+        group_order_key(left_rule, left_items).cmp(&group_order_key(right_rule, right_items))
+    });
+    groups
+}
+
+fn sort_issues_for_presentation(issues: &mut [MdDraftingIssue]) {
+    let mut ranks: BTreeMap<String, (u8, u8, (u32, u32), String)> = BTreeMap::new();
+    for (rule, items) in ordered_rule_groups(issues) {
+        let (revision, confidence, number, name) = group_order_key(rule, &items);
+        ranks.insert(
+            rule.to_owned(),
+            (revision, confidence, number, name.to_owned()),
+        );
+    }
+    issues.sort_by(|left, right| {
+        let left_group = &ranks[&left.rule];
+        let right_group = &ranks[&right.rule];
+        left_group
+            .cmp(right_group)
+            .then_with(|| {
+                confidence_rank(&left.confidence).cmp(&confidence_rank(&right.confidence))
+            })
+            .then_with(|| left.location.cmp(&right.location))
+            .then_with(|| left.id.cmp(&right.id))
+    });
+}
+
 pub fn collect(
     report: &MdDraftingRuleReport,
     graph: &Value,
@@ -359,20 +442,7 @@ pub fn collect(
             });
         }
     }
-    let priority = |i: &MdDraftingIssue| match i.confidence.as_str() {
-        "certain" => 0,
-        "likely" => 1,
-        _ => 2,
-    };
-    issues.sort_by(|a, b| {
-        (&a.classification, priority(a), &a.rule, &a.location, &a.id).cmp(&(
-            &b.classification,
-            priority(b),
-            &b.rule,
-            &b.location,
-            &b.id,
-        ))
-    });
+    sort_issues_for_presentation(&mut issues);
     ensure!(
         issues.iter().all(|i| i.validate().is_ok()),
         "issues_contract"
@@ -418,14 +488,8 @@ pub fn plan(source: &[u8], issues: Vec<MdDraftingIssue>) -> Result<MdDrawingCorr
 
 pub fn text(issues: &[MdDraftingIssue]) -> String {
     let mut out = String::from("制图不一致与版本比较清单（候选，供复核）\n");
-    let mut by_rule: BTreeMap<(&str, &str), Vec<&MdDraftingIssue>> = BTreeMap::new();
-    for item in issues {
-        by_rule
-            .entry((&item.rule, &item.rule_label))
-            .or_default()
-            .push(item);
-    }
-    for ((rule, label), items) in by_rule {
+    for (rule, items) in ordered_rule_groups(issues) {
+        let label = items[0].rule_label.as_str();
         out.push_str(&format!("\n规则：{label}（{rule}） · {} 条\n", items.len()));
         for item in items {
             let class = match item.classification.as_str() {
@@ -552,5 +616,75 @@ mod tests {
             severity: "violation".into(),
         };
         assert_eq!(render_spans(&spans(&finding, &graph)), vec!["C1#[0.2,0.3]"]);
+    }
+
+    #[test]
+    fn presentation_groups_put_strongest_confidence_first_and_versions_last() {
+        let issue =
+            |rule: &str, label: &str, confidence: &str, classification: &str| MdDraftingIssue {
+                id: format!("issue-{rule}-{confidence}"),
+                location: rule.into(),
+                source_occurrences: vec![rule.into()],
+                observed: vec![label.into()],
+                rule: rule.into(),
+                clause: format!("source:{rule}"),
+                concept_ids: vec![],
+                confidence: confidence.into(),
+                alternatives: vec![],
+                proposed_correction: "请复核".into(),
+                rule_label: label.into(),
+                classification: classification.into(),
+                layers: vec!["source".into()],
+                details: json!({}),
+            };
+        let mut issues = vec![
+            issue(
+                "G1-028-likely",
+                "很可能组",
+                "likely",
+                "source_deviation_candidate",
+            ),
+            issue(
+                "G4-043-certain",
+                "确定组",
+                "certain",
+                "source_deviation_candidate",
+            ),
+            issue(
+                "G2-018-needs-expert",
+                "要问专家组",
+                "needs_expert",
+                "recognition_deviation",
+            ),
+            issue(
+                "drawing_revision_comparison",
+                "版本差别组",
+                "needs_expert",
+                "revision_difference",
+            ),
+        ];
+        sort_issues_for_presentation(&mut issues);
+        assert_eq!(
+            issues
+                .iter()
+                .map(|issue| issue.rule.as_str())
+                .collect::<Vec<_>>(),
+            vec![
+                "G4-043-certain",
+                "G1-028-likely",
+                "G2-018-needs-expert",
+                "drawing_revision_comparison",
+            ]
+        );
+        let listing = text(&issues);
+        let headings = ["确定组", "很可能组", "要问专家组", "版本差别组"];
+        let offsets: Vec<_> = headings
+            .iter()
+            .map(|label| listing.find(&format!("规则：{label}")))
+            .collect();
+        assert!(
+            offsets.windows(2).all(|pair| pair[0] < pair[1]),
+            "{offsets:?}"
+        );
     }
 }

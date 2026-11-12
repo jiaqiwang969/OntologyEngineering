@@ -1178,7 +1178,42 @@ struct Object {
     /// drafting-object contract stays unchanged; the interval is emitted through the existing
     /// section-boundary fact fields so findings and review items can carry the same source range.
     span: Option<SpanInfo>,
+    /// Contract facts for view composition and view-mark references.  These facts have no
+    /// drawing geometry of their own; their source/member identity is carried by the ordinary
+    /// object fields above and the interval/metadata below is emitted as existing fact fields.
+    view_fact: Option<ViewFact>,
     geometry: Geometry,
+}
+
+#[derive(Debug, Clone)]
+enum ViewFact {
+    Composition {
+        position_role: String,
+        representation_kind: String,
+        section_extent: String,
+        cutting_surface_kind: String,
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
+    Component {
+        view_relation_role: String,
+        view_component_kind: String,
+        interval: [f64; 2],
+        native_member_id: Option<String>,
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
+    Mark {
+        view_mark_kind: String,
+        relation_role: String,
+        target_view_id: Option<String>,
+        interval: [f64; 2],
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -1564,6 +1599,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             layer_colour,
             inferred_geometry: false,
             span: None,
+            view_fact: None,
             geometry,
         });
     }
@@ -1621,6 +1657,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 layer_colour: None,
                 inferred_geometry,
                 span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1659,6 +1696,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 layer_colour: None,
                 inferred_geometry: true,
                 span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1668,6 +1706,341 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
         }
     }
     Ok(out)
+}
+
+fn graph_strings(value: &Value, key: &str) -> Vec<String> {
+    value
+        .get(key)
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .map(str::to_owned)
+        .collect()
+}
+
+fn graph_value(value: &Value, key: &str, default: &str) -> String {
+    value
+        .get(key)
+        .and_then(Value::as_str)
+        .filter(|s| !s.is_empty())
+        .unwrap_or(default)
+        .to_owned()
+}
+
+fn graph_interval(value: &Value) -> [f64; 2] {
+    let Some(a) = value
+        .get("interval")
+        .and_then(Value::as_array)
+        .filter(|v| v.len() == 2)
+    else {
+        return [0., 1.];
+    };
+    let (Some(start), Some(end)) = (a[0].as_f64(), a[1].as_f64()) else {
+        return [0., 1.];
+    };
+    let start = start.clamp(0., 1.);
+    let end = end.clamp(0., 1.);
+    if end > start {
+        [start, end]
+    } else {
+        [0., 1.]
+    }
+}
+
+fn append_view_facts(
+    layer: &str,
+    g: &Value,
+    objects: &mut Vec<Object>,
+    relations: &mut Vec<Relation>,
+) -> Result<()> {
+    let views = g.get("views").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default();
+    let mut compositions: HashMap<String, usize> = HashMap::new();
+    for view in views {
+        let Some(view_id) = view.get("id").and_then(Value::as_str).filter(|s| !s.is_empty()) else {
+            continue;
+        };
+        if compositions.contains_key(view_id) {
+            continue;
+        }
+        let index = objects.len();
+        objects.push(Object {
+            id: format!("{layer}:view-composition:{view_id}"),
+            classes: vec!["ViewComposition"],
+            source_handles: graph_strings(view, "label_source_ids"),
+            member_ids: Vec::new(),
+            expression_id: None,
+            expression_kind: None,
+            view: Some(view_id.to_owned()),
+            line_type: None,
+            text: view.get("label").and_then(Value::as_str).map(str::to_owned),
+            rotation_deg: None,
+            angle_deg: None,
+            height: None,
+            spacing: None,
+            dxf_layer: None,
+            colour: None,
+            layer_colour: None,
+            inferred_geometry: false,
+            span: None,
+            view_fact: Some(ViewFact::Composition {
+                position_role: graph_value(view, "position_role", "unknown"),
+                representation_kind: graph_value(view, "representation_kind", "unknown"),
+                section_extent: graph_value(view, "section_extent", "unknown"),
+                cutting_surface_kind: graph_value(view, "cutting_surface_kind", "unknown"),
+                state: graph_value(view, "state", "unknown"),
+                evidence_ids: graph_strings(view, "evidence_ids"),
+                unknowns: graph_strings(view, "unknowns"),
+            }),
+            geometry: Geometry::default(),
+        });
+        compositions.insert(view_id.to_owned(), index);
+    }
+
+    let expressions: HashMap<&str, &Value> = g
+        .get("expressions")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(|expression| Some((expression.get("id")?.as_str()?, expression)))
+        .collect();
+    let members = g.get("members").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default();
+    let mut expression_handles: HashMap<String, Vec<String>> = HashMap::new();
+    let mut expression_member_ids: HashMap<String, Vec<String>> = HashMap::new();
+    let mut member_by_id: HashMap<&str, &Value> = HashMap::new();
+    for member in members {
+        let Some(member_id) = member.get("id").and_then(Value::as_str).filter(|s| !s.is_empty()) else {
+            continue;
+        };
+        member_by_id.insert(member_id, member);
+        let expression_id = graph_value(member, "expression_id", "");
+        let source_handle = graph_value(member, "source_handle", "");
+        if !expression_id.is_empty() && !source_handle.is_empty() {
+            expression_handles.entry(expression_id.clone()).or_default().push(source_handle.clone());
+        }
+        if !expression_id.is_empty() {
+            expression_member_ids.entry(expression_id).or_default().push(member_id.to_owned());
+        }
+    }
+    // A component is one fact for each target composition.  This keeps a multi-target
+    // member's source/member/interval payload tied to exactly one componentOf edge.
+    for member in members {
+        let Some(member_id) = member.get("id").and_then(Value::as_str).filter(|s| !s.is_empty()) else {
+            continue;
+        };
+        let expression_id = graph_value(member, "expression_id", "");
+        let expression = expressions.get(expression_id.as_str()).copied();
+        let view_id = graph_value(member, "view_id", "");
+        let native_member_id = member.get("native_member_id").and_then(Value::as_str).map(str::to_owned);
+        let source_handles = graph_value(member, "source_handle", "");
+        let relation_role = graph_value(member, "view_relation_role", "unknown");
+        let component_kind = graph_value(member, "view_component_kind", "unknown");
+        let interval = graph_interval(member);
+        let mut targets = Vec::new();
+        if relation_role == "component" {
+            for target in graph_strings(member, "composition_view_ids") {
+                if !targets.contains(&target) && compositions.contains_key(&target) {
+                    targets.push(target);
+                }
+            }
+        }
+        if targets.is_empty() {
+            targets.push(String::new());
+        }
+        for target in targets {
+            let index = objects.len();
+            let id = if target.is_empty() {
+                format!("{layer}:view-component:{member_id}")
+            } else {
+                format!("{layer}:view-component:{member_id}:target:{target}")
+            };
+            objects.push(Object {
+                id,
+                classes: vec!["ViewComponent"],
+                source_handles: if source_handles.is_empty() { Vec::new() } else { vec![source_handles.clone()] },
+                member_ids: vec![member_id.to_owned()],
+                expression_id: (!expression_id.is_empty()).then_some(expression_id.clone()),
+                expression_kind: expression.and_then(|e| e.get("kind")).and_then(Value::as_str).map(str::to_owned),
+                view: (!view_id.is_empty()).then_some(view_id.clone()),
+                line_type: member.get("line_type").and_then(Value::as_str).map(str::to_owned),
+                text: expression.and_then(|e| e.get("label")).and_then(Value::as_str).map(str::to_owned),
+                rotation_deg: None,
+                angle_deg: None,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
+                inferred_geometry: false,
+                span: None,
+                view_fact: Some(ViewFact::Component {
+                    view_relation_role: relation_role.clone(),
+                    view_component_kind: component_kind.clone(),
+                    interval,
+                    native_member_id: native_member_id.clone(),
+                    state: graph_value(member, "state", "unknown"),
+                    evidence_ids: graph_strings(member, "evidence_ids"),
+                    unknowns: graph_strings(member, "unknowns"),
+                }),
+                geometry: Geometry::default(),
+            });
+            if let Some(&view_index) = compositions.get(view_id.as_str()) {
+                relations.push(Relation::node(index, "locatedInView", view_index));
+            }
+            if let Some(&view_index) = compositions.get(&target) {
+                relations.push(Relation::node(index, "componentOf", view_index));
+                relations.push(Relation::node(view_index, "hasComponent", index));
+            }
+        }
+    }
+
+    for expression in expressions.values() {
+        let kind = graph_value(expression, "view_mark_kind", "unknown");
+        let mut targets = Vec::new();
+        for target in graph_strings(expression, "defines_view_ids") {
+            if !targets.iter().any(|(role, id): &(String, String)| role == "defines" && id == &target) {
+                targets.push(("defines".to_owned(), target));
+            }
+        }
+        for target in graph_strings(expression, "references_view_ids") {
+            if !targets.iter().any(|(role, id): &(String, String)| role == "references" && id == &target) {
+                targets.push(("references".to_owned(), target));
+            }
+        }
+        let known_targets: Vec<(String, String)> = targets
+            .iter()
+            .filter(|(_, id)| compositions.contains_key(id))
+            .cloned()
+            .collect();
+        let is_view_mark = kind != "unknown"
+            || matches!(
+                expression.get("kind").and_then(Value::as_str),
+                Some("view_mark" | "view_callout")
+            )
+            || expression.get("family").and_then(Value::as_str) == Some("view");
+        if !is_view_mark && targets.is_empty() {
+            continue;
+        }
+        let Some(expression_id) = expression.get("id").and_then(Value::as_str) else {
+            continue;
+        };
+        let mut source_handles = expression_handles.get(expression_id).cloned().unwrap_or_default();
+        source_handles.sort();
+        source_handles.dedup();
+        let mut member_ids = expression
+            .get("member_ids")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str)
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        if member_ids.is_empty() {
+            member_ids = expression_member_ids.get(expression_id).cloned().unwrap_or_default();
+        }
+        let mut unique_member_ids = Vec::with_capacity(member_ids.len());
+        for member_id in member_ids {
+            if !unique_member_ids.contains(&member_id) {
+                unique_member_ids.push(member_id);
+            }
+        }
+        let member_ids = unique_member_ids;
+        let mut interval = [0., 1.];
+        let mut member_intervals = member_ids
+            .iter()
+            .filter_map(|id| member_by_id.get(id.as_str()).map(|m| graph_interval(m)));
+        if let Some(first) = member_intervals.next() {
+            interval = member_intervals.fold(first, |mut range, current| {
+                range[0] = range[0].min(current[0]);
+                range[1] = range[1].max(current[1]);
+                range
+            });
+        }
+        let targets = if known_targets.is_empty() {
+            vec![(String::new(), String::new())]
+        } else {
+            known_targets
+        };
+        for (relation_role, target_view_id) in targets {
+            let index = objects.len();
+            let id = if target_view_id.is_empty() {
+                format!("{layer}:view-mark-reference:{expression_id}")
+            } else {
+                format!("{layer}:view-mark-reference:{expression_id}:{relation_role}:{target_view_id}")
+            };
+            objects.push(Object {
+                id,
+                classes: vec!["ViewMarkReference"],
+                source_handles: source_handles.clone(),
+                member_ids: member_ids.clone(),
+                expression_id: Some(expression_id.to_owned()),
+                expression_kind: expression.get("kind").and_then(Value::as_str).map(str::to_owned),
+                view: expression.get("view_id").and_then(Value::as_str).map(str::to_owned),
+                line_type: None,
+                text: expression.get("label").and_then(Value::as_str).map(str::to_owned),
+                rotation_deg: None,
+                angle_deg: None,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
+                inferred_geometry: false,
+                span: None,
+                view_fact: Some(ViewFact::Mark {
+                    view_mark_kind: kind.clone(),
+                    relation_role: if relation_role.is_empty() { "unknown".to_owned() } else { relation_role.clone() },
+                    target_view_id: (!target_view_id.is_empty()).then_some(target_view_id.clone()),
+                    interval,
+                    state: graph_value(expression, "state", "unknown"),
+                    evidence_ids: graph_strings(expression, "evidence_ids"),
+                    unknowns: graph_strings(expression, "unknowns"),
+                }),
+                geometry: Geometry::default(),
+            });
+            if let Some(&view_index) = compositions.get(&target_view_id) {
+                let predicate = if relation_role == "defines" { "definesView" } else { "referencesView" };
+                relations.push(Relation::node(index, predicate, view_index));
+            }
+        }
+    }
+
+    // Reuse the existing letter relation for the new view-component facts.  The relation is
+    // based on the composition target, so a cutting/detail mark located in one view can match
+    // the title in its target view without inventing a geometric adjacency.
+    let mut components_by_target: HashMap<usize, Vec<usize>> = HashMap::new();
+    for relation in relations.iter() {
+        if relation.predicate == "componentOf" && let Some(target) = relation.object {
+            components_by_target.entry(target).or_default().push(relation.subject);
+        }
+    }
+    for component_indices in components_by_target.values() {
+        for (offset, &left) in component_indices.iter().enumerate() {
+            for &right in &component_indices[offset + 1..] {
+                let (Some(left_kind), Some(right_kind)) = (view_component_kind(&objects[left]), view_component_kind(&objects[right])) else {
+                    continue;
+                };
+                let pair = matches!((left_kind, right_kind),
+                    ("view_title", "mark_letters" | "detail_label")
+                    | ("mark_letters" | "detail_label", "view_title"));
+                if pair
+                    && objects[left].text.as_deref().map(view_letter).filter(|s| !s.is_empty())
+                        == objects[right].text.as_deref().map(view_letter).filter(|s| !s.is_empty())
+                {
+                    relations.push(Relation::node(left, "sameLetterAs", right));
+                    relations.push(Relation::node(right, "sameLetterAs", left));
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn view_component_kind(object: &Object) -> Option<&str> {
+    match object.view_fact.as_ref() {
+        Some(ViewFact::Component { view_component_kind, .. }) => Some(view_component_kind.as_str()),
+        _ => None,
+    }
 }
 
 /// Hatching drawn as loose parallel lines is one section region per expression: an object with the lines'
@@ -1725,6 +2098,7 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
             layer_colour: first.layer_colour,
             inferred_geometry: false,
             span: None,
+            view_fact: None,
             geometry: Geometry::default(),
         });
     }
@@ -1824,6 +2198,7 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
                 inferred_geometry: first.inferred_geometry
                     || members.iter().any(|i| objects[*i].inferred_geometry),
                 span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     ..Geometry::default()
@@ -2775,6 +3150,83 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
                     .unwrap_or(0.),
             )));
         }
+        if let Some(view_fact) = &o.view_fact {
+            let metadata = |kind: &str, state: &str, evidence_ids: &[String], unknowns: &[String]| {
+                serde_json::json!({
+                    "kind": kind,
+                    "state": state,
+                    "evidence_ids": evidence_ids,
+                    "unknowns": unknowns,
+                })
+                .to_string()
+            };
+            match view_fact {
+                ViewFact::Composition {
+                    position_role,
+                    representation_kind,
+                    section_extent,
+                    cutting_surface_kind,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("positionRole", turtle_literal(position_role)));
+                    props.push(("representationKind", turtle_literal(representation_kind)));
+                    props.push(("sectionExtent", turtle_literal(section_extent)));
+                    props.push(("cuttingSurfaceKind", turtle_literal(cutting_surface_kind)));
+                    props.push((
+                        "sectionOrigin",
+                        turtle_literal(&metadata("view_composition", state, evidence_ids, unknowns)),
+                    ));
+                }
+                ViewFact::Component {
+                    view_relation_role,
+                    view_component_kind,
+                    interval,
+                    native_member_id,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("viewRelationRole", turtle_literal(view_relation_role)));
+                    props.push(("viewComponentKind", turtle_literal(view_component_kind)));
+                    props.push((
+                        "sectionOrigin",
+                        turtle_literal(&serde_json::json!({
+                            "kind": "view_component",
+                            "interval": interval,
+                            "state": state,
+                            "native_member_id": native_member_id,
+                            "evidence_ids": evidence_ids,
+                            "unknowns": unknowns,
+                        }).to_string()),
+                    ));
+                }
+                ViewFact::Mark {
+                    view_mark_kind,
+                    relation_role,
+                    target_view_id,
+                    interval,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("viewMarkKind", turtle_literal(view_mark_kind)));
+                    props.push((
+                        "sectionOrigin",
+                        turtle_literal(&serde_json::json!({
+                            "kind": "view_mark_reference",
+                            "interval": interval,
+                            "relation_role": relation_role,
+                            "target_view_id": target_view_id,
+                            "state": state,
+                            "evidence_ids": evidence_ids,
+                            "unknowns": unknowns,
+                        }).to_string()),
+                    ));
+                }
+            }
+        }
         let n = props.len();
         for (i, (p, v)) in props.iter().enumerate() {
             writeln!(ttl, "    md:{p} {v} {}", if i + 1 == n { "." } else { ";" })?;
@@ -2972,6 +3424,7 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         sections::augment(layer, &g, &d, &mut objs, &mut rels)?;
         cutting::append(layer, &g, &d, &mut objs, &mut rels)?;
         append_coincidence_spans(layer, &g, &mut objs, &mut rels);
+        append_view_facts(layer, &g, &mut objs, &mut rels)?;
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -3046,6 +3499,7 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
         sections::augment(layer, graph, &d, &mut objs, &mut rels)?;
         cutting::append(layer, graph, &d, &mut objs, &mut rels)?;
         append_coincidence_spans(layer, graph, &mut objs, &mut rels);
+        append_view_facts(layer, graph, &mut objs, &mut rels)?;
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -3171,6 +3625,7 @@ mod tests {
             layer_colour: None,
             inferred_geometry: false,
             span: None,
+            view_fact: None,
             geometry: Geometry { chains: vec![vec![(0., 0.), (10., 0.)]], ..Geometry::default() },
         };
         let objects = vec![object];
@@ -3214,5 +3669,40 @@ mod tests {
         assert!(!segments_coincident((0., 0.), (10., 0.), (5., 0.5), (20., 0.5)));
         assert_eq!(angle_deg((0., 0.), (1., 1.)), 45.);
         assert_eq!(angle_deg((0., 0.), (-1., 1.)), 135.);
+    }
+    #[test]
+    fn view_facts_keep_one_target_per_component_and_mark() {
+        let graph = serde_json::json!({
+            "views": [
+                {"id":"view:source", "label":"源", "position_role":"principal", "representation_kind":"view", "section_extent":"unknown", "cutting_surface_kind":"unknown"},
+                {"id":"view:target-a", "label":"Ⅰ", "position_role":"free", "representation_kind":"detail_view", "section_extent":"unknown", "cutting_surface_kind":"unknown"},
+                {"id":"view:target-b", "label":"Ⅱ", "position_role":"free", "representation_kind":"detail_view", "section_extent":"unknown", "cutting_surface_kind":"unknown"}
+            ],
+            "members": [
+                {"id":"member:detail-label", "source_handle":"C1", "expression_id":"expression:mark", "interval":[0.2,0.6], "view_id":"view:source", "view_relation_role":"component", "composition_view_ids":["view:target-a","view:target-b"], "view_component_kind":"detail_label", "state":"observed", "evidence_ids":["source:C1"], "unknowns":[]},
+                {"id":"member:located-only", "source_handle":"C2", "expression_id":"expression:note", "interval":[0.1,0.3], "view_id":"view:source", "view_relation_role":"located_only", "composition_view_ids":[], "view_component_kind":"auxiliary_annotation", "state":"candidate", "evidence_ids":[], "unknowns":["target unclear"]}
+            ],
+            "expressions": [
+                {"id":"expression:mark", "kind":"view_callout", "label":"Ⅰ", "member_ids":["member:detail-label"], "view_id":"view:source", "view_mark_kind":"detail_mark", "defines_view_ids":[], "references_view_ids":["view:target-a","view:target-b"], "state":"observed", "evidence_ids":["source:C1"], "unknowns":[]},
+                {"id":"expression:note", "kind":"technical_general", "label":"说明", "member_ids":["member:located-only"], "view_id":"view:source", "view_mark_kind":"unknown", "defines_view_ids":[], "references_view_ids":[], "state":"candidate", "evidence_ids":[], "unknowns":[]}
+            ]
+        });
+        let mut objects = Vec::new();
+        let mut relations = Vec::new();
+        append_view_facts("source", &graph, &mut objects, &mut relations).unwrap();
+        let (ttl, _, rows, relation_rows) = facts("source", &objects, &relations).unwrap();
+        assert_eq!(rows.iter().filter(|row| row.class == "ViewComposition").count(), 3);
+        assert_eq!(rows.iter().filter(|row| row.class == "ViewComponent").count(), 3);
+        assert_eq!(rows.iter().filter(|row| row.class == "ViewMarkReference").count(), 2);
+        let count = |predicate: &str| relation_rows.iter().filter(|r| r.predicate == predicate).count();
+        assert_eq!(count("locatedInView"), 3);
+        assert_eq!(count("componentOf"), 2);
+        assert_eq!(count("hasComponent"), 2);
+        assert_eq!(count("referencesView"), 2);
+        assert!(!relation_rows.iter().any(|r| r.predicate == "componentOf" && r.subject.contains("located-only")));
+        assert!(ttl.contains("md:viewComponentKind \"detail_label\""));
+        assert!(ttl.contains("\\\"interval\\\":[0.2,0.6]"));
+        assert!(ttl.contains("md:viewMarkKind \"detail_mark\""));
+        assert!(ttl.contains("\\\"interval\\\":[0.2,0.6]"));
     }
 }

@@ -311,6 +311,7 @@ pub(super) fn append(
             layer_colour: None,
             inferred_geometry: false,
             span: None,
+            view_fact: None,
             geometry: Geometry::default(),
         });
         relations.push(Relation::number(

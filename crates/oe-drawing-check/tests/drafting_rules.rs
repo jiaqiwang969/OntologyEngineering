@@ -178,6 +178,94 @@ impl Drawing {
             "source": {"entities": self.kinds.iter().map(|(h, k)| json!({"id": h, "kind": k})).collect::<Vec<_>>()},
         })
     }
+    fn synthetic_view(
+        repr: &str,
+        extent: &str,
+        position: &str,
+        surface: &str,
+        parts: &[(&str, &str)],
+    ) -> Value {
+        let mut expressions = Vec::new();
+        let mut members = Vec::new();
+        for (index, (component_kind, label)) in parts.iter().enumerate() {
+            let expression_id = format!("expression:synthetic:{index}");
+            let member_id = format!("{expression_id}:m0");
+            expressions.push(json!({
+                "id": expression_id,
+                "kind": "view_mark",
+                "label": label,
+                "member_ids": [member_id],
+                "defines_view_ids": [],
+                "references_view_ids": [],
+                "view_mark_kind": "unknown",
+                "state": "observed",
+                "evidence_ids": [format!("synthetic:{index}")],
+                "unknowns": []
+            }));
+            members.push(json!({
+                "id": member_id,
+                "source_handle": format!("synthetic-handle-{index}"),
+                "native_member_id": null,
+                "member_role": "special_mark",
+                "line_type": "thin_continuous",
+                "expression_id": format!("expression:synthetic:{index}"),
+                "interval": [0.0, 1.0],
+                "view_id": "view:synthetic",
+                "view_relation_role": "component",
+                "composition_view_ids": ["view:synthetic"],
+                "view_component_kind": component_kind,
+                "state": "observed",
+                "evidence_ids": [format!("synthetic:{index}")],
+                "unknowns": []
+            }));
+        }
+        json!({
+            "expressions": expressions,
+            "members": members,
+            "structural_lines": [],
+            "implied_spans": [],
+            "views": [{
+                "id": "view:synthetic",
+                "kind": "synthetic",
+                "label": "Synthetic",
+                "label_source_ids": [],
+                "bbox": [0.0, 0.0, 10.0, 10.0],
+                "position_role": position,
+                "representation_kind": repr,
+                "section_extent": extent,
+                "cutting_surface_kind": surface,
+                "state": "observed",
+                "evidence_ids": ["synthetic:view"],
+                "unknowns": []
+            }],
+            "source": {"entities": []}
+        })
+    }
+    fn synthetic_drawing(
+        repr: &str,
+        extent: &str,
+        position: &str,
+        surface: &str,
+        parts: &[(&str, &str)],
+    ) -> Self {
+        let graph = Self::synthetic_view(repr, extent, position, surface, parts);
+        Self {
+            expressions: graph["expressions"].as_array().cloned().unwrap_or_default(),
+            members: graph["members"].as_array().cloned().unwrap_or_default(),
+            views: graph["views"].as_array().cloned().unwrap_or_default(),
+            structural: graph["structural_lines"].as_array().cloned().unwrap_or_default(),
+            implied: graph["implied_spans"].as_array().cloned().unwrap_or_default(),
+            ..Self::default()
+        }
+    }
+    fn synthetic_findings(graph: Value) -> BTreeSet<String> {
+        drafting::evaluate_bytes(b"0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n", &graph)
+            .unwrap()
+            .values()
+            .flatten()
+            .map(|finding| finding.rule_id.clone())
+            .collect()
+    }
     fn findings(&self) -> BTreeMap<String, Vec<oe_contracts::MdDraftingFinding>> {
         drafting::evaluate_bytes(&self.dxf(), &self.graph()).unwrap()
     }
@@ -212,6 +300,72 @@ fn outline(d: &mut Drawing, a: [f64; 2], b: [f64; 2]) -> String {
 fn fixture(rule: &str, violating: bool) -> Drawing {
     let mut d = Drawing::default();
     match rule {
+        "V6-section-title-required" => return Drawing::synthetic_drawing(
+            "section_view",
+            "full",
+            "free",
+            "single_plane",
+            if violating {
+                &[("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            } else {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            },
+        ),
+        "V6-section-cutting-position-required" => return Drawing::synthetic_drawing(
+            "section_view",
+            "full",
+            "free",
+            "single_plane",
+            if violating {
+                &[("view_title", "A-A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            } else {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            },
+        ),
+        "V6-section-direction-required" => return Drawing::synthetic_drawing(
+            "section_view",
+            "full",
+            "free",
+            "single_plane",
+            if violating {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("mark_letters", "A")]
+            } else {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            },
+        ),
+        "V6-section-letters-required" => return Drawing::synthetic_drawing(
+            "section_view",
+            "full",
+            "free",
+            "single_plane",
+            if violating {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "B")]
+            } else {
+                &[("view_title", "A-A"), ("cutting_location", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            },
+        ),
+        "V6-detail-marking" => return Drawing::synthetic_drawing(
+            "detail_view",
+            "full",
+            "free",
+            "unknown",
+            if violating {
+                &[("detail_circle", "circle"), ("detail_label", "Ⅰ"), ("view_title", "Ⅰ"), ("view_scale", "2:1")]
+            } else {
+                &[("detail_circle", "circle"), ("view_title", "Ⅰ"), ("view_scale", "2:1")]
+            },
+        ),
+        "V6-direction-view-marking" => return Drawing::synthetic_drawing(
+            "view",
+            "unknown",
+            "free",
+            "unknown",
+            if violating {
+                &[("view_title", "A"), ("projection_direction", "arrow"), ("mark_letters", "B")]
+            } else {
+                &[("view_title", "A"), ("projection_direction", "arrow"), ("mark_letters", "A")]
+            },
+        ),
         "G4-059-unresolved-terminator-on-carrier" | "G4-059-unresolved-dimension-continuation" => {
             let e = d.expression("dimension_linear", "8");
             let l = d.line([0., 0.], [24., 0.]);
@@ -469,6 +623,131 @@ fn fixture(rule: &str, violating: bool) -> Drawing {
 }
 
 #[test]
+fn synthetic_detail_view_with_one_numbered_enlargement_is_reported() {
+    let graph = Drawing::synthetic_view(
+        "detail_view",
+        "full",
+        "free",
+        "unknown",
+        &[("detail_circle", "circle"), ("detail_label", "Ⅰ"), ("view_title", "Ⅰ"), ("view_scale", "2:1")],
+    );
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(findings.contains("V6-detail-marking"));
+}
+
+#[test]
+fn synthetic_multiple_enlargements_without_roman_labels_are_reported() {
+    let graph = Drawing::synthetic_view(
+        "detail_view",
+        "full",
+        "free",
+        "unknown",
+        &[
+            ("detail_circle", "circle-a"),
+            ("detail_circle", "circle-b"),
+            ("detail_label", "A"),
+            ("detail_label", "B"),
+            ("view_title", "A"),
+            ("view_scale", "3:1"),
+        ],
+    );
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(findings.contains("V6-detail-marking"));
+}
+
+#[test]
+fn synthetic_multiple_enlargements_with_mismatched_title_are_reported() {
+    let graph = Drawing::synthetic_view(
+        "detail_view",
+        "full",
+        "free",
+        "unknown",
+        &[
+            ("detail_circle", "circle-a"),
+            ("detail_circle", "circle-b"),
+            ("detail_label", "Ⅰ"),
+            ("detail_label", "Ⅱ"),
+            ("view_title", "Ⅲ"),
+            ("view_scale", "3:1"),
+        ],
+    );
+    assert!(Drawing::synthetic_findings(graph).contains("V6-detail-marking"));
+}
+
+#[test]
+fn synthetic_section_without_cutting_symbol_is_reported() {
+    let graph = Drawing::synthetic_view(
+        "section_view",
+        "full",
+        "free",
+        "single_plane",
+        &[("view_title", "A-A"), ("mark_letters", "A")],
+    );
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(findings.contains("V6-section-cutting-position-required"));
+    assert!(findings.contains("V6-section-direction-required"));
+}
+
+#[test]
+fn synthetic_section_with_mismatched_letters_is_reported() {
+    let graph = Drawing::synthetic_view(
+        "section_view",
+        "full",
+        "free",
+        "single_plane",
+        &[
+            ("view_title", "A-A"),
+            ("cutting_location", "A"),
+            ("projection_direction", "arrow"),
+            ("mark_letters", "B"),
+        ],
+    );
+    assert!(Drawing::synthetic_findings(graph).contains("V6-section-letters-required"));
+}
+
+#[test]
+fn synthetic_projected_section_may_omit_direction_arrow() {
+    let graph = Drawing::synthetic_view(
+        "section_view",
+        "full",
+        "top",
+        "single_plane",
+        &[("view_title", "A-A"), ("cutting_location", "A"), ("mark_letters", "A")],
+    );
+    assert!(!Drawing::synthetic_findings(graph).contains("V6-section-direction-required"));
+}
+
+#[test]
+fn synthetic_direction_view_with_mismatched_letter_is_reported() {
+    let graph = Drawing::synthetic_view(
+        "view",
+        "unknown",
+        "free",
+        "unknown",
+        &[
+            ("view_title", "A"),
+            ("projection_direction", "arrow"),
+            ("mark_letters", "B"),
+        ],
+    );
+    assert!(Drawing::synthetic_findings(graph).contains("V6-direction-view-marking"));
+}
+
+#[test]
+fn synthetic_symmetric_projected_section_may_omit_all_marking() {
+    let graph = Drawing::synthetic_view("section_view", "half", "left", "single_plane", &[]);
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(!findings.iter().any(|id| id.starts_with("V6-section-")));
+}
+
+#[test]
+fn synthetic_local_section_may_omit_all_marking() {
+    let graph = Drawing::synthetic_view("section_view", "local", "free", "single_plane", &[]);
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(!findings.iter().any(|id| id.starts_with("V6-section-")));
+}
+
+#[test]
 fn every_rule_has_a_violating_and_a_conforming_fixture() {
     let k = drafting::knowledge().unwrap();
     let rules = drafting::rules(&k.shapes).unwrap();
@@ -478,6 +757,20 @@ fn every_rule_has_a_violating_and_a_conforming_fixture() {
     assert!(groups("G1-") >= 7 && groups("G2-") >= 8 && groups("G4-") >= 12 && groups("G5-") >= 2 && groups("G6-") >= 1, "{ids:?}");
     for id in &ids {
         let bad = fixture(id, true);
+        if id.starts_with("V6-") {
+            assert!(
+                bad.rule_ids().contains(id),
+                "violating fixture of {id}: {:#?}",
+                bad.findings()
+            );
+            let good = fixture(id, false);
+            assert!(
+                good.rule_ids().is_empty(),
+                "conforming fixture of {id}: {:#?}",
+                good.findings()
+            );
+            continue;
+        }
         assert_eq!(
             bad.rule_ids(),
             BTreeSet::from([id.clone()]),

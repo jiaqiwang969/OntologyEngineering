@@ -2834,6 +2834,23 @@ fn related_facts(objects: &[Object], relations: &[Relation]) -> HashMap<String, 
             .or_default()
             .push(format!("{} {object}", r.predicate));
     }
+    // Findings with an interval-scoped derived carrier must expose that carrier in the
+    // existing fallback value.  Keep the authored relation order for every other object, but
+    // move coincidence/overrun carriers ahead of unrelated crossedBy evidence so the finding
+    // and page highlighter can recover every relevant source interval.
+    for values in out.values_mut() {
+        let mut scoped = Vec::new();
+        let mut ordinary = Vec::new();
+        for value in values.drain(..) {
+            if value.contains("coincidence_span:") || value.contains("hatch_overrun_span:") {
+                scoped.push(value);
+            } else {
+                ordinary.push(value);
+            }
+        }
+        scoped.extend(ordinary);
+        *values = scoped;
+    }
     out
 }
 

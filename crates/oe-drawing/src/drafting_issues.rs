@@ -17,22 +17,36 @@ struct Span {
 /// Rule facts use a derived visible-outline object for an interval-scoped coincidence or hatch
 /// overrun.  Its ID carries the focus object's normalized interval so the review item can reuse
 /// the same range without widening back to the member's whole circle/line.
-fn derived_source_interval(value: Option<&str>) -> Option<[f64; 2]> {
-    let marker = value
-        .and_then(|v| {
-            v.find("coincidence_span:")
-                .map(|i| &v[i + "coincidence_span:".len()..])
-        })
-        .or_else(|| {
-            value.and_then(|v| {
-                v.find("hatch_overrun_span:")
-                    .map(|i| &v[i + "hatch_overrun_span:".len()..])
-            })
-        })?;
-    let mut fields = marker.split(':');
-    let start = fields.next()?.parse::<f64>().ok()?;
-    let end = fields.next()?.parse::<f64>().ok()?;
-    (end > start).then_some([start.clamp(0., 1.), end.clamp(0., 1.)])
+fn derived_source_intervals(value: Option<&str>) -> Vec<[f64; 2]> {
+    let Some(value) = value else {
+        return Vec::new();
+    };
+    let mut out: Vec<[f64; 2]> = Vec::new();
+    for part in value.split('|') {
+        let Some((_, marker)) = part
+            .split_once("coincidence_span:")
+            .or_else(|| part.split_once("hatch_overrun_span:"))
+        else {
+            continue;
+        };
+        let mut fields = marker.split(':');
+        let (Some(start), Some(end)) = (
+            fields.next().and_then(|s| s.trim().parse::<f64>().ok()),
+            fields.next().and_then(|s| s.trim().parse::<f64>().ok()),
+        ) else {
+            continue;
+        };
+        if end <= start {
+            continue;
+        }
+        let interval = [start.clamp(0., 1.), end.clamp(0., 1.)];
+        if !out.iter().any(|old| {
+            (old[0] - interval[0]).abs() < 1e-10 && (old[1] - interval[1]).abs() < 1e-10
+        }) {
+            out.push(interval);
+        }
+    }
+    out
 }
 
 fn curve_boundary_intervals(member: &Value) -> Vec<(f64, f64)> {
@@ -106,16 +120,17 @@ fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
 }
 
 fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
-    if let Some(interval) = derived_source_interval(f.value.as_deref())
-        && !f.source_handles.is_empty()
-    {
+    let intervals = derived_source_intervals(f.value.as_deref());
+    if !intervals.is_empty() && !f.source_handles.is_empty() {
         return f
             .source_handles
             .iter()
-            .map(|path| Span {
-                path: path.clone(),
-                start: interval[0],
-                end: interval[1],
+            .flat_map(|path| {
+                intervals.iter().map(move |interval| Span {
+                    path: path.clone(),
+                    start: interval[0],
+                    end: interval[1],
+                })
             })
             .collect();
     }

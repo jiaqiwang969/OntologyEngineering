@@ -1494,7 +1494,7 @@ fn the_browser_checks_use_view_composition_and_located_overlay_on_a_synthetic_pa
         json!(["XA", "XD", "XN", "XS"])
     );
     // A check must reject the old location-based selection, annotation leakage while off, wrong target
-    // colour, an unbounded source interval and a faint overlay painted at full opacity.
+    // colour, an unbounded source interval, a faint overlay painted at full opacity, and missing option guidance.
     for (n, (from, to, caught)) in [
         (
             "composition.passes(m,enabled.view,$('viewOverlay').checked)",
@@ -1520,6 +1520,11 @@ fn the_browser_checks_use_view_composition_and_located_overlay_on_a_synthetic_pa
             ".located-overlay{opacity:calc(var(--op,1)*.38)}",
             ".located-overlay{opacity:calc(var(--op,1)*1)}",
             "faint display",
+        ),
+        (
+            "不受“完整结构”勾选的影响。",
+            "按成员显示。",
+            "panel explains the complete-structure option has no effect",
         ),
     ]
     .into_iter()

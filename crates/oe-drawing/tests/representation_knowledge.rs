@@ -704,6 +704,7 @@ fn every_card_is_used_and_every_named_test_exists() {
         include_str!("annotation_constituents.rs"),
         include_str!("../../oe-drawing-check/tests/drafting_constituents.rs"),
         include_str!("section_regions.rs"),
+        include_str!("view_composition.rs"),
         include_str!("../src/revisions.rs"),
         include_str!("../../oe-drawing-check/tests/drafting_rules.rs"),
         include_str!("../../oe-drawing-check/tests/support/section_rule_fixtures.rs"),

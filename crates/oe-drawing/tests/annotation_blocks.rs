@@ -717,6 +717,10 @@ fn arrow_block_without_strokes_is_not_a_cutting_plane() {
 /// block (×4, boundary circle, outline copy and section lines) and its title block. `shift`
 /// moves the copy away from what it should repeat.
 fn detail_sheet(shift: f64) -> MdEngineeringExpressionGraph {
+    detail_sheet_hatching(shift, false)
+}
+
+fn detail_sheet_hatching(shift: f64, meets_circle: bool) -> MdEngineeringExpressionGraph {
     let indicator = vec![
         circle("I1", "02", [0., 0.], 4.),
         line("I2", "02", [2.828, -2.828], [10., -12.]),
@@ -729,12 +733,13 @@ fn detail_sheet(shift: f64) -> MdEngineeringExpressionGraph {
         line_w("Y2", "01", 50, [shift, shift], [shift, 3. + shift]),
     ];
     for (k, c) in [0.4, 1.2, 2.0, 2.8].iter().enumerate() {
+        let x = (-c + (32_f64 - c * c).sqrt()) / 2.;
         copy.push(line_w(
             &format!("Y{}", k + 3),
             "02",
             18,
             [-*c, 0.],
-            [0., *c],
+            if meets_circle { [x, x + c] } else { [0., *c] },
         ));
     }
     let view = vec![
@@ -759,6 +764,20 @@ fn detail_sheet(shift: f64) -> MdEngineeringExpressionGraph {
         ],
         &ents,
     )
+}
+
+#[test]
+fn composition_native_loose_hatching_meets_detail_boundary() {
+    let g = detail_sheet_hatching(0., true);
+    let e = exprs(&g, "DV")
+        .into_iter()
+        .find(|e| e.kind == "section_hatch")
+        .expect("the detail boundary is a real endpoint witness");
+    assert!(
+        ev(e, "loose_hatch_region:independent_boundary_contacts"),
+        "{e:?}"
+    );
+    assert!(!exprs(&g, "DV").iter().any(|e| e.kind == "unresolved"));
 }
 
 #[test]
@@ -812,6 +831,16 @@ fn detail_label_and_view_drawn_as_blocks() {
             e.label
         );
         assert!(ev(e, "enlargement_measured:4"), "{:?}", e.evidence_ids);
+    }
+    let boundary = exprs(&g, "DV").into_iter().find(|e|e.qualifiers.iter().any(|q|q=="detail_boundary")).unwrap();
+    assert_eq!(boundary.view_mark_kind, "detail_mark");
+    assert_eq!(boundary.defines_view_ids, vec![region.id.clone()]);
+    for m in g.members.iter().filter(|m|m.expression_id==boundary.id) {
+        assert_eq!(m.view_component_kind,"detail_boundary");
+        assert_eq!(m.composition_view_ids,vec![region.id.clone()]);
+    }
+    for m in g.members.iter().filter(|m|m.expression_id==ind[0].id && m.member_role=="detail_circle") {
+        assert_eq!(m.view_component_kind,"detail_circle");
     }
     let outline = exprs(&g, "DV")
         .into_iter()

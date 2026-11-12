@@ -224,6 +224,7 @@ for(const lt of a.presentLines){$('lineNone').click();d.querySelector('[data-lin
 $('lineAll').click();$('tab-prim').click();ok(a.mode==='prim','Primitive mode');
 for(const pr of a.presentPrims){$('primNone').click();d.querySelector('[data-prim="'+pr+'"]').click();ok(count()===expect(m=>a.entities.get(m.source_handle).kind===pr).size,'Primitive coverage '+pr)}
 $('primAll').click();$('tab-view').click();ok(a.mode==='view','View mode');
+ok($('panel-view').textContent.includes('“视图”分类按源成员显示组成，不受“完整结构”勾选的影响。'),'View composition panel explains the complete-structure option has no effect');
 // Explicit view relations, checked independently of the page's composition helper. View mode uses source
 // members even while the complete-structure checkbox stays checked, preserving bounded intervals and marks
 // drawn in another region. Nonrendered roots still have their selected ranges and are reported separately.

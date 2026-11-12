@@ -1,5 +1,7 @@
 #![cfg(unix)]
-use oe_core::process::{CommandSpec, run_command, run_command_memory};
+use oe_core::process::{
+    CommandSpec, run_command, run_command_memory, run_command_with_timeout_resource,
+};
 use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
@@ -80,6 +82,21 @@ fn process_fixture() {
             println!("descendant:{}", child.id());
             let _ = child.try_wait();
         }
+        "tree" => {
+            let mut child = Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "process_fixture", "--nocapture"])
+                .env("OE_PROCESS_FIXTURE", "hold")
+                .stdin(Stdio::null())
+                .stdout(Stdio::inherit())
+                .stderr(Stdio::inherit())
+                .spawn()
+                .unwrap();
+            println!("parent:{}", std::process::id());
+            println!("descendant:{}", child.id());
+            std::io::Write::flush(&mut std::io::stdout()).unwrap();
+            let _ = child.try_wait();
+            std::thread::sleep(Duration::from_secs(30));
+        }
         "retarget" => {
             let path = PathBuf::from(std::env::var_os("OE_PROCESS_LINK").unwrap());
             fs::remove_file(&path).unwrap();
@@ -106,6 +123,71 @@ fn preserves_exit_logs_and_exclusive_output() {
     let persisted: Value =
         serde_json::from_slice(&fs::read(f.0.join("failure/process.json")).unwrap()).unwrap();
     assert_eq!(persisted, result.report);
+}
+
+#[test]
+fn timeout_resource_and_elapsed_time_are_persisted_in_the_process_receipt() {
+    let f = Fixture::new();
+    let resource = json!({
+        "name": "ggen-generation-timeout",
+        "version": "1",
+        "timeout_seconds": 300,
+    });
+    let result = run_command_with_timeout_resource(
+        &f.spec("ok"),
+        &f.0.join("timeout-resource"),
+        resource.clone(),
+    )
+    .unwrap();
+    assert_eq!(result.report["timeout_resource"], resource);
+    assert_eq!(result.report["timeout_seconds"], 10.0);
+    assert!(result.report["elapsed_seconds"].as_f64().unwrap() >= 0.0);
+    let persisted: Value =
+        serde_json::from_slice(&fs::read(f.0.join("timeout-resource/process.json")).unwrap())
+            .unwrap();
+    assert_eq!(persisted["timeout_resource"], resource);
+    assert_eq!(
+        persisted["elapsed_seconds"],
+        result.report["elapsed_seconds"]
+    );
+}
+
+fn pid_is_running(pid: i32) -> bool {
+    let result = unsafe { libc::kill(pid, 0) };
+    result == 0 || std::io::Error::last_os_error().raw_os_error() != Some(libc::ESRCH)
+}
+
+fn assert_pid_exited(pid: i32) {
+    for _ in 0..200 {
+        if !pid_is_running(pid) {
+            return;
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    assert!(!pid_is_running(pid), "process {pid} is still running");
+}
+
+#[test]
+fn timeout_kills_sleeping_process_and_its_sleeping_child() {
+    let f = Fixture::new();
+    let mut spec = f.spec("tree");
+    spec.timeout = Duration::from_secs(1);
+    let result = run_command(&spec, &f.0.join("tree")).unwrap();
+    assert_eq!(result.status, "timed_out");
+    let output = String::from_utf8_lossy(&result.stdout);
+    let parent = output
+        .lines()
+        .find_map(|line| line.strip_prefix("parent:").and_then(|v| v.parse().ok()))
+        .expect("timed-out fixture must report its parent pid");
+    let child = output
+        .lines()
+        .find_map(|line| {
+            line.strip_prefix("descendant:")
+                .and_then(|v| v.parse().ok())
+        })
+        .expect("timed-out fixture must report its child pid");
+    assert_pid_exited(parent);
+    assert_pid_exited(child);
 }
 #[test]
 fn timeout_and_inherited_pipes_are_bounded_and_keep_partial_streams() {

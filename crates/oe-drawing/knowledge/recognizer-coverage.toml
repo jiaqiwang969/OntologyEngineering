@@ -915,8 +915,8 @@ missing = "整块剖切符号（粗短画、箭头、字母与转折）已识别
 [[concepts]]
 id = "DC-G1-010"
 level = "partial"
-by = ["card:section_line_region", "native_hatch_pattern", "uniform_parallel_thin_oblique_lines"]
-missing = "填充对象、区域内画出的剖面线、按自身间距成组的散画剖面线与区域内残段已识别；图块内（如整块的放大视图）一根根画出的剖面线未读出"
+by = ["card:section_line_region", "native_hatch_pattern", "uniform_parallel_thin_oblique_lines", "card:view_section_components", "card:loose_hatch_region_guard"]
+missing = "原生填充及散线按平行晶格与真实接边/闭合区域核验，含已展开的原生块；非直线散线、无区域证据和未知材料交叉网格等保留未知"
 
 [[concepts]]
 id = "DC-G1-014"
@@ -1074,13 +1074,13 @@ missing = "识别原生填充图案，但不把图案对应到材料类别；散
 [[concepts]]
 id = "DC-G2-023"
 level = "partial"
-by = ["card:local_section_boundary", "piece:free_curve_bounding_hatched_local_section", "card:section_extent_context"]
+by = ["card:local_section_boundary", "piece:free_curve_bounding_hatched_local_section", "card:section_extent_context", "card:view_representation_facts", "card:view_section_components"]
 missing = "局部剖视的范围按波浪线与其两端之间的轮廓求出（一条波浪线落在同一轮廓上、两条横跨同一对轮廓、放大圈内的局部剖），区域内只因剖开才画出的图线、剖面线与波浪线标为局部剖视专属，被剖开显露的虚线在完整结构中连通；以轴线为分界的局部剖、两端落在不同轮廓需沿轮廓转角围成的范围未识别；剖面轮廓在完整结构中只能隐去、不能改画为虚线，同一段虚线圆弧两端隔剖视相对时不连；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G2-043"
 level = "partial"
-by = ["card:view_callout", "card:view_callout/strokes_without_arrows", "card:view_callout/cutting_plane_group"]
+by = ["card:view_callout", "card:view_callout/strokes_without_arrows", "card:view_callout/cutting_plane_group", "card:view_mark_targets", "card:view_member_relations"]
 missing = "短画加箭头加字母（散线）、箭头为图块时箭尾的短画、整条剖切路径（转折处的短画与字母、终点短画与箭头及外侧补入的同名字母）、已有命名路径按 GB/T 4458.6 §6.1–6.4 核起点/终点/转折缺字母（独立规则 G2-043-cutting-letter-required；仅散线与 TEXT，无明确路径不推断漏标）、无箭头的成对短画，以及作为一个图块的剖切符号（含转折）已识别；剖切符号之间的细点画线剖切线未识别"
 
 [[concepts]]
@@ -1097,7 +1097,7 @@ by = ["card:section_line_region", "uniform_parallel_thin_oblique_lines"]
 [[concepts]]
 id = "DC-G2-065"
 level = "full"
-by = ["card:view_callout", "card:view_callout/section_name", "card:view_callout/section_name_split"]
+by = ["card:view_callout", "card:view_callout/section_name", "card:view_callout/section_name_split", "card:view_mark_targets", "card:view_member_relations"]
 
 [[concepts]]
 id = "DC-G2-066"
@@ -1114,19 +1114,19 @@ missing = "散线写的视图名称与比例组合（罗马数字或字母在上
 [[concepts]]
 id = "DC-G2-072"
 level = "partial"
-by = ["card:annotation_constituents", "card:view_callout", "card:view_callout/arrow_and_letter_apart", "card:view_callout/arrow_block", "view_letter_with_direction_suffix", "viewing_direction_arrow_and_letter"]
+by = ["card:annotation_constituents", "card:view_callout", "card:view_callout/arrow_and_letter_apart", "card:view_callout/arrow_block", "view_letter_with_direction_suffix", "viewing_direction_arrow_and_letter", "card:view_mark_targets"]
 missing = "箭头加字母（散线、图块，或箭头与字母一个画成图块一个散画）和“X向”名称已识别；现行标准只写字母的向视图名称（不带“向”字）未识别为视图名称"
 
 [[concepts]]
 id = "DC-G2-073"
 level = "partial"
-by = ["card:view_arrangement"]
+by = ["card:view_arrangement", "card:view_representation_facts", "card:view_member_relations"]
 missing = "无名称视图按第一角配置读出主视图与左、右、俯、仰、后视图（行或列两侧对齐、行列都对齐、只有两视图对齐）；没有任何对齐时退回最大的无名称视图；视图内容与方位的矛盾（可能为第三角）不检查"
 
 [[concepts]]
 id = "DC-G2-075"
 level = "partial"
-by = ["card:detail_circle_interruption", "card:detail_view", "card:detail_view/boundary_arc", "card:detail_view/boundary_circle", "card:detail_view/title_forms", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale", "card:detail_view/block_view", "card:view_callout/detail_indicator"]
+by = ["card:detail_circle_interruption", "card:detail_view", "card:detail_view/boundary_arc", "card:detail_view/boundary_circle", "card:detail_view/title_forms", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale", "card:detail_view/block_view", "card:view_callout/detail_indicator", "card:view_representation_facts", "card:view_mark_targets", "card:view_member_relations", "card:view_section_components"]
 missing = "散线写的放大部位圈、编号与名称（罗马数字含 Unicode 写法、大写字母编号、“旋转”字样、全角冒号）、细实线圆或圆弧加波浪线的边界，以及整块作为一个图块的放大视图与图块中的名称已识别；标题比例与几何放大倍数只记证据，不与图纸比例核对"
 
 [[concepts]]
@@ -1696,13 +1696,13 @@ missing = "只把遮罩对象（WIPEOUT）并入其注写对象；剖面线与�
 [[concepts]]
 id = "DC-G2-015"
 level = "partial"
-by = ["card:view_callout", "card:section_extent_context"]
+by = ["card:view_callout", "card:section_extent_context", "card:view_representation_facts"]
 missing = "整块或散画的剖切符号在转折处成直角时记为平行剖切面，所指视图记 section_type:parallel_planes；阶梯剖视图中各段剖切面后的结构未分类；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
 id = "DC-G2-016"
 level = "partial"
-by = ["card:section_view_type", "card:view_callout", "card:section_extent_context"]
+by = ["card:section_view_type", "card:view_callout", "card:section_extent_context", "card:view_representation_facts"]
 missing = "整块或散画的剖切符号在转折处成斜角时，符号记为相交剖切面，所指的“X—X”视图记 section_type:intersecting_planes（转折点在回转视图中心时记为依据）；转到剖切面上的结构本身、展开画法未分类；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
@@ -1779,7 +1779,7 @@ missing = "只识别图框外注写中带质量词的文字；标题栏内质量
 [[concepts]]
 id = "DC-G2-020"
 level = "partial"
-by = ["card:section_view_type", "card:section_extent_context"]
+by = ["card:section_view_type", "card:section_extent_context", "card:view_representation_facts"]
 missing = "剖面线全在贯穿视图的对称中心线一侧、两侧轮廓不成镜像、中心线上没有粗实线时记为半剖；半标注的直径尺寸未作旁证，局部被波浪线围住的剖面线不参与判断；区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
@@ -1810,7 +1810,7 @@ ids = ["DC-G4-006", "DC-G4-017", "DC-G4-032", "DC-G4-059"]
 [[concepts]]
 id = "DC-G2-028"
 level = "partial"
-by = ["card:section_cross_section_type", "card:section_region_boundary", "card:section_hatch_boundary"]
+by = ["card:section_cross_section_type", "card:section_region_boundary", "card:section_hatch_boundary", "card:view_representation_facts", "card:view_section_components"]
 missing = "区域证据保守实现；完整局部放大图的轴线分界按 GB/T 4458.6 5.5/5.6 与 GB/T 16675.1 5.2 保留对称半剖例外，圆弧/圆形点画分布圆不作剖面外缘；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论；第三批断面规则在独立事实层检查中心线承载外缘与实体内部轮廓，范围/类型未知保留复核，螺纹细线及连续母视图轮廓有形状例外；纵剖肋板轮辐和半剖分界规则暂缓，曲边/原生块/散画区域的未覆盖不算合格"
 
 [[concepts]]
@@ -1828,13 +1828,13 @@ missing = "区域证据保守实现；椭圆/样条边界、中断处对称配�
 [[concepts]]
 id = "DC-G2-018"
 level = "partial"
-by = ["card:section_line_origin"]
+by = ["card:section_line_origin", "card:view_representation_facts", "card:view_section_components"]
 missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论；第三批断面规则在独立事实层检查中心线承载外缘与实体内部轮廓，范围/类型未知保留复核，螺纹细线及连续母视图轮廓有形状例外；纵剖肋板轮辐和半剖分界规则暂缓，曲边/原生块/散画区域的未覆盖不算合格"
 
 [[concepts]]
 id = "DC-G2-013"
 level = "partial"
-by = ["card:section_extent_context"]
+by = ["card:section_extent_context", "card:view_representation_facts"]
 missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
 
 [[concepts]]
@@ -1842,3 +1842,16 @@ id = "DC-G3-046"
 level = "partial"
 by = ["card:section_line_exceptions"]
 missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[rules]]
+rule = "card:loose_hatch_region_guard/without_region"
+function = "loose_hatch_regions::state"
+piece = false
+kinds = ["unresolved"]
+concepts = []
+
+[[concepts]]
+id = "DC-G1-046"
+level = "partial"
+by = ["card:loose_hatch_region_guard"]
+missing = "仅拒绝被误当作散线剖面的重复交叉网格；未建立独立网格材料或坐标系统识别"

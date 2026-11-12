@@ -87,6 +87,7 @@ fn the_harness_carries_the_mode_focus_and_region_without_answers() {
             "'Content that never plots is drawn faint in the classified views and nothing else is'",
             "'Expression details name every referenced view by its label'",
             "'View mode'",
+            "'View composition panel explains the complete-structure option has no effect'",
             "'Composition overlay is off by default'",
             "'Every view draws exactly its component members and optional located annotations'",
         ] {

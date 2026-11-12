@@ -5294,3 +5294,251 @@ tests = ["revision_justified_text_uses_the_semantic_alignment_point"]
 [[cards.counter_examples]]
 statement = "左基线对齐的第二点没有定位意义；居中文字内容不变但第一点重算也不是修改"
 test = "revision_justified_text_uses_the_semantic_alignment_point"
+
+[[cards]]
+id = "view_representation_facts"
+markers = []
+expression_kind = "view_callout"
+title = "视图位置与图形表示法独立读取"
+meaning = "主视图等投影位置不决定是否剖切；剖切名称或同名剖切符号确认剖切图形，全部轮廓均为已核剖面边界时才判断面，否则为剖视。带局部剖的外形视图仍为视图。缺少范围或路径证据写未知。"
+sources = ["GB/T 17452-1998 3.1–3.6、5、6、7、8（本地原页5–8）", "GB/T 4458.6-2002 4.5、5.3–5.6、7（本地原页7、10、14、18–20）", "GB/T 14692-2008 5.1、5.2.1（本地原页5–6）"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition = "沿同页投影配置证据读取位置；剖面区域的源区间边界覆盖全部轮廓才判断面。完整原生剖面外廓覆盖图形外廓且无半剖/局部剖分界才记全剖；半剖、局部剖沿剖面及中心线/断裂边界证据；两端共线为单面，平行错层为阶梯，转折相交为旋转，两者并存为组合。"
+concepts = ["DC-G2-013", "DC-G2-015", "DC-G2-016", "DC-G2-018", "DC-G2-020", "DC-G2-023", "DC-G2-028", "DC-G2-073", "DC-G2-075"]
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "HATCH", "INSERT"]
+requirement = "所在视图的轮廓、剖面边界区间、剖面区域、中心线和局部剖分界"
+[[cards.components]]
+role = "cutting_stroke"
+primitives = ["LINE", "LWPOLYLINE", "INSERT", "TEXT"]
+requirement = "同页、同名的剖切符号及其几何路径"
+[[cards.variants]]
+id = "separate_axes"
+title = "位置与图形独立"
+distinguishing = "主视图可以画成剖视；第一角名称按投射方向而非纸上上下左右命名"
+encodings = ["inferred"]
+tests = ["composition_first_angle_names_follow_projection", "composition_principal_section_and_cross_section_are_independent"]
+[[cards.variants]]
+id = "bounded_face"
+title = "仅剖面与剖后轮廓"
+distinguishing = "同名图形多出剖后可见轮廓时不能再判断面；方向名称不否定剖切符号"
+encodings = ["native", "inferred"]
+tests = ["composition_face_only_differs_from_projected_contour", "composition_cutting_surface_requires_two_collinear_ends", "loose_cutting_path_with_an_oblique_turn_shows_intersecting_planes", "cutting_path_with_a_right_angle_turn_shows_parallel_planes", "section_lines_on_one_side_of_the_centre_line_make_a_half_section"]
+[[cards.counter_examples]]
+statement = "只有填充或一条剖切端线，不证明全剖或单一剖切面；无名称或配置证据的碎片位置未知"
+test = "composition_unlabelled_hatch_does_not_invent_cutting_plane"
+[[cards.parameters]]
+name = "collinear_tolerance"
+value = 0.08
+meaning = "共线距离容差为同图文字高度的本比例，非国标数值"
+[[cards.parameters]]
+name = "parallel_sine"
+value = 0.01
+meaning = "单位方向叉积的数值容差，随图形缩放不变，非产品公差"
+
+[[cards]]
+id = "view_mark_targets"
+expression_kind = "view_callout"
+title = "视图标注的定义与指向"
+meaning = "名称与比例定义自己的图形；剖切符号、向视箭头、局部放大圈按同页同名/同编号指向对应图形，和它画在哪个区域分开。引线上的剖视名称定义引线所接局部剖面的宿主视图；嵌套图块内字母仍是有原生路径的字母成员。"
+sources = ["GB/T 17452-1998 8.1–8.2（本地原页8）", "GB/T 4458.6-2002 5.6、6.1（本地原页14、16）", "GB/T 4458.1-2002 4.1、5.1、5.7.1–5.7.4（本地原页5、10–11）；引线名称宿主及嵌套编码是这些标注关系的保守实现解释，非额外国标条文"]
+knowledge_units = ["K11", "K13"]
+markers = []
+recognition = "名称源成员与图形标题源身份相等；同字母剖切符号连接同页剖视名称（包括有引线剖面接触证据的局部剖宿主）。嵌套 INSERT 原生解析保留字母叶路径。有字母的箭头先按同名图形匹配；同页唯一剩余的无字母投射箭头与唯一未被指向的具名向视图/局部视图可用排除法配对，写入指向和组成目标但表达与成员均为候选，证据注明排除法。余数不唯一、名称重复或无剖面接触则保留未知，不按邻近补配。"
+concepts = ["DC-G2-043", "DC-G2-065", "DC-G2-072", "DC-G2-075"]
+[[cards.components]]
+role = "view_letter"
+primitives = ["TEXT", "MTEXT", "INSERT", "LINE", "SOLID", "HATCH"]
+requirement = "同页名称、比例、剖切符号或投射箭头、放大标注的原始成员身份和字母/编号"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "LWPOLYLINE", "HATCH"]
+requirement = "引线与名称基准线相连，远端必须在已核剖面区域内或接到其边界"
+[[cards.variants]]
+id = "named_reference"
+title = "名称、剖切标注和目标分开"
+distinguishing = "有源名称定义目标，剖切端标注指向目标，绘制位置保持原值"
+encodings = ["text", "loose", "block"]
+tests = ["composition_title_defines_its_figure_and_cutting_ends_reference_it"]
+[[cards.variants]]
+id = "local_section_leader"
+title = "名称经引线指到局部剖面"
+distinguishing = "名称可远离图形；同字母剖切符号指向包含该剖面的视图"
+encodings = ["loose"]
+tests = ["composition_local_name_targets_the_cut_face_containing_view"]
+[[cards.variants]]
+id = "nested_letter_member"
+title = "嵌套块中的方向字母"
+distinguishing = "递归到文字叶成员，保留所有祖先和变换，不将整块当作字母"
+encodings = ["block"]
+tests = ["composition_nested_arrow_letter_keeps_leaf_member_and_target"]
+[[cards.counter_examples]]
+statement = "只有名称引线而无区域接触证据时，目标留空并说明未知"
+test = "composition_local_name_without_cut_region_keeps_unknown_target"
+[[cards.variants]]
+id = "unique_elimination_candidate"
+title = "同页唯一余项的候选指向"
+distinguishing = "同名字母箭头先匹配完，同页只余一个无字母投射箭头和一个未被指向的具名向视图/局部视图；写明排除法，目标和标注组成均保留候选状态，不升级observed"
+encodings = ["loose", "block"]
+tests = ["composition_letterless_arrow_keeps_unique_elimination_as_candidate_reference"]
+[[cards.counter_examples]]
+statement = "剩余投射箭头或具名图形不止一个，或同页名称重复时，不能排除到唯一目标；正式目标留空并写未知"
+test = "composition_letterless_arrow_without_unique_elimination_keeps_unknown_target"
+[[cards.counter_examples]]
+statement = "同页有多个同名图形时，不能按最近图形选目标；旧指向证据仍保留，正式数组留空"
+test = "composition_ambiguous_repeated_name_does_not_pick_the_nearest_target"
+[[cards.parameters]]
+name = "leader_contact"
+value = 0.1
+meaning = "引线端点接边距离容差 = 图中文字高度 × 本比例；不是对区域位置的最近邻搜索"
+
+[[cards]]
+id = "view_member_relations"
+expression_kind = "view_callout"
+title = "视图组成与所在位置分开"
+meaning = "轮廓、轴线、螺纹、断裂和剖面图形组成所在视图；名称、比例、剖切、向视及局部放大标注组成其正式目标。尺寸、公差、粗糙度、基准、注写、普通引线、标题栏/表格在本程序组成合同中只记所在位置，未解释成员为未知。"
+sources = ["GB/T 14692-2008 5.1.5（本地原页5，图形的可见/不可见轮廓）", "GB/T 17452-1998 3、8（本地原页5、8，图形与剖切标注）", "GB/T 4458.1-2002 5.7（本地原页10–11，放大图名称、比例与标注）", "GB/T 4458.4-2003 4.2.1–4.2.2（本地原页7，尺寸线与图形线分开）；电子字段归属是程序合同解释，非标准新增术语"]
+knowledge_units = ["K11", "K13", "K14"]
+markers = []
+recognition = "先按表达族排除仅位于的注写成员，再按已读几何或正式 defines/references 数组确定组成目标；目标必须是同页已有非容器视图。名称引线、分数横线属于名称；单独比例文字属于比例，局部数量注写仍只位于。"
+concepts = ["DC-G2-043", "DC-G2-065", "DC-G2-073", "DC-G2-075"]
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "HATCH", "INSERT"]
+requirement = "已识别的图形成员及所在视图，保持源身份、原始角色与参数区间"
+[[cards.components]]
+role = "view_title"
+primitives = ["TEXT", "MTEXT", "LINE", "INSERT"]
+requirement = "名称、比例、名称引线、分数横线以及具有正式目标的视图标注成员"
+[[cards.variants]]
+id = "geometry_and_marks"
+title = "图形按位置组成、标注按目标组成"
+distinguishing = "剖切位置和字母可以位于另一图形，却组成剖得的图形"
+encodings = ["loose", "native"]
+tests = ["composition_geometry_and_dimension_keep_separate_membership_roles", "composition_cutting_marks_belong_to_the_target_not_their_location"]
+[[cards.variants]]
+id = "name_parts"
+title = "名称、比例、横线与引线"
+distinguishing = "名称的分数横线和名称引出线不被当作尺寸引线；比例保持独立成员"
+encodings = ["loose", "text"]
+tests = ["composition_detail_fraction_line_name_and_scale_are_distinct_members", "composition_local_name_leader_is_title_but_quantity_note_is_located_only"]
+[[cards.counter_examples]]
+statement = "DIMENSION 的箭头、尺寸线即使接触轮廓也只位于，不能组成视图"
+test = "composition_geometry_and_dimension_keep_separate_membership_roles"
+[[cards.counter_examples]]
+statement = "未解释成员不能改记为只位于来隐藏未知"
+test = "composition_unresolved_source_is_unknown_rather_than_located_only"
+[[cards.parameters]]
+name = "interval_domain"
+value = 1.0
+meaning = "成员参数使用源图元的归一化完整区间；本步不裁剪、合并或延长几何"
+
+[[cards]]
+id = "view_section_components"
+expression_kind = "section_hatch"
+title = "剖面与局部放大图的组成角色"
+meaning = "原生填充承担剖面区域，散画的填充线承担剖面线；已核边界区间优先于剖后可见轮廓，其他图线保留图形角色。放大图自己的边界与原图上的放大部位圈分开。"
+sources = ["GB/T 17452-1998 3.1–3.6、6–7（本地原页5、7）", "GB/T 4458.6-2002 4.4、5.6、7（本地原页7、14、18–20）", "GB/T 4458.1-2002 5.7.2–5.7.4（本地原页10–11）", "GB/T 4457.5-2013 3.2、4.1（本地原页5–6）；角色的标量字段和保留区间行为沿程序合同，非标准新增术语"]
+knowledge_units = ["K11", "K12", "K14"]
+markers = []
+recognition = "按源区间的剖面边界覆盖证据区分边界和剖后可见轮廓；只有覆盖整段才给整段边界角色。局部重合保留原区间与细分证据，整段角色未知。原生HATCH不伪造内部线成员。图纸显示前缀不参与剖视名称解析。"
+concepts = ["DC-G1-010", "DC-G2-018", "DC-G2-023", "DC-G2-028", "DC-G2-075"]
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE", "INSERT"]
+requirement = "填充的源身份与区域、图案、散线成员；未能拆分的原生区域保持一个成员"
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "INSERT"]
+requirement = "剖面边界的原始参数区间、剖后可见轮廓或局部放大图自身边界"
+[[cards.variants]]
+id = "cut_face_roles"
+title = "区域、剖面线、边界与剖后轮廓"
+distinguishing = "同一区间的边界角色优先；区域与单根散线不重复计数"
+encodings = ["native", "loose"]
+tests = ["composition_cut_face_boundary_precedes_visible_contour", "composition_loose_hatch_strokes_are_lines_rather_than_native_regions", "composition_outer_view_keeps_its_local_cut_region", "composition_sheet_prefix_does_not_hide_a_section_name", "composition_hidden_contour_prevents_face_only_classification"]
+[[cards.variants]]
+id = "detail_roles"
+title = "放大边界与原图圈"
+distinguishing = "自身边界属于放大图，原图的圈和编号通过正式目标归入放大图"
+encodings = ["loose"]
+tests = ["composition_detail_boundary_differs_from_original_indicator_circle", "detail_label_and_view_drawn_as_blocks"]
+[[cards.counter_examples]]
+statement = "只有局部区间为剖面边界，不把整段改成边界或剖后轮廓"
+test = "composition_partial_boundary_does_not_relabel_the_whole_member"
+[[cards.counter_examples]]
+statement = "中心线的局部承边不改变整条原始线型、区间或图形角色"
+test = "axis_boundary_is_bounded_and_keeps_line_type"
+[[cards.parameters]]
+name = "interval_merge_tolerance"
+value = 0.00000001
+meaning = "归一化源区间覆盖比较的浮点容差，不是几何延长范围"
+
+[[cards]]
+id = "loose_hatch_region_guard"
+expression_kind = "section_hatch"
+title = "散线剖面线必须有区域证据"
+meaning = "等距平行的斜线只是剖面候选；自动确认还需源轮廓/分界的真实接触，或由断裂曲线与实际轮廓追踪的闭合剖切区域，或放大圆弧与断裂界线实际闭合的区域。原生图案填充保留为区域证据。只有角度、间距、文字框或视图包围盒不能确认剖面，交叉网格在缺原生材料图案证据时保留未知。"
+sources = ["GB/T 4457.5-2013 3.2、4.1及表1（本地原页5–6）", "GB/T 17453-2005 第4–5章（本地原页7–8）", "GB/T 17452-1998 3.1–3.2（本地原页5，剖面区域与剖切面关系）；端点接边和已追踪闭合剖切区域，或放大圆弧与断裂界线实际闭合的区域是两种自动确认依据，不把大面积剖切的局部沿周线画法否定为非剖面"]
+knowledge_units = ["K03", "K11", "K14"]
+markers = []
+recognition = "逐个散线族复核同空间、至少三条独立平行线道、等距或整数倍空区间断，并且每根非零线段两端接到真实轮廓/剖切分界，或整组被已追踪的闭合局部剖区域围住。排除轮廓转角的短斜线和与另一平行线族反复交叉的网格；无证据改为未解释，并保留被拒绝的原规则与证据。嵌套块使用已经变换的叶几何。"
+concepts = ["DC-G1-010", "DC-G1-046"]
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["LINE", "HATCH", "INSERT"]
+requirement = "独立平行线道及源成员路径，或原生HATCH图案；同一线道的碎片不充当多条线"
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "INSERT"]
+requirement = "与散线端点接触的独立真实曲线，含放大图自身圆/弧边界；不延长曲线，也不用包围盒作边界"
+[[cards.variants]]
+id = "bounded_lattice"
+title = "有轮廓接触的散线族"
+distinguishing = "方向和间距是必要条件，独立轮廓接触或真实闭合局部剖区域补齐区域证据"
+encodings = ["loose", "block"]
+tests = ["composition_bounded_parallel_lines_keep_independent_region_evidence", "section_lines_with_enlarged_spacing_are_one_hatch", "section_lines_on_one_lattice_across_a_void_are_one_hatch", "detail_label_and_view_drawn_as_blocks", "composition_native_loose_hatching_meets_detail_boundary", "composition_loose_hatch_enclosed_by_local_cut", "detail_view_bounded_by_an_arc_and_a_wavy_line_takes_its_title"]
+[[cards.variants]]
+id = "native_pattern"
+title = "原生图案填充"
+distinguishing = "不要求把CAD填充拆成虚构单根线，不受散线最小条数限制"
+encodings = ["native"]
+tests = ["composition_native_pattern_does_not_require_loose_line_count"]
+[[cards.variants]]
+id = "without_region"
+title = "缺少区域依据的散线候选"
+distinguishing = "拒绝原剖面候选，输出未解释表达并保留旧规则与证据"
+encodings = ["loose", "block"]
+tests = ["composition_loose_lattice_without_region_stays_unknown", "composition_crossing_grid_is_not_a_loose_material_hatch"]
+[[cards.counter_examples]]
+statement = "角度与间距整齐，但端点悬空、没有区域接触，不能确认为剖面"
+test = "composition_loose_lattice_without_region_stays_unknown"
+[[cards.counter_examples]]
+statement = "倒角或拐角处的一根短斜线不构成剖面线族"
+test = "composition_one_short_chamfer_is_not_hatching"
+[[cards.counter_examples]]
+statement = "表示平面的两根对角线不构成剖面线族"
+test = "composition_two_plane_diagonals_are_not_hatching"
+[[cards.counter_examples]]
+statement = "两族重复相交的网格即使两端接到外框，也缺少材料剖面依据"
+test = "composition_crossing_grid_is_not_a_loose_material_hatch"
+[[cards.counter_examples]]
+statement = "孤立的点画中心线保持原线型和图形身份，不变成剖面"
+test = "composition_isolated_centre_line_is_not_a_hatch"
+[[cards.parameters]]
+name = "endpoint_tolerance"
+value = 0.05
+meaning = "端点到真实曲线的接触容差 = 图中文字高度 × 本比例"
+[[cards.parameters]]
+name = "parallel_sine"
+value = 0.03
+meaning = "两线单位方向叉积的无量纲上限，约1.72度；是实现容差而非国标规定"
+[[cards.parameters]]
+name = "spacing_tolerance"
+value = 0.15
+meaning = "间距或整数倍间断的误差上限 = 自身最小线道间距 × 本比例"
+[[cards.parameters]]
+name = "min_lanes"
+value = 3.0
+meaning = "自动确认所需的最少独立线道数；单根线的分段不能增加条数"

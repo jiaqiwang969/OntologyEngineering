@@ -287,6 +287,33 @@ fn local_section_region_between_a_break_curve_and_one_outline() {
 }
 
 #[test]
+fn composition_loose_hatch_enclosed_by_local_cut() {
+    let mut ents = bay(vec![]);
+    // The fixture's native HATCH establishes the cut region and break curve.
+    // Inset loose strokes must use its traced boundary, not their own extent.
+    for (i, x) in [14., 15., 16.].into_iter().enumerate() {
+        ents.push(line(&format!("inset-{i}"), "02", [x, 1.], [x + 0.6, 1.6]));
+    }
+    let g = run(&ents);
+    for i in 0..3 {
+        let h = format!("inset-{i}");
+        let m = g.members.iter().find(|m| m.source_handle == h).unwrap();
+        let e = g
+            .expressions
+            .iter()
+            .find(|e| e.id == m.expression_id)
+            .unwrap();
+        assert_eq!(e.kind, "section_hatch", "{e:?}");
+        assert!(
+            e.evidence_ids
+                .iter()
+                .any(|s| s == "loose_hatch_region:closed_local_section"),
+            "{e:?}"
+        );
+    }
+}
+
+#[test]
 fn outline_outside_the_region_is_never_section_only() {
     // a fillet beside the break curve, inside the extent of the hatch but outside the region
     let g = run(&bay(vec![arc("F", "01", [10.5, 4.5], 1.5, 0., 90.)]));

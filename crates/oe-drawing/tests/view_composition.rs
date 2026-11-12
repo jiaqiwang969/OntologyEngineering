@@ -143,3 +143,193 @@ fn composition_cutting_surface_requires_two_collinear_ends() {
             .collect::<Vec<_>>()
     );
 }
+
+fn owner<'a>(
+    g: &'a MdEngineeringExpressionGraph,
+    src: &str,
+) -> &'a oe_contracts::MdEngineeringExpression {
+    let m = g
+        .members
+        .iter()
+        .find(|m| {
+            m.source_handle == src
+                && g.expressions
+                    .iter()
+                    .any(|e| e.id == m.expression_id && e.kind == "view_callout")
+        })
+        .unwrap();
+    g.expressions
+        .iter()
+        .find(|e| e.id == m.expression_id)
+        .unwrap()
+}
+#[test]
+fn composition_title_defines_its_figure_and_cutting_ends_reference_it() {
+    let mut es = named_face(false);
+    es.extend([
+        line("low", [-17., 8.], [-17., 14.], 60),
+        line("high", [-17., 38.], [-17., 44.], 60),
+        text("low-letter", "U", [-20., 4.]),
+        text("high-letter", "U", [-20., 44.]),
+    ]);
+    let g = run(es);
+    let target = &view_of(&g, "face0").id;
+    assert_eq!(owner(&g, "name").view_mark_kind, "view_name");
+    assert_eq!(owner(&g, "name").defines_view_ids, vec![target.clone()]);
+    let e = owner(&g, "low");
+    assert_eq!(e.view_mark_kind, "cutting_symbol");
+    assert_eq!(e.references_view_ids, vec![target.clone()]);
+    assert_ne!(e.view_id.as_ref(), Some(target));
+    assert!(
+        e.evidence_ids
+            .contains(&format!("references_view:{target}"))
+    );
+}
+fn local_name(has_region: bool) -> Vec<String> {
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.extend([
+        text("local-name", "U—U", [116., 78.]),
+        line("shoulder", [112., 77.], [128., 77.], 18),
+        line("name-leader", [112., 77.], [29., 22.], 18),
+    ]);
+    if has_region {
+        es.push(hatch("local-fill", [20., 13., 39., 31.]));
+    }
+    es
+}
+#[test]
+fn composition_local_name_targets_the_cut_face_containing_view() {
+    let mut es = local_name(true);
+    es.extend([
+        line("low", [-17., 8.], [-17., 14.], 60),
+        line("high", [-17., 38.], [-17., 44.], 60),
+        text("low-letter", "U", [-20., 4.]),
+        text("high-letter", "U", [-20., 44.]),
+    ]);
+    let g = run(es);
+    let target = view_of(&g, "body0");
+    let name = owner(&g, "local-name");
+    assert!(name.qualifiers.contains(&"local_section_name".into()));
+    assert_eq!(name.defines_view_ids, vec![target.id.clone()]);
+    assert_eq!(
+        owner(&g, "low").references_view_ids,
+        vec![target.id.clone()]
+    );
+    assert_eq!(target.representation_kind, "view");
+    assert_eq!(target.section_extent, "local");
+}
+#[test]
+fn composition_local_name_without_cut_region_keeps_unknown_target() {
+    let g = run(local_name(false));
+    let e = owner(&g, "local-name");
+    assert!(e.qualifiers.contains(&"local_section_name".into()));
+    assert!(e.defines_view_ids.is_empty() && !e.unknowns.is_empty());
+}
+fn insert(id: &str, name: &str, p: P) -> String {
+    ent(
+        "INSERT",
+        id,
+        &format!(
+            "2\n{name}\n10\n{}\n20\n{}\n41\n1\n42\n1\n50\n0\n",
+            p[0], p[1]
+        ),
+    )
+}
+fn block(name: &str, es: Vec<String>) -> String {
+    format!(
+        "0\nBLOCK\n2\n{name}\n10\n0\n20\n0\n{}0\nENDBLK\n",
+        es.concat()
+    )
+}
+fn head(id: &str, p: P) -> String {
+    ent(
+        "SOLID",
+        id,
+        &format!(
+            "10\n{}\n20\n{}\n11\n{}\n21\n{}\n12\n{}\n22\n{}\n13\n{}\n23\n{}\n",
+            p[0],
+            p[1],
+            p[0] - 3.,
+            p[1] - 0.5,
+            p[0] - 3.,
+            p[1] + 0.5,
+            p[0] - 3.,
+            p[1] + 0.5
+        ),
+    )
+}
+#[test]
+fn composition_nested_arrow_letter_keeps_leaf_member_and_target() {
+    let blocks = format!(
+        "0\nSECTION\n2\nBLOCKS\n{}{}{}0\nENDSEC\n",
+        block("LetterPart", vec![text("letter-leaf", "V", [3., 2.])]),
+        block(
+            "ArrowPart",
+            vec![
+                line("shaft-leaf", [0., 0.], [12., 0.], 18),
+                head("head-leaf", [15., 0.]),
+                insert("letter-node", "LetterPart", [0., 0.])
+            ]
+        ),
+        block("Wrapper", vec![insert("arrow-node", "ArrowPart", [0., 0.])])
+    );
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.extend(rect("side", [190., 0., 223., 27.]));
+    es.extend([
+        text("side-name", "V向", [197., 33.]),
+        insert("arrow-root", "Wrapper", [17., 70.]),
+    ]);
+    let g = run_blocks(&blocks, es);
+    let e = owner(&g, "arrow-root");
+    assert_eq!(e.view_mark_kind, "direction_mark");
+    assert_eq!(e.references_view_ids, vec![view_of(&g, "side0").id.clone()]);
+    assert!(g.members.iter().any(|m| m.expression_id == e.id
+        && m.member_role == "view_letter"
+        && m.native_member_id.as_deref() == Some("arrow-root/arrow-node/letter-node/letter-leaf")));
+}
+#[test]
+fn composition_letterless_arrow_does_not_promote_elimination_to_a_reference() {
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.extend(rect("side", [190., 0., 223., 27.]));
+    es.extend([
+        text("side-name", "V向", [197., 33.]),
+        line("shaft", [63., 33.], [75., 33.], 18),
+        head("arrow", [78., 33.]),
+    ]);
+    let g = run(es);
+    let e = owner(&g, "arrow");
+    assert_eq!(e.rule, "arrow_with_short_shaft_at_outline_without_letter");
+    assert!(
+        e.evidence_ids
+            .iter()
+            .any(|s| s.ends_with(":by_elimination"))
+    );
+    assert!(
+        e.references_view_ids.is_empty() && !e.unknowns.is_empty(),
+        "{e:?}"
+    );
+}
+
+#[test]
+fn composition_ambiguous_repeated_name_does_not_pick_the_nearest_target() {
+    let mut es = named_face(false);
+    es.extend(rect("other", [370., 0., 403., 27.]));
+    es.extend([
+        hatch("other-fill", [370., 0., 403., 27.]),
+        text("other-name", "U—U", [378., 33.]),
+        line("low", [-17., 8.], [-17., 14.], 60),
+        line("high", [-17., 38.], [-17., 44.], 60),
+        text("low-letter", "U", [-20., 4.]),
+        text("high-letter", "U", [-20., 44.]),
+    ]);
+    let g = run(es);
+    let e = owner(&g, "low");
+    assert_eq!(e.view_mark_kind, "cutting_symbol");
+    assert!(e.references_view_ids.is_empty() && !e.unknowns.is_empty());
+    assert!(
+        e.evidence_ids
+            .iter()
+            .any(|s| s.starts_with("references_view:")),
+        "legacy evidence must survive"
+    );
+}

@@ -88,6 +88,8 @@ mod section_hatching;
 mod section_regions;
 #[path = "view_composition.rs"]
 mod view_composition;
+#[path = "view_mark_targets.rs"]
+mod view_mark_targets;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]

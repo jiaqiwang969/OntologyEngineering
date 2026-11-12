@@ -5336,3 +5336,53 @@ meaning = "共线距离容差为同图文字高度的本比例，非国标数值
 name = "parallel_sine"
 value = 0.01
 meaning = "单位方向叉积的数值容差，随图形缩放不变，非产品公差"
+
+[[cards]]
+id = "view_mark_targets"
+expression_kind = "view_callout"
+title = "视图标注的定义与指向"
+meaning = "名称与比例定义自己的图形；剖切符号、向视箭头、局部放大圈按同页同名/同编号指向对应图形，和它画在哪个区域分开。引线上的剖视名称定义引线所接局部剖面的宿主视图；嵌套图块内字母仍是有原生路径的字母成员。"
+sources = ["GB/T 17452-1998 8.1–8.2（本地原页8）", "GB/T 4458.6-2002 5.6、6.1（本地原页14、16）", "GB/T 4458.1-2002 4.1、5.1、5.7.1–5.7.4（本地原页5、10–11）；引线名称宿主及嵌套编码是这些标注关系的保守实现解释，非额外国标条文"]
+knowledge_units = ["K11", "K13"]
+markers = []
+recognition = "名称源成员与图形标题源身份相等；同字母剖切符号连接同页剖视名称（包括有引线剖面接触证据的局部剖宿主）。嵌套 INSERT 原生解析保留字母叶路径。缺字母、同名多候选、无剖面接触均不由邻近或排除法确认目标。"
+concepts = ["DC-G2-043", "DC-G2-065", "DC-G2-072", "DC-G2-075"]
+[[cards.components]]
+role = "view_letter"
+primitives = ["TEXT", "MTEXT", "INSERT", "LINE", "SOLID", "HATCH"]
+requirement = "同页名称、比例、剖切符号或投射箭头、放大标注的原始成员身份和字母/编号"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "LWPOLYLINE", "HATCH"]
+requirement = "引线与名称基准线相连，远端必须在已核剖面区域内或接到其边界"
+[[cards.variants]]
+id = "named_reference"
+title = "名称、剖切标注和目标分开"
+distinguishing = "有源名称定义目标，剖切端标注指向目标，绘制位置保持原值"
+encodings = ["text", "loose", "block"]
+tests = ["composition_title_defines_its_figure_and_cutting_ends_reference_it"]
+[[cards.variants]]
+id = "local_section_leader"
+title = "名称经引线指到局部剖面"
+distinguishing = "名称可远离图形；同字母剖切符号指向包含该剖面的视图"
+encodings = ["loose"]
+tests = ["composition_local_name_targets_the_cut_face_containing_view"]
+[[cards.variants]]
+id = "nested_letter_member"
+title = "嵌套块中的方向字母"
+distinguishing = "递归到文字叶成员，保留所有祖先和变换，不将整块当作字母"
+encodings = ["block"]
+tests = ["composition_nested_arrow_letter_keeps_leaf_member_and_target"]
+[[cards.counter_examples]]
+statement = "只有名称引线而无区域接触证据时，目标留空并说明未知"
+test = "composition_local_name_without_cut_region_keeps_unknown_target"
+[[cards.counter_examples]]
+statement = "无字母箭头与唯一剩余视图的排除法证据仍保留为候选，不建立正式指向"
+test = "composition_letterless_arrow_does_not_promote_elimination_to_a_reference"
+[[cards.counter_examples]]
+statement = "同页有多个同名图形时，不能按最近图形选目标；旧指向证据仍保留，正式数组留空"
+test = "composition_ambiguous_repeated_name_does_not_pick_the_nearest_target"
+[[cards.parameters]]
+name = "leader_contact"
+value = 0.1
+meaning = "引线端点接边距离容差 = 图中文字高度 × 本比例；不是对区域位置的最近邻搜索"

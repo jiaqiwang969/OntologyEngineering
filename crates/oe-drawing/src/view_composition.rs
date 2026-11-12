@@ -134,7 +134,7 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
         .exprs
         .iter()
         .filter(|e| {
-            has(&e.evidence_ids, &format!("references_view:{}", v.id))
+            e.references_view_ids.contains(&v.id)
                 && b.members
                     .iter()
                     .any(|m| m.expression_id == e.id && m.member_role == "cutting_stroke")
@@ -143,19 +143,20 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
         })
         .collect();
     let half = has(&v.evidence_ids, "section_type:half");
-    let local = hs
-        .iter()
-        .any(|h| h.section_extent.as_deref() == Some("local"))
+    let local_name = b.exprs.iter().any(|e| {
+        e.qualifiers.iter().any(|q| q == "local_section_name") && e.defines_view_ids.contains(&v.id)
+    });
+    let local = local_name
+        || hs
+            .iter()
+            .any(|h| h.section_extent.as_deref() == Some("local"))
         || b.members.iter().any(|m| {
             m.view_id.as_ref() == Some(&v.id)
                 && m.evidence_ids
                     .iter()
                     .any(|s| s.starts_with("section_profile:"))
         });
-    let cut = view_layout::section_letters(&v.label).is_some()
-        || !symbols.is_empty()
-        || has(&v.evidence_ids, "view_type:section")
-        || half;
+    let cut = view_layout::section_letters(&v.label).is_some() || !symbols.is_empty() || half;
     let contour_ids: BTreeSet<_> = here
         .iter()
         .filter(|e| e.kind == "visible_contour")
@@ -263,6 +264,7 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
 
 pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &mut [MdDrawingView]) -> Result<()> {
     representation::card_ref(FACTS)?;
+    view_mark_targets::state(cx, b, views)?;
     for v in views {
         v.position_role = position(v).into();
         if v.kind != "sheet" {

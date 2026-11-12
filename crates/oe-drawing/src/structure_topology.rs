@@ -67,6 +67,18 @@ pub(super) struct Cover {
     symbols: Vec<Symbol>,
 }
 
+impl Cover {
+    /// A closed cut region must be traced through its break curves and actual
+    /// outline. Its box alone cannot witness that a loose lattice is enclosed.
+    pub(super) fn encloses_hatch(&self, sources: &[&str], points: &[P], tol: f64) -> bool {
+        !points.is_empty()
+            && self.sections.iter().any(|s| {
+                sources.iter().all(|h| s.hatch.iter().any(|x| x == h))
+                    && points.iter().all(|p| s.holds(*p, tol))
+            })
+    }
+}
+
 /// A collinear outline piece that may continue a line across a gap.
 pub(super) struct Partner {
     pub handle: String,

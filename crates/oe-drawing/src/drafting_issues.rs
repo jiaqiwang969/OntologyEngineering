@@ -257,9 +257,9 @@ fn group_order_key<'a>(
     )
 }
 
-fn ordered_rule_groups<'a>(
-    issues: &'a [MdDraftingIssue],
-) -> Vec<(&'a str, Vec<&'a MdDraftingIssue>)> {
+fn ordered_rule_groups(
+    issues: &[MdDraftingIssue],
+) -> Vec<(&str, Vec<&MdDraftingIssue>)> {
     let mut by_rule: BTreeMap<&str, Vec<&MdDraftingIssue>> = BTreeMap::new();
     for issue in issues {
         by_rule.entry(issue.rule.as_str()).or_default().push(issue);

@@ -269,7 +269,7 @@ rule:G2-019-section-hatch-crosses-outline a sh:NodeShape ;
     sh:targetClass md:HatchLine, md:SectionRegion ;
     md:ruleId "G2-019-section-hatch-crosses-outline" ; md:group "G2" ;
     md:concept dc:DC-G2-019, dc:DC-G2-028 ;
-    md:clause "GB/T 17453-2005 第5条、4.3；GB/T 4457.5-2013 4.4" ;
+    md:clause "GB/T 17453-2005 第5章；GB/T 4457.5-2013 4.1、4.3、4.4" ;
     md:confidence "likely" ;
     md:proposedCorrection "将越过剖面边界的剖面线截回区域轮廓内，使剖面线与轮廓相接或保持在剖面区域内；保留原图并复核倒角、键槽和槽口的边界。"@zh ;
     rdfs:label "剖面线越出其边界轮廓"@zh ;
@@ -278,7 +278,7 @@ rule:G2-019-section-hatch-crosses-outline a sh:NodeShape ;
 rule:G2-019-section-hatch-crosses-outline-p1 a sh:PropertyShape ;
     sh:path md:crossedBy ;
     sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ;
-    sh:message "剖面线穿过边界轮廓并越出剖面区域；请按 GB/T 17453-2005 第5条、4.3条复核边界和剖面线。"@zh .
+    sh:message "剖面线穿过边界轮廓并越出剖面区域；请按 GB/T 17453-2005 第5章、GB/T 4457.5-2013 4.1条复核边界和剖面线。"@zh .
 
 rule:G2-001-hatch-broken-at-text a sh:NodeShape ;
     sh:targetClass md:Text ;
@@ -738,7 +738,7 @@ text_band_height = 0.3
 # GB/T 14665-2012 5.7 表4 gives a 1 mm minimum gap to a reference/baseline;
 # Table 3 gives 3.5 mm alphanumeric height on A2--A4.  Use that supported
 # worst-case ratio (1 / 3.5 = 2/7), rather than the former unsupported 0.5.
-text_carrier_gap_height = 0.2857142857142857
+text_carrier_gap_height = 0.285714
 text_end_height = 0.5
 text_gap_height = 3.0
 arc_end_arrow = 1.2
@@ -891,7 +891,7 @@ scale_test = "section_rules_are_scale_equivariant"
 [[section_rule_knowledge]]
 id = "section_hatch_boundary_rules"
 concepts = ["DC-G2-019", "DC-G2-028"]
-clauses = ["GB/T 17453-2005 5、4.3", "GB/T 4457.5-2013 4.4"]
+clauses = ["GB/T 17453-2005 5", "GB/T 4457.5-2013 4.1、4.3、4.4"]
 components = ["Loose hatch line or native SectionRegion", "Single visible outline or connected outline chain", "Internal crossing versus endpoint contact", "Small cut-off area and one-sided entity evidence"]
 variants = ["Loose crossing: section_hatch_boundary_crossing_is_reported", "Boundary contact: section_hatch_boundary_touch_is_not_reported", "Chamfer corner cut: section_chamfer_corner_cut_is_reported_source_layer", "Connected native slot chain: section_native_boundary_slot_chain_is_reported", "Spoke crossing both sides: section_spoke_crossing_superimposed_remains_interior", "Native pattern line with visible continuation: section_native_pattern_visible_overrun_is_reported", "Inferred local-section span is not an original contour: section_inferred_local_span_is_ignored", "Contour lineweight controls the visible threshold: section_contour_lineweight_controls_visible_overrun", "Text height is the fallback scale: section_text_height_sets_fallback_and_hatch_spacing_does_not", "Arrow length is the second fallback: section_arrow_length_is_the_second_fallback"]
 counter_examples = ["A hatch line ending on the outline is not an overrun: section_hatch_boundary_touch_is_not_reported", "A large cut-off region remains an interior use: section_large_boundary_cut_remains_interior", "Entity evidence on both sides keeps the chain an interior use: section_two_sided_boundary_cut_remains_interior", "A spoke crossing the candidate cut is split at the boundary before side classification: section_spoke_crossing_superimposed_remains_interior", "A small continuation hidden by the thick outline is not visible: section_tiny_overrun_under_stroke_is_ignored", "A contour tangent point is contact, not an overrun: section_tangent_endpoint_is_ignored", "A native boundary without pattern lines has no visible overrun: section_native_boundary_without_pattern_is_ignored", "No contour width or scale witness means no judgment: section_missing_contour_width_scale_is_not_judged"]

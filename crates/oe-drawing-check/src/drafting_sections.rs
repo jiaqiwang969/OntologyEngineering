@@ -531,60 +531,53 @@ struct CutSegment {
     nodes: [usize; 2],
 }
 
-fn collect_boundary_paths(
-    current: usize,
+struct BoundaryPathSearch<'a> {
     target: usize,
-    component: &BTreeSet<usize>,
-    adjacency: &[Vec<usize>],
-    segments: &[CutSegment],
-    visited_nodes: &mut BTreeSet<usize>,
-    used_segments: &mut BTreeSet<usize>,
-    path: &mut Vec<usize>,
-    paths: &mut Vec<Vec<usize>>,
+    component: &'a BTreeSet<usize>,
+    adjacency: &'a [Vec<usize>],
+    segments: &'a [CutSegment],
+    visited_nodes: &'a mut BTreeSet<usize>,
+    used_segments: &'a mut BTreeSet<usize>,
+    path: &'a mut Vec<usize>,
+    paths: &'a mut Vec<Vec<usize>>,
     limit: usize,
-) {
-    if paths.len() >= 128 || path.len() > limit {
-        return;
-    }
-    if current == target {
-        if !path.is_empty() {
-            paths.push(path.clone());
+}
+
+impl BoundaryPathSearch<'_> {
+    fn visit(&mut self, current: usize) {
+        if self.paths.len() >= 128 || self.path.len() > self.limit {
+            return;
         }
-        return;
-    }
-    for &segment in &adjacency[current] {
-        if !component.contains(&segment) || used_segments.contains(&segment) {
-            continue;
+        if current == self.target {
+            if !self.path.is_empty() {
+                self.paths.push(self.path.clone());
+            }
+            return;
         }
-        let data = segments[segment];
-        let next = if data.nodes[0] == current {
-            data.nodes[1]
-        } else if data.nodes[1] == current {
-            data.nodes[0]
-        } else {
-            continue;
-        };
-        if visited_nodes.contains(&next) {
-            continue;
+        let adjacent = self.adjacency[current].clone();
+        for segment in adjacent {
+            if !self.component.contains(&segment) || self.used_segments.contains(&segment) {
+                continue;
+            }
+            let data = self.segments[segment];
+            let next = if data.nodes[0] == current {
+                data.nodes[1]
+            } else if data.nodes[1] == current {
+                data.nodes[0]
+            } else {
+                continue;
+            };
+            if self.visited_nodes.contains(&next) {
+                continue;
+            }
+            self.visited_nodes.insert(next);
+            self.used_segments.insert(segment);
+            self.path.push(segment);
+            self.visit(next);
+            self.path.pop();
+            self.used_segments.remove(&segment);
+            self.visited_nodes.remove(&next);
         }
-        visited_nodes.insert(next);
-        used_segments.insert(segment);
-        path.push(segment);
-        collect_boundary_paths(
-            next,
-            target,
-            component,
-            adjacency,
-            segments,
-            visited_nodes,
-            used_segments,
-            path,
-            paths,
-            limit,
-        );
-        path.pop();
-        used_segments.remove(&segment);
-        visited_nodes.remove(&next);
     }
 }
 
@@ -718,18 +711,19 @@ fn boundary_cut_chains(
                 let mut paths = Vec::new();
                 let mut visited_nodes = BTreeSet::from([start_node]);
                 let mut used_segments = BTreeSet::new();
-                collect_boundary_paths(
-                    start_node,
-                    end_node,
-                    &component_set,
-                    &adjacency,
-                    &segments,
-                    &mut visited_nodes,
-                    &mut used_segments,
-                    &mut Vec::new(),
-                    &mut paths,
-                    4,
-                );
+                let mut path = Vec::new();
+                let mut search = BoundaryPathSearch {
+                    target: end_node,
+                    component: &component_set,
+                    adjacency: &adjacency,
+                    segments: &segments,
+                    visited_nodes: &mut visited_nodes,
+                    used_segments: &mut used_segments,
+                    path: &mut path,
+                    paths: &mut paths,
+                    limit: 4,
+                };
+                search.visit(start_node);
                 for path in paths {
                     let mut current = start_node;
                     let mut ordered = Vec::new();
@@ -1132,7 +1126,7 @@ fn contour_lineweight(
 fn record_points(record: &dxf::Record) -> Vec<P> {
     let mut points = Vec::new();
     for (index, (code, value)) in record.tags.iter().enumerate() {
-        if !matches!(*code, 10 | 11 | 12 | 13) {
+        if !matches!(*code, 10..=13) {
             continue;
         }
         let y_code = *code + 10;
@@ -1175,20 +1169,24 @@ fn arrow_length(
 /// thin line and its own width/spacing is deliberately never used as the contour width.  When
 /// the contour has no explicit DXF width, the drawing's text height or arrow length supplies the
 /// scale witness named by the knowledge card; if neither exists, the rule remains unclassified.
-fn visible_overrun_threshold(
-    contour: &Object,
-    d: &Dxf<'_>,
-    members: &BTreeMap<&str, &Value>,
+struct OverrunScale {
     text_height: Option<f64>,
     arrow_length: Option<f64>,
     text_ratio: f64,
     arrow_strokes: f64,
     visible_ratio: f64,
+}
+
+fn visible_overrun_threshold(
+    contour: &Object,
+    d: &Dxf<'_>,
+    members: &BTreeMap<&str, &Value>,
+    scale: &OverrunScale,
 ) -> Option<f64> {
     let thick = contour_lineweight(contour, d, members)
-        .or_else(|| text_height.map(|height| height * text_ratio))
-        .or_else(|| arrow_length.map(|length| length / arrow_strokes))?;
-    Some((thick * visible_ratio).max(1e-9))
+        .or_else(|| scale.text_height.map(|height| height * scale.text_ratio))
+        .or_else(|| scale.arrow_length.map(|length| length / scale.arrow_strokes))?;
+    Some((thick * scale.visible_ratio).max(1e-9))
 }
 
 fn same_source_interval(
@@ -1715,6 +1713,13 @@ pub(super) fn augment(
         param("section_arrow_length_in_thick_strokes")?,
         param("section_visible_overrun_stroke_ratio")?,
     );
+    let overrun_scale = OverrunScale {
+        text_height,
+        arrow_length,
+        text_ratio: stroke_ratio,
+        arrow_strokes: arrow_ratio,
+        visible_ratio,
+    };
     let expressions: BTreeMap<&str, &Value> = list(g, "expressions")?
         .iter()
         .filter_map(|e| Some((e["id"].as_str()?, e)))
@@ -1802,11 +1807,7 @@ pub(super) fn augment(
                 target,
                 d,
                 &members,
-                text_height,
-                arrow_length,
-                stroke_ratio,
-                arrow_ratio,
-                visible_ratio,
+                &overrun_scale,
             ) else {
                 return false;
             };
@@ -1890,11 +1891,7 @@ pub(super) fn augment(
                     &objects[outline],
                     d,
                     &members,
-                    text_height,
-                    arrow_length,
-                    stroke_ratio,
-                    arrow_ratio,
-                    visible_ratio,
+                    &overrun_scale,
                 ) else {
                     continue;
                 };

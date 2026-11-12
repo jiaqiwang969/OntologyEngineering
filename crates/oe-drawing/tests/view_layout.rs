@@ -883,7 +883,26 @@ fn detail_view_bounded_by_an_arc_and_a_wavy_line_takes_its_title() {
     ents.push(text("U", "11", "Ⅱ 旋转", [190., 38.], 3.5));
     ents.push(line("UL", "02", [188., 35.5], [206., 35.5]));
     ents.push(text("SC", "11", "5:1", [192., 31.], 3.5));
+    for (i, x) in [183., 187., 191.].into_iter().enumerate() {
+        ents.push(line(&format!("inset-{i}"), "02", [x, 23.], [x + 2., 25.]));
+    }
     let g = run("", &ents);
+    for i in 0..3 {
+        let h = format!("inset-{i}");
+        let m = g.members.iter().find(|m| m.source_handle == h).unwrap();
+        let e = g
+            .expressions
+            .iter()
+            .find(|e| e.id == m.expression_id)
+            .unwrap();
+        assert_eq!(e.kind, "section_hatch", "{e:?}");
+        assert!(
+            e.evidence_ids
+                .iter()
+                .any(|s| s == "loose_hatch_region:closed_detail_boundary"),
+            "{e:?}"
+        );
+    }
     let b = rule_expr(&g, "card:detail_view/boundary_arc");
     let [b] = b.as_slice() else {
         panic!(

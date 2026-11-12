@@ -423,3 +423,18 @@ fn separate_named_face_is_removed() {
     assert!(face(&g).concept_ids.iter().any(|s| s == "DC-G2-028"));
     assert!(!face(&g).concept_ids.iter().any(|s| s == "DC-G2-033"));
 }
+
+#[test]
+fn composition_isolated_centre_line_is_not_a_hatch() {
+    let mut es=outline("parent",[0.,0.,79.,59.],60);
+    es.push(line("isolated-axis",[9.,29.],[70.,29.],18,true));
+    let g=run(es);
+    let ms:Vec<_>=g.members.iter().filter(|m|m.source_handle=="isolated-axis").collect();
+    assert!(!ms.is_empty());
+    for m in ms {
+        let e=g.expressions.iter().find(|e|e.id==m.expression_id).unwrap();
+        assert_eq!(e.kind,"center_axis");
+        assert_eq!(m.view_component_kind,"view_geometry");
+        assert_eq!(m.line_type,"thin_dash_dot");
+    }
+}

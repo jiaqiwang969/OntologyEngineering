@@ -161,15 +161,13 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
         || half;
     let contour_ids: BTreeSet<_> = here
         .iter()
-        .filter(|e| e.kind == "visible_contour")
+        .filter(|e| matches!(e.kind.as_str(), "visible_contour" | "hidden_contour"))
         .map(|e| e.id.as_str())
         .collect();
     let contours: Vec<_> = b
         .members
         .iter()
-        .filter(|m| {
-            contour_ids.contains(m.expression_id.as_str()) && m.member_role == "contour_segment"
-        })
+        .filter(|m| contour_ids.contains(m.expression_id.as_str()))
         .collect();
     let face_only = !hs.is_empty()
         && !contours.is_empty()

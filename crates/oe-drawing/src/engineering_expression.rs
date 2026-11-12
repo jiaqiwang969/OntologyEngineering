@@ -94,6 +94,8 @@ mod view_mark_targets;
 mod view_component_roles;
 #[path = "view_section_roles.rs"]
 mod view_section_roles;
+#[path = "loose_hatch_regions.rs"]
+mod loose_hatch_regions;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]
@@ -6916,6 +6918,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     hatch_lines(&cx, &mut b);
     line_evidence::section_lines_by_spacing(&cx, &mut b)?;
     line_evidence::hatch_remnants(&cx, &mut b)?;
+    loose_hatch_regions::state(&cx, &mut b, &titles)?;
     line_evidence::hole_patterns(&cx, &mut b)?;
     extension_lines::virtual_corners(&cx, &mut b)?;
     let cover = topology::cover(&cx, &b);

@@ -5451,7 +5451,7 @@ id = "cut_face_roles"
 title = "区域、剖面线、边界与剖后轮廓"
 distinguishing = "同一区间的边界角色优先；区域与单根散线不重复计数"
 encodings = ["native", "loose"]
-tests = ["composition_cut_face_boundary_precedes_visible_contour", "composition_loose_hatch_strokes_are_lines_rather_than_native_regions", "composition_outer_view_keeps_its_local_cut_region", "composition_sheet_prefix_does_not_hide_a_section_name"]
+tests = ["composition_cut_face_boundary_precedes_visible_contour", "composition_loose_hatch_strokes_are_lines_rather_than_native_regions", "composition_outer_view_keeps_its_local_cut_region", "composition_sheet_prefix_does_not_hide_a_section_name", "composition_hidden_contour_prevents_face_only_classification"]
 [[cards.variants]]
 id = "detail_roles"
 title = "放大边界与原图圈"
@@ -5468,3 +5468,71 @@ test = "axis_boundary_is_bounded_and_keeps_line_type"
 name = "interval_merge_tolerance"
 value = 0.00000001
 meaning = "归一化源区间覆盖比较的浮点容差，不是几何延长范围"
+
+[[cards]]
+id = "loose_hatch_region_guard"
+expression_kind = "section_hatch"
+title = "散线剖面线必须有区域证据"
+meaning = "等距平行的斜线只是剖面候选；自动确认还需源轮廓/分界的真实接触，或由断裂曲线与实际轮廓追踪的闭合剖切区域，或放大圆弧与断裂界线实际闭合的区域。原生图案填充保留为区域证据。只有角度、间距、文字框或视图包围盒不能确认剖面，交叉网格在缺原生材料图案证据时保留未知。"
+sources = ["GB/T 4457.5-2013 3.2、4.1及表1（本地原页5–6）", "GB/T 17453-2005 第4–5章（本地原页7–8）", "GB/T 17452-1998 3.1–3.2（本地原页5，剖面区域与剖切面关系）；端点接边和已追踪闭合剖切区域，或放大圆弧与断裂界线实际闭合的区域是两种自动确认依据，不把大面积剖切的局部沿周线画法否定为非剖面"]
+knowledge_units = ["K03", "K11", "K14"]
+markers = []
+recognition = "逐个散线族复核同空间、至少三条独立平行线道、等距或整数倍空区间断，并且每根非零线段两端接到真实轮廓/剖切分界，或整组被已追踪的闭合局部剖区域围住。排除轮廓转角的短斜线和与另一平行线族反复交叉的网格；无证据改为未解释，并保留被拒绝的原规则与证据。嵌套块使用已经变换的叶几何。"
+concepts = ["DC-G1-010", "DC-G1-046"]
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["LINE", "HATCH", "INSERT"]
+requirement = "独立平行线道及源成员路径，或原生HATCH图案；同一线道的碎片不充当多条线"
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "INSERT"]
+requirement = "与散线端点接触的独立真实曲线，含放大图自身圆/弧边界；不延长曲线，也不用包围盒作边界"
+[[cards.variants]]
+id = "bounded_lattice"
+title = "有轮廓接触的散线族"
+distinguishing = "方向和间距是必要条件，独立轮廓接触或真实闭合局部剖区域补齐区域证据"
+encodings = ["loose", "block"]
+tests = ["composition_bounded_parallel_lines_keep_independent_region_evidence", "section_lines_with_enlarged_spacing_are_one_hatch", "section_lines_on_one_lattice_across_a_void_are_one_hatch", "detail_label_and_view_drawn_as_blocks", "composition_native_loose_hatching_meets_detail_boundary", "composition_loose_hatch_enclosed_by_local_cut", "detail_view_bounded_by_an_arc_and_a_wavy_line_takes_its_title"]
+[[cards.variants]]
+id = "native_pattern"
+title = "原生图案填充"
+distinguishing = "不要求把CAD填充拆成虚构单根线，不受散线最小条数限制"
+encodings = ["native"]
+tests = ["composition_native_pattern_does_not_require_loose_line_count"]
+[[cards.variants]]
+id = "without_region"
+title = "缺少区域依据的散线候选"
+distinguishing = "拒绝原剖面候选，输出未解释表达并保留旧规则与证据"
+encodings = ["loose", "block"]
+tests = ["composition_loose_lattice_without_region_stays_unknown", "composition_crossing_grid_is_not_a_loose_material_hatch"]
+[[cards.counter_examples]]
+statement = "角度与间距整齐，但端点悬空、没有区域接触，不能确认为剖面"
+test = "composition_loose_lattice_without_region_stays_unknown"
+[[cards.counter_examples]]
+statement = "倒角或拐角处的一根短斜线不构成剖面线族"
+test = "composition_one_short_chamfer_is_not_hatching"
+[[cards.counter_examples]]
+statement = "表示平面的两根对角线不构成剖面线族"
+test = "composition_two_plane_diagonals_are_not_hatching"
+[[cards.counter_examples]]
+statement = "两族重复相交的网格即使两端接到外框，也缺少材料剖面依据"
+test = "composition_crossing_grid_is_not_a_loose_material_hatch"
+[[cards.counter_examples]]
+statement = "孤立的点画中心线保持原线型和图形身份，不变成剖面"
+test = "composition_isolated_centre_line_is_not_a_hatch"
+[[cards.parameters]]
+name = "endpoint_tolerance"
+value = 0.05
+meaning = "端点到真实曲线的接触容差 = 图中文字高度 × 本比例"
+[[cards.parameters]]
+name = "parallel_sine"
+value = 0.03
+meaning = "两线单位方向叉积的无量纲上限，约1.72度；是实现容差而非国标规定"
+[[cards.parameters]]
+name = "spacing_tolerance"
+value = 0.15
+meaning = "间距或整数倍间断的误差上限 = 自身最小线道间距 × 本比例"
+[[cards.parameters]]
+name = "min_lanes"
+value = 3.0
+meaning = "自动确认所需的最少独立线道数；单根线的分段不能增加条数"

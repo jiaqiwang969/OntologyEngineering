@@ -915,8 +915,8 @@ missing = "整块剖切符号（粗短画、箭头、字母与转折）已识别
 [[concepts]]
 id = "DC-G1-010"
 level = "partial"
-by = ["card:section_line_region", "native_hatch_pattern", "uniform_parallel_thin_oblique_lines", "card:view_section_components"]
-missing = "填充对象、区域内画出的剖面线、按自身间距成组的散画剖面线与区域内残段已识别；图块内（如整块的放大视图）一根根画出的剖面线未读出"
+by = ["card:section_line_region", "native_hatch_pattern", "uniform_parallel_thin_oblique_lines", "card:view_section_components", "card:loose_hatch_region_guard"]
+missing = "原生填充及散线按平行晶格与真实接边/闭合区域核验，含已展开的原生块；非直线散线、无区域证据和未知材料交叉网格等保留未知"
 
 [[concepts]]
 id = "DC-G1-014"
@@ -1842,3 +1842,16 @@ id = "DC-G3-046"
 level = "partial"
 by = ["card:section_line_exceptions"]
 missing = "区域证据保守实现；椭圆/样条边界、中断处对称配置及跨视图深度/纵向肋板身份尚未确认，保留未知；不生成确定的剖后应消失结论"
+
+[[rules]]
+rule = "card:loose_hatch_region_guard/without_region"
+function = "loose_hatch_regions::state"
+piece = false
+kinds = ["unresolved"]
+concepts = []
+
+[[concepts]]
+id = "DC-G1-046"
+level = "partial"
+by = ["card:loose_hatch_region_guard"]
+missing = "仅拒绝被误当作散线剖面的重复交叉网格；未建立独立网格材料或坐标系统识别"

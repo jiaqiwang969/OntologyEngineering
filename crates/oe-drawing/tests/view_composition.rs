@@ -48,7 +48,7 @@ fn run(es: Vec<String>) -> MdEngineeringExpressionGraph {
 }
 fn run_blocks(blocks: &str, mut es: Vec<String>) -> MdEngineeringExpressionGraph {
     es.push(text("scale-anchor", "synthetic specimen", [-49., -31.]));
-    discover(format!("0\nSECTION\n2\nTABLES\n0\nLTYPE\n2\nCONTINUOUS\n73\n0\n0\nLAYER\n2\nink\n62\n7\n6\nCONTINUOUS\n0\nENDSEC\n{blocks}0\nSECTION\n2\nENTITIES\n{}0\nENDSEC\n0\nEOF\n",es.concat()).as_bytes()).unwrap()
+    discover(format!("0\nSECTION\n2\nTABLES\n0\nLTYPE\n2\nCONTINUOUS\n73\n0\n0\nLTYPE\n2\nHIDDEN_SYN\n73\n2\n49\n5\n49\n-2\n0\nLAYER\n2\nink\n62\n7\n6\nCONTINUOUS\n0\nENDSEC\n{blocks}0\nSECTION\n2\nENTITIES\n{}0\nENDSEC\n0\nEOF\n",es.concat()).as_bytes()).unwrap()
 }
 fn view_of<'a>(g: &'a MdEngineeringExpressionGraph, src: &str) -> &'a MdDrawingView {
     let m = g
@@ -520,4 +520,146 @@ fn composition_partial_boundary_does_not_relabel_the_whole_member() {
     assert_eq!(m.view_relation_role, "component");
     assert_eq!(m.view_component_kind, "unknown");
     assert!(m.unknowns.iter().any(|s| s.contains("部分区间")));
+}
+
+fn no_hatch(g: &MdEngineeringExpressionGraph, sources: &[&str]) {
+    for src in sources {
+        assert!(!members_of(g, src).is_empty(), "missing source {src}");
+        for m in members_of(g, src) {
+            assert!(
+                g.expressions
+                    .iter()
+                    .any(|e| e.id == m.expression_id && e.kind != "section_hatch"),
+                "{src}: {m:?}"
+            );
+        }
+    }
+}
+#[test]
+fn composition_loose_lattice_without_region_stays_unknown() {
+    let mut es = rect("body", [0., 0., 63., 63.]);
+    for (i, y) in [15., 18., 21., 24.].into_iter().enumerate() {
+        es.push(line(&format!("floating-{i}"), [14., y], [20., y + 6.], 18));
+    }
+    let g = run(es);
+    let e = g
+        .expressions
+        .iter()
+        .find(|e| e.rule == "card:loose_hatch_region_guard/without_region")
+        .expect("the lattice was examined, not silently ignored");
+    assert_eq!(e.kind, "unresolved");
+    assert!(
+        e.evidence_ids
+            .iter()
+            .any(|s| s.starts_with("rejected_hatch_rule:"))
+    );
+    for i in 0..4 {
+        let ms = members_of(&g, &format!("floating-{i}"));
+        assert!(!ms.is_empty());
+        assert!(
+            ms.iter()
+                .all(|m| m.view_relation_role == "unknown" && m.composition_view_ids.is_empty())
+        );
+    }
+    no_hatch(
+        &g,
+        &["floating-0", "floating-1", "floating-2", "floating-3"],
+    );
+}
+#[test]
+fn composition_bounded_parallel_lines_keep_independent_region_evidence() {
+    let mut es = rect("body", [0., 0., 63., 63.]);
+    for (i, x) in [7., 17., 27., 37.].into_iter().enumerate() {
+        es.push(line(&format!("bounded-{i}"), [x, 0.], [63., 63. - x], 18));
+    }
+    let g = run(es);
+    let m = members_of(&g, "bounded-0")[0];
+    let e = g
+        .expressions
+        .iter()
+        .find(|e| e.id == m.expression_id)
+        .unwrap();
+    assert_eq!(e.kind, "section_hatch");
+    assert!(
+        e.evidence_ids
+            .iter()
+            .any(|s| s == "loose_hatch_region:independent_boundary_contacts")
+    );
+}
+#[test]
+fn composition_one_short_chamfer_is_not_hatching() {
+    let es = vec![
+        line("edge-a", [0., 0.], [36., 0.], 60),
+        line("corner", [36., 0.], [41., 5.], 18),
+        line("edge-b", [41., 5.], [41., 39.], 60),
+    ];
+    let g = run(es);
+    assert!(!members_of(&g, "corner").is_empty());
+    no_hatch(&g, &["corner"]);
+}
+#[test]
+fn composition_two_plane_diagonals_are_not_hatching() {
+    let mut es = rect("body", [0., 0., 63., 47.]);
+    es.extend([
+        line("diagonal-a", [0., 0.], [63., 47.], 18),
+        line("diagonal-b", [0., 47.], [63., 0.], 18),
+    ]);
+    let g = run(es);
+    assert!(!members_of(&g, "diagonal-a").is_empty());
+    no_hatch(&g, &["diagonal-a", "diagonal-b"]);
+}
+#[test]
+fn composition_crossing_grid_is_not_a_loose_material_hatch() {
+    let mut es = rect("body", [0., 0., 63., 63.]);
+    for (i, x) in [7., 17., 27., 37.].into_iter().enumerate() {
+        es.push(line(&format!("grid-a-{i}"), [x, 0.], [63., 63. - x], 18));
+    }
+    for (i, y) in [24., 34., 44., 54.].into_iter().enumerate() {
+        es.push(line(&format!("grid-b-{i}"), [0., y], [y, 0.], 18));
+    }
+    let g = run(es);
+    assert!(
+        g.expressions
+            .iter()
+            .any(|e| e.unknowns.iter().any(|s| s.contains("网格")))
+    );
+    no_hatch(
+        &g,
+        &[
+            "grid-a-0", "grid-a-1", "grid-a-2", "grid-a-3", "grid-b-0", "grid-b-1", "grid-b-2",
+            "grid-b-3",
+        ],
+    );
+}
+#[test]
+fn composition_native_pattern_does_not_require_loose_line_count() {
+    let mut es = rect("body", [0., 0., 63., 47.]);
+    es.push(hatch("native-fill", [0., 0., 63., 47.]));
+    let g = run(es);
+    let m = members_of(&g, "native-fill")[0];
+    assert!(
+        g.expressions
+            .iter()
+            .any(|e| e.id == m.expression_id && e.kind == "section_hatch")
+    );
+    assert_eq!(m.view_component_kind, "section_region");
+}
+
+#[test]
+fn composition_hidden_contour_prevents_face_only_classification() {
+    let mut es = named_face(false);
+    es.push(ent(
+        "LINE",
+        "behind-hidden",
+        "370\n18\n6\nHIDDEN_SYN\n10\n190\n20\n8\n11\n223\n21\n8\n",
+    ));
+    let g = run(es);
+    let m = members_of(&g, "behind-hidden")[0];
+    assert!(
+        g.expressions
+            .iter()
+            .any(|e| e.id == m.expression_id && e.kind == "hidden_contour")
+    );
+    assert_eq!(view_of(&g, "face0").representation_kind, "section_view");
+    assert_eq!(m.view_component_kind, "view_geometry");
 }

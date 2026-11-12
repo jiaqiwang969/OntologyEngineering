@@ -61,6 +61,7 @@ pub fn inputs(root: &Path) -> std::io::Result<Vec<PathBuf>> {
         // The review page template, its browser checks and the converter lock are compiled into the
         // drawing route.
         "crates/oe-drawing/assets/expression-review.html",
+        "crates/oe-drawing/assets/view-composition.js",
         "crates/oe-drawing-check/assets/review-page-checks.js",
         "integrations/runtime-locks/cadcraft-source.json",
     ] {

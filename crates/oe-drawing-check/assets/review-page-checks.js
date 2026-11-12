@@ -30,6 +30,7 @@ const categoryPaint=(root,graph,label)=>{
  return {colors:[...colors].sort(),painted,visible_contour:contour};
 };
 ok($('complete').checked&&!$('original').checked&&a.mode==='kind','Default is complete structure with category colours and original comparison off');
+ok(!$('viewOverlay').checked,'Located annotation overlay is initially off');
 facts.initial_classified=categoryPaint(d.querySelector('#canvas>svg'),G,'Initial drawing');
 if(a.drafting?.receipt.status==='written'){
  ok(a.drawingMode==='compare','A corrected drawing initially opens in comparison mode');
@@ -137,6 +138,8 @@ ok(new Set(SEQ.values()).size===baseNodes&&[...SEQ].every(([g,i])=>{const p=PRIS
 // The graph, indexed here; the page's own indexes are not used for the expectations below.
 const ENT=new Map(G.entities.map(e=>[e.id,e])),MS=new Map(G.entities.map(e=>[e.id,[]]));for(const m of G.members)MS.get(m.source_handle).push(m);
 const EXK=new Map(G.expressions.map(e=>[e.id,e.kind])),EXV=new Map(G.expressions.map(e=>[e.id,e.view_id||'none'])),MLINE=new Map(),LBY=new Map(LINES.map(l=>[l.id,l]));for(const l of LINES)for(const p of [...l.pieces,...l.coincident])if(p.startsWith('member:'))MLINE.set(p.slice(7),l.id);
+const memberRole=m=>m.view_relation_role||'unknown',memberTargets=m=>Array.isArray(m.composition_view_ids)?m.composition_view_ids:[],locatedView=m=>m.located_view_id??m.view_id??'none';
+const componentFor=(m,id)=>memberRole(m)==='component'&&memberTargets(m).includes(id),locatedFor=(m,id)=>['located_only','unknown'].includes(memberRole(m))&&locatedView(m)===id;
 // Member identity: a group names a native member of its root; a member with native member id X claims the groups whose data-member
 // is X or lies under X/, a member without one claims every group of its root, a group without data-member is claimed by every member.
 const IDENT=new Set(PRIS.filter(p=>p.dataset.member).map(p=>p.dataset.entity)),NATIVES=new Map();
@@ -148,15 +151,18 @@ const U=rr=>{rr=rr.map(r=>[r[0]<1e-9?0:r[0],r[1]>1-1e-9?1:r[1]]).sort((x,y)=>x[0
 const cut=(rr,cc)=>{let o=rr.map(r=>[...r]);for(const [x,y] of cc){const n=[];for(const [p,q] of o){if(y<=p+1e-9||x>=q-1e-9){n.push([p,q]);continue}if(x>p+1e-9)n.push([p,x]);if(y<q-1e-9)n.push([y,q])}o=n}return o.filter(r=>r[1]-r[0]>1e-9)};
 const ticked=axis=>new Set([...d.querySelectorAll('input[data-'+axis+']')].filter(n=>n.checked).map(n=>n.dataset[axis]));
 const layer=k=>svg0.children[svg0.children.length-k]; // 4 partial spans, 3 structural lines, 2 highlight, 1 end markers
-const pageState=()=>{const raw=$('original').checked,complete=$('complete').checked&&!raw,sharedOnly=$('shared').checked,showDup=$('showDuplicates').checked,en={kind:ticked('kind'),line:ticked('line'),prim:ticked('prim'),view:ticked('view')},lines=new Set([...layer(3).children].map(n=>n.dataset.line));
- const pass=m=>!(isSec(m)&&complete)&&en.kind.has(EXK.get(m.expression_id))&&en.line.has(m.line_type)&&en.prim.has(ENT.get(m.source_handle).kind)&&en.view.has(EXV.get(m.expression_id));
- const multi=id=>new Set(MS.get(id).map(m=>m.expression_id)).size>1,carried=m=>complete&&lines.has(MLINE.get(m.id)),dupHidden=m=>{const p=DUP.get(m.id);return !!p&&!showDup&&(!sharedOnly||multi(p))&&MS.get(p).some(x=>pass(x)&&isContour(x))};
+const pageState=()=>{const raw=$('original').checked,viewMode=a.mode==='view'&&!raw,complete=$('complete').checked&&!raw&&!viewMode,sharedOnly=$('shared').checked,showDup=$('showDuplicates').checked,en={kind:ticked('kind'),line:ticked('line'),prim:ticked('prim'),view:ticked('view')},lines=new Set([...layer(3).children].map(n=>n.dataset.line));
+ const viewPass=m=>viewMode?[...en.view].some(id=>componentFor(m,id)||($('viewOverlay').checked&&locatedFor(m,id))):en.view.has(EXV.get(m.expression_id));
+ const pass=m=>!(isSec(m)&&complete)&&en.kind.has(EXK.get(m.expression_id))&&en.line.has(m.line_type)&&en.prim.has(ENT.get(m.source_handle).kind)&&viewPass(m);
+ const multi=id=>new Set(MS.get(id).map(m=>m.expression_id)).size>1,carried=m=>complete&&lines.has(MLINE.get(m.id)),dupHidden=m=>{const p=DUP.get(m.id);return !viewMode&&!!p&&!showDup&&(!sharedOnly||multi(p))&&MS.get(p).some(x=>pass(x)&&isContour(x))};
  const cache=new Map(),root=id=>{if(!cache.has(id)){const ms=MS.get(id);let chosen,ranges,byLine=false;if(raw){chosen=ms;ranges=[[0,1]]}else if(sharedOnly&&!multi(id)){chosen=[];ranges=[]}else{chosen=ms.filter(m=>pass(m)&&!dupHidden(m)&&!carried(m));ranges=complete?cut(U(chosen.map(m=>m.interval)),U(ms.filter(carried).map(m=>m.interval))):U(chosen.map(m=>m.interval));byLine=!ranges.length&&ms.some(m=>carried(m)&&pass(m))}
    cache.set(id,{chosen,on:new Set(chosen),ranges,byLine,full:ranges.length===1&&ranges[0][0]===0&&ranges[0][1]===1})}return cache.get(id)};
- return {raw,complete,root}};
+ return {raw,complete,viewMode,root}};
+const renderedSources=()=>{const out=new Set(live().filter(g=>g.style.display!=='none').map(g=>g.dataset.entity));for(const n of layer(4).children)out.add(n.dataset.entity);return out};
+const sortedSet=s=>[...s].sort();
 // A group is shown exactly when its root is shown whole and a chosen member claims it; the empty notice is shown exactly when
 // nothing is drawn (no group, no partial span, no structural line); the status line counts the sources drawn, by themselves or by a line.
-const shownGroups=label=>{const S=pageState();let shown=0,named=0,namedShown=0;for(const g of live()){const R=S.root(g.dataset.entity),want=S.raw||(R.full&&claimers(g).some(m=>R.on.has(m))),is=g.style.display!=='none';
+const shownGroups=label=>{const S=pageState();let shown=0,named=0,namedShown=0;for(const g of live()){const R=S.root(g.dataset.entity),want=S.raw||(R.full&&!(S.viewMode&&ENT.get(g.dataset.entity).geometry_kind==='line')&&claimers(g).some(m=>R.on.has(m))),is=g.style.display!=='none';
   if(want!==is)throw Error(label+': group '+(g.dataset.member||g.dataset.entity)+' is '+(is?'shown':'hidden')+' against the members that claim it');if(is)shown++;if(g.dataset.member){named++;if(is)namedShown++}}
  const spans=layer(4).children.length,lines=layer(3).children.length,drawn=shown+spans+lines;if($('empty').hidden!==(drawn>0))throw Error(label+': the empty notice is '+($('empty').hidden?'hidden':'shown')+' with '+drawn+' pieces drawn');
  let own=0,byLine=0;for(const e of G.entities){const R=S.root(e.id);if(R.ranges.length)own++;else if(R.byLine)byLine++}
@@ -167,7 +173,7 @@ const shownGroups=label=>{const S=pageState();let shown=0,named=0,namedShown=0;f
 // native members without member identity is thick only when all its line-typed members are thick. Tolerance 1e-4 relative.
 const close=(x,y)=>Math.abs(x-y)<=1e-4*Math.max(1e-3,Math.abs(y)),px=n=>parseFloat(w.getComputedStyle(n).strokeWidth);
 const RK=['visible_contour','center_axis','hidden_contour','thread_convention','break_line','phantom_line','section_hatch'],rk=m=>{const k=EXK.get(m.expression_id),i=RK.indexOf(k);return k==='unresolved'?99:i<0?10:i};
-const top=(ms,specific)=>{let b=null,br=0,bd=0;for(const m of ms){const r=rk(m),dd=specific&&m.native_member_id?m.native_member_id.split('/').length:0;if(!b||r<br||(r===br&&dd>bd)){b=m;br=r;bd=dd}}return b};
+const top=(ms,specific)=>{if(a.mode==='view'&&ms.some(m=>memberRole(m)==='component'))ms=ms.filter(m=>memberRole(m)==='component');let b=null,br=0,bd=0;for(const m of ms){const r=rk(m),dd=specific&&m.native_member_id?m.native_member_id.split('/').length:0;if(!b||r<br||(r===br&&dd>bd)){b=m;br=r;bd=dd}}return b};
 const isThick=lt=>typeof lt==='string'&&lt.startsWith('thick'),lined=lt=>/^(thick|thin)_|^(continuous|wavy|double_break)$/.test(lt),CURVE=new Set(['LINE','ARC','CIRCLE','ELLIPSE','SPLINE','LWPOLYLINE','POLYLINE']);
 const wholeThick=id=>{const ms=MS.get(id).filter(m=>lined(m.line_type));return ms.length>0&&ms.every(m=>isThick(m.line_type))};
 const DASH=lt=>lt.includes('dash_double_dot')?[24,3,.5,3,.5,3]:lt.includes('dash_dot')?[24,3,.5,3]:lt.includes('dashed')?[12,3]:[];
@@ -218,7 +224,49 @@ for(const lt of a.presentLines){$('lineNone').click();d.querySelector('[data-lin
 $('lineAll').click();$('tab-prim').click();ok(a.mode==='prim','Primitive mode');
 for(const pr of a.presentPrims){$('primNone').click();d.querySelector('[data-prim="'+pr+'"]').click();ok(count()===expect(m=>a.entities.get(m.source_handle).kind===pr).size,'Primitive coverage '+pr)}
 $('primAll').click();$('tab-view').click();ok(a.mode==='view','View mode');
-for(const v of a.presentViews){$('viewNone').click();d.querySelector('[data-view="'+v+'"]').click();verify(expect(m=>(a.exprs.get(m.expression_id).view_id||'none')===v),'View '+v)}
+ok($('panel-view').textContent.includes('“视图”分类按源成员显示组成，不受“完整结构”勾选的影响。'),'View composition panel explains the complete-structure option has no effect');
+// Explicit view relations, checked independently of the page's composition helper. View mode uses source
+// members even while the complete-structure checkbox stays checked, preserving bounded intervals and marks
+// drawn in another region. Nonrendered roots still have their selected ranges and are reported separately.
+{
+ const viewFacts={views:0,component_sources:0,located_sources:0,unknown_sources:0,empty_views:0,by_view:{}};
+ ok(!$('viewOverlay').checked,'Composition overlay is off by default');
+ const viewRows=G.views.filter(v=>v.kind!=='sheet'&&v.representation_kind!=='sheet');
+ const assertView=(v,overlay)=>{const require=(condition,label)=>{if(!condition)throw Error(label)};
+  const id=v.id,pred=m=>componentFor(m,id)||(overlay&&locatedFor(m,id)),want=expect(pred,true);
+  require(count()===want.size,'View '+id+' source coverage');
+  for(const e of G.entities)require(same(a.visible.get(e.id),want.get(e.id)||[]),'View '+id+' source interval '+e.id);
+  require(!layer(3).children.length,'View '+id+' preserves source members without structural extensions');
+  const rendered=new Set(PRIS.filter(g=>claimers(g).some(pred)).map(g=>g.dataset.entity));for(const e of G.entities)if(e.geometry_kind==='line'&&want.has(e.id))rendered.add(e.id);
+  require(same(sortedSet(renderedSources()),sortedSet(rendered)),'View '+id+' draws exactly its '+(overlay?'composition and located':'component')+' source set');
+  shownGroups('View '+id+(overlay?' overlay':' composition'));
+  // Every qualified LINE segment is split at member boundaries; its ends stay on its original carrier.
+  let spans=0;for(const e of G.entities){if(e.geometry_kind!=='line')continue;const ms=MS.get(e.id).filter(pred),ends=[...new Set(ms.flatMap(m=>m.interval))].sort((x,y)=>x-y),expected=[];
+   for(let k=0;k+1<ends.length;k++){const x=ends[k],y=ends[k+1],claim=ms.filter(m=>m.interval[0]<y-1e-9&&m.interval[1]>x+1e-9);if(y-x>1e-9&&claim.length)expected.push({x,y,claim})}
+   const nodes=[...layer(4).children].filter(n=>n.dataset.entity===e.id);require(nodes.length===expected.length,'View '+id+' source segments '+e.id);
+   for(let k=0;k<nodes.length;k++){const n=nodes[k],{x,y,claim}=expected[k],p=e.coordinates,faint=claim.every(m=>memberRole(m)!=='component');
+    require(same(n.dataset.interval.split(',').map(Number),[x,y]),'View '+id+' bounded member span '+e.id);
+    require(close(+n.getAttribute('x1'),p[0]+x*(p[2]-p[0])-ox0)&&close(+n.getAttribute('y1'),ty0-p[1]-x*(p[3]-p[1]))&&close(+n.getAttribute('x2'),p[0]+y*(p[2]-p[0])-ox0)&&close(+n.getAttribute('y2'),ty0-p[1]-y*(p[3]-p[1])),'View '+id+' source endpoints '+e.id);
+    require(n.classList.contains('located-overlay')===faint,'View '+id+' distinguishes overlay spans '+e.id);spans++}}
+  const swatch=d.querySelector('[data-view="'+id+'"]').closest('label').style.getPropertyValue('--c'),probe=d.createElement('span');probe.style.color=swatch;d.body.append(probe);const color=w.getComputedStyle(probe).color;probe.remove();
+  for(const n of [...live().filter(g=>g.style.display!=='none'),...layer(4).children]){const claim=n.dataset.interval?MS.get(n.dataset.entity).filter(m=>pred(m)&&Math.min(m.interval[1],Number(n.dataset.interval.split(',')[1]))-Math.max(m.interval[0],Number(n.dataset.interval.split(',')[0]))>1e-9):claimers(n).filter(pred),faint=claim.length>0&&claim.every(m=>memberRole(m)!=='component');
+   require(w.getComputedStyle(n).color===color||n.tagName==='line'&&w.getComputedStyle(n).stroke===color,'View '+id+' uses target view colour '+n.dataset.entity);
+   require(n.classList.contains('located-overlay')===faint,'View '+id+' distinguishes composition and located members '+n.dataset.entity);
+   const base=Number(n.style.getPropertyValue('--op')||1),plot=n.classList.contains('not-plotted')?.4:1;require(close(Number(w.getComputedStyle(n).opacity),base*plot*(faint?.38:1)),'View '+id+' overlay members use the faint display '+n.dataset.entity)}
+  ok(true,'View '+id+' source set, member intervals, target colours and overlay style match the graph');
+  return {sources:want.size,rendered_sources:rendered.size,source_ids:sortedSet(new Set(want.keys())),spans};
+ };
+ for(const v of viewRows){const id=v.id,input=d.querySelector('[data-view="'+id+'"]');ok(!!input,'Composition view row exists '+id);$('viewNone').click();input.click();
+  const compositionSources=new Set(G.members.filter(m=>componentFor(m,id)).map(m=>m.source_handle));
+  ok(Number(input.closest('label').lastElementChild.textContent)===compositionSources.size,'View '+id+' row counts component sources');
+  if(!$('complete').checked)$('complete').click();const completeOff=assertView(v,false);$('complete').click();const off=assertView(v,false);ok(same(completeOff,off),'View '+id+' source members are unchanged by the complete-structure checkbox');viewFacts.views++;viewFacts.component_sources+=compositionSources.size;
+  if(!compositionSources.size){viewFacts.empty_views++;ok(!$('empty').hidden&&$('emptyHint').textContent.includes('组成还没有读出'),'Empty composition view states the relation is not read '+id)}
+  $('viewOverlay').click();const on=assertView(v,true),located=new Set(G.members.filter(m=>memberRole(m)==='located_only'&&locatedView(m)===id).map(m=>m.source_handle)),unknown=new Set(G.members.filter(m=>memberRole(m)==='unknown'&&locatedView(m)===id).map(m=>m.source_handle));
+  viewFacts.located_sources+=located.size;viewFacts.unknown_sources+=unknown.size;viewFacts.by_view[id]={composition:off,overlay:on,located_sources:located.size,unknown_sources:unknown.size};$('viewOverlay').click();
+ }
+ facts.view_composition=viewFacts;ok(true,'Every view draws exactly its component members and optional located annotations');
+ $('viewOverlay').click();$('tab-kind').click();$('tab-view').click();ok(!$('viewOverlay').checked,'Reopening the view classification turns its overlay off');
+}
 $('viewAll').click();$('tab-kind').click();
 if(a.presentKinds.includes('visible_contour')&&a.presentLines.includes('thick_continuous')){$('kindNone').click();d.querySelector('[data-kind="visible_contour"]').click();$('tab-line').click();$('lineNone').click();d.querySelector('[data-line="thick_continuous"]').click();
 verify(expect(m=>a.exprs.get(m.expression_id).kind==='visible_contour'&&m.line_type==='thick_continuous'),'Intersection visible_contour x thick_continuous');

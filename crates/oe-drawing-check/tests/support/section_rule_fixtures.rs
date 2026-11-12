@@ -690,7 +690,7 @@ fn section_inferred_local_span_is_ignored() {
 fn section_tiny_overrun_under_stroke_is_ignored() {
     let mut d = Drawing::default();
     let e = face(&mut d, &[rectangle()], "removed", "unknown", 1.);
-    let hatch = d.line([11.8, -0.1], [12.2, 0.3]);
+    let hatch = d.line([11.8, -0.17], [12.2, 0.3]);
     d.member_in(&e, &hatch, "hatch_fill", "thin_continuous");
     outline(&mut d, [0., 0.], [24., 0.]);
     assert!(new_findings(&d).is_empty(), "a covered continuation is below the visible threshold");

@@ -310,6 +310,7 @@ pub(super) fn append(
             colour: None,
             layer_colour: None,
             inferred_geometry: false,
+            span: None,
             geometry: Geometry::default(),
         });
         relations.push(Relation::number(

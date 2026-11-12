@@ -1174,7 +1174,21 @@ struct Object {
     /// source.  Section-boundary checks must keep that provenance even though the public fact
     /// contract has no extra field for it.
     inferred_geometry: bool,
+    /// A derived object whose geometry is only the interval relevant to a rule.  The public
+    /// drafting-object contract stays unchanged; the interval is emitted through the existing
+    /// section-boundary fact fields so findings and review items can carry the same source range.
+    span: Option<SpanInfo>,
     geometry: Geometry,
+}
+
+#[derive(Debug, Clone)]
+struct SpanInfo {
+    /// Interval on the rule source object (the focus object), normalized to its source member.
+    source: [f64; 2],
+    /// Existing fact vocabulary field used to distinguish the derived kind.
+    parameter: &'static str,
+    /// Small deterministic JSON payload retaining the two endpoints and the measured length.
+    detail: String,
 }
 impl Object {
     fn is(&self, class: &str) -> bool {
@@ -1549,6 +1563,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             colour,
             layer_colour,
             inferred_geometry: false,
+            span: None,
             geometry,
         });
     }
@@ -1605,6 +1620,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 colour: None,
                 layer_colour: None,
                 inferred_geometry,
+                span: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1642,6 +1658,7 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 colour: None,
                 layer_colour: None,
                 inferred_geometry: true,
+                span: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1707,6 +1724,7 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
             colour: first.colour,
             layer_colour: first.layer_colour,
             inferred_geometry: false,
+            span: None,
             geometry: Geometry::default(),
         });
     }
@@ -1805,6 +1823,7 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
                 layer_colour: first.layer_colour,
                 inferred_geometry: first.inferred_geometry
                     || members.iter().any(|i| objects[*i].inferred_geometry),
+                span: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     ..Geometry::default()
@@ -1986,8 +2005,16 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 }
             }
             if coincident {
-                out.push(Relation::node(i, "coincidentWith", j));
-                out.push(Relation::node(j, "coincidentWith", i));
+                // G1-055 is interval-scoped.  Its ordinary line-to-line relation is
+                // replaced below by a relation to a derived visible-outline span; keeping
+                // the whole-line edge here would make the finding and review item cover the
+                // complete circle/arc.  Other coincidence rules retain the generic edge.
+                let g1_pair = (a.is("VisibleOutline") && (b.is("CentreLine") || b.is("HiddenOutline")))
+                    || (b.is("VisibleOutline") && (a.is("CentreLine") || a.is("HiddenOutline")));
+                if !g1_pair {
+                    out.push(Relation::node(i, "coincidentWith", j));
+                    out.push(Relation::node(j, "coincidentWith", i));
+                }
             }
             // A dimension line on the extension of a visible outline: collinear, not overlapping, close along the line.
             if !same_expression
@@ -2334,6 +2361,312 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
     out
 }
 
+/// Parameters of the positive-length overlap of two collinear segments.  The existing
+/// `segments_coincident` predicate deliberately returns only a boolean; the rule findings need
+/// the two source intervals as well, so the calculation is repeated with the same tolerances.
+fn coincident_segment_ranges(a: P, b: P, c: P, d: P) -> Option<([f64; 2], [f64; 2])> {
+    let (la, lb) = (dist(a, b), dist(c, d));
+    if la < 1e-9 || lb < 1e-9 {
+        return None;
+    }
+    let ua = ((b.0 - a.0) / la, (b.1 - a.1) / la);
+    let ub = ((d.0 - c.0) / lb, (d.1 - c.1) / lb);
+    if (ua.0 * ub.1 - ua.1 * ub.0).abs() > (1f64).to_radians().sin() {
+        return None;
+    }
+    let offset = |p: P| ((p.0 - a.0) * -ua.1 + (p.1 - a.1) * ua.0).abs();
+    if offset(c) > EPS_COINCIDENT || offset(d) > EPS_COINCIDENT {
+        return None;
+    }
+    let along_a = |p: P| (p.0 - a.0) * ua.0 + (p.1 - a.1) * ua.1;
+    let (lo, hi) = (
+        along_a(c).min(along_a(d)).max(0.),
+        along_a(c).max(along_a(d)).min(la),
+    );
+    if hi - lo < MIN_OVERLAP {
+        return None;
+    }
+    let at_a = |p: P| ((p.0 - a.0) * ua.0 + (p.1 - a.1) * ua.1) / la;
+    let at_b = |p: P| ((p.0 - c.0) * ub.0 + (p.1 - c.1) * ub.1) / lb;
+    let p0 = (a.0 + ua.0 * lo, a.1 + ua.1 * lo);
+    let p1 = (a.0 + ua.0 * hi, a.1 + ua.1 * hi);
+    Some((
+        [at_a(p0), at_a(p1)],
+        [at_b(p0).min(at_b(p1)), at_b(p0).max(at_b(p1))],
+    ))
+}
+
+/// The normalized parameter interval of every sampled straight piece of an object.
+fn normalized_segments(o: &Object) -> Vec<(P, P, f64, f64)> {
+    let total: f64 = o
+        .geometry
+        .chains
+        .iter()
+        .flat_map(|chain| chain.windows(2))
+        .map(|w| dist(w[0], w[1]))
+        .sum();
+    if !total.is_finite() || total <= 1e-9 {
+        return Vec::new();
+    }
+    let mut offset = 0.;
+    let mut out = Vec::new();
+    for chain in &o.geometry.chains {
+        for w in chain.windows(2) {
+            let length = dist(w[0], w[1]);
+            if length > 1e-9 {
+                out.push((
+                    *w.first().unwrap(),
+                    *w.last().unwrap(),
+                    offset / total,
+                    (offset + length) / total,
+                ));
+            }
+            offset += length;
+        }
+    }
+    out
+}
+
+/// Intervals of a presentation structural line that are backed by an actual member.  A wholly
+/// inferred line has no allowed interval; a mixed line keeps the native portions on both sides of
+/// each implied span.  This is the G1-055 provenance gate: a guessed hidden span cannot become a
+/// drawn dashed line merely because its page geometry touches an outline.
+fn native_intervals(g: &Value, o: &Object, tolerance: f64) -> Vec<[f64; 2]> {
+    if !o.inferred_geometry {
+        return vec![[0., 1.]];
+    }
+    let Some(index) =
+        o.id.strip_prefix("presentation:line:")
+            .and_then(|s| s.parse::<usize>().ok())
+    else {
+        return Vec::new();
+    };
+    let Some(line) = g
+        .get("structural_lines")
+        .and_then(Value::as_array)
+        .and_then(|v| v.get(index))
+    else {
+        return Vec::new();
+    };
+    let pieces = line
+        .get("pieces")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+        .unwrap_or_default();
+    if !pieces
+        .iter()
+        .filter_map(Value::as_str)
+        .any(|p| p.starts_with("member:"))
+    {
+        return Vec::new();
+    }
+    let Some(points) = line.get("points").and_then(Value::as_array) else {
+        return vec![[0., 1.]];
+    };
+    if points.len() != 4 {
+        return vec![[0., 1.]];
+    }
+    let (Some(x0), Some(y0), Some(x1), Some(y1)) = (
+        points[0].as_f64(),
+        points[1].as_f64(),
+        points[2].as_f64(),
+        points[3].as_f64(),
+    ) else {
+        return vec![[0., 1.]];
+    };
+    let a = (x0, y0);
+    let b = (x1, y1);
+    if dist(a, b) <= 1e-9 {
+        return Vec::new();
+    }
+    let mut implied = Vec::new();
+    if let Some(spans) = g.get("implied_spans").and_then(Value::as_array) {
+        for piece in pieces.iter().filter_map(Value::as_str) {
+            let Some(index) = piece
+                .strip_prefix("implied:")
+                .and_then(|s| s.parse::<usize>().ok())
+            else {
+                continue;
+            };
+            let Some(span) = spans.get(index) else {
+                continue;
+            };
+            let Some(p) = span.get("points").and_then(Value::as_array) else {
+                continue;
+            };
+            if p.len() != 4 {
+                continue;
+            }
+            let (Some(px), Some(py), Some(qx), Some(qy)) =
+                (p[0].as_f64(), p[1].as_f64(), p[2].as_f64(), p[3].as_f64())
+            else {
+                continue;
+            };
+            let (off_p, t_p) = point_line((px, py), a, b);
+            let (off_q, t_q) = point_line((qx, qy), a, b);
+            if off_p <= tolerance && off_q <= tolerance {
+                let lo = t_p.min(t_q).clamp(0., 1.);
+                let hi = t_p.max(t_q).clamp(0., 1.);
+                if hi > lo + 1e-10 {
+                    implied.push([lo, hi]);
+                }
+            }
+        }
+    }
+    implied.sort_by(|a, b| a[0].total_cmp(&b[0]));
+    let mut out = Vec::new();
+    let mut cursor = 0.;
+    for [lo, hi] in implied {
+        if lo > cursor + 1e-10 {
+            out.push([cursor, lo]);
+        }
+        cursor = cursor.max(hi);
+    }
+    if cursor < 1. - 1e-10 {
+        out.push([cursor, 1.]);
+    }
+    out
+}
+
+fn map_interval(layer: &str, g: &Value, o: &Object, local: [f64; 2]) -> [f64; 2] {
+    let range = if layer == "recognition" && o.member_ids.len() == 1 {
+        o.member_ids
+            .first()
+            .and_then(|id| {
+                g.get("members").and_then(Value::as_array).and_then(|ms| {
+                    ms.iter()
+                        .find(|m| m.get("id").and_then(Value::as_str) == Some(id))
+                })
+            })
+            .and_then(|m| m.get("interval").and_then(Value::as_array))
+            .and_then(|a| Some([a.first()?.as_f64()?, a.get(1)?.as_f64()?]))
+            .filter(|r| r[1] > r[0])
+            .unwrap_or([0., 1.])
+    } else {
+        [0., 1.]
+    };
+    [
+        (range[0] + (range[1] - range[0]) * local[0]).clamp(0., 1.),
+        (range[0] + (range[1] - range[0]) * local[1]).clamp(0., 1.),
+    ]
+}
+
+fn intersect_interval(a: [f64; 2], b: [f64; 2]) -> Option<[f64; 2]> {
+    let lo = a[0].max(b[0]);
+    let hi = a[1].min(b[1]);
+    (hi > lo + 1e-10).then_some([lo, hi])
+}
+
+/// Replace whole-line G1-055 relations with visible-outline carrier objects carrying the exact
+/// source and carrier intervals.  The source object remains the SHACL focus, so all existing
+/// rule metadata and layer accounting stay stable while the finding value identifies the span.
+fn append_coincidence_spans(
+    layer: &str,
+    g: &Value,
+    objects: &mut Vec<Object>,
+    relations: &mut Vec<Relation>,
+) {
+    let original_count = objects.len();
+    let mut additions = Vec::new();
+    for i in 0..original_count {
+        for j in (i + 1)..original_count {
+            let (source, carrier) = if (objects[i].is("CentreLine")
+                || objects[i].is("HiddenOutline"))
+                && objects[j].is("VisibleOutline")
+            {
+                (i, j)
+            } else if (objects[j].is("CentreLine") || objects[j].is("HiddenOutline"))
+                && objects[i].is("VisibleOutline")
+            {
+                (j, i)
+            } else {
+                continue;
+            };
+            let source_object = &objects[source];
+            let carrier_object = &objects[carrier];
+            if source_object.expression_id.is_some()
+                && source_object.expression_id == carrier_object.expression_id
+                || source_object
+                    .member_ids
+                    .iter()
+                    .any(|m| carrier_object.member_ids.contains(m))
+                || source_object
+                    .source_handles
+                    .iter()
+                    .any(|h| carrier_object.source_handles.contains(h))
+            {
+                continue;
+            }
+            if source_object.inferred_geometry
+                && native_intervals(g, source_object, EPS_COINCIDENT).is_empty()
+            {
+                continue;
+            }
+            let source_allowed = native_intervals(g, source_object, EPS_COINCIDENT);
+            let carrier_allowed = native_intervals(g, carrier_object, EPS_COINCIDENT);
+            let source_segments = normalized_segments(source_object);
+            let carrier_segments = normalized_segments(carrier_object);
+            let mut ranges = Vec::new();
+            for (a0, a1, alo, ahi) in &source_segments {
+                for (b0, b1, blo, bhi) in &carrier_segments {
+                    let Some(([sa, sb], [ta, tb])) = coincident_segment_ranges(*a0, *a1, *b0, *b1)
+                    else {
+                        continue;
+                    };
+                    let source_local = [alo + (ahi - alo) * sa, alo + (ahi - alo) * sb];
+                    let carrier_local = [blo + (bhi - blo) * ta, blo + (bhi - blo) * tb];
+                    for allowed_source in &source_allowed {
+                        for allowed_carrier in &carrier_allowed {
+                            if let (Some(s), Some(c)) = (
+                                intersect_interval(source_local, *allowed_source),
+                                intersect_interval(carrier_local, *allowed_carrier),
+                            ) {
+                                ranges.push((
+                                    map_interval(layer, g, source_object, s),
+                                    map_interval(layer, g, carrier_object, c),
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            ranges.sort_by(|(a, b), (c, d)| a[0].total_cmp(&c[0]).then(b[0].total_cmp(&d[0])));
+            let mut merged: Vec<([f64; 2], [f64; 2])> = Vec::new();
+            for (s, c) in ranges {
+                if let Some((last_s, last_c)) = merged.last_mut()
+                    && s[0] <= last_s[1] + 1e-8
+                    && c[0] <= last_c[1] + 1e-8
+                {
+                    last_s[1] = last_s[1].max(s[1]);
+                    last_c[1] = last_c[1].max(c[1]);
+                } else {
+                    merged.push((s, c));
+                }
+            }
+            for (serial, (source_range, carrier_range)) in merged.into_iter().enumerate() {
+                let mut span = carrier_object.clone();
+                span.id = format!(
+                    "{layer}:coincidence_span:{:.9}:{:.9}:target:{:.9}:{:.9}:{serial}",
+                    source_range[0], source_range[1], carrier_range[0], carrier_range[1]
+                );
+                span.span = Some(SpanInfo {
+                    source: source_range,
+                    parameter: "coincidence",
+                    detail: serde_json::json!({"kind":"coincidence","source":source_range,"carrier":carrier_range,"length":0.0}).to_string(),
+                });
+                span.geometry = carrier_object.geometry.clone();
+                additions.push((source, span));
+            }
+        }
+    }
+    for (source, span) in additions {
+        let index = objects.len();
+        objects.push(span);
+        relations.push(Relation::node(source, "coincidentWith", index));
+    }
+}
+
+
 // ------------------------------------------------------------------------------------------------ facts
 
 fn turtle_literal(s: &str) -> String {
@@ -2423,6 +2756,24 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
         }
         if let Some(c) = o.layer_colour {
             props.push(("layerColourIndex", format!("\"{c}\"^^xsd:integer")));
+        }
+        if let Some(span) = &o.span {
+            // These predicates describe section-boundary parameters.  Hatch-overrun
+            // carriers are section-boundary evidence; coincidence carriers retain their
+            // interval in sectionOrigin and their deterministic ID, without masquerading
+            // as a section boundary in the shared fact stream.
+            if span.parameter == "hatch_overrun" {
+                props.push(("boundaryIntervalStart", number(span.source[0])));
+                props.push(("boundaryIntervalEnd", number(span.source[1])));
+            }
+            props.push(("boundaryParameter", turtle_literal(span.parameter)));
+            props.push(("sectionOrigin", turtle_literal(&span.detail)));
+            props.push(("extentUnits", number(
+                serde_json::from_str::<Value>(&span.detail)
+                    .ok()
+                    .and_then(|v| v.get("length").and_then(Value::as_f64))
+                    .unwrap_or(0.),
+            )));
         }
         let n = props.len();
         for (i, (p, v)) in props.iter().enumerate() {
@@ -2603,6 +2954,7 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         rels.extend(constituents::relations(&g, &d, &objs)?);
         sections::augment(layer, &g, &d, &mut objs, &mut rels)?;
         cutting::append(layer, &g, &d, &mut objs, &mut rels)?;
+        append_coincidence_spans(layer, &g, &mut objs, &mut rels);
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2676,6 +3028,7 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
         rels.extend(constituents::relations(graph, &d, &objs)?);
         sections::augment(layer, graph, &d, &mut objs, &mut rels)?;
         cutting::append(layer, graph, &d, &mut objs, &mut rels)?;
+        append_coincidence_spans(layer, graph, &mut objs, &mut rels);
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2800,6 +3153,7 @@ mod tests {
             colour: None,
             layer_colour: None,
             inferred_geometry: false,
+            span: None,
             geometry: Geometry { chains: vec![vec![(0., 0.), (10., 0.)]], ..Geometry::default() },
         };
         let objects = vec![object];

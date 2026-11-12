@@ -14,6 +14,27 @@ struct Span {
     end: f64,
 }
 
+/// Rule facts use a derived visible-outline object for an interval-scoped coincidence or hatch
+/// overrun.  Its ID carries the focus object's normalized interval so the review item can reuse
+/// the same range without widening back to the member's whole circle/line.
+fn derived_source_interval(value: Option<&str>) -> Option<[f64; 2]> {
+    let marker = value
+        .and_then(|v| {
+            v.find("coincidence_span:")
+                .map(|i| &v[i + "coincidence_span:".len()..])
+        })
+        .or_else(|| {
+            value.and_then(|v| {
+                v.find("hatch_overrun_span:")
+                    .map(|i| &v[i + "hatch_overrun_span:".len()..])
+            })
+        })?;
+    let mut fields = marker.split(':');
+    let start = fields.next()?.parse::<f64>().ok()?;
+    let end = fields.next()?.parse::<f64>().ok()?;
+    (end > start).then_some([start.clamp(0., 1.), end.clamp(0., 1.)])
+}
+
 fn curve_boundary_intervals(member: &Value) -> Vec<(f64, f64)> {
     member["evidence_ids"]
         .as_array()
@@ -85,6 +106,19 @@ fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
 }
 
 fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
+    if let Some(interval) = derived_source_interval(f.value.as_deref())
+        && !f.source_handles.is_empty()
+    {
+        return f
+            .source_handles
+            .iter()
+            .map(|path| Span {
+                path: path.clone(),
+                start: interval[0],
+                end: interval[1],
+            })
+            .collect();
+    }
     let all: Vec<_> = graph["members"].as_array().into_iter().flatten().collect();
     let line_index = focused_line_index(&f.focus, &graph["structural_lines"]);
     // A structural-line focus names the concrete carrier line after an enclosing

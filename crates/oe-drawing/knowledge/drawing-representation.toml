@@ -5294,3 +5294,45 @@ tests = ["revision_justified_text_uses_the_semantic_alignment_point"]
 [[cards.counter_examples]]
 statement = "左基线对齐的第二点没有定位意义；居中文字内容不变但第一点重算也不是修改"
 test = "revision_justified_text_uses_the_semantic_alignment_point"
+
+[[cards]]
+id = "view_representation_facts"
+markers = []
+expression_kind = "view_callout"
+title = "视图位置与图形表示法独立读取"
+meaning = "主视图等投影位置不决定是否剖切；剖切名称或同名剖切符号确认剖切图形，全部轮廓均为已核剖面边界时才判断面，否则为剖视。带局部剖的外形视图仍为视图。缺少范围或路径证据写未知。"
+sources = ["GB/T 17452-1998 3.1–3.6、5、6、7、8（本地原页5–8）", "GB/T 4458.6-2002 4.5、5.3–5.6、7（本地原页7、10、14、18–20）", "GB/T 14692-2008 5.1、5.2.1（本地原页5–6）"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition = "沿同页投影配置证据读取位置；剖面区域的源区间边界覆盖全部轮廓才判断面。完整原生剖面外廓覆盖图形外廓且无半剖/局部剖分界才记全剖；半剖、局部剖沿剖面及中心线/断裂边界证据；两端共线为单面，平行错层为阶梯，转折相交为旋转，两者并存为组合。"
+concepts = ["DC-G2-013", "DC-G2-015", "DC-G2-016", "DC-G2-018", "DC-G2-020", "DC-G2-023", "DC-G2-028", "DC-G2-073", "DC-G2-075"]
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "HATCH", "INSERT"]
+requirement = "所在视图的轮廓、剖面边界区间、剖面区域、中心线和局部剖分界"
+[[cards.components]]
+role = "cutting_stroke"
+primitives = ["LINE", "LWPOLYLINE", "INSERT", "TEXT"]
+requirement = "同页、同名的剖切符号及其几何路径"
+[[cards.variants]]
+id = "separate_axes"
+title = "位置与图形独立"
+distinguishing = "主视图可以画成剖视；第一角名称按投射方向而非纸上上下左右命名"
+encodings = ["inferred"]
+tests = ["composition_first_angle_names_follow_projection", "composition_principal_section_and_cross_section_are_independent"]
+[[cards.variants]]
+id = "bounded_face"
+title = "仅剖面与剖后轮廓"
+distinguishing = "同名图形多出剖后可见轮廓时不能再判断面；方向名称不否定剖切符号"
+encodings = ["native", "inferred"]
+tests = ["composition_face_only_differs_from_projected_contour", "composition_cutting_surface_requires_two_collinear_ends", "loose_cutting_path_with_an_oblique_turn_shows_intersecting_planes", "cutting_path_with_a_right_angle_turn_shows_parallel_planes", "section_lines_on_one_side_of_the_centre_line_make_a_half_section"]
+[[cards.counter_examples]]
+statement = "只有填充或一条剖切端线，不证明全剖或单一剖切面；无名称或配置证据的碎片位置未知"
+test = "composition_unlabelled_hatch_does_not_invent_cutting_plane"
+[[cards.parameters]]
+name = "collinear_tolerance"
+value = 0.08
+meaning = "共线距离容差为同图文字高度的本比例，非国标数值"
+[[cards.parameters]]
+name = "parallel_sine"
+value = 0.01
+meaning = "单位方向叉积的数值容差，随图形缩放不变，非产品公差"

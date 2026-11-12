@@ -86,6 +86,8 @@ mod expression_names;
 mod section_hatching;
 #[path = "section_regions.rs"]
 mod section_regions;
+#[path = "view_composition.rs"]
+mod view_composition;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]
@@ -6991,7 +6993,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             }
         })
         .collect::<Vec<_>>();
-    let views = regions
+    let mut views = regions
         .iter()
         .map(|r| MdDrawingView {
             id: r.id.clone(),
@@ -7023,6 +7025,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             cutting_surface_kind: "unknown".into(),
         })
         .collect::<Vec<_>>();
+    view_composition::state(&cx, &mut nb, &mut views)?;
     let mut graph = MdEngineeringExpressionGraph {
         schema: SCHEMA.into(),
         profile: PROFILE.into(),

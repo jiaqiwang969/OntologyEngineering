@@ -267,6 +267,17 @@ pub fn run_command(spec: &CommandSpec, evidence_dir: &Path) -> Result<ProcessObs
     run_command_with_retention(spec, evidence_dir, true)
 }
 
+/// Execute a command and bind a caller-owned timeout resource to its private
+/// process receipt. The resource is descriptive evidence; `spec.timeout`
+/// remains the enforced wall-clock limit.
+pub fn run_command_with_timeout_resource(
+    spec: &CommandSpec,
+    evidence_dir: &Path,
+    timeout_resource: Value,
+) -> Result<ProcessObservation> {
+    run_command_controlled(spec, evidence_dir, true, None, None, Some(timeout_resource))
+}
+
 /// Capture sensitive response streams only in memory. The private process
 /// receipt retains status, byte counts and hashes, but no stream files.
 /// Arguments are still recorded; callers must never put secrets in arguments.
@@ -286,7 +297,7 @@ pub fn run_command_with_deadline(
     evidence_dir: &Path,
     deadline: Instant,
 ) -> Result<ProcessObservation> {
-    run_command_controlled(spec, evidence_dir, true, Some(deadline), None)
+    run_command_controlled(spec, evidence_dir, true, Some(deadline), None, None)
 }
 
 /// Replay the exact bounded bytes of a checked regular input file on stdin.
@@ -311,6 +322,7 @@ pub fn run_command_with_stdin_file_deadline(
             spec.output_limit.min(4 * 1024 * 1024),
             false,
         )),
+        None,
     )
 }
 
@@ -335,6 +347,7 @@ pub fn run_command_with_bounded_stdin_file_deadline(
         true,
         Some(deadline),
         Some((input, expected, input_limit, true)),
+        None,
     )
 }
 
@@ -372,7 +385,7 @@ fn run_command_with_retention(
     evidence_dir: &Path,
     retain_streams: bool,
 ) -> Result<ProcessObservation> {
-    run_command_controlled(spec, evidence_dir, retain_streams, None, None)
+    run_command_controlled(spec, evidence_dir, retain_streams, None, None, None)
 }
 
 fn run_command_controlled(
@@ -381,6 +394,7 @@ fn run_command_controlled(
     retain_streams: bool,
     deadline: Option<Instant>,
     input: Option<(&Path, &crate::FileIdentity, usize, bool)>,
+    timeout_resource: Option<Value>,
 ) -> Result<ProcessObservation> {
     ensure!(
         cfg!(any(unix, windows)),
@@ -631,6 +645,9 @@ fn run_command_controlled(
     if let Some(borrowed) = borrowed {
         report["borrowed_deadline"] = borrowed;
         report["effective_process_timeout_seconds"] = json!(process_timeout.as_secs_f64());
+    }
+    if let Some(resource) = timeout_resource {
+        report["timeout_resource"] = resource;
     }
     write_new(&evidence_dir.join("process.json"), &report)?;
     // The original receipt is retained even when its synchronous publication

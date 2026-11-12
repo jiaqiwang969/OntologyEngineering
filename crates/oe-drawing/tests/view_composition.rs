@@ -453,3 +453,71 @@ fn composition_local_name_leader_is_title_but_quantity_note_is_located_only() {
     assert_eq!(m.view_relation_role, "located_only");
     assert!(m.composition_view_ids.is_empty());
 }
+
+#[test]
+fn composition_cut_face_boundary_precedes_visible_contour() {
+    let g = run(named_face(true));
+    let v = view_of(&g, "face0");
+    assert_eq!(v.representation_kind, "section_view");
+    for src in ["face0", "face1", "face2", "face3"] {
+        let m = members_of(&g, src)[0];
+        assert_eq!(m.member_role, "contour_segment");
+        assert_eq!(m.view_component_kind, "section_boundary");
+        assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+        assert_eq!(m.interval, [0., 1.]);
+    }
+    assert_eq!(
+        members_of(&g, "behind")[0].view_component_kind,
+        "section_visible_contour"
+    );
+    assert_eq!(
+        members_of(&g, "fill")[0].view_component_kind,
+        "section_region"
+    );
+}
+#[test]
+fn composition_loose_hatch_strokes_are_lines_rather_than_native_regions() {
+    let mut es = rect("body", [0., 0., 63., 63.]);
+    for (i, x) in [5., 15., 25., 35.].into_iter().enumerate() {
+        es.push(line(
+            &format!("hatch-line-{i}"),
+            [x, 0.],
+            [63., 63. - x],
+            18,
+        ));
+    }
+    let g = run(es);
+    for i in 0..4 {
+        let m = members_of(&g, &format!("hatch-line-{i}"))[0];
+        assert_eq!(m.member_role, "hatch_fill");
+        assert_eq!(m.view_component_kind, "section_hatch");
+        assert_eq!(m.view_relation_role, "component");
+    }
+}
+#[test]
+fn composition_outer_view_keeps_its_local_cut_region() {
+    let g = run(local_name(true));
+    let v = view_of(&g, "body0");
+    assert_eq!(v.representation_kind, "view");
+    assert_eq!(v.section_extent, "local");
+    let m = members_of(&g, "local-fill")[0];
+    assert_eq!(m.view_component_kind, "section_region");
+    assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+}
+#[test]
+fn composition_partial_boundary_does_not_relabel_the_whole_member() {
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.push(hatch("partial-fill", [16., 0., 42., 14.]));
+    let g = run(es);
+    let m = members_of(&g, "body0")[0];
+    assert!(
+        m.evidence_ids
+            .iter()
+            .any(|s| s.starts_with("section_boundary:"))
+    );
+    assert_eq!(m.interval, [0., 1.]);
+    assert_eq!(m.member_role, "contour_segment");
+    assert_eq!(m.view_relation_role, "component");
+    assert_eq!(m.view_component_kind, "unknown");
+    assert!(m.unknowns.iter().any(|s| s.contains("部分区间")));
+}

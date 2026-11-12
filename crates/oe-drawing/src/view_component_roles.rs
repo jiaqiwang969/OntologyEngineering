@@ -55,6 +55,9 @@ fn mark_role(
             .then_some("view_title");
     }
     if e.view_mark_kind == "detail_mark" {
+        if role == "detail_circle" && e.qualifiers.iter().any(|q| q == "detail_boundary") {
+            return Some("detail_boundary");
+        }
         return match role {
             "detail_circle" => Some("detail_circle"),
             "leader_line" | "arrowhead" => Some("detail_leader"),

@@ -5427,3 +5427,44 @@ test = "composition_unresolved_source_is_unknown_rather_than_located_only"
 name = "interval_domain"
 value = 1.0
 meaning = "成员参数使用源图元的归一化完整区间；本步不裁剪、合并或延长几何"
+
+[[cards]]
+id = "view_section_components"
+expression_kind = "section_hatch"
+title = "剖面与局部放大图的组成角色"
+meaning = "原生填充承担剖面区域，散画的填充线承担剖面线；已核边界区间优先于剖后可见轮廓，其他图线保留图形角色。放大图自己的边界与原图上的放大部位圈分开。"
+sources = ["GB/T 17452-1998 3.1–3.6、6–7（本地原页5、7）", "GB/T 4458.6-2002 4.4、5.6、7（本地原页7、14、18–20）", "GB/T 4458.1-2002 5.7.2–5.7.4（本地原页10–11）", "GB/T 4457.5-2013 3.2、4.1（本地原页5–6）；角色的标量字段和保留区间行为沿程序合同，非标准新增术语"]
+knowledge_units = ["K11", "K12", "K14"]
+markers = []
+recognition = "按源区间的剖面边界覆盖证据区分边界和剖后可见轮廓；只有覆盖整段才给整段边界角色。局部重合保留原区间与细分证据，整段角色未知。原生HATCH不伪造内部线成员。图纸显示前缀不参与剖视名称解析。"
+concepts = ["DC-G1-010", "DC-G2-018", "DC-G2-023", "DC-G2-028", "DC-G2-075"]
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE", "INSERT"]
+requirement = "填充的源身份与区域、图案、散线成员；未能拆分的原生区域保持一个成员"
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "INSERT"]
+requirement = "剖面边界的原始参数区间、剖后可见轮廓或局部放大图自身边界"
+[[cards.variants]]
+id = "cut_face_roles"
+title = "区域、剖面线、边界与剖后轮廓"
+distinguishing = "同一区间的边界角色优先；区域与单根散线不重复计数"
+encodings = ["native", "loose"]
+tests = ["composition_cut_face_boundary_precedes_visible_contour", "composition_loose_hatch_strokes_are_lines_rather_than_native_regions", "composition_outer_view_keeps_its_local_cut_region", "composition_sheet_prefix_does_not_hide_a_section_name"]
+[[cards.variants]]
+id = "detail_roles"
+title = "放大边界与原图圈"
+distinguishing = "自身边界属于放大图，原图的圈和编号通过正式目标归入放大图"
+encodings = ["loose"]
+tests = ["composition_detail_boundary_differs_from_original_indicator_circle", "detail_label_and_view_drawn_as_blocks"]
+[[cards.counter_examples]]
+statement = "只有局部区间为剖面边界，不把整段改成边界或剖后轮廓"
+test = "composition_partial_boundary_does_not_relabel_the_whole_member"
+[[cards.counter_examples]]
+statement = "中心线的局部承边不改变整条原始线型、区间或图形角色"
+test = "axis_boundary_is_bounded_and_keeps_line_type"
+[[cards.parameters]]
+name = "interval_merge_tolerance"
+value = 0.00000001
+meaning = "归一化源区间覆盖比较的浮点容差，不是几何延长范围"

@@ -15,7 +15,7 @@ fn has(xs: &[String], s: &str) -> bool {
     xs.iter().any(|x| x == s)
 }
 
-fn boundary_intervals(m: &MdExpressionMember) -> Vec<[f64; 2]> {
+pub(super) fn boundary_intervals(m: &MdExpressionMember) -> Vec<[f64; 2]> {
     m.evidence_ids
         .iter()
         .filter_map(|s| s.strip_prefix("section_boundary:"))
@@ -25,7 +25,7 @@ fn boundary_intervals(m: &MdExpressionMember) -> Vec<[f64; 2]> {
 }
 
 /// Full interval coverage is required: a line touching a face is not all face boundary.
-fn all_boundary(m: &MdExpressionMember) -> bool {
+pub(super) fn all_boundary(m: &MdExpressionMember) -> bool {
     let mut spans = boundary_intervals(m);
     spans.sort_by(|a, z| a[0].total_cmp(&z[0]));
     let mut end = m.interval[0];
@@ -156,7 +156,9 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
                     .iter()
                     .any(|s| s.starts_with("section_profile:"))
         });
-    let cut = view_layout::section_letters(&v.label).is_some() || !symbols.is_empty() || half;
+    let cut = view_layout::section_letters(view_mark_targets::label(v)).is_some()
+        || !symbols.is_empty()
+        || half;
     let contour_ids: BTreeSet<_> = here
         .iter()
         .filter(|e| e.kind == "visible_contour")
@@ -277,5 +279,6 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &mut [MdDrawingView]) -> R
         representation(cx, b, v)?;
     }
     view_component_roles::state(cx, b, views)?;
+    view_section_roles::state(cx, b, views)?;
     Ok(())
 }

@@ -16,7 +16,7 @@ fn same_sheet(e: &MdEngineeringExpression, v: &MdDrawingView) -> bool {
         && e.view_id.as_deref().map(view_types::sheet_key) == Some(view_types::sheet_key(&v.id))
 }
 
-fn label(v: &MdDrawingView) -> &str {
+pub(super) fn label(v: &MdDrawingView) -> &str {
     if view_types::sheet_key(&v.id).is_empty() {
         &v.label
     } else {
@@ -236,7 +236,8 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[MdDrawingView]) -> Resul
         let cutting = ms.iter().any(|m| m.member_role == "cutting_stroke")
             || e.qualifiers.iter().any(|q| q == "cutting_plane");
         let detail = e.qualifiers.iter().any(|q| q == "detail_indicator");
-        let boundary = e.rule.starts_with("card:detail_view/boundary_");
+        let boundary = e.rule.starts_with("card:detail_view/boundary_")
+            || e.qualifiers.iter().any(|q| q == "detail_boundary");
         let kind = if title {
             "view_name"
         } else if cutting {

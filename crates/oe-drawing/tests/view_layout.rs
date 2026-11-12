@@ -972,3 +972,47 @@ fn cutting_path_end_letter_joins_its_endpoint_symbol() {
     let members:Vec<_>=g.members.iter().filter(|m|m.source_handle=="M3"&&m.member_role=="view_letter").collect();
     assert!(members.iter().any(|m|g.members.iter().any(|s|s.source_handle=="S2"&&s.member_role=="cutting_stroke"&&s.expression_id==m.expression_id)),"{members:?}");
 }
+
+#[test]
+fn composition_detail_boundary_differs_from_original_indicator_circle() {
+    let mut ents = view("parent", 0., 110., 83., 170., &[140.]);
+    ents.extend(view("detail", 200., 0., 238., 30., &[]));
+    ents.push(circle("original-circle", "02", [43., 140.], 7.));
+    ents.push(text("original-label", "11", "Ⅵ", [54., 141.], 3.5));
+    ents.push(circle("own-boundary", "02", [219., 15.], 27.));
+    ents.push(text("detail-title", "11", "Ⅵ", [216., 51.], 3.5));
+    ents.push(text("detail-ratio", "11", "7:2", [214., 44.], 3.5));
+    let g = run("", &ents);
+    let target = view_of(&g, "detail1").unwrap();
+    assert_eq!(target.representation_kind, "detail_view");
+    for (src, role) in [
+        ("original-circle", "detail_circle"),
+        ("original-label", "detail_label"),
+        ("own-boundary", "detail_boundary"),
+    ] {
+        let m = g.members.iter().find(|m| m.source_handle == src).unwrap();
+        assert_eq!(m.view_component_kind, role, "{m:?}");
+        assert_eq!(m.composition_view_ids, vec![target.id.clone()]);
+    }
+}
+
+#[test]
+fn composition_sheet_prefix_does_not_hide_a_section_name() {
+    let mut ents = sheet(1, 0., true, "20240418");
+    ents.extend(sheet(2, 500., true, "20250723"));
+    for (i, x) in [(1, 0.), (2, 500.)] {
+        ents.push(text(
+            &format!("section-title-{i}"),
+            "11",
+            "U—U",
+            [x + 92., 260.],
+            3.5,
+        ));
+    }
+    let g = run(&sheet_blocks(), &ents);
+    for i in [1, 2] {
+        let v = view_of(&g, &format!("V{i}1")).unwrap();
+        assert!(v.label.starts_with(&format!("图纸 {i} · ")));
+        assert_eq!(v.representation_kind, "section_view");
+    }
+}

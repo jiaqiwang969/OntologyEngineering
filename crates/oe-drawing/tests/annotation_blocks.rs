@@ -813,6 +813,16 @@ fn detail_label_and_view_drawn_as_blocks() {
         );
         assert!(ev(e, "enlargement_measured:4"), "{:?}", e.evidence_ids);
     }
+    let boundary = exprs(&g, "DV").into_iter().find(|e|e.qualifiers.iter().any(|q|q=="detail_boundary")).unwrap();
+    assert_eq!(boundary.view_mark_kind, "detail_mark");
+    assert_eq!(boundary.defines_view_ids, vec![region.id.clone()]);
+    for m in g.members.iter().filter(|m|m.expression_id==boundary.id) {
+        assert_eq!(m.view_component_kind,"detail_boundary");
+        assert_eq!(m.composition_view_ids,vec![region.id.clone()]);
+    }
+    for m in g.members.iter().filter(|m|m.expression_id==ind[0].id && m.member_role=="detail_circle") {
+        assert_eq!(m.view_component_kind,"detail_circle");
+    }
     let outline = exprs(&g, "DV")
         .into_iter()
         .find(|e| e.kind == "visible_contour")

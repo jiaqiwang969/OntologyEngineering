@@ -126,6 +126,8 @@ fn axis_boundary_is_bounded_and_keeps_line_type() {
     }
     for m in g.members.iter().filter(|m| m.source_handle == "axis-span") {
         assert_eq!(m.line_type, "thin_dash_dot");
+        assert_eq!(m.view_component_kind, "view_geometry");
+        assert_eq!(m.view_relation_role, "component");
         assert_eq!(m.interval, [0., 1.]);
         assert!(
             m.evidence_ids

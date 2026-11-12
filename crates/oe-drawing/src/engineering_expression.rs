@@ -92,6 +92,8 @@ mod view_composition;
 mod view_mark_targets;
 #[path = "view_component_roles.rs"]
 mod view_component_roles;
+#[path = "view_section_roles.rs"]
+mod view_section_roles;
 #[path = "thread_forms.rs"]
 mod thread_forms;
 #[path = "view_types.rs"]

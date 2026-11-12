@@ -22,8 +22,13 @@ fn escaped(value: &serde_json::Value) -> String {
 
 #[test]
 fn the_browser_result_is_read_from_the_dumped_page_and_a_failure_is_kept() {
-    let passed = json!({"status":"passed","count":2,"checks":["Typed expression graph loaded","Kind a<b> & c"],"facts":{"label":"Ø20\u{a0}h7"},"mode":"kind"});
+    let passed = json!({"status":"passed","count":2,"checks":["Typed expression graph loaded","Kind a<b> & c"],"facts":{"label":"Ø20\u{a0}h7","view_composition":{"views":2,"component_sources":1,"overlay_sources":1}},"mode":"kind"});
     assert_eq!(read_result(&dom(&escaped(&passed))).unwrap(), passed);
+    assert_eq!(
+        read_result(&dom(&escaped(&passed))).unwrap()["facts"]["view_composition"]["component_sources"]
+            .as_u64(),
+        Some(1)
+    );
     let failed = json!({"status":"failed","error":"Error: Default view draws every structural line once as one element"});
     let error = read_result(&dom(&escaped(&failed)))
         .unwrap_err()
@@ -81,6 +86,9 @@ fn the_harness_carries_the_mode_focus_and_region_without_answers() {
             "'Every data-member names a native member of its root'",
             "'Content that never plots is drawn faint in the classified views and nothing else is'",
             "'Expression details name every referenced view by its label'",
+            "'View mode'",
+            "'Composition overlay is off by default'",
+            "'Every view draws exactly its component members and optional located annotations'",
         ] {
             assert!(text.contains(label), "{mode}: {label}");
         }

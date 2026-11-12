@@ -381,12 +381,14 @@ impl Synthetic {
             let member = format!("{id}:m{k}");
             self.members.push(json!({"id":member,"expression_id":id,"source_handle":source,"interval":interval,
                 "line_type":line_type,"member_role":role,"native_member_id":native,"evidence_ids":proof,
-                "relation_ids":[],"state":"candidate","unknowns":[],"view_id":view}));
+                "relation_ids":[],"state":"candidate","unknowns":[],"view_id":view,
+                "view_relation_role":"unknown","composition_view_ids":[],"view_component_kind":"unknown"}));
             ids.push(member);
         }
         self.expressions.push(json!({"id":id,"kind":kind,"family":family,"label":label,"view_id":view,
             "member_ids":ids,"evidence_ids":evidence,"qualifiers":qualifiers,"rule":format!("synthetic_{kind}"),
-            "knowledge_ids":["K0"],"concept_ids":[],"state":"candidate","unknowns":[],"engineering_target":Value::Null}));
+            "knowledge_ids":["K0"],"concept_ids":[],"state":"candidate","unknowns":[],"engineering_target":Value::Null,
+            "view_mark_kind":"unknown","defines_view_ids":[],"references_view_ids":[]}));
         ids
     }
     fn structural(&mut self, member: &str, class: &str, line_type: &str, points: [f64; 4]) {
@@ -986,6 +988,178 @@ fn synthetic(identity: bool) -> (Vec<u8>, String) {
     (serde_json::to_vec(&graph).unwrap(), svg)
 }
 
+/// Invented page-only drawing, never classified: two views, a cutting symbol hosted by the first but
+/// composing the second, a located dimension, and one source with component/located/unknown intervals.
+fn composition_synthetic() -> (Vec<u8>, String) {
+    let mut s = Synthetic {
+        top: 180.,
+        svg: String::new(),
+        identity: true,
+        entities: Vec::new(),
+        natives: Vec::new(),
+        members: Vec::new(),
+        expressions: Vec::new(),
+        styles: Vec::new(),
+        lines: Vec::new(),
+    };
+    let first = "view:principal";
+    let second = "view:offset";
+    let assign = |s: &mut Synthetic, ids: Vec<String>, role: &str, targets: &[&str], kind: &str| {
+        for id in ids {
+            let m = s.members.iter_mut().find(|m| m["id"] == id).unwrap();
+            m["view_relation_role"] = json!(role);
+            m["composition_view_ids"] = json!(targets);
+            m["view_component_kind"] = json!(kind);
+        }
+    };
+    for (id, points, view) in [
+        ("XA", [36., 48., 96., 48.], first),
+        ("XB", [170., 62., 244., 62.], second),
+    ] {
+        s.entity(id, "LINE", Some(points), &[]);
+        s.stroke(id, None, &[(points[0], points[1]), (points[2], points[3])]);
+        let ids = s.expression(
+            "visible_contour",
+            "geometry",
+            "轮廓",
+            Some(view),
+            &[(id, "contour_segment", "thick_continuous", None, WHOLE, &[])],
+            &[],
+            &[],
+        );
+        s.structural(&ids[0], "visible_outline", "thick_continuous", points);
+        assign(&mut s, ids, "component", &[view], "view_geometry");
+    }
+    s.entity("XC", "LINE", Some([56., 78., 56., 100.]), &[]);
+    s.stroke("XC", None, &[(56., 78.), (56., 100.)]);
+    s.entity("XR", "SOLID", None, &[]);
+    s.fill("XR", None, &[(56., 78.), (54., 88.), (58., 88.)]);
+    s.entity("XT", "TEXT", None, &[]);
+    s.fill("XT", None, &rectangle([52., 106., 59., 114.]));
+    let ids = s.expression(
+        "view_callout",
+        "view",
+        "Q 剖切符号",
+        Some(first),
+        &[
+            ("XC", "cutting_stroke", "thick_continuous", None, WHOLE, &[]),
+            ("XR", "view_arrow", "fill", None, WHOLE, &[]),
+            ("XT", "view_letter", "text", None, WHOLE, &[]),
+        ],
+        &["references_view:view:offset"],
+        &["cutting_plane"],
+    );
+    for (id, kind) in
+        ids.into_iter()
+            .zip(["cutting_location", "projection_direction", "mark_letters"])
+    {
+        assign(&mut s, vec![id], "component", &[second], kind);
+    }
+    s.dimension(
+        "XD",
+        "48",
+        [(36., 32.), (96., 32.)],
+        [
+            [(36., 32.), (45., 30.5), (45., 33.5)],
+            [(96., 32.), (87., 30.5), (87., 33.5)],
+        ],
+        [[(36., 46.), (36., 29.)], [(96., 46.), (96., 29.)]],
+        [58., 32., 77., 44.],
+        [[60., 35., 65., 41.], [69., 35., 74., 41.]],
+    );
+    let ids = s
+        .members
+        .iter()
+        .filter(|m| m["source_handle"] == "XD")
+        .map(|m| m["id"].as_str().unwrap().to_owned())
+        .collect();
+    assign(&mut s, ids, "located_only", &[], "auxiliary_annotation");
+    s.entity("XS", "LINE", Some([32., 144., 136., 144.]), &[]);
+    s.stroke("XS", None, &[(32., 144.), (136., 144.)]);
+    for (interval, role, targets, kind) in [
+        (
+            [0.18, 0.64],
+            "component",
+            vec![first, second],
+            "view_geometry",
+        ),
+        ([0.64, 1.], "located_only", vec![], "auxiliary_annotation"),
+        ([0., 0.18], "unknown", vec![], "unknown"),
+    ] {
+        let ids = s.expression(
+            "center_axis",
+            "geometry",
+            "有界共享来源",
+            Some(first),
+            &[("XS", "center_line", "thin_dash_dot", None, interval, &[])],
+            &[],
+            &[],
+        );
+        assign(&mut s, ids, role, &targets, kind);
+    }
+    // Two native members of a single INSERT have different view relations.
+    s.entity("XN", "INSERT", None, &[("K", "LINE"), ("J", "TEXT")]);
+    s.stroke("XN", Some("XN/K"), &[(186., 96.), (242., 96.)]);
+    s.fill("XN", Some("XN/J"), &rectangle([204., 102., 214., 110.]));
+    for (native, role, targets) in [
+        ("XN/K", "component", vec![second]),
+        ("XN/J", "located_only", vec![]),
+    ] {
+        let ids = s.expression(
+            "view_callout",
+            "view",
+            "嵌套成员",
+            Some(first),
+            &[(
+                "XN",
+                "native_member",
+                "thin_continuous",
+                Some(native),
+                WHOLE,
+                &[],
+            )],
+            &[],
+            &[],
+        );
+        assign(
+            &mut s,
+            ids,
+            role,
+            &targets,
+            if role == "component" {
+                "view_title"
+            } else {
+                "auxiliary_annotation"
+            },
+        );
+    }
+    let cutting = s
+        .expressions
+        .iter_mut()
+        .find(|e| e["label"] == "Q 剖切符号")
+        .unwrap();
+    cutting["view_mark_kind"] = json!("cutting_symbol");
+    cutting["references_view_ids"] = json!([second]);
+    let view = |id: &str, label: &str, bbox: [f64; 4]| {
+        json!({
+            "id":id, "kind":"principal", "label":label, "bbox":bbox, "position_role":"unknown",
+            "representation_kind":"unknown", "section_extent":"unknown", "cutting_surface_kind":"unknown",
+            "label_source_ids":[], "scale_text":null, "state":"candidate", "evidence_ids":[], "unknowns":[],
+        })
+    };
+    let graph = json!({"schema":"oev2.drawing-expression-graph/1", "profile":"synthetic-composition",
+        "source_sha256":"3".repeat(64), "layer_convention":"not_checked", "layer_convention_evidence":[],
+        "views":[view(first,"甲视图",[20.,20.,145.,160.]),view(second,"乙视图",[158.,40.,260.,125.])],
+        "line_styles":s.styles, "members":s.members, "expressions":s.expressions, "unknowns":[],
+        "structure_ends":[], "implied_spans":[], "structural_lines":s.lines,
+        "source":{"schema":"synthetic", "entities":s.entities, "members":s.natives, "relations":[]}});
+    let svg = format!(
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 280 180\" data-drawing-origin-x=\"0\" data-drawing-top-y=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"white\"/>{}</svg>",
+        s.svg
+    );
+    (serde_json::to_vec(&graph).unwrap(), svg)
+}
+
 const CHROME: &str = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 #[test]
@@ -1244,6 +1418,127 @@ fn the_browser_checks_pass_on_a_synthetic_page_and_catch_each_broken_rule() {
         assert_eq!(text.matches(from).count(), 1, "{from}");
         let error = check(&text.replacen(from, to, 1), "kind")
             .expect_err(from)
+            .to_string();
+        assert!(error.contains(caught), "{from}: {error}");
+    }
+}
+
+#[test]
+fn the_browser_checks_use_view_composition_and_located_overlay_on_a_synthetic_page() {
+    if !Path::new(CHROME).is_file() {
+        eprintln!("skipped: no Chrome at {CHROME}");
+        return;
+    }
+    let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../..")
+        .canonicalize()
+        .unwrap();
+    let scratch = Scratch::new(&source);
+    // Optional durable evidence for the lane report. Ordinary test runs still own and remove their scratch.
+    let evidence = std::env::var_os("OE_DRAWING_PAGE_EVIDENCE_DIR").map(std::path::PathBuf::from);
+    if let Some(path) = &evidence {
+        assert!(path.is_absolute());
+        std::fs::create_dir(path).unwrap();
+    }
+    let data_root = evidence.as_deref().unwrap_or(&scratch.0);
+    let root = oe_core::SkillRoot::new(&source)
+        .unwrap()
+        .with_project_data_root(data_root)
+        .unwrap();
+    let (graph, svg) = composition_synthetic();
+    let mut page_request = request();
+    page_request.title = "合成图：两个视图的组成与所在标注".into();
+    page_request.version = "甲段合成样例".into();
+    page_request.source_note = "手工关系图与中性矢量；不经过读图识别".into();
+    page_request.status_note = "页面逻辑合成测试，非工程结论".into();
+    let (page, _) = oe_drawing::page::page(&graph, &svg, &page_request).unwrap();
+    std::fs::write(data_root.join("composition-graph.json"), &graph).unwrap();
+    std::fs::write(data_root.join("composition-source.svg"), &svg).unwrap();
+    std::fs::write(data_root.join("composition-page.html"), &page).unwrap();
+    let result = oe_drawing_check::browser::check_page(
+        &root,
+        &oe_contracts::MdReviewPageCheckRequest {
+            schema: oe_drawing_check::browser::REQUEST_SCHEMA.into(),
+            page: "composition-page.html".into(),
+            output_directory: "composition-check".into(),
+            chrome: CHROME.into(),
+            mode: "view".into(),
+            region: None,
+            focus_label: None,
+        },
+    )
+    .unwrap();
+    assert_eq!(result.facts["view_composition"]["views"], 2);
+    assert!(
+        result.facts["view_composition"]["component_sources"]
+            .as_u64()
+            .unwrap()
+            > 0
+    );
+    assert!(
+        result.facts["view_composition"]["located_sources"]
+            .as_u64()
+            .unwrap()
+            > 0
+    );
+    assert_eq!(
+        result.facts["view_composition"]["by_view"]["view:offset"]["composition"]["source_ids"],
+        json!(["XB", "XC", "XN", "XR", "XS", "XT"])
+    );
+    assert_eq!(
+        result.facts["view_composition"]["by_view"]["view:principal"]["composition"]["source_ids"],
+        json!(["XA", "XS"])
+    );
+    assert_eq!(
+        result.facts["view_composition"]["by_view"]["view:principal"]["overlay"]["source_ids"],
+        json!(["XA", "XD", "XN", "XS"])
+    );
+    // A check must reject the old location-based selection, annotation leakage while off, wrong target
+    // colour, an unbounded source interval and a faint overlay painted at full opacity.
+    for (n, (from, to, caught)) in [
+        (
+            "composition.passes(m,enabled.view,$('viewOverlay').checked)",
+            "enabled.view.has(locatedView(m))",
+            "source coverage",
+        ),
+        (
+            "composition.passes(m,enabled.view,$('viewOverlay').checked)",
+            "composition.passes(m,enabled.view,true)",
+            "source coverage",
+        ),
+        (
+            "const targetForMember=m=>composition.colorTarget(m,enabled.view);",
+            "const targetForMember=m=>locatedView(m);",
+            "target view colour",
+        ),
+        (
+            "out.push({interval:[a,b],members:claiming})",
+            "out.push({interval:[0,1],members:claiming})",
+            "bounded member span",
+        ),
+        (
+            ".located-overlay{opacity:calc(var(--op,1)*.38)}",
+            ".located-overlay{opacity:calc(var(--op,1)*1)}",
+            "faint display",
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        assert_eq!(page.matches(from).count(), 1, "{from}");
+        let file = format!("composition-broken-{n}.html");
+        std::fs::write(data_root.join(&file), page.replacen(from, to, 1)).unwrap();
+        let q = oe_contracts::MdReviewPageCheckRequest {
+            schema: oe_drawing_check::browser::REQUEST_SCHEMA.into(),
+            page: file,
+            output_directory: format!("composition-broken-{n}"),
+            chrome: CHROME.into(),
+            mode: "view".into(),
+            region: None,
+            focus_label: None,
+        };
+        let error = oe_drawing_check::browser::check_page(&root, &q)
+            .unwrap_err()
             .to_string();
         assert!(error.contains(caught), "{from}: {error}");
     }

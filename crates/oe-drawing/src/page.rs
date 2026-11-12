@@ -246,7 +246,12 @@ pub fn page_with_review(graph: &[u8], svg: &str, q: &MdReviewPageRequest, review
         "drafting_review":review, "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered,
         "native_member_kinds":Value::Object(native_kinds),"rendered_member_identities":shown.members.len()});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");
-    let text = TEMPLATE.replace("@@SECTION_REVIEW@@", include_str!("../assets/section-review.js")).replace("@@COMPARISON_JS@@", include_str!("../assets/drawing-comparison.js")).replace("@@DATA@@", &data).replace("@@SVG@@", svg);
+    let text = TEMPLATE
+        .replace("@@VIEW_COMPOSITION@@", include_str!("../assets/view-composition.js"))
+        .replace("@@SECTION_REVIEW@@", include_str!("../assets/section-review.js"))
+        .replace("@@COMPARISON_JS@@", include_str!("../assets/drawing-comparison.js"))
+        .replace("@@DATA@@", &data)
+        .replace("@@SVG@@", svg);
     let result = MdReviewPage {
         schema: SCHEMA.into(),
         page: MdDrawingRouteFile {

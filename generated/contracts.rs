@@ -2947,12 +2947,16 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDrawingRouteStep", "seconds", "f64"),
     ("MdDrawingRouteStep", "status", "String"),
     ("MdDrawingView", "bbox", "Vec<f64>"),
+    ("MdDrawingView", "cutting_surface_kind", "String"),
     ("MdDrawingView", "evidence_ids", "Vec<String>"),
     ("MdDrawingView", "id", "String"),
     ("MdDrawingView", "kind", "String"),
     ("MdDrawingView", "label", "String"),
     ("MdDrawingView", "label_source_ids", "Vec<String>"),
+    ("MdDrawingView", "position_role", "String"),
+    ("MdDrawingView", "representation_kind", "String"),
     ("MdDrawingView", "scale_text", "Option<String>"),
+    ("MdDrawingView", "section_extent", "String"),
     ("MdDrawingView", "state", "String"),
     ("MdDrawingView", "unknowns", "Vec<String>"),
     ("MdDxfByteChange", "end", "u64"),
@@ -2963,6 +2967,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDxfStyleEdit", "value", "String"),
     ("MdEngineeringExpression", "concept_ids", "Vec<String>"),
     ("MdEngineeringExpression", "cross_section_type", "Option<String>"),
+    ("MdEngineeringExpression", "defines_view_ids", "Vec<String>"),
     ("MdEngineeringExpression", "engineering_target", "Option<String>"),
     ("MdEngineeringExpression", "evidence_ids", "Vec<String>"),
     ("MdEngineeringExpression", "family", "String"),
@@ -2972,6 +2977,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "label", "String"),
     ("MdEngineeringExpression", "member_ids", "Vec<String>"),
     ("MdEngineeringExpression", "qualifiers", "Vec<String>"),
+    ("MdEngineeringExpression", "references_view_ids", "Vec<String>"),
     ("MdEngineeringExpression", "rule", "String"),
     ("MdEngineeringExpression", "section_extent", "Option<String>"),
     ("MdEngineeringExpression", "section_geometry", "Option<String>"),
@@ -2979,6 +2985,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "state", "String"),
     ("MdEngineeringExpression", "unknowns", "Vec<String>"),
     ("MdEngineeringExpression", "view_id", "Option<String>"),
+    ("MdEngineeringExpression", "view_mark_kind", "String"),
     ("MdEngineeringExpressionGraph", "expressions", "Vec<MdEngineeringExpression>"),
     ("MdEngineeringExpressionGraph", "implied_spans", "Vec<MdImpliedSpan>"),
     ("MdEngineeringExpressionGraph", "layer_convention", "String"),
@@ -3014,6 +3021,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdExpressionGraphCheckRequest", "schema", "String"),
     ("MdExpressionGraphCheckRequest", "svg", "String"),
     ("MdExpressionGraphCheckRequest", "worker_executable", "String"),
+    ("MdExpressionMember", "composition_view_ids", "Vec<String>"),
     ("MdExpressionMember", "cross_section_type", "Option<String>"),
     ("MdExpressionMember", "evidence_ids", "Vec<String>"),
     ("MdExpressionMember", "expression_id", "String"),
@@ -3029,7 +3037,9 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "source_handle", "String"),
     ("MdExpressionMember", "state", "String"),
     ("MdExpressionMember", "unknowns", "Vec<String>"),
+    ("MdExpressionMember", "view_component_kind", "String"),
     ("MdExpressionMember", "view_id", "Option<String>"),
+    ("MdExpressionMember", "view_relation_role", "String"),
     ("MdImpliedSpan", "arc", "Option<Vec<f64>>"),
     ("MdImpliedSpan", "cause", "String"),
     ("MdImpliedSpan", "evidence_ids", "Vec<String>"),
@@ -5777,7 +5787,10 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingObject", "class", "Text"),
     ("MdDraftingObject", "class", "ThreadLine"),
     ("MdDraftingObject", "class", "ToleranceText"),
+    ("MdDraftingObject", "class", "ViewComponent"),
+    ("MdDraftingObject", "class", "ViewComposition"),
     ("MdDraftingObject", "class", "ViewLabel"),
+    ("MdDraftingObject", "class", "ViewMarkReference"),
     ("MdDraftingObject", "class", "ViewTitle"),
     ("MdDraftingObject", "class", "VisibleOutline"),
     ("MdDraftingObject", "class", "WavyBreakBoundary"),
@@ -5801,26 +5814,34 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "chainedWith"),
     ("MdDraftingRelation", "predicate", "coincidentWith"),
     ("MdDraftingRelation", "predicate", "colourIndex"),
+    ("MdDraftingRelation", "predicate", "componentOf"),
     ("MdDraftingRelation", "predicate", "crossSectionType"),
     ("MdDraftingRelation", "predicate", "crossedBy"),
     ("MdDraftingRelation", "predicate", "cutLetterCount"),
+    ("MdDraftingRelation", "predicate", "cuttingSurfaceKind"),
+    ("MdDraftingRelation", "predicate", "definesView"),
     ("MdDraftingRelation", "predicate", "dxfLayer"),
     ("MdDraftingRelation", "predicate", "endOnOutline"),
     ("MdDraftingRelation", "predicate", "expressionId"),
     ("MdDraftingRelation", "predicate", "expressionKind"),
     ("MdDraftingRelation", "predicate", "extensionBeyondUnits"),
     ("MdDraftingRelation", "predicate", "extentUnits"),
+    ("MdDraftingRelation", "predicate", "hasComponent"),
     ("MdDraftingRelation", "predicate", "hatchDirectionDiffersFrom"),
     ("MdDraftingRelation", "predicate", "hatchSpacingDiffersFrom"),
     ("MdDraftingRelation", "predicate", "heightUnits"),
     ("MdDraftingRelation", "predicate", "layer"),
     ("MdDraftingRelation", "predicate", "layerColourIndex"),
     ("MdDraftingRelation", "predicate", "lineType"),
+    ("MdDraftingRelation", "predicate", "locatedInView"),
     ("MdDraftingRelation", "predicate", "memberId"),
     ("MdDraftingRelation", "predicate", "onExtensionOf"),
     ("MdDraftingRelation", "predicate", "overshootUnits"),
     ("MdDraftingRelation", "predicate", "parentOutlineContinuation"),
+    ("MdDraftingRelation", "predicate", "positionRole"),
     ("MdDraftingRelation", "predicate", "radialTo"),
+    ("MdDraftingRelation", "predicate", "referencesView"),
+    ("MdDraftingRelation", "predicate", "representationKind"),
     ("MdDraftingRelation", "predicate", "rotationDeg"),
     ("MdDraftingRelation", "predicate", "sameLetterAs"),
     ("MdDraftingRelation", "predicate", "scaledBy"),
@@ -5834,6 +5855,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "terminatorOnCarrier"),
     ("MdDraftingRelation", "predicate", "text"),
     ("MdDraftingRelation", "predicate", "view"),
+    ("MdDraftingRelation", "predicate", "viewComponentKind"),
+    ("MdDraftingRelation", "predicate", "viewMarkKind"),
+    ("MdDraftingRelation", "predicate", "viewRelationRole"),
     ("MdDraftingRule", "confidence", "certain"),
     ("MdDraftingRule", "confidence", "likely"),
     ("MdDraftingRule", "confidence", "needs_expert"),
@@ -5903,12 +5927,40 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingRouteStep", "status", "not_run"),
     ("MdDrawingRouteStep", "status", "passed"),
     ("MdDrawingRouteStep", "status", "skipped"),
+    ("MdDrawingView", "cutting_surface_kind", "combined_planes"),
+    ("MdDrawingView", "cutting_surface_kind", "not_applicable"),
+    ("MdDrawingView", "cutting_surface_kind", "offset_planes"),
+    ("MdDrawingView", "cutting_surface_kind", "rotated_planes"),
+    ("MdDrawingView", "cutting_surface_kind", "single_plane"),
+    ("MdDrawingView", "cutting_surface_kind", "unknown"),
     ("MdDrawingView", "kind", "detail_view"),
     ("MdDrawingView", "kind", "direction_view"),
     ("MdDrawingView", "kind", "partial_view"),
     ("MdDrawingView", "kind", "principal"),
     ("MdDrawingView", "kind", "section_view"),
     ("MdDrawingView", "kind", "sheet"),
+    ("MdDrawingView", "position_role", "bottom"),
+    ("MdDrawingView", "position_role", "free"),
+    ("MdDrawingView", "position_role", "left"),
+    ("MdDrawingView", "position_role", "not_applicable"),
+    ("MdDrawingView", "position_role", "principal"),
+    ("MdDrawingView", "position_role", "rear"),
+    ("MdDrawingView", "position_role", "right"),
+    ("MdDrawingView", "position_role", "top"),
+    ("MdDrawingView", "position_role", "unknown"),
+    ("MdDrawingView", "representation_kind", "cross_section"),
+    ("MdDrawingView", "representation_kind", "detail_view"),
+    ("MdDrawingView", "representation_kind", "section_view"),
+    ("MdDrawingView", "representation_kind", "sheet"),
+    ("MdDrawingView", "representation_kind", "unknown"),
+    ("MdDrawingView", "representation_kind", "view"),
+    ("MdDrawingView", "section_extent", "cross_section"),
+    ("MdDrawingView", "section_extent", "full"),
+    ("MdDrawingView", "section_extent", "half"),
+    ("MdDrawingView", "section_extent", "local"),
+    ("MdDrawingView", "section_extent", "local_axis"),
+    ("MdDrawingView", "section_extent", "not_applicable"),
+    ("MdDrawingView", "section_extent", "unknown"),
     ("MdDrawingView", "state", "candidate"),
     ("MdDrawingView", "state", "observed"),
     ("MdDrawingView", "state", "unknown"),
@@ -5986,6 +6038,11 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "state", "candidate"),
     ("MdEngineeringExpression", "state", "observed"),
     ("MdEngineeringExpression", "state", "unknown"),
+    ("MdEngineeringExpression", "view_mark_kind", "cutting_symbol"),
+    ("MdEngineeringExpression", "view_mark_kind", "detail_mark"),
+    ("MdEngineeringExpression", "view_mark_kind", "direction_mark"),
+    ("MdEngineeringExpression", "view_mark_kind", "unknown"),
+    ("MdEngineeringExpression", "view_mark_kind", "view_name"),
     ("MdEngineeringExpressionGraph", "layer_convention", "gbt14665_2012_table6_consistent"),
     ("MdEngineeringExpressionGraph", "layer_convention", "not_qualified"),
     ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/2"),
@@ -6072,6 +6129,26 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "state", "candidate"),
     ("MdExpressionMember", "state", "observed"),
     ("MdExpressionMember", "state", "unknown"),
+    ("MdExpressionMember", "view_component_kind", "auxiliary_annotation"),
+    ("MdExpressionMember", "view_component_kind", "cutting_location"),
+    ("MdExpressionMember", "view_component_kind", "detail_boundary"),
+    ("MdExpressionMember", "view_component_kind", "detail_circle"),
+    ("MdExpressionMember", "view_component_kind", "detail_indicator"),
+    ("MdExpressionMember", "view_component_kind", "detail_label"),
+    ("MdExpressionMember", "view_component_kind", "detail_leader"),
+    ("MdExpressionMember", "view_component_kind", "mark_letters"),
+    ("MdExpressionMember", "view_component_kind", "projection_direction"),
+    ("MdExpressionMember", "view_component_kind", "section_boundary"),
+    ("MdExpressionMember", "view_component_kind", "section_hatch"),
+    ("MdExpressionMember", "view_component_kind", "section_region"),
+    ("MdExpressionMember", "view_component_kind", "section_visible_contour"),
+    ("MdExpressionMember", "view_component_kind", "unknown"),
+    ("MdExpressionMember", "view_component_kind", "view_geometry"),
+    ("MdExpressionMember", "view_component_kind", "view_scale"),
+    ("MdExpressionMember", "view_component_kind", "view_title"),
+    ("MdExpressionMember", "view_relation_role", "component"),
+    ("MdExpressionMember", "view_relation_role", "located_only"),
+    ("MdExpressionMember", "view_relation_role", "unknown"),
     ("MdImpliedSpan", "cause", "detail_circle_crossing"),
     ("MdImpliedSpan", "cause", "local_section"),
     ("MdImpliedSpan", "cause", "text_break"),
@@ -20831,7 +20908,7 @@ impl MdDraftingObject {
         if self.id.trim().is_empty() { failures.push("MdDraftingObject.id:required".into()); }
         if self.layer.trim().is_empty() { failures.push("MdDraftingObject.layer:required".into()); }
 
-        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","CuttingLetterSite","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionBoundarySpan","SectionInteriorUse","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
+        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","CuttingLetterSite","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionBoundarySpan","SectionInteriorUse","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewComponent","ViewComposition","ViewLabel","ViewMarkReference","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingObject.layer:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20864,7 +20941,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundaryCarrier","boundaryIntervalEnd","boundaryIntervalStart","boundaryParameter","boundedContinuationOf","chainedWith","coincidentWith","colourIndex","crossSectionType","crossedBy","cutLetterCount","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","parentOutlineContinuation","radialTo","rotationDeg","sameLetterAs","scaledBy","sectionExtent","sectionGeometry","sectionOrigin","sectionRegion","sourceHandle","sourceLine","spacingUnits","terminatorOnCarrier","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundaryCarrier","boundaryIntervalEnd","boundaryIntervalStart","boundaryParameter","boundedContinuationOf","chainedWith","coincidentWith","colourIndex","componentOf","crossSectionType","crossedBy","cutLetterCount","cuttingSurfaceKind","definesView","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hasComponent","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","locatedInView","memberId","onExtensionOf","overshootUnits","parentOutlineContinuation","positionRole","radialTo","referencesView","representationKind","rotationDeg","sameLetterAs","scaledBy","sectionExtent","sectionGeometry","sectionOrigin","sectionRegion","sourceHandle","sourceLine","spacingUnits","terminatorOnCarrier","text","view","viewComponentKind","viewMarkKind","viewRelationRole",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21385,6 +21462,8 @@ impl MdDrawingRouteStep {
 pub struct MdDrawingView {
     /// Region [xmin, ymin, xmax, ymax] in drawing units
     pub bbox: Vec<f64>,
+    /// Formal kind of the cutting surface(s)
+    pub cutting_surface_kind: String,
     /// Evidence supporting the view region and title
     pub evidence_ids: Vec<String>,
     /// View identity
@@ -21395,8 +21474,14 @@ pub struct MdDrawingView {
     pub label: String,
     /// Source handles of the view title or callout
     pub label_source_ids: Vec<String>,
+    /// Formal position role of the view: projection arrangement or free placement
+    pub position_role: String,
+    /// Formal figure representation, separate from position role
+    pub representation_kind: String,
     /// Scale text of a detail view when present
     pub scale_text: Option<String>,
+    /// Formal extent of a view section
+    pub section_extent: String,
     /// Evidence state
     pub state: String,
     /// Unresolved view limitations
@@ -21406,12 +21491,20 @@ impl MdDrawingView {
     pub fn validate(&self) -> Result<(), Vec<String>> {
         #[allow(unused_mut)]
         let mut failures = Vec::new();
+        if self.cutting_surface_kind.trim().is_empty() { failures.push("MdDrawingView.cutting_surface_kind:required".into()); }
         if self.id.trim().is_empty() { failures.push("MdDrawingView.id:required".into()); }
         if self.kind.trim().is_empty() { failures.push("MdDrawingView.kind:required".into()); }
         if self.label.trim().is_empty() { failures.push("MdDrawingView.label:required".into()); }
+        if self.position_role.trim().is_empty() { failures.push("MdDrawingView.position_role:required".into()); }
+        if self.representation_kind.trim().is_empty() { failures.push("MdDrawingView.representation_kind:required".into()); }
+        if self.section_extent.trim().is_empty() { failures.push("MdDrawingView.section_extent:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdDrawingView.state:required".into()); }
 
+        if !["combined_planes","not_applicable","offset_planes","rotated_planes","single_plane","unknown",].contains(&self.cutting_surface_kind.as_str()) { failures.push("MdDrawingView.cutting_surface_kind:allowed_values".into()); }
         if !["detail_view","direction_view","partial_view","principal","section_view","sheet",].contains(&self.kind.as_str()) { failures.push("MdDrawingView.kind:allowed_values".into()); }
+        if !["bottom","free","left","not_applicable","principal","rear","right","top","unknown",].contains(&self.position_role.as_str()) { failures.push("MdDrawingView.position_role:allowed_values".into()); }
+        if !["cross_section","detail_view","section_view","sheet","unknown","view",].contains(&self.representation_kind.as_str()) { failures.push("MdDrawingView.representation_kind:allowed_values".into()); }
+        if !["cross_section","full","half","local","local_axis","not_applicable","unknown",].contains(&self.section_extent.as_str()) { failures.push("MdDrawingView.section_extent:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdDrawingView.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -21468,6 +21561,8 @@ pub struct MdEngineeringExpression {
     pub concept_ids: Vec<String>,
     /// Formal cross-section configuration for a section expression or member
     pub cross_section_type: Option<String>,
+    /// Views defined by this view-mark expression
+    pub defines_view_ids: Vec<String>,
     /// Part feature, face or requirement target; absent unless separately and uniquely supported
     pub engineering_target: Option<String>,
     /// Evidence for the composition
@@ -21486,6 +21581,8 @@ pub struct MdEngineeringExpression {
     pub member_ids: Vec<String>,
     /// Qualifiers such as key characteristic, reference, toleranced or general requirement
     pub qualifiers: Vec<String>,
+    /// Views pointed at by this view-mark expression
+    pub references_view_ids: Vec<String>,
     /// Generic rule that formed the expression
     pub rule: String,
     /// Formal extent of the section
@@ -21500,6 +21597,8 @@ pub struct MdEngineeringExpression {
     pub unknowns: Vec<String>,
     /// View that contains it, when established
     pub view_id: Option<String>,
+    /// Kind of view-mark expression; member roles remain in view_component_kind
+    pub view_mark_kind: String,
 }
 impl MdEngineeringExpression {
     pub fn validate(&self) -> Result<(), Vec<String>> {
@@ -21511,6 +21610,7 @@ impl MdEngineeringExpression {
         if self.label.trim().is_empty() { failures.push("MdEngineeringExpression.label:required".into()); }
         if self.rule.trim().is_empty() { failures.push("MdEngineeringExpression.rule:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdEngineeringExpression.state:required".into()); }
+        if self.view_mark_kind.trim().is_empty() { failures.push("MdEngineeringExpression.view_mark_kind:required".into()); }
 
         if let Some(value) = &self.cross_section_type { if !["removed","superimposed","unknown",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.cross_section_type:allowed_values".into()); } }
         if !["construction","dimension","geometry","note","sheet","surface","tolerance","unresolved","view",].contains(&self.family.as_str()) { failures.push("MdEngineeringExpression.family:allowed_values".into()); }
@@ -21519,6 +21619,7 @@ impl MdEngineeringExpression {
         if let Some(value) = &self.section_geometry { if !["complete","partial","unavailable",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.section_geometry:allowed_values".into()); } }
         if let Some(value) = &self.section_origin { if !["cut_formed","pre_existing","suppressed","unknown",].contains(&value.as_str()) { failures.push("MdEngineeringExpression.section_origin:allowed_values".into()); } }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdEngineeringExpression.state:allowed_values".into()); }
+        if !["cutting_symbol","detail_mark","direction_mark","unknown","view_name",].contains(&self.view_mark_kind.as_str()) { failures.push("MdEngineeringExpression.view_mark_kind:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21674,6 +21775,8 @@ impl MdExpressionGraphCheckRequest {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdExpressionMember {
+    /// Views composed by this member; a member may belong to more than one target view
+    pub composition_view_ids: Vec<String>,
     /// Formal cross-section configuration for a section expression or member
     pub cross_section_type: Option<String>,
     /// Evidence for this assignment
@@ -21704,8 +21807,12 @@ pub struct MdExpressionMember {
     pub state: String,
     /// Member-specific limitations
     pub unknowns: Vec<String>,
+    /// Closed role of a member when it composes a view
+    pub view_component_kind: String,
     /// View that contains it, when established
     pub view_id: Option<String>,
+    /// Whether this member composes a view or is only located in one
+    pub view_relation_role: String,
 }
 impl MdExpressionMember {
     pub fn validate(&self) -> Result<(), Vec<String>> {
@@ -21717,6 +21824,8 @@ impl MdExpressionMember {
         if self.member_role.trim().is_empty() { failures.push("MdExpressionMember.member_role:required".into()); }
         if self.source_handle.trim().is_empty() { failures.push("MdExpressionMember.source_handle:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdExpressionMember.state:required".into()); }
+        if self.view_component_kind.trim().is_empty() { failures.push("MdExpressionMember.view_component_kind:required".into()); }
+        if self.view_relation_role.trim().is_empty() { failures.push("MdExpressionMember.view_relation_role:required".into()); }
 
         if let Some(value) = &self.cross_section_type { if !["removed","superimposed","unknown",].contains(&value.as_str()) { failures.push("MdExpressionMember.cross_section_type:allowed_values".into()); } }
         if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdExpressionMember.line_type:allowed_values".into()); }
@@ -21725,6 +21834,8 @@ impl MdExpressionMember {
         if let Some(value) = &self.section_geometry { if !["complete","partial","unavailable",].contains(&value.as_str()) { failures.push("MdExpressionMember.section_geometry:allowed_values".into()); } }
         if let Some(value) = &self.section_origin { if !["cut_formed","pre_existing","suppressed","unknown",].contains(&value.as_str()) { failures.push("MdExpressionMember.section_origin:allowed_values".into()); } }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdExpressionMember.state:allowed_values".into()); }
+        if !["auxiliary_annotation","cutting_location","detail_boundary","detail_circle","detail_indicator","detail_label","detail_leader","mark_letters","projection_direction","section_boundary","section_hatch","section_region","section_visible_contour","unknown","view_geometry","view_scale","view_title",].contains(&self.view_component_kind.as_str()) { failures.push("MdExpressionMember.view_component_kind:allowed_values".into()); }
+        if !["component","located_only","unknown",].contains(&self.view_relation_role.as_str()) { failures.push("MdExpressionMember.view_relation_role:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

@@ -907,6 +907,9 @@ impl Builder {
             section_extent: None,
             section_origin: None,
             section_geometry: None,
+            defines_view_ids: vec![],
+            references_view_ids: vec![],
+            view_mark_kind: "unknown".into(),
         });
         self.exprs.len() - 1
     }
@@ -974,6 +977,9 @@ impl Builder {
             section_extent: None,
             section_origin: None,
             section_geometry: None,
+            view_relation_role: "unknown".into(),
+            composition_view_ids: vec![],
+            view_component_kind: "unknown".into(),
         });
     }
     fn used(&self, src: &str) -> bool {
@@ -7003,6 +7009,18 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             } else {
                 vec!["Projection relation to the principal view remains a candidate".into()]
             },
+            position_role: if r.kind == "sheet" {
+                "not_applicable".into()
+            } else {
+                "unknown".into()
+            },
+            representation_kind: if r.kind == "sheet" {
+                "sheet".into()
+            } else {
+                "unknown".into()
+            },
+            section_extent: "unknown".into(),
+            cutting_surface_kind: "unknown".into(),
         })
         .collect::<Vec<_>>();
     let mut graph = MdEngineeringExpressionGraph {

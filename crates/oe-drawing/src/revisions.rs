@@ -731,6 +731,10 @@ mod tests {
                 state: "candidate".into(),
                 evidence_ids: ev,
                 unknowns: vec![],
+                position_role: "not_applicable".into(),
+                representation_kind: "sheet".into(),
+                section_extent: "unknown".into(),
+                cutting_surface_kind: "unknown".into(),
             });
             for (h, c) in hs.into_iter().zip(["DC-G9-018", "DC-G9-019"]) {
                 let mut m = template.clone();

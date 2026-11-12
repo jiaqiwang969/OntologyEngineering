@@ -1044,6 +1044,58 @@ write="ggen contract; Rust expression assembler from source bytes only; no old a
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
+[[types.fields]]
+name="position_role"
+rust_type="String"
+required=true
+format="typed"
+meaning="Formal position role of the view: projection arrangement or free placement"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; unknown is retained when projection evidence is unavailable"
+write="Locked ggen contract; source-only view structure"
+applicability="Drawing views and sheet containers"
+acceptance="Matches retained position evidence; no location-neighbour inference"
+allowed_values=["principal", "top", "bottom", "left", "right", "rear", "free", "unknown", "not_applicable"]
+
+[[types.fields]]
+name="representation_kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Formal figure representation, separate from position role"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; unknown is retained when the figure kind is not established"
+write="Locked ggen contract; source-only view structure"
+applicability="Drawing views and sheet containers"
+acceptance="Matches retained representation evidence; a local section remains a view with section fields"
+allowed_values=["view", "section_view", "cross_section", "detail_view", "sheet", "unknown"]
+
+[[types.fields]]
+name="section_extent"
+rust_type="String"
+required=true
+format="typed"
+meaning="Formal extent of a view section"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; unknown is retained when section evidence exists but extent is unreadable"
+write="Locked ggen contract; source-only view structure"
+applicability="Drawing views; non-sectional defaults remain unknown in this lane"
+acceptance="Matches retained section extent evidence"
+allowed_values=["full", "half", "local", "local_axis", "cross_section", "unknown", "not_applicable"]
+
+[[types.fields]]
+name="cutting_surface_kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Formal kind of the cutting surface(s)"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; unknown is retained when section evidence exists but surface kind is unreadable"
+write="Locked ggen contract; source-only view structure"
+applicability="Drawing views; non-sectional defaults remain unknown in this lane"
+acceptance="Matches retained cutting-surface evidence"
+allowed_values=["single_plane", "offset_planes", "rotated_planes", "unknown", "not_applicable", "combined_planes"]
+
 [[types]]
 name="MdLineStyle"
 contract_group="engineering"
@@ -1354,6 +1406,44 @@ applicability="Section regions and members carrying section evidence"
 acceptance="Matches the retained section boundary geometry evidence"
 allowed_values=["complete", "partial", "unavailable"]
 
+[[types.fields]]
+name="view_relation_role"
+rust_type="String"
+required=true
+format="typed"
+meaning="Whether this member composes a view or is only located in one"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; this lane leaves the value unknown"
+write="Locked ggen contract; source-only view structure"
+applicability="All expression members"
+acceptance="component, located_only or unknown, with no location-neighbour inference"
+allowed_values=["component", "located_only", "unknown"]
+
+[[types.fields]]
+name="composition_view_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Views composed by this member; a member may belong to more than one target view"
+unit="Stable view identities within one drawing sheet"
+precision="Empty when the relation is unknown or not a component"
+write="Locked ggen contract; source-only view structure"
+applicability="All expression members"
+acceptance="Each target is an existing same-sheet view when populated"
+
+[[types.fields]]
+name="view_component_kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Closed role of a member when it composes a view"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; detail_indicator is only the unresolved detail-mark group"
+write="Locked ggen contract; source-only view structure"
+applicability="All expression members"
+acceptance="Unknown in this lane; auxiliary_annotation is reserved for located_only members"
+allowed_values=["view_geometry", "cutting_location", "projection_direction", "mark_letters", "section_region", "section_hatch", "section_boundary", "section_visible_contour", "detail_indicator", "detail_boundary", "detail_circle", "detail_leader", "detail_label", "view_title", "view_scale", "auxiliary_annotation", "unknown"]
+
 [[types]]
 name="MdEngineeringExpression"
 contract_group="engineering"
@@ -1582,6 +1672,43 @@ write="Locked ggen contract; source-only section recognizer"
 applicability="Section regions and members carrying section evidence"
 acceptance="Matches the retained section boundary geometry evidence"
 allowed_values=["complete", "partial", "unavailable"]
+
+[[types.fields]]
+name="defines_view_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Views defined by this view-mark expression"
+unit="Stable view identities within one drawing sheet"
+precision="Empty when the expression does not define a view or evidence is unavailable"
+write="Locked ggen contract; source-only view structure"
+applicability="Engineering expressions, especially view callouts"
+acceptance="Each target is an existing same-sheet view when populated"
+
+[[types.fields]]
+name="references_view_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Views pointed at by this view-mark expression"
+unit="Stable view identities within one drawing sheet"
+precision="Empty when the expression does not point at a view or evidence is unavailable"
+write="Locked ggen contract; source-only view structure"
+applicability="Engineering expressions, especially view callouts"
+acceptance="Each target is an existing same-sheet view when populated"
+
+[[types.fields]]
+name="view_mark_kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Kind of view-mark expression; member roles remain in view_component_kind"
+unit="Drawing-domain categorical fact; no product tolerance"
+precision="One closed value; this lane leaves the value unknown"
+write="Locked ggen contract; source-only view structure"
+applicability="Engineering expressions"
+acceptance="view_name, cutting_symbol, direction_mark, detail_mark or unknown"
+allowed_values=["view_name", "cutting_symbol", "direction_mark", "detail_mark", "unknown"]
 
 [[types]]
 name="MdStructuralEnd"
@@ -6396,7 +6523,7 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction", "SectionBoundarySpan", "SectionInteriorUse", "CuttingLetterSite"]
+allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "LinearDimensionLine", "RadiusDimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "LinearDimensionText", "AngularDimensionText", "ToleranceText", "GeometricToleranceValue", "RoughnessValue", "NoteText", "TableText", "ScaleText", "ViewLabel", "ViewTitle", "DetailViewTitle", "CalloutLetter", "DatumLetter", "DatumIdentifierLetter", "SymbolText", "Construction", "SectionBoundarySpan", "SectionInteriorUse", "CuttingLetterSite", "ViewComposition", "ViewComponent", "ViewMarkReference"]
 
 [[types.fields]]
 name = "classes"
@@ -6524,7 +6651,7 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith", "terminatorOnCarrier", "boundedContinuationOf", "sectionRegion", "sourceLine", "boundaryCarrier", "sectionOrigin", "boundaryIntervalStart", "boundaryIntervalEnd", "boundaryParameter", "crossSectionType", "sectionExtent", "parentOutlineContinuation", "sectionGeometry", "cutLetterCount"]
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith", "terminatorOnCarrier", "boundedContinuationOf", "sectionRegion", "sourceLine", "boundaryCarrier", "sectionOrigin", "boundaryIntervalStart", "boundaryIntervalEnd", "boundaryParameter", "crossSectionType", "sectionExtent", "parentOutlineContinuation", "sectionGeometry", "cutLetterCount", "locatedInView", "hasComponent", "componentOf", "definesView", "referencesView", "positionRole", "representationKind", "cuttingSurfaceKind", "viewRelationRole", "viewComponentKind", "viewMarkKind"]
 
 [[types.fields]]
 name = "object"

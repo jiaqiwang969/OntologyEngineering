@@ -155,6 +155,22 @@ md:parentOutlineContinuation a owl:DatatypeProperty ; rdfs:range xsd:string ; rd
 md:sectionGeometry a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "原生边界可核程度：complete、partial、unavailable"@zh ; rdfs:comment "直边、圆弧和带凸度闭合路径；实体包含按偶奇规则保留孔洞。部分边界只支持实际可读边上的重合，不支持内部判定。"@zh .
 md:CuttingLetterSite a owl:Class ; rdfs:label "已有明确命名剖切路径的端点或转折标记位置"@zh .
 md:cutLetterCount a owl:DatatypeProperty ; rdfs:label "该位置附近同名剖切字母数"@zh .
+
+# ---- 第四批：视图组成合同。只声明结构词汇；本路不新增规则形状。
+md:ViewComposition a owl:Class ; rdfs:label "视图组成声明"@zh ; rdfs:comment "同一图纸页内一个视图的正式组成记录。"@zh ; md:group "G2" .
+md:ViewComponent a owl:Class ; rdfs:label "视图组成成员区间"@zh ; rdfs:comment "带源图元、表达成员和参数区间的组成事实。"@zh ; md:group "G2" .
+md:ViewMarkReference a owl:Class ; rdfs:label "视图标注指向关系"@zh ; rdfs:comment "视图标注表达定义或指向目标视图的关系事实。"@zh ; md:group "G2" .
+md:locatedInView a owl:ObjectProperty ; rdfs:domain md:ViewComponent ; rdfs:range md:ViewComposition ; rdfs:label "成员所在视图"@zh .
+md:hasComponent a owl:ObjectProperty ; rdfs:domain md:ViewComposition ; rdfs:range md:ViewComponent ; rdfs:label "视图具有组成成员"@zh .
+md:componentOf a owl:ObjectProperty ; rdfs:domain md:ViewComponent ; rdfs:range md:ViewComposition ; rdfs:label "成员组成视图"@zh .
+md:definesView a owl:ObjectProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range md:ViewComposition ; rdfs:label "标注定义的视图"@zh .
+md:referencesView a owl:ObjectProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range md:ViewComposition ; rdfs:label "标注指向的视图"@zh .
+md:positionRole a owl:DatatypeProperty ; rdfs:domain md:ViewComposition ; rdfs:range xsd:string ; rdfs:label "视图位置角色"@zh .
+md:representationKind a owl:DatatypeProperty ; rdfs:domain md:ViewComposition ; rdfs:range xsd:string ; rdfs:label "视图图形种类"@zh .
+md:cuttingSurfaceKind a owl:DatatypeProperty ; rdfs:domain md:ViewComposition ; rdfs:range xsd:string ; rdfs:label "剖切面种类"@zh .
+md:viewRelationRole a owl:DatatypeProperty ; rdfs:domain md:ViewComponent ; rdfs:range xsd:string ; rdfs:label "成员视图关系角色"@zh .
+md:viewComponentKind a owl:DatatypeProperty ; rdfs:domain md:ViewComponent ; rdfs:range xsd:string ; rdfs:label "视图组成成员角色"@zh .
+md:viewMarkKind a owl:DatatypeProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range xsd:string ; rdfs:label "视图标注种类"@zh .
 '''
 
 [shapes]

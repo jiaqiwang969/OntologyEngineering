@@ -47,7 +47,7 @@ mod sections;
 const SCOPE: &str = "Drafting rules of the ontology evaluated on facts exported from the source bytes and the frozen graph; a finding is a deviation to review, not a correction and not engineering acceptance.";
 
 /// Every class of the fact vocabulary; the ontology and the spec declare the same set (tested).
-pub const CLASSES: [&str; 41] = [
+pub const CLASSES: [&str; 44] = [
     "Line",
     "VisibleOutline",
     "HiddenOutline",
@@ -89,9 +89,12 @@ pub const CLASSES: [&str; 41] = [
     "SectionBoundarySpan",
     "SectionInteriorUse",
     "CuttingLetterSite",
+    "ViewComposition",
+    "ViewComponent",
+    "ViewMarkReference",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 44] = [
+pub const PREDICATES: [&str; 55] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -136,6 +139,17 @@ pub const PREDICATES: [&str; 44] = [
     "parentOutlineContinuation",
     "sectionGeometry",
     "cutLetterCount",
+    "locatedInView",
+    "hasComponent",
+    "componentOf",
+    "definesView",
+    "referencesView",
+    "positionRole",
+    "representationKind",
+    "cuttingSurfaceKind",
+    "viewRelationRole",
+    "viewComponentKind",
+    "viewMarkKind",
 ];
 
 pub struct DraftingRuleChecker<'a> {

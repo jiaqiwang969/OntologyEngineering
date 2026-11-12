@@ -1,13 +1,40 @@
 //! Invoke official ggen in isolation and publish an entire generation atomically.
 use crate::{Design, inspection::files};
 use anyhow::{Context, Result, ensure};
-use oe_core::process::{CommandSpec, run_command};
+use oe_core::process::CommandSpec;
 use oe_core::{SkillRoot, no_symlinks, read_regular_bytes, sha256, write_new_bytes};
 use oe_wire::json::{canonical_json, strict_json};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GenerationTimeoutResource {
+    pub name: &'static str,
+    pub version: &'static str,
+    pub timeout_seconds: u64,
+}
+
+impl GenerationTimeoutResource {
+    pub const fn duration(self) -> Duration {
+        Duration::from_secs(self.timeout_seconds)
+    }
+
+    pub fn as_json(self) -> Value {
+        json!({
+            "name": self.name,
+            "version": self.version,
+            "timeout_seconds": self.timeout_seconds,
+        })
+    }
+}
+
+pub const GGEN_GENERATION_TIMEOUT_RESOURCE: GenerationTimeoutResource = GenerationTimeoutResource {
+    name: "ggen-generation-timeout",
+    version: "1",
+    timeout_seconds: 300,
+};
 
 pub fn resource_profile() -> Value {
     json!({"schema":oe_core::source_limits::PROFILE,"derived_model_bytes":oe_core::source_limits::DERIVED_MODEL_BYTES,"other_artifact_bytes":oe_core::source_limits::PUBLIC_FILE_BYTES,"editable_spec_bytes":4*1024*1024,"template_file_bytes":4*1024*1024})
@@ -93,6 +120,18 @@ fn verify_sources(root: &SkillRoot, hashes: &BTreeMap<String, String>) -> Result
         );
     }
     Ok(())
+}
+
+fn ggen_command(tool: PathBuf, stage: PathBuf) -> CommandSpec {
+    CommandSpec {
+        executable: tool,
+        arguments: vec!["sync".into(), "run".into()],
+        cwd: stage,
+        environment: BTreeMap::new(),
+        remove_environment: vec!["OPENAI_API_KEY".into(), "ANTHROPIC_API_KEY".into()],
+        timeout: GGEN_GENERATION_TIMEOUT_RESOURCE.duration(),
+        output_limit: 4 * 1024 * 1024,
+    }
 }
 /// Record the editable original as well as its normalized derivation.
 pub fn run_spec(root: &SkillRoot, spec: &Path, ggen: &Path) -> Result<(PathBuf, Value)> {
@@ -213,16 +252,12 @@ fn run_for_input(
         &stage.join("templates"),
     )?;
     let before = snapshot_for_input(&stage, input_schema)?;
-    let command = CommandSpec {
-        executable: tool.clone(),
-        arguments: vec!["sync".into(), "run".into()],
-        cwd: stage.clone(),
-        environment: BTreeMap::new(),
-        remove_environment: vec!["OPENAI_API_KEY".into(), "ANTHROPIC_API_KEY".into()],
-        timeout: Duration::from_secs(120),
-        output_limit: 4 * 1024 * 1024,
-    };
-    let observation = run_command(&command, &stage.join("execution"))?;
+    let command = ggen_command(tool.clone(), stage.clone());
+    let observation = oe_core::process::run_command_with_timeout_resource(
+        &command,
+        &stage.join("execution"),
+        GGEN_GENERATION_TIMEOUT_RESOURCE.as_json(),
+    )?;
     ensure!(
         observation.status == "completed" && observation.exit_code == Some(0),
         "ggen_execution_failed:{}",
@@ -442,6 +477,23 @@ pub fn publish(root: &SkillRoot, output: &Path) -> Result<()> {
 #[cfg(test)]
 mod reference_envelope_tests {
     use super::*;
+
+    #[test]
+    fn ggen_command_uses_the_versioned_300_second_resource() {
+        let stage = tempfile::tempdir().unwrap();
+        let command = ggen_command(PathBuf::from("/bin/echo"), stage.path().to_owned());
+        assert_eq!(GGEN_GENERATION_TIMEOUT_RESOURCE.timeout_seconds, 300);
+        assert_eq!(command.timeout, GGEN_GENERATION_TIMEOUT_RESOURCE.duration());
+        assert_eq!(
+            GGEN_GENERATION_TIMEOUT_RESOURCE.as_json(),
+            json!({
+                "name": "ggen-generation-timeout",
+                "version": "1",
+                "timeout_seconds": 300,
+            })
+        );
+    }
+
     #[test]
     fn composition4_envelope_rejects_every_mixed_pair_and_missing_source() {
         for i in 1..=4 {

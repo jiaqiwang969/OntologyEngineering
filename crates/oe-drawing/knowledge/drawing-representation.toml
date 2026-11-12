@@ -5386,3 +5386,44 @@ test = "composition_ambiguous_repeated_name_does_not_pick_the_nearest_target"
 name = "leader_contact"
 value = 0.1
 meaning = "引线端点接边距离容差 = 图中文字高度 × 本比例；不是对区域位置的最近邻搜索"
+
+[[cards]]
+id = "view_member_relations"
+expression_kind = "view_callout"
+title = "视图组成与所在位置分开"
+meaning = "轮廓、轴线、螺纹、断裂和剖面图形组成所在视图；名称、比例、剖切、向视及局部放大标注组成其正式目标。尺寸、公差、粗糙度、基准、注写、普通引线、标题栏/表格在本程序组成合同中只记所在位置，未解释成员为未知。"
+sources = ["GB/T 14692-2008 5.1.5（本地原页5，图形的可见/不可见轮廓）", "GB/T 17452-1998 3、8（本地原页5、8，图形与剖切标注）", "GB/T 4458.1-2002 5.7（本地原页10–11，放大图名称、比例与标注）", "GB/T 4458.4-2003 4.2.1–4.2.2（本地原页7，尺寸线与图形线分开）；电子字段归属是程序合同解释，非标准新增术语"]
+knowledge_units = ["K11", "K13", "K14"]
+markers = []
+recognition = "先按表达族排除仅位于的注写成员，再按已读几何或正式 defines/references 数组确定组成目标；目标必须是同页已有非容器视图。名称引线、分数横线属于名称；单独比例文字属于比例，局部数量注写仍只位于。"
+concepts = ["DC-G2-043", "DC-G2-065", "DC-G2-073", "DC-G2-075"]
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE", "HATCH", "INSERT"]
+requirement = "已识别的图形成员及所在视图，保持源身份、原始角色与参数区间"
+[[cards.components]]
+role = "view_title"
+primitives = ["TEXT", "MTEXT", "LINE", "INSERT"]
+requirement = "名称、比例、名称引线、分数横线以及具有正式目标的视图标注成员"
+[[cards.variants]]
+id = "geometry_and_marks"
+title = "图形按位置组成、标注按目标组成"
+distinguishing = "剖切位置和字母可以位于另一图形，却组成剖得的图形"
+encodings = ["loose", "native"]
+tests = ["composition_geometry_and_dimension_keep_separate_membership_roles", "composition_cutting_marks_belong_to_the_target_not_their_location"]
+[[cards.variants]]
+id = "name_parts"
+title = "名称、比例、横线与引线"
+distinguishing = "名称的分数横线和名称引出线不被当作尺寸引线；比例保持独立成员"
+encodings = ["loose", "text"]
+tests = ["composition_detail_fraction_line_name_and_scale_are_distinct_members", "composition_local_name_leader_is_title_but_quantity_note_is_located_only"]
+[[cards.counter_examples]]
+statement = "DIMENSION 的箭头、尺寸线即使接触轮廓也只位于，不能组成视图"
+test = "composition_geometry_and_dimension_keep_separate_membership_roles"
+[[cards.counter_examples]]
+statement = "未解释成员不能改记为只位于来隐藏未知"
+test = "composition_unresolved_source_is_unknown_rather_than_located_only"
+[[cards.parameters]]
+name = "interval_domain"
+value = 1.0
+meaning = "成员参数使用源图元的归一化完整区间；本步不裁剪、合并或延长几何"

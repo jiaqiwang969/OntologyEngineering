@@ -265,7 +265,7 @@ fn representation(cx: &Ctx, b: &Builder, v: &mut MdDrawingView) -> Result<()> {
 pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &mut [MdDrawingView]) -> Result<()> {
     representation::card_ref(FACTS)?;
     view_mark_targets::state(cx, b, views)?;
-    for v in views {
+    for v in views.iter_mut() {
         v.position_role = position(v).into();
         if v.kind != "sheet" {
             v.unknowns
@@ -276,5 +276,6 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &mut [MdDrawingView]) -> R
         }
         representation(cx, b, v)?;
     }
+    view_component_roles::state(cx, b, views)?;
     Ok(())
 }

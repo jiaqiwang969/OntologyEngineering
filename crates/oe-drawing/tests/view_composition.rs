@@ -333,3 +333,123 @@ fn composition_ambiguous_repeated_name_does_not_pick_the_nearest_target() {
         "legacy evidence must survive"
     );
 }
+
+fn members_of<'a>(
+    g: &'a MdEngineeringExpressionGraph,
+    src: &str,
+) -> Vec<&'a oe_contracts::MdExpressionMember> {
+    g.members
+        .iter()
+        .filter(|m| m.source_handle == src)
+        .collect()
+}
+#[test]
+fn composition_geometry_and_dimension_keep_separate_membership_roles() {
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.push(ent(
+        "DIMENSION",
+        "length",
+        "70\n0\n1\n79\n10\n0\n20\n65\n11\n39\n21\n67\n13\n0\n23\n0\n14\n79\n24\n0\n42\n79\n",
+    ));
+    es.push(text("process-note", "sharp edges removed", [16., 18.]));
+    let g = run(es);
+    let v = view_of(&g, "body0");
+    let dim = g
+        .expressions
+        .iter()
+        .find(|e| e.kind == "dimension_linear")
+        .unwrap();
+    for m in g.members.iter().filter(|m| m.expression_id == dim.id) {
+        assert_eq!(m.view_relation_role, "located_only");
+        assert_eq!(m.view_component_kind, "auxiliary_annotation");
+        assert!(m.composition_view_ids.is_empty());
+    }
+    for m in members_of(&g, "body0") {
+        assert_eq!(m.view_relation_role, "component");
+        assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+        assert_eq!(m.view_component_kind, "view_geometry");
+    }
+}
+#[test]
+fn composition_cutting_marks_belong_to_the_target_not_their_location() {
+    let mut es = named_face(false);
+    es.extend([
+        line("low", [-17., 8.], [-17., 14.], 60),
+        line("high", [-17., 38.], [-17., 44.], 60),
+        text("low-letter", "U", [-20., 4.]),
+        text("high-letter", "U", [-20., 44.]),
+    ]);
+    let g = run(es);
+    let v = view_of(&g, "face0");
+    for (src, role) in [
+        ("low", "cutting_location"),
+        ("low-letter", "mark_letters"),
+        ("name", "view_title"),
+    ] {
+        let m = members_of(&g, src)[0];
+        assert_eq!(m.view_relation_role, "component");
+        assert_eq!(m.view_component_kind, role);
+        assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+        if src != "name" {
+            assert_ne!(m.view_id.as_ref(), Some(&v.id));
+        }
+    }
+}
+#[test]
+fn composition_detail_fraction_line_name_and_scale_are_distinct_members() {
+    let mut es = rect("main", [0., 0., 79., 59.]);
+    es.extend(rect("enlarged", [190., 0., 223., 27.]));
+    es.extend([
+        text("detail-letter", "V", [203., 42.]),
+        text("detail-scale", "7:2", [201., 34.]),
+        line("fraction-bar", [199., 40.], [211., 40.], 18),
+    ]);
+    let g = run(es);
+    let v = view_of(&g, "enlarged0");
+    assert_eq!(v.representation_kind, "detail_view");
+    for (src, role) in [
+        ("detail-letter", "view_title"),
+        ("detail-scale", "view_scale"),
+        ("fraction-bar", "view_title"),
+    ] {
+        let m = members_of(&g, src)[0];
+        assert_eq!(m.view_component_kind, role, "{m:?}");
+        assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+    }
+}
+#[test]
+fn composition_unresolved_source_is_unknown_rather_than_located_only() {
+    let mut es = rect("body", [0., 0., 79., 59.]);
+    es.push(text("unknown-note", "@@@", [31., 23.]));
+    let g = run(es);
+    let unknown = g
+        .members
+        .iter()
+        .filter(|m| {
+            g.expressions
+                .iter()
+                .any(|e| e.id == m.expression_id && e.kind == "unresolved")
+        })
+        .collect::<Vec<_>>();
+    assert!(!unknown.is_empty());
+    for m in unknown {
+        assert_eq!(m.view_relation_role, "unknown");
+        assert!(m.composition_view_ids.is_empty());
+        assert_eq!(m.view_component_kind, "unknown");
+    }
+}
+#[test]
+fn composition_local_name_leader_is_title_but_quantity_note_is_located_only() {
+    let mut es = local_name(true);
+    es.push(text("quantity-note", "7处", [116., 72.]));
+    let g = run(es);
+    let v = view_of(&g, "body0");
+    for src in ["shoulder", "name-leader"] {
+        let m = members_of(&g, src)[0];
+        assert_eq!(m.view_component_kind, "view_title");
+        assert_eq!(m.composition_view_ids, vec![v.id.clone()]);
+    }
+    let m = members_of(&g, "quantity-note")[0];
+    assert_eq!(m.view_relation_role, "located_only");
+    assert!(m.composition_view_ids.is_empty());
+}

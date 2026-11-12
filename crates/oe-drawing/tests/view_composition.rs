@@ -288,26 +288,125 @@ fn composition_nested_arrow_letter_keeps_leaf_member_and_target() {
         && m.native_member_id.as_deref() == Some("arrow-root/arrow-node/letter-node/letter-leaf")));
 }
 #[test]
-fn composition_letterless_arrow_does_not_promote_elimination_to_a_reference() {
-    let mut es = rect("body", [0., 0., 79., 59.]);
-    es.extend(rect("side", [190., 0., 223., 27.]));
-    es.extend([
-        text("side-name", "V向", [197., 33.]),
-        line("shaft", [63., 33.], [75., 33.], 18),
-        head("arrow", [78., 33.]),
-    ]);
-    let g = run(es);
-    let e = owner(&g, "arrow");
-    assert_eq!(e.rule, "arrow_with_short_shaft_at_outline_without_letter");
-    assert!(
-        e.evidence_ids
-            .iter()
-            .any(|s| s.ends_with(":by_elimination"))
-    );
-    assert!(
-        e.references_view_ids.is_empty() && !e.unknowns.is_empty(),
-        "{e:?}"
-    );
+fn composition_letterless_arrow_keeps_unique_elimination_as_candidate_reference() {
+    for with_named_arrow in [false, true] {
+        let mut es = rect("body", [0., 0., 79., 59.]);
+        es.extend(rect("side", [190., 0., 223., 27.]));
+        es.extend([
+            text("side-name", "V向", [197., 33.]),
+            line("shaft", [63., 33.], [75., 33.], 18),
+            head("arrow", [78., 33.]),
+        ]);
+        let blocks = if with_named_arrow {
+            es.extend(rect("named-side", [370., 0., 403., 27.]));
+            es.extend([
+                text("named-side-name", "W向", [377., 33.]),
+                insert("named-arrow", "NamedArrow", [17., 70.]),
+            ]);
+            format!(
+                "0\nSECTION\n2\nBLOCKS\n{}0\nENDSEC\n",
+                block(
+                    "NamedArrow",
+                    vec![
+                        line("named-shaft", [0., 0.], [12., 0.], 18),
+                        head("named-head", [15., 0.]),
+                        text("named-letter", "W", [3., 2.]),
+                    ]
+                )
+            )
+        } else {
+            String::new()
+        };
+        let g = run_blocks(&blocks, es);
+        if with_named_arrow {
+            assert_eq!(
+                owner(&g, "named-arrow").references_view_ids,
+                vec![view_of(&g, "named-side0").id.clone()]
+            );
+        }
+        let e = owner(&g, "arrow");
+        let target = view_of(&g, "side0").id.clone();
+        assert_eq!(e.rule, "arrow_with_short_shaft_at_outline_without_letter");
+        assert_eq!(e.references_view_ids, vec![target.clone()], "{e:?}");
+        assert_eq!(e.state, "candidate");
+        assert!(
+            e.evidence_ids
+                .iter()
+                .any(|s| s == "view_reference_basis:by_elimination")
+        );
+        if !with_named_arrow {
+            assert!(
+                e.evidence_ids
+                    .iter()
+                    .any(|s| s.ends_with(":by_elimination")),
+                "legacy evidence must survive"
+            );
+        }
+        for m in g.members.iter().filter(|m| m.expression_id == e.id) {
+            assert_eq!(m.state, "candidate");
+            assert_eq!(m.view_relation_role, "component");
+            assert_eq!(m.composition_view_ids, vec![target.clone()]);
+            assert_eq!(m.view_component_kind, "projection_direction");
+            assert!(
+                m.evidence_ids
+                    .iter()
+                    .any(|s| s == "view_reference_basis:by_elimination")
+            );
+            assert_ne!(m.view_id.as_ref(), Some(&target));
+        }
+    }
+}
+
+#[test]
+fn composition_letterless_arrow_without_unique_elimination_keeps_unknown_target() {
+    for case in ["multiple_figures", "multiple_arrows", "duplicate_names"] {
+        let mut es = rect("body", [0., 0., 79., 59.]);
+        es.extend(rect("side", [190., 0., 223., 27.]));
+        es.extend([
+            text("side-name", "V向", [197., 33.]),
+            line("shaft", [63., 33.], [75., 33.], 18),
+            head("arrow", [78., 33.]),
+        ]);
+        if case == "multiple_arrows" {
+            es.extend([
+                line("other-shaft", [63., 15.], [75., 15.], 18),
+                head("other-arrow", [78., 15.]),
+            ]);
+        } else {
+            es.extend(rect("other", [370., 0., 403., 27.]));
+            es.push(text(
+                "other-name",
+                if case == "duplicate_names" {
+                    "V向"
+                } else {
+                    "W向"
+                },
+                [377., 33.],
+            ));
+        }
+        let g = run(es);
+        for src in if case == "multiple_arrows" {
+            vec!["arrow", "other-arrow"]
+        } else {
+            vec!["arrow"]
+        } {
+            let e = owner(&g, src);
+            assert_eq!(e.rule, "arrow_with_short_shaft_at_outline_without_letter");
+            assert!(
+                e.references_view_ids.is_empty() && !e.unknowns.is_empty(),
+                "{case}: {e:?}"
+            );
+            assert!(
+                !e.evidence_ids
+                    .iter()
+                    .any(|s| s == "view_reference_basis:by_elimination")
+            );
+            for m in g.members.iter().filter(|m| m.expression_id == e.id) {
+                assert_eq!(m.view_relation_role, "unknown");
+                assert!(m.composition_view_ids.is_empty());
+            }
+        }
+    }
 }
 
 #[test]

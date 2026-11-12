@@ -5345,7 +5345,7 @@ meaning = "名称与比例定义自己的图形；剖切符号、向视箭头、
 sources = ["GB/T 17452-1998 8.1–8.2（本地原页8）", "GB/T 4458.6-2002 5.6、6.1（本地原页14、16）", "GB/T 4458.1-2002 4.1、5.1、5.7.1–5.7.4（本地原页5、10–11）；引线名称宿主及嵌套编码是这些标注关系的保守实现解释，非额外国标条文"]
 knowledge_units = ["K11", "K13"]
 markers = []
-recognition = "名称源成员与图形标题源身份相等；同字母剖切符号连接同页剖视名称（包括有引线剖面接触证据的局部剖宿主）。嵌套 INSERT 原生解析保留字母叶路径。缺字母、同名多候选、无剖面接触均不由邻近或排除法确认目标。"
+recognition = "名称源成员与图形标题源身份相等；同字母剖切符号连接同页剖视名称（包括有引线剖面接触证据的局部剖宿主）。嵌套 INSERT 原生解析保留字母叶路径。有字母的箭头先按同名图形匹配；同页唯一剩余的无字母投射箭头与唯一未被指向的具名向视图/局部视图可用排除法配对，写入指向和组成目标但表达与成员均为候选，证据注明排除法。余数不唯一、名称重复或无剖面接触则保留未知，不按邻近补配。"
 concepts = ["DC-G2-043", "DC-G2-065", "DC-G2-072", "DC-G2-075"]
 [[cards.components]]
 role = "view_letter"
@@ -5376,9 +5376,15 @@ tests = ["composition_nested_arrow_letter_keeps_leaf_member_and_target"]
 [[cards.counter_examples]]
 statement = "只有名称引线而无区域接触证据时，目标留空并说明未知"
 test = "composition_local_name_without_cut_region_keeps_unknown_target"
+[[cards.variants]]
+id = "unique_elimination_candidate"
+title = "同页唯一余项的候选指向"
+distinguishing = "同名字母箭头先匹配完，同页只余一个无字母投射箭头和一个未被指向的具名向视图/局部视图；写明排除法，目标和标注组成均保留候选状态，不升级observed"
+encodings = ["loose", "block"]
+tests = ["composition_letterless_arrow_keeps_unique_elimination_as_candidate_reference"]
 [[cards.counter_examples]]
-statement = "无字母箭头与唯一剩余视图的排除法证据仍保留为候选，不建立正式指向"
-test = "composition_letterless_arrow_does_not_promote_elimination_to_a_reference"
+statement = "剩余投射箭头或具名图形不止一个，或同页名称重复时，不能排除到唯一目标；正式目标留空并写未知"
+test = "composition_letterless_arrow_without_unique_elimination_keeps_unknown_target"
 [[cards.counter_examples]]
 statement = "同页有多个同名图形时，不能按最近图形选目标；旧指向证据仍保留，正式数组留空"
 test = "composition_ambiguous_repeated_name_does_not_pick_the_nearest_target"

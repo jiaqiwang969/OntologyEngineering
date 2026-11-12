@@ -1,8 +1,9 @@
 //! Names define their own figure; cutting, direction and detail marks refer to that figure.
-//! Matching is sheet-local and source-bound. Elimination alone stays an unresolved candidate.
+//! Matching is sheet-local and source-bound. Unique elimination names a candidate target.
 use super::*;
 
 const CARD: &str = "view_mark_targets";
+const UNKNOWN_TARGET: &str = "视图标注目标未知：缺少同页名称、编号或引线剖面接触证据";
 
 fn push(xs: &mut Vec<String>, s: impl Into<String>) {
     let s = s.into();
@@ -186,6 +187,81 @@ fn nested_letters(cx: &Ctx, b: &mut Builder) {
     }
 }
 
+/// After named arrows have claimed their figures, one remaining letterless
+/// projection arrow and one remaining named figure can be paired as candidates.
+fn elimination_candidates(b: &mut Builder, views: &[MdDrawingView]) {
+    let mut arrows = BTreeMap::<String, Vec<usize>>::new();
+    for (i, e) in b.exprs.iter().enumerate() {
+        if e.kind != "view_callout" || e.view_mark_kind != "direction_mark" {
+            continue;
+        }
+        let members: Vec<_> = b
+            .members
+            .iter()
+            .filter(|m| m.expression_id == e.id)
+            .collect();
+        if members.iter().any(|m| m.member_role == "view_letter")
+            || !members
+                .iter()
+                .any(|m| matches!(m.member_role.as_str(), "view_arrow" | "arrowhead"))
+        {
+            continue;
+        }
+        if let Some(located) = &e.view_id {
+            arrows
+                .entry(view_types::sheet_key(located).into())
+                .or_default()
+                .push(i);
+        }
+    }
+    let claimed: BTreeSet<_> = b
+        .exprs
+        .iter()
+        .flat_map(|e| e.references_view_ids.iter())
+        .cloned()
+        .collect();
+    for (sheet, pending) in arrows {
+        let named: Vec<_> = views
+            .iter()
+            .filter(|v| {
+                view_types::sheet_key(&v.id) == sheet
+                    && matches!(v.kind.as_str(), "direction_view" | "partial_view")
+                    && !v.label_source_ids.is_empty()
+            })
+            .collect();
+        let mut names = BTreeSet::new();
+        if named.iter().any(|v| !names.insert(label(v).trim())) {
+            continue;
+        }
+        let open: Vec<_> = named
+            .into_iter()
+            .filter(|v| !claimed.contains(&v.id))
+            .collect();
+        let ([i], [target]) = (pending.as_slice(), open.as_slice()) else {
+            continue;
+        };
+        let e = &mut b.exprs[*i];
+        e.references_view_ids = vec![target.id.clone()];
+        e.state = "candidate".into();
+        e.unknowns.retain(|s| s != UNKNOWN_TARGET);
+        push(
+            &mut e.unknowns,
+            "视图字母缺失：由同页唯一剩余箭头和图形排除得到候选目标，未经名称直接确认",
+        );
+        for fact in [
+            "variant:unique_elimination_candidate".to_owned(),
+            "view_reference_basis:by_elimination".into(),
+            format!("references_view:{}", target.id),
+        ] {
+            push(&mut e.evidence_ids, fact);
+        }
+        for m in b.members.iter_mut().filter(|m| m.expression_id == e.id) {
+            m.state = "candidate".into();
+            push(&mut m.evidence_ids, "view_reference_basis:by_elimination");
+        }
+    }
+}
+
 pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[MdDrawingView]) -> Result<()> {
     representation::card_ref(CARD)?;
     nested_letters(cx, b);
@@ -320,12 +396,13 @@ pub(super) fn state(cx: &Ctx, b: &mut Builder, views: &[MdDrawingView]) -> Resul
             push(
                 &mut e.unknowns,
                 if targets.is_empty() {
-                    "视图标注目标未知：缺少同页名称、编号或引线剖面接触证据"
+                    UNKNOWN_TARGET
                 } else {
                     "视图标注目标未知：同页有多个同名候选，不能仅靠排除法确认"
                 },
             );
         }
     }
+    elimination_candidates(b, views);
     Ok(())
 }

@@ -416,15 +416,32 @@ pub fn collect(
         }
         let views: BTreeSet<_> = found
             .iter()
-            .flat_map(|f| f.expression_ids.iter())
-            .flat_map(|id| {
+            .flat_map(|f| {
+                // A composition finding describes its target view, which can differ from
+                // the view containing the annotation and has no expression identity.
+                if f.focus_classes
+                    .iter()
+                    .any(|class| class == "ViewComposition")
+                    && let Some(id) = f
+                        .focus
+                        .strip_prefix(&format!("{}:view-composition:", f.layer))
+                    && let Some(view) = graph["views"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .find(|view| view["id"] == id)
+                    && let Some(id) = view["id"].as_str()
+                {
+                    return vec![id];
+                }
                 graph["expressions"]
                     .as_array()
                     .into_iter()
                     .flatten()
-                    .filter(move |e| e["id"] == id.as_str())
+                    .filter(|e| f.expression_ids.iter().any(|id| e["id"] == id.as_str()))
+                    .filter_map(|e| e["view_id"].as_str())
+                    .collect::<Vec<_>>()
             })
-            .filter_map(|e| e["view_id"].as_str())
             .collect();
         let location = if views.is_empty() {
             positions.join("、")

@@ -119,6 +119,37 @@ fn recognition_only_certain_findings_are_separate_and_never_corrected() {
     .operations;
     assert!(correction::rewrite(&source, &plan).is_err());
 }
+
+#[test]
+fn view_composition_issue_names_target_view_without_expression_identity() {
+    let (source, mut graph) = fixture();
+    graph["views"] = json!([
+        {"id":"view:synthetic-origin"},
+        {"id":"view:synthetic-enlargement"}
+    ]);
+    graph["expressions"][1]["view_id"] = json!("view:synthetic-origin");
+    let mut r = report(&source, &graph);
+    r.findings = ["source", "recognition", "presentation"]
+        .into_iter()
+        .map(|layer| MdDraftingFinding {
+            layer: layer.into(),
+            rule_id: "V6-detail-single-numbered".into(),
+            focus: format!("{layer}:view-composition:view:synthetic-enlargement"),
+            focus_classes: vec!["ViewComposition".into()],
+            source_handles: vec!["13".into()],
+            expression_ids: vec![],
+            value: None,
+            message: "synthetic numbered enlargement".into(),
+            severity: "violation".into(),
+        })
+        .collect();
+
+    let issues = drafting_issues::collect(&r, &graph, &source).unwrap();
+    assert_eq!(issues.len(), 1);
+    assert_eq!(issues[0].location, "view:synthetic-enlargement · 13");
+    assert_eq!(issues[0].source_occurrences, vec!["13"]);
+    assert!(drafting_issues::text(&issues).contains("位置：view:synthetic-enlargement · 13"));
+}
 #[test]
 fn old_rule_metadata_defaults_and_source_occurrences_merge_without_expression_identity() {
     let rules = drafting::rules(&drafting::knowledge().unwrap().shapes).unwrap();

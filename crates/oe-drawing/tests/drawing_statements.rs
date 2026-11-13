@@ -852,6 +852,7 @@ fn loose_cutting_path_with_an_oblique_turn_shows_intersecting_planes() {
         w.evidence_ids
     );
     assert_eq!(w.kind, "section_view");
+    assert_eq!(w.cutting_surface_kind, "rotated_planes");
 }
 
 #[test]
@@ -895,6 +896,7 @@ fn cutting_path_with_a_right_angle_turn_shows_parallel_planes() {
     );
     assert!(concepts(k).contains("DC-G2-015"), "{:?}", k.concept_ids);
     let w = view_of(&g, "W1");
+    assert_eq!(w.cutting_surface_kind, "offset_planes");
     assert_eq!(referenced(k), vec![w.id.as_str()]);
     assert!(
         vev(w, "section_type:parallel_planes") && !vev(w, "section_type:intersecting_planes"),
@@ -990,6 +992,9 @@ fn section_lines_on_one_side_of_the_centre_line_make_a_half_section() {
         p.evidence_ids
     );
     assert_eq!(p.kind, "principal");
+    assert_eq!(p.position_role, "principal");
+    assert_eq!(p.representation_kind, "section_view");
+    assert_eq!(p.section_extent, "half");
     let h = expr_with(&g, "HU", "section_hatch");
     assert!(
         concepts(h).contains("DC-G2-020") && ev(h, "variant:half_section"),

@@ -1255,6 +1255,61 @@ fn synthetic_free_view_without_matching_letter_is_reported() {
 }
 
 #[test]
+fn synthetic_annotation_shapes_ignore_large_geometry_component_set() {
+    let mut graph = Drawing::synthetic_view(
+        "view",
+        "unknown",
+        "free",
+        "unknown",
+        &[
+            ("view_title", "A"),
+            ("projection_direction", "arrow"),
+            ("mark_letters", "A"),
+        ],
+    );
+    let mut expressions = graph["expressions"].as_array().cloned().unwrap();
+    let mut members = graph["members"].as_array().cloned().unwrap();
+    for index in 0..1500 {
+        let expression_id = format!("expression:geometry:{index}");
+        let member_id = format!("{expression_id}:member");
+        expressions.push(json!({
+            "id": expression_id,
+            "kind": "line",
+            "label": "",
+            "member_ids": [member_id],
+            "defines_view_ids": [],
+            "references_view_ids": [],
+            "view_mark_kind": "unknown",
+            "state": "observed",
+            "evidence_ids": [],
+            "unknowns": []
+        }));
+        members.push(json!({
+            "id": member_id,
+            "source_handle": format!("geometry:{index}"),
+            "member_role": "line",
+            "line_type": "continuous",
+            "expression_id": expression_id,
+            "interval": [0.0, 1.0],
+            "view_id": "view:synthetic",
+            "view_relation_role": "component",
+            "composition_view_ids": ["view:synthetic"],
+            "view_component_kind": "view_geometry",
+            "state": "observed",
+            "evidence_ids": [],
+            "unknowns": []
+        }));
+    }
+    graph["expressions"] = Value::Array(expressions);
+    graph["members"] = Value::Array(members);
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(
+        !findings.iter().any(|id| id.starts_with("V6-")),
+        "{findings:?}"
+    );
+}
+
+#[test]
 fn every_rule_has_a_violating_and_a_conforming_fixture() {
     let k = drafting::knowledge().unwrap();
     let rules = drafting::rules(&k.shapes).unwrap();

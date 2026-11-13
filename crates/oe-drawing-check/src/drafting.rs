@@ -96,7 +96,7 @@ pub const CLASSES: [&str; 44] = [
     "ViewMarkReference",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 73] = [
+pub const PREDICATES: [&str; 74] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -170,6 +170,7 @@ pub const PREDICATES: [&str; 73] = [
     "viewMarkRelationRole",
     "targetViewId",
     "detailPartCount",
+    "hasAnnotationComponent",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -2037,6 +2038,15 @@ fn append_view_facts(
         .flatten()
         .filter_map(|expression| Some((expression.get("id")?.as_str()?, expression)))
         .collect();
+    // Keep fact object identities and Turtle order stable across route processes.  The lookup
+    // map is useful for member joins, but its values have no deterministic iteration order.
+    let mut expression_values: Vec<&Value> = expressions.values().copied().collect();
+    expression_values.sort_by_key(|expression| {
+        expression
+            .get("id")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+    });
     let mut expression_handles: HashMap<String, Vec<String>> = HashMap::new();
     let mut expression_member_ids: HashMap<String, Vec<String>> = HashMap::new();
     let mut member_by_id: HashMap<&str, &Value> = HashMap::new();
@@ -2152,11 +2162,14 @@ fn append_view_facts(
             if let Some(&view_index) = compositions.get(&target) {
                 relations.push(Relation::node(index, "componentOf", view_index));
                 relations.push(Relation::node(view_index, "hasComponent", index));
+                if is_annotation_component_kind(&component_kind) {
+                    relations.push(Relation::node(view_index, "hasAnnotationComponent", index));
+                }
             }
         }
     }
 
-    for expression in expressions.values() {
+    for expression in expression_values {
         let kind = graph_value(expression, "view_mark_kind", "unknown");
         let mut targets = Vec::new();
         for target in graph_strings(expression, "defines_view_ids") {
@@ -2312,7 +2325,10 @@ fn append_view_facts(
                 .push(relation.subject);
         }
     }
-    for component_indices in components_by_target.values() {
+    let mut component_groups: Vec<(usize, Vec<usize>)> = components_by_target.into_iter().collect();
+    component_groups.sort_by_key(|(target, _)| *target);
+    for (_, mut component_indices) in component_groups {
+        component_indices.sort_unstable();
         for (offset, &left) in component_indices.iter().enumerate() {
             for &right in &component_indices[offset + 1..] {
                 let (Some(left_kind), Some(right_kind)) = (
@@ -2345,6 +2361,25 @@ fn append_view_facts(
         }
     }
     Ok(())
+}
+
+/// The annotation-only view relation deliberately excludes drawn geometry, hatching and
+/// section regions. The V6 shapes can therefore inspect names, scales and marking members
+/// without traversing every line that composes a view.
+fn is_annotation_component_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "view_title"
+            | "view_scale"
+            | "cutting_location"
+            | "projection_direction"
+            | "mark_letters"
+            | "detail_circle"
+            | "detail_leader"
+            | "detail_label"
+            | "detail_indicator"
+            | "detail_boundary"
+    )
 }
 
 fn view_component_kind(object: &Object) -> Option<&str> {
@@ -4461,6 +4496,7 @@ mod tests {
         assert_eq!(count("locatedInView"), 3);
         assert_eq!(count("componentOf"), 2);
         assert_eq!(count("hasComponent"), 2);
+        assert_eq!(count("hasAnnotationComponent"), 2);
         assert_eq!(count("referencesView"), 2);
         assert!(
             !relation_rows

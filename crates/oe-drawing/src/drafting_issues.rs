@@ -14,6 +14,42 @@ struct Span {
     end: f64,
 }
 
+/// Rule facts use a derived visible-outline object for an interval-scoped coincidence or hatch
+/// overrun.  Its ID carries the focus object's normalized interval so the review item can reuse
+/// the same range without widening back to the member's whole circle/line.
+fn derived_source_intervals(value: Option<&str>) -> Vec<[f64; 2]> {
+    let Some(value) = value else {
+        return Vec::new();
+    };
+    let mut out: Vec<[f64; 2]> = Vec::new();
+    for part in value.split('|') {
+        let Some((_, marker)) = part
+            .split_once("coincidence_span:")
+            .or_else(|| part.split_once("hatch_overrun_span:"))
+        else {
+            continue;
+        };
+        let mut fields = marker.split(':');
+        let (Some(start), Some(end)) = (
+            fields.next().and_then(|s| s.trim().parse::<f64>().ok()),
+            fields.next().and_then(|s| s.trim().parse::<f64>().ok()),
+        ) else {
+            continue;
+        };
+        if end <= start {
+            continue;
+        }
+        let interval = [start.clamp(0., 1.), end.clamp(0., 1.)];
+        if !out
+            .iter()
+            .any(|old| (old[0] - interval[0]).abs() < 1e-10 && (old[1] - interval[1]).abs() < 1e-10)
+        {
+            out.push(interval);
+        }
+    }
+    out
+}
+
 fn curve_boundary_intervals(member: &Value) -> Vec<(f64, f64)> {
     member["evidence_ids"]
         .as_array()
@@ -85,6 +121,20 @@ fn focused_line_index(focus: &str, lines: &Value) -> Option<usize> {
 }
 
 fn spans(f: &MdDraftingFinding, graph: &Value) -> Vec<Span> {
+    let intervals = derived_source_intervals(f.value.as_deref());
+    if !intervals.is_empty() && !f.source_handles.is_empty() {
+        return f
+            .source_handles
+            .iter()
+            .flat_map(|path| {
+                intervals.iter().map(move |interval| Span {
+                    path: path.clone(),
+                    start: interval[0],
+                    end: interval[1],
+                })
+            })
+            .collect();
+    }
     let all: Vec<_> = graph["members"].as_array().into_iter().flatten().collect();
     let line_index = focused_line_index(&f.focus, &graph["structural_lines"]);
     // A structural-line focus names the concrete carrier line after an enclosing
@@ -257,9 +307,7 @@ fn group_order_key<'a>(
     )
 }
 
-fn ordered_rule_groups(
-    issues: &[MdDraftingIssue],
-) -> Vec<(&str, Vec<&MdDraftingIssue>)> {
+fn ordered_rule_groups(issues: &[MdDraftingIssue]) -> Vec<(&str, Vec<&MdDraftingIssue>)> {
     let mut by_rule: BTreeMap<&str, Vec<&MdDraftingIssue>> = BTreeMap::new();
     for issue in issues {
         by_rule.entry(issue.rule.as_str()).or_default().push(issue);
@@ -368,15 +416,32 @@ pub fn collect(
         }
         let views: BTreeSet<_> = found
             .iter()
-            .flat_map(|f| f.expression_ids.iter())
-            .flat_map(|id| {
+            .flat_map(|f| {
+                // A composition finding describes its target view, which can differ from
+                // the view containing the annotation and has no expression identity.
+                if f.focus_classes
+                    .iter()
+                    .any(|class| class == "ViewComposition")
+                    && let Some(id) = f
+                        .focus
+                        .strip_prefix(&format!("{}:view-composition:", f.layer))
+                    && let Some(view) = graph["views"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .find(|view| view["id"] == id)
+                    && let Some(id) = view["id"].as_str()
+                {
+                    return vec![id];
+                }
                 graph["expressions"]
                     .as_array()
                     .into_iter()
                     .flatten()
-                    .filter(move |e| e["id"] == id.as_str())
+                    .filter(|e| f.expression_ids.iter().any(|id| e["id"] == id.as_str()))
+                    .filter_map(|e| e["view_id"].as_str())
+                    .collect::<Vec<_>>()
             })
-            .filter_map(|e| e["view_id"].as_str())
             .collect();
         let location = if views.is_empty() {
             positions.join("、")

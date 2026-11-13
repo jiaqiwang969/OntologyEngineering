@@ -162,6 +162,7 @@ md:ViewComponent a owl:Class ; rdfs:label "视图组成成员区间"@zh ; rdfs:c
 md:ViewMarkReference a owl:Class ; rdfs:label "视图标注指向关系"@zh ; rdfs:comment "视图标注表达定义或指向目标视图的关系事实。"@zh ; md:group "G2" .
 md:locatedInView a owl:ObjectProperty ; rdfs:domain md:ViewComponent ; rdfs:range md:ViewComposition ; rdfs:label "成员所在视图"@zh .
 md:hasComponent a owl:ObjectProperty ; rdfs:domain md:ViewComposition ; rdfs:range md:ViewComponent ; rdfs:label "视图具有组成成员"@zh .
+md:hasAnnotationComponent a owl:ObjectProperty ; rdfs:domain md:ViewComposition ; rdfs:range md:ViewComponent ; rdfs:label "视图具有标注组成成员"@zh ; rdfs:comment "仅连接名称、比例、剖切位置、投射方向、字母、放大部位圈、引出线、编号和放大图边界等标注组成；不连接图形线、剖面线或剖面区域。"@zh .
 md:componentOf a owl:ObjectProperty ; rdfs:domain md:ViewComponent ; rdfs:range md:ViewComposition ; rdfs:label "成员组成视图"@zh .
 md:definesView a owl:ObjectProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range md:ViewComposition ; rdfs:label "标注定义的视图"@zh .
 md:referencesView a owl:ObjectProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range md:ViewComposition ; rdfs:label "标注指向的视图"@zh .
@@ -171,6 +172,24 @@ md:cuttingSurfaceKind a owl:DatatypeProperty ; rdfs:domain md:ViewComposition ; 
 md:viewRelationRole a owl:DatatypeProperty ; rdfs:domain md:ViewComponent ; rdfs:range xsd:string ; rdfs:label "成员视图关系角色"@zh .
 md:viewComponentKind a owl:DatatypeProperty ; rdfs:domain md:ViewComponent ; rdfs:range xsd:string ; rdfs:label "视图组成成员角色"@zh .
 md:viewMarkKind a owl:DatatypeProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range xsd:string ; rdfs:label "视图标注种类"@zh .
+md:factState a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "事实状态"@zh .
+md:evidenceId a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "事实证据编号"@zh .
+md:unknownReason a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "事实未知项"@zh .
+md:factDetail a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "事实成组细节"@zh .
+md:coincidenceIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "重合源区间起点"@zh .
+md:coincidenceIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "重合源区间终点"@zh .
+md:coincidenceCarrierIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "重合承载区间起点"@zh .
+md:coincidenceCarrierIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "重合承载区间终点"@zh .
+md:hatchOverrunIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "剖面线越界源区间起点"@zh .
+md:hatchOverrunIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "剖面线越界源区间终点"@zh .
+md:hatchOverrunOutlineIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "剖面线越界轮廓区间起点"@zh .
+md:hatchOverrunOutlineIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "剖面线越界轮廓区间终点"@zh .
+md:viewIntervalStart a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "视图事实区间起点"@zh .
+md:viewIntervalEnd a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "视图事实区间终点"@zh .
+md:nativeMemberId a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "原生成员编号"@zh .
+md:viewMarkRelationRole a owl:DatatypeProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range xsd:string ; rdfs:label "视图标注关系角色"@zh .
+md:targetViewId a owl:DatatypeProperty ; rdfs:domain md:ViewMarkReference ; rdfs:range xsd:string ; rdfs:label "标注目标视图编号"@zh .
+md:detailPartCount a owl:DatatypeProperty ; rdfs:domain md:ViewComposition ; rdfs:range xsd:integer ; rdfs:label "整张图纸被放大部位数"@zh .
 '''
 
 [shapes]
@@ -736,6 +755,217 @@ rule:G2-043-cutting-letter-required a sh:NodeShape ;
 rule:G2-043-cutting-letter-required-p1 a sh:PropertyShape ;
     sh:path md:cutLetterCount ; sh:minCount 1 ; sh:minInclusive 1 ;
     sh:message "此明确命名剖切路径的端点或转折标记附近缺少同名字母；邻近投影配置省略箭头不等于省略字母"@zh .
+
+# ================= V6 视图组成标注（合同关系图） =================
+# 这些形状只读取组成事实。合约不能可靠读取投影间是否有图形、是否通过对称面、
+# 断面是否在剖切线延长线上、或局部视图是否按第三角细点画线配置；这些未知只在
+# 没有名称的完整省略候选中放行。已写出名称时，6.1/8.1 的位置和同字母要求不因
+# 范围、曲面或位置字段未知而消失；箭头仍只在确定不是基本投影位置时要求。
+
+rule:V6-section-title-required a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-section-title-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043, dc:DC-G2-065 ;
+    md:clause "GB/T 4458.6-2002 6.1、8.1；6.2–6.4、8.2–8.3" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "补齐剖视图或断面图名称；仅在投影配置、单一对称平面、明确局部剖或断面允许省略条件成立时省略。"@zh ;
+    rdfs:label "剖视图和断面图应有名称（允许的省略除外）"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:in ( "section_view" "cross_section" ) ] ] ]
+        [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:representationKind ; sh:hasValue "section_view" ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:or (
+                [ sh:property [ sh:path md:positionRole ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:in ( "local" "local_axis" ) ] ]
+                [ sh:and (
+                    [ sh:property [ sh:path md:positionRole ; sh:in ( "principal" "top" "bottom" "left" "right" "rear" ) ] ]
+                    [ sh:property [ sh:path md:sectionExtent ; sh:in ( "full" "half" ) ] ]
+                    [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "single_plane" ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "cutting_location" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                ) ]
+            ) ]
+        ) ]
+        [ sh:and (
+            [ sh:property [ sh:path md:representationKind ; sh:hasValue "cross_section" ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+        ) ]
+    ) ;
+    sh:message "剖视图或断面图缺少名称"@zh .
+
+rule:V6-section-cutting-position-required a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-section-cutting-position-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043 ;
+    md:clause "GB/T 4458.6-2002 6.1、8.1；6.2–6.4、8.2–8.3" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "补齐剖切位置标记；局部剖切位置明确或适用断面省略条件时保留省略。"@zh ;
+    rdfs:label "剖视图和断面图应标出剖切位置（允许的省略除外）"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:in ( "section_view" "cross_section" ) ] ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "cutting_location" ] ] ; sh:qualifiedMinCount 1 ] ]
+        ) ]
+        [ sh:and (
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:or (
+                [ sh:property [ sh:path md:positionRole ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:in ( "local" "local_axis" ) ] ]
+                [ sh:property [ sh:path md:representationKind ; sh:hasValue "cross_section" ] ]
+                [ sh:and (
+                    [ sh:property [ sh:path md:representationKind ; sh:hasValue "section_view" ] ]
+                    [ sh:property [ sh:path md:positionRole ; sh:in ( "principal" "top" "bottom" "left" "right" "rear" ) ] ]
+                    [ sh:property [ sh:path md:sectionExtent ; sh:in ( "full" "half" ) ] ]
+                    [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "single_plane" ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "cutting_location" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                ) ]
+            ) ]
+        ) ]
+    ) ;
+    sh:message "剖视图或断面图缺少剖切位置标记"@zh .
+
+rule:V6-section-direction-required a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-section-direction-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043 ;
+    md:clause "GB/T 4458.6-2002 6.1、8.1；6.2–6.4、8.2–8.3" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "仅在确定不是按基本视图投影关系配置时补齐剖切投射方向箭头；断面图对称和配置条件读不出时不报。"@zh ;
+    rdfs:label "剖视图和断面图应标出投射方向箭头（允许的省略除外）"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:in ( "section_view" "cross_section" ) ] ] ]
+        [ sh:property [ sh:path md:representationKind ; sh:hasValue "cross_section" ] ]
+        [ sh:property [ sh:path md:positionRole ; sh:hasValue "unknown" ] ]
+        [ sh:property [ sh:path md:positionRole ; sh:in ( "principal" "top" "bottom" "left" "right" "rear" ) ] ]
+        [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMinCount 1 ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:representationKind ; sh:hasValue "section_view" ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:or (
+                [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:in ( "local" "local_axis" ) ] ]
+            ) ]
+        ) ]
+    ) ;
+    sh:message "剖视图或断面图缺少投射方向箭头"@zh .
+
+rule:V6-section-letters-required a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-section-letters-required" ; md:group "G2" ;
+    md:concept dc:DC-G2-043, dc:DC-G2-065 ;
+    md:clause "GB/T 4458.6-2002 6.1、8.1；6.2–6.4、8.2–8.3" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "补齐剖切符号和视图名称中的同名字母；断面图的对称/重合/中断配置读不出时保留未知。"@zh ;
+    rdfs:label "剖视图和断面图的剖切字母应相互对应（允许的省略除外）"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:in ( "section_view" "cross_section" ) ] ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ; sh:property [ sh:path md:sameLetterAs ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ] ; sh:qualifiedMinCount 1 ] ]
+        ) ]
+        [ sh:and (
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:or (
+                [ sh:property [ sh:path md:positionRole ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "unknown" ] ]
+                [ sh:property [ sh:path md:sectionExtent ; sh:in ( "local" "local_axis" ) ] ]
+                [ sh:property [ sh:path md:representationKind ; sh:hasValue "cross_section" ] ]
+                [ sh:and (
+                    [ sh:property [ sh:path md:representationKind ; sh:hasValue "section_view" ] ]
+                    [ sh:property [ sh:path md:positionRole ; sh:in ( "principal" "top" "bottom" "left" "right" "rear" ) ] ]
+                    [ sh:property [ sh:path md:sectionExtent ; sh:in ( "full" "half" ) ] ]
+                    [ sh:property [ sh:path md:cuttingSurfaceKind ; sh:hasValue "single_plane" ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "cutting_location" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                    [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMaxCount 0 ] ]
+                ) ]
+            ) ]
+        ) ]
+    ) ;
+    sh:message "剖视图或断面图缺少相互对应的字母"@zh .
+
+rule:V6-detail-marking a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-detail-marking" ; md:group "G2" ;
+    md:concept dc:DC-G2-075 ;
+    md:clause "GB/T 4458.1-2002 5.7.2" ;
+    md:confidence "certain" ;
+    md:proposedCorrection "原图圈出全部被放大部位；一处只注比例，多处按罗马数字逐一编号并在放大图上方注相应编号和比例。"@zh ;
+    rdfs:label "局部放大图的圈、编号、名称和比例应成套对应"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:hasValue "detail_view" ] ] ]
+        [ sh:property [ sh:path md:representationKind ; sh:hasValue "unknown" ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:detailPartCount ; sh:hasValue 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "detail_circle" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "detail_label" ] ] ; sh:qualifiedMaxCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_scale" ] ] ; sh:qualifiedMinCount 1 ] ]
+        ) ]
+        [ sh:and (
+            [ sh:property [ sh:path md:detailPartCount ; sh:minInclusive 2 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "detail_circle" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "detail_label" ] ; sh:property [ sh:path md:text ; sh:pattern "^[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫIVXLCDM]+$" ] ; sh:property [ sh:path md:sameLetterAs ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_scale" ] ] ; sh:qualifiedMinCount 1 ] ]
+        ) ]
+    ) ;
+    sh:message "局部放大图的圈、编号、名称或比例标注不一致"@zh .
+
+rule:V6-detail-single-numbered a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-detail-single-numbered" ; md:group "G2" ;
+    md:concept dc:DC-G2-075 ;
+    md:clause "GB/T 4458.1-2002 5.7.2" ;
+    md:confidence "needs_expert" ;
+    md:proposedCorrection "仅一处放大，上方只需注比例，编号可省；请专家复核现有编号是否有必要。"@zh ;
+    rdfs:label "仅一处放大时编号可省（专家复核）"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:hasValue "detail_view" ] ] ]
+        [ sh:not [ sh:property [ sh:path md:detailPartCount ; sh:hasValue 1 ] ] ]
+        [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "detail_label" ] ] ; sh:qualifiedMaxCount 0 ] ]
+    ) ;
+    sh:message "同一图纸仅一处放大部位，上方同时标有编号和比例"@zh .
+
+rule:V6-direction-view-marking a sh:NodeShape ;
+    sh:targetClass md:ViewComposition ;
+    md:ruleId "V6-direction-view-marking" ; md:group "G2" ;
+    md:concept dc:DC-G2-072 ;
+    md:clause "GB/T 4458.1-2002 5.1.3" ;
+    md:confidence "likely" ;
+    md:proposedCorrection "自由配置且已有标注的向视图或局部视图补齐上方名称、附近箭头和相同字母；按基本视图位置或可读的第三角局部配置时可省略。"@zh ;
+    rdfs:label "向视图和局部视图的名称、箭头、字母应相互对应"@zh ;
+    sh:or (
+        [ sh:not [ sh:property [ sh:path md:representationKind ; sh:hasValue "view" ] ] ]
+        [ sh:property [ sh:path md:representationKind ; sh:hasValue "unknown" ] ]
+        [ sh:property [ sh:path md:positionRole ; sh:hasValue "unknown" ] ]
+        [ sh:property [ sh:path md:positionRole ; sh:in ( "principal" "top" "bottom" "left" "right" "rear" ) ] ]
+        [ sh:and (
+            [ sh:property [ sh:path md:positionRole ; sh:hasValue "free" ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMaxCount 0 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ] ; sh:qualifiedMaxCount 0 ] ]
+        ) ]
+        [ sh:and (
+            [ sh:property [ sh:path md:representationKind ; sh:hasValue "view" ] ]
+            [ sh:property [ sh:path md:positionRole ; sh:hasValue "free" ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "projection_direction" ] ] ; sh:qualifiedMinCount 1 ] ]
+            [ sh:property [ sh:path md:hasAnnotationComponent ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "mark_letters" ] ; sh:property [ sh:path md:sameLetterAs ; sh:qualifiedValueShape [ sh:class md:ViewComponent ; sh:property [ sh:path md:viewComponentKind ; sh:hasValue "view_title" ] ] ; sh:qualifiedMinCount 1 ] ] ; sh:qualifiedMinCount 1 ] ]
+        ) ]
+    ) ;
+    sh:message "自由配置的向视图或局部视图缺少名称、箭头或相同字母"@zh .
 '''
 
 

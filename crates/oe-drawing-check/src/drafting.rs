@@ -26,7 +26,9 @@ mod constituents;
 mod cutting;
 
 /// Source-bound named cutting positions, shared by the rule facts and correction planner.
-pub fn cutting_sites(bytes: &[u8], graph: &Value) -> Result<Vec<Value>> { cutting::values(bytes, graph) }
+pub fn cutting_sites(bytes: &[u8], graph: &Value) -> Result<Vec<Value>> {
+    cutting::values(bytes, graph)
+}
 
 pub const SCHEMA: &str = "oev2.drawing-drafting-rules/1";
 pub const REQUEST_SCHEMA: &str = "oev2.drawing-drafting-rules-request/1";
@@ -94,7 +96,7 @@ pub const CLASSES: [&str; 44] = [
     "ViewMarkReference",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 55] = [
+pub const PREDICATES: [&str; 74] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -150,6 +152,25 @@ pub const PREDICATES: [&str; 55] = [
     "viewRelationRole",
     "viewComponentKind",
     "viewMarkKind",
+    "factState",
+    "evidenceId",
+    "unknownReason",
+    "factDetail",
+    "coincidenceIntervalStart",
+    "coincidenceIntervalEnd",
+    "coincidenceCarrierIntervalStart",
+    "coincidenceCarrierIntervalEnd",
+    "hatchOverrunIntervalStart",
+    "hatchOverrunIntervalEnd",
+    "hatchOverrunOutlineIntervalStart",
+    "hatchOverrunOutlineIntervalEnd",
+    "viewIntervalStart",
+    "viewIntervalEnd",
+    "nativeMemberId",
+    "viewMarkRelationRole",
+    "targetViewId",
+    "detailPartCount",
+    "hasAnnotationComponent",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -160,7 +181,8 @@ impl MdDraftingRulePort for DraftingRuleChecker<'_> {
         &self,
         input: &MdDraftingRuleRequest,
     ) -> std::result::Result<MdDraftingRuleReport, FailureRecord> {
-        check_rules(self.root, input).map_err(|e| crate::graph::failure("drawing_drafting_rules", e))
+        check_rules(self.root, input)
+            .map_err(|e| crate::graph::failure("drawing_drafting_rules", e))
     }
 }
 
@@ -345,15 +367,13 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
             group: value(&format!("{NS}group")).unwrap_or_default(),
             concept_ids: values(&format!("{NS}concept"))
                 .into_iter()
-                .filter_map(|c| {
-                    c.strip_prefix(&format!("{NS}concept:"))
-                        .map(str::to_owned)
-                })
+                .filter_map(|c| c.strip_prefix(&format!("{NS}concept:")).map(str::to_owned))
                 .collect(),
             clause: value(&format!("{NS}clause")).unwrap_or_default(),
             label: value(&format!("{RDFS}label")).unwrap_or_default(),
             confidence: value(&format!("{NS}confidence")).unwrap_or_else(|| "needs_expert".into()),
-            proposed_correction: value(&format!("{NS}proposedCorrection")).unwrap_or_else(|| "请专家确认".into()),
+            proposed_correction: value(&format!("{NS}proposedCorrection"))
+                .unwrap_or_else(|| "请专家确认".into()),
             messages,
             severity,
             target_classes,
@@ -432,7 +452,9 @@ impl TextBox {
     fn is_shelf(&self, a: P, b: P) -> bool {
         let (p0, p1) = (self.local(a), self.local(b));
         let band = 0.3 * self.height;
-        (p1.1 - p0.1).abs() <= 0.05 * dist(a, b).max(1e-9) && p0.1.abs() <= band && p1.1.abs() <= band
+        (p1.1 - p0.1).abs() <= 0.05 * dist(a, b).max(1e-9)
+            && p0.1.abs() <= band
+            && p1.1.abs() <= band
     }
     /// The segment in box coordinates (x along the text, y up), clipped to the box; its length inside.
     fn chord(&self, a: P, b: P) -> f64 {
@@ -515,7 +537,8 @@ fn segment_intersection(a: P, b: P, c: P, d: P) -> Option<P> {
 /// Two curves cross when some pieces intersect at a point away from the ends of both curves: a corner shared by
 /// two outlines and a line ending on another are not crossings; a line through a vertex of a polyline is.
 fn chains_cross(ca: &[P], cb: &[P]) -> bool {
-    let (Some(a0), Some(a1), Some(b0), Some(b1)) = (ca.first(), ca.last(), cb.first(), cb.last()) else {
+    let (Some(a0), Some(a1), Some(b0), Some(b1)) = (ca.first(), ca.last(), cb.first(), cb.last())
+    else {
         return false;
     };
     let ends = [*a0, *a1, *b0, *b1];
@@ -638,7 +661,10 @@ fn collinear_gap(a: P, b: P, c: P, d: P) -> Option<f64> {
 fn stretch(a: P, b: P, by: f64) -> (P, P) {
     let l = dist(a, b).max(1e-9);
     let u = ((b.0 - a.0) / l, (b.1 - a.1) / l);
-    ((a.0 - u.0 * by, a.1 - u.1 * by), (b.0 + u.0 * by, b.1 + u.1 * by))
+    (
+        (a.0 - u.0 * by, a.1 - u.1 * by),
+        (b.0 + u.0 * by, b.1 + u.1 * by),
+    )
 }
 fn median(values: &mut [f64]) -> Option<f64> {
     if values.is_empty() {
@@ -752,7 +778,8 @@ impl<'a> Dxf<'a> {
 
     /// Straight chains of a curve record, in drawing coordinates plus an offset, and the arcs among them.
     fn chains(&self, r: &dxf::Record, offset: P) -> Result<CurveChains> {
-        let pt = |x: i64, y: i64| -> Result<P> { Ok((r.float(x)? + offset.0, r.float(y)? + offset.1)) };
+        let pt =
+            |x: i64, y: i64| -> Result<P> { Ok((r.float(x)? + offset.0, r.float(y)? + offset.1)) };
         let mut arcs = Vec::new();
         let chains = match r.kind.as_str() {
             "LINE" => vec![vec![pt(10, 20)?, pt(11, 21)?]],
@@ -780,7 +807,13 @@ impl<'a> Dxf<'a> {
                         10 => x = Some(value.parse::<f64>().context("dxf_vertex_x")?),
                         20 => {
                             if let Some(px) = x.take() {
-                                vertices.push(((px + offset.0, value.parse::<f64>().context("dxf_vertex_y")? + offset.1), 0.));
+                                vertices.push((
+                                    (
+                                        px + offset.0,
+                                        value.parse::<f64>().context("dxf_vertex_y")? + offset.1,
+                                    ),
+                                    0.,
+                                ));
                             }
                         }
                         42 => {
@@ -832,13 +865,19 @@ impl<'a> Dxf<'a> {
                         11 => fx = Some(value.parse::<f64>().context("dxf_fit_x")?),
                         21 => {
                             if let Some(x) = fx.take() {
-                                fit.push((x + offset.0, value.parse::<f64>().context("dxf_fit_y")? + offset.1));
+                                fit.push((
+                                    x + offset.0,
+                                    value.parse::<f64>().context("dxf_fit_y")? + offset.1,
+                                ));
                             }
                         }
                         10 => cx = Some(value.parse::<f64>().context("dxf_control_x")?),
                         20 => {
                             if let Some(x) = cx.take() {
-                                control.push((x + offset.0, value.parse::<f64>().context("dxf_control_y")? + offset.1));
+                                control.push((
+                                    x + offset.0,
+                                    value.parse::<f64>().context("dxf_control_y")? + offset.1,
+                                ));
                             }
                         }
                         _ => {}
@@ -1098,7 +1137,8 @@ fn clean_text(raw: &str) -> CleanText {
                         .map(|p| i + 2 + p)
                         .unwrap_or(chars.len());
                     let body: String = chars[i + 2..end].iter().collect();
-                    if let Some(factor) = body.strip_suffix('x').and_then(|f| f.parse::<f64>().ok()) {
+                    if let Some(factor) = body.strip_suffix('x').and_then(|f| f.parse::<f64>().ok())
+                    {
                         scale *= factor;
                     }
                     i = end + 1;
@@ -1174,7 +1214,57 @@ struct Object {
     /// source.  Section-boundary checks must keep that provenance even though the public fact
     /// contract has no extra field for it.
     inferred_geometry: bool,
+    /// A derived object whose geometry is only the interval relevant to a rule.  The public
+    /// drafting-object contract stays unchanged; the interval is emitted through the existing
+    /// section-boundary fact fields so findings and review items can carry the same source range.
+    span: Option<SpanInfo>,
+    /// Contract facts for view composition and view-mark references.  These facts have no
+    /// drawing geometry of their own; their source/member identity is carried by the ordinary
+    /// object fields above and the interval/metadata below is emitted as existing fact fields.
+    view_fact: Option<ViewFact>,
     geometry: Geometry,
+}
+
+#[derive(Debug, Clone)]
+enum ViewFact {
+    Composition {
+        position_role: String,
+        representation_kind: String,
+        section_extent: String,
+        cutting_surface_kind: String,
+        detail_part_count: Option<u64>,
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
+    Component {
+        view_relation_role: String,
+        view_component_kind: String,
+        interval: [f64; 2],
+        native_member_id: Option<String>,
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
+    Mark {
+        view_mark_kind: String,
+        relation_role: String,
+        target_view_id: Option<String>,
+        interval: [f64; 2],
+        state: String,
+        evidence_ids: Vec<String>,
+        unknowns: Vec<String>,
+    },
+}
+
+#[derive(Debug, Clone)]
+struct SpanInfo {
+    /// Interval on the rule source object (the focus object), normalized to its source member.
+    source: [f64; 2],
+    /// Existing fact vocabulary field used to distinguish the derived kind.
+    parameter: &'static str,
+    /// Small deterministic JSON payload retaining the two endpoints and the measured length.
+    detail: String,
 }
 impl Object {
     fn is(&self, class: &str) -> bool {
@@ -1195,7 +1285,10 @@ impl Object {
     }
     /// Both text boxes (main text and stack), as drawn.
     fn boxes(&self) -> impl Iterator<Item = &TextBox> {
-        self.geometry.text_box.iter().chain(self.geometry.stack_box.iter())
+        self.geometry
+            .text_box
+            .iter()
+            .chain(self.geometry.stack_box.iter())
     }
 }
 
@@ -1209,7 +1302,13 @@ struct Setting {
 }
 
 /// The class of a member from its role, the source kind, the expression kind and its setting.
-fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &str, setting: Setting) -> Vec<&'static str> {
+fn classes_of(
+    role: &str,
+    line_type: &str,
+    source_kind: &str,
+    expression_kind: &str,
+    setting: Setting,
+) -> Vec<&'static str> {
     let text = |extra: &'static str| vec!["Text", extra];
     let line = |extra: &'static str| vec!["Line", extra];
     let title = || {
@@ -1226,7 +1325,12 @@ fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &
             _ => text("DimensionText"),
         },
         "tolerance_text" => vec!["Text", "ToleranceText", "DimensionText"],
-        "tolerance_value" => vec!["Text", "ToleranceText", "DimensionText", "GeometricToleranceValue"],
+        "tolerance_value" => vec![
+            "Text",
+            "ToleranceText",
+            "DimensionText",
+            "GeometricToleranceValue",
+        ],
         "roughness_value" => vec!["Text", "ToleranceText", "DimensionText", "RoughnessValue"],
         "note_text" => text("NoteText"),
         "table_text" => text("TableText"),
@@ -1357,12 +1461,22 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
     // Detail views of the graph: their ids and the handles of the texts that label them.
     let mut detail_views: BTreeSet<&str> = BTreeSet::new();
     let mut detail_labels: BTreeSet<&str> = BTreeSet::new();
-    for v in g.get("views").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default() {
+    for v in g
+        .get("views")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+        .unwrap_or_default()
+    {
         if v.get("kind").and_then(Value::as_str) == Some("detail_view") {
             if let Some(id) = v.get("id").and_then(Value::as_str) {
                 detail_views.insert(id);
             }
-            for h in v.get("label_source_ids").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default() {
+            for h in v
+                .get("label_source_ids")
+                .and_then(Value::as_array)
+                .map(Vec::as_slice)
+                .unwrap_or_default()
+            {
                 if let Some(h) = h.as_str() {
                     detail_labels.insert(h);
                 }
@@ -1376,7 +1490,10 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             continue;
         }
         let root = text(m, "source_handle")?;
-        let native = m.get("native_member_id").and_then(Value::as_str).unwrap_or(root);
+        let native = m
+            .get("native_member_id")
+            .and_then(Value::as_str)
+            .unwrap_or(root);
         let handle = native.rsplit('/').next().unwrap_or(root);
         let role = text(m, "member_role")?;
         let line_type = text(m, "line_type")?;
@@ -1406,9 +1523,17 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             continue;
         }
         // Provenance of the record: layer and colour, own or by layer (BYBLOCK pieces take their container's).
-        let container = if handle != root { d.by_handle.get(root).copied() } else { None };
+        let container = if handle != root {
+            d.by_handle.get(root).copied()
+        } else {
+            None
+        };
         let layer_of = |r: &dxf::Record| r.tag(8).map(str::to_owned);
-        let own_colour = |r: &dxf::Record| r.tag(62).and_then(|c| c.trim().parse::<i64>().ok()).filter(|c| *c > 0);
+        let own_colour = |r: &dxf::Record| {
+            r.tag(62)
+                .and_then(|c| c.trim().parse::<i64>().ok())
+                .filter(|c| *c > 0)
+        };
         let dxf_layer = own_colour(record)
             .map(|_| layer_of(record))
             .unwrap_or_else(|| container.and_then(layer_of).or_else(|| layer_of(record)));
@@ -1419,7 +1544,11 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             .or_else(|| container.and_then(own_colour))
             .or(layer_colour);
         if classes.contains(&"Line") && handle == root {
-            let shared = roles_by_handle.get(root).map(BTreeSet::iter).into_iter().flatten();
+            let shared = roles_by_handle
+                .get(root)
+                .map(BTreeSet::iter)
+                .into_iter()
+                .flatten();
             for (other_role, class) in shared.filter_map(|r| match *r {
                 "contour_segment" => Some((*r, "VisibleOutline")),
                 "center_line" => Some((*r, "CentreLine")),
@@ -1475,7 +1604,11 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 let ct = clean_text(record.tag_or(1, ""));
                 if let (Ok(x), Ok(y)) = (record.float(11), record.float(21)) {
                     let width = (ct.width * h).max(0.5 * h);
-                    let main_width = if ct.stacked { (ct.main_width * h).clamp(0.5 * h, width) } else { width };
+                    let main_width = if ct.stacked {
+                        (ct.main_width * h).clamp(0.5 * h, width)
+                    } else {
+                        width
+                    };
                     let origin = (x - width / 2., y - h / 2.);
                     geometry.text_box = Some(TextBox {
                         origin,
@@ -1549,6 +1682,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             colour,
             layer_colour,
             inferred_geometry: false,
+            span: None,
+            view_fact: None,
             geometry,
         });
     }
@@ -1560,7 +1695,10 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             .filter_map(|m| {
                 Some((
                     m.get("id")?.as_str()?,
-                    (m.get("source_handle")?.as_str()?, m.get("view_id").and_then(Value::as_str).unwrap_or("")),
+                    (
+                        m.get("source_handle")?.as_str()?,
+                        m.get("view_id").and_then(Value::as_str).unwrap_or(""),
+                    ),
                 ))
             })
             .collect();
@@ -1574,7 +1712,9 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 .iter()
                 .filter_map(Value::as_str)
                 .collect();
-            let inferred_geometry = source_pieces.iter().any(|piece| piece.starts_with("implied:"));
+            let inferred_geometry = source_pieces
+                .iter()
+                .any(|piece| piece.starts_with("implied:"));
             let pieces: Vec<&str> = source_pieces
                 .iter()
                 .filter_map(|piece| piece.strip_prefix("member:"))
@@ -1586,7 +1726,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             handles.sort();
             handles.dedup();
             let (chain, arcs) = structural_chain(line)?;
-            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9).then(|| angle_deg(chain[0], chain[1]));
+            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9)
+                .then(|| angle_deg(chain[0], chain[1]));
             out.push(Object {
                 id: format!("{layer}:line:{i}"),
                 classes: vec!["Line", class],
@@ -1605,6 +1746,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 colour: None,
                 layer_colour: None,
                 inferred_geometry,
+                span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1623,7 +1766,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 .filter_map(|k| optional_text(span, k))
                 .collect();
             let (chain, arcs) = structural_chain(span)?;
-            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9).then(|| angle_deg(chain[0], chain[1]));
+            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9)
+                .then(|| angle_deg(chain[0], chain[1]));
             out.push(Object {
                 id: format!("{layer}:implied:{i}"),
                 classes: vec!["Line", class, "InferredSpan"],
@@ -1642,6 +1786,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 colour: None,
                 layer_colour: None,
                 inferred_geometry: true,
+                span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     arcs,
@@ -1651,6 +1797,599 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
         }
     }
     Ok(out)
+}
+
+fn graph_strings(value: &Value, key: &str) -> Vec<String> {
+    value
+        .get(key)
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(Value::as_str)
+        .map(str::to_owned)
+        .collect()
+}
+
+fn graph_value(value: &Value, key: &str, default: &str) -> String {
+    value
+        .get(key)
+        .and_then(Value::as_str)
+        .filter(|s| !s.is_empty())
+        .unwrap_or(default)
+        .to_owned()
+}
+
+fn graph_interval(value: &Value) -> [f64; 2] {
+    let Some(a) = value
+        .get("interval")
+        .and_then(Value::as_array)
+        .filter(|v| v.len() == 2)
+    else {
+        return [0., 1.];
+    };
+    let (Some(start), Some(end)) = (a[0].as_f64(), a[1].as_f64()) else {
+        return [0., 1.];
+    };
+    let start = start.clamp(0., 1.);
+    let end = end.clamp(0., 1.);
+    if end > start { [start, end] } else { [0., 1.] }
+}
+
+fn append_view_facts(
+    layer: &str,
+    g: &Value,
+    objects: &mut Vec<Object>,
+    relations: &mut Vec<Relation>,
+) -> Result<()> {
+    let views = g
+        .get("views")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+        .unwrap_or_default();
+    let members = g
+        .get("members")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+        .unwrap_or_default();
+    // The standard counts the enlarged portions on the same drawing sheet.  A member id is one
+    // source circled portion, even when the same portion is related to more than one target view
+    // or the drawing chooses to show only one of two equal enlarged views.  Classifier graphs do
+    // not currently carry a normalized sheet id, so use an explicit id when present and otherwise
+    // place views by their bounding box inside the sheet view.  With no sheet views, the whole
+    // graph remains one sheet for backwards compatibility with single-sheet drawings.
+    let sheet_views: Vec<&Value> = views
+        .iter()
+        .filter(|view| {
+            view.get("kind").and_then(Value::as_str) == Some("sheet")
+                || view.get("representation_kind").and_then(Value::as_str) == Some("sheet")
+        })
+        .collect();
+    let explicit_sheet_id = |value: &Value| {
+        ["sheet_id", "page_id", "sheet"]
+            .into_iter()
+            .find_map(|key| value.get(key).and_then(Value::as_str))
+            .filter(|id| !id.is_empty())
+            .map(str::to_owned)
+    };
+    let view_sheet_id = |view: &Value| {
+        if let Some(sheet_id) = explicit_sheet_id(view) {
+            return sheet_id;
+        }
+        if sheet_views.is_empty() {
+            return "__all__".to_owned();
+        }
+        let center = view
+            .get("bbox")
+            .and_then(Value::as_array)
+            .filter(|bbox| bbox.len() == 4)
+            .and_then(|bbox| {
+                let (x0, y0, x1, y1) = (
+                    bbox[0].as_f64()?,
+                    bbox[1].as_f64()?,
+                    bbox[2].as_f64()?,
+                    bbox[3].as_f64()?,
+                );
+                Some(((x0 + x1) / 2., (y0 + y1) / 2.))
+            });
+        if let Some((x, y)) = center {
+            for sheet in &sheet_views {
+                let Some(bbox) = sheet
+                    .get("bbox")
+                    .and_then(Value::as_array)
+                    .filter(|bbox| bbox.len() == 4)
+                else {
+                    continue;
+                };
+                let (Some(x0), Some(y0), Some(x1), Some(y1)) = (
+                    bbox[0].as_f64(),
+                    bbox[1].as_f64(),
+                    bbox[2].as_f64(),
+                    bbox[3].as_f64(),
+                ) else {
+                    continue;
+                };
+                let (left, right) = (x0.min(x1), x0.max(x1));
+                let (bottom, top) = (y0.min(y1), y0.max(y1));
+                if x >= left && x <= right && y >= bottom && y <= top {
+                    return sheet
+                        .get("id")
+                        .and_then(Value::as_str)
+                        .filter(|id| !id.is_empty())
+                        .unwrap_or("__unassigned__")
+                        .to_owned();
+                }
+            }
+        }
+        "__unassigned__".to_owned()
+    };
+    let view_sheet_ids: HashMap<String, String> = views
+        .iter()
+        .filter_map(|view| {
+            Some((
+                view.get("id").and_then(Value::as_str)?.to_owned(),
+                view_sheet_id(view),
+            ))
+        })
+        .collect();
+    let mut detail_parts_by_sheet: HashMap<String, BTreeSet<String>> = HashMap::new();
+    for member in members {
+        if member.get("view_component_kind").and_then(Value::as_str) != Some("detail_circle") {
+            continue;
+        }
+        let Some(member_id) = member.get("id").and_then(Value::as_str) else {
+            continue;
+        };
+        let sheet_id = explicit_sheet_id(member)
+            .or_else(|| {
+                member
+                    .get("view_id")
+                    .and_then(Value::as_str)
+                    .and_then(|view_id| view_sheet_ids.get(view_id).cloned())
+            })
+            .or_else(|| {
+                member
+                    .get("composition_view_ids")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .find_map(|view_id| view_sheet_ids.get(view_id).cloned())
+            })
+            .unwrap_or_else(|| {
+                if sheet_views.is_empty() {
+                    "__all__".to_owned()
+                } else {
+                    "__unassigned__".to_owned()
+                }
+            });
+        detail_parts_by_sheet
+            .entry(sheet_id)
+            .or_default()
+            .insert(member_id.to_owned());
+    }
+    let detail_part_count = |view: &Value| {
+        detail_parts_by_sheet
+            .get(
+                view.get("id")
+                    .and_then(Value::as_str)
+                    .and_then(|id| view_sheet_ids.get(id))
+                    .map(String::as_str)
+                    .unwrap_or(if sheet_views.is_empty() {
+                        "__all__"
+                    } else {
+                        "__unassigned__"
+                    }),
+            )
+            .map_or(0, |parts| parts.len() as u64)
+    };
+    let mut compositions: HashMap<String, usize> = HashMap::new();
+    for view in views {
+        let Some(view_id) = view
+            .get("id")
+            .and_then(Value::as_str)
+            .filter(|s| !s.is_empty())
+        else {
+            continue;
+        };
+        if compositions.contains_key(view_id) {
+            continue;
+        }
+        let index = objects.len();
+        objects.push(Object {
+            id: format!("{layer}:view-composition:{view_id}"),
+            classes: vec!["ViewComposition"],
+            source_handles: graph_strings(view, "label_source_ids"),
+            member_ids: Vec::new(),
+            expression_id: None,
+            expression_kind: None,
+            view: Some(view_id.to_owned()),
+            line_type: None,
+            text: view.get("label").and_then(Value::as_str).map(str::to_owned),
+            rotation_deg: None,
+            angle_deg: None,
+            height: None,
+            spacing: None,
+            dxf_layer: None,
+            colour: None,
+            layer_colour: None,
+            inferred_geometry: false,
+            span: None,
+            view_fact: Some(ViewFact::Composition {
+                position_role: graph_value(view, "position_role", "unknown"),
+                representation_kind: graph_value(view, "representation_kind", "unknown"),
+                section_extent: graph_value(view, "section_extent", "unknown"),
+                cutting_surface_kind: graph_value(view, "cutting_surface_kind", "unknown"),
+                detail_part_count: (graph_value(view, "representation_kind", "unknown")
+                    == "detail_view")
+                    .then(|| detail_part_count(view)),
+                state: graph_value(view, "state", "unknown"),
+                evidence_ids: graph_strings(view, "evidence_ids"),
+                unknowns: graph_strings(view, "unknowns"),
+            }),
+            geometry: Geometry::default(),
+        });
+        compositions.insert(view_id.to_owned(), index);
+    }
+
+    let expressions: HashMap<&str, &Value> = g
+        .get("expressions")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+        .filter_map(|expression| Some((expression.get("id")?.as_str()?, expression)))
+        .collect();
+    // Keep fact object identities and Turtle order stable across route processes.  The lookup
+    // map is useful for member joins, but its values have no deterministic iteration order.
+    let mut expression_values: Vec<&Value> = expressions.values().copied().collect();
+    expression_values.sort_by_key(|expression| {
+        expression
+            .get("id")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+    });
+    let mut expression_handles: HashMap<String, Vec<String>> = HashMap::new();
+    let mut expression_member_ids: HashMap<String, Vec<String>> = HashMap::new();
+    let mut member_by_id: HashMap<&str, &Value> = HashMap::new();
+    for member in members {
+        let Some(member_id) = member
+            .get("id")
+            .and_then(Value::as_str)
+            .filter(|s| !s.is_empty())
+        else {
+            continue;
+        };
+        member_by_id.insert(member_id, member);
+        let expression_id = graph_value(member, "expression_id", "");
+        let source_handle = graph_value(member, "source_handle", "");
+        if !expression_id.is_empty() && !source_handle.is_empty() {
+            expression_handles
+                .entry(expression_id.clone())
+                .or_default()
+                .push(source_handle.clone());
+        }
+        if !expression_id.is_empty() {
+            expression_member_ids
+                .entry(expression_id)
+                .or_default()
+                .push(member_id.to_owned());
+        }
+    }
+    // A component is one fact for each target composition.  This keeps a multi-target
+    // member's source/member/interval payload tied to exactly one componentOf edge.
+    for member in members {
+        let Some(member_id) = member
+            .get("id")
+            .and_then(Value::as_str)
+            .filter(|s| !s.is_empty())
+        else {
+            continue;
+        };
+        let expression_id = graph_value(member, "expression_id", "");
+        let expression = expressions.get(expression_id.as_str()).copied();
+        let view_id = graph_value(member, "view_id", "");
+        let native_member_id = member
+            .get("native_member_id")
+            .and_then(Value::as_str)
+            .map(str::to_owned);
+        let source_handles = graph_value(member, "source_handle", "");
+        let relation_role = graph_value(member, "view_relation_role", "unknown");
+        let component_kind = graph_value(member, "view_component_kind", "unknown");
+        let interval = graph_interval(member);
+        let mut targets = Vec::new();
+        if relation_role == "component" {
+            for target in graph_strings(member, "composition_view_ids") {
+                if !targets.contains(&target) && compositions.contains_key(&target) {
+                    targets.push(target);
+                }
+            }
+        }
+        if targets.is_empty() {
+            targets.push(String::new());
+        }
+        for target in targets {
+            let index = objects.len();
+            let id = if target.is_empty() {
+                format!("{layer}:view-component:{member_id}")
+            } else {
+                format!("{layer}:view-component:{member_id}:target:{target}")
+            };
+            objects.push(Object {
+                id,
+                classes: vec!["ViewComponent"],
+                source_handles: if source_handles.is_empty() {
+                    Vec::new()
+                } else {
+                    vec![source_handles.clone()]
+                },
+                member_ids: vec![member_id.to_owned()],
+                expression_id: (!expression_id.is_empty()).then_some(expression_id.clone()),
+                expression_kind: expression
+                    .and_then(|e| e.get("kind"))
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                view: (!view_id.is_empty()).then_some(view_id.clone()),
+                line_type: member
+                    .get("line_type")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                text: expression
+                    .and_then(|e| e.get("label"))
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                rotation_deg: None,
+                angle_deg: None,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
+                inferred_geometry: false,
+                span: None,
+                view_fact: Some(ViewFact::Component {
+                    view_relation_role: relation_role.clone(),
+                    view_component_kind: component_kind.clone(),
+                    interval,
+                    native_member_id: native_member_id.clone(),
+                    state: graph_value(member, "state", "unknown"),
+                    evidence_ids: graph_strings(member, "evidence_ids"),
+                    unknowns: graph_strings(member, "unknowns"),
+                }),
+                geometry: Geometry::default(),
+            });
+            if let Some(&view_index) = compositions.get(view_id.as_str()) {
+                relations.push(Relation::node(index, "locatedInView", view_index));
+            }
+            if let Some(&view_index) = compositions.get(&target) {
+                relations.push(Relation::node(index, "componentOf", view_index));
+                relations.push(Relation::node(view_index, "hasComponent", index));
+                if is_annotation_component_kind(&component_kind) {
+                    relations.push(Relation::node(view_index, "hasAnnotationComponent", index));
+                }
+            }
+        }
+    }
+
+    for expression in expression_values {
+        let kind = graph_value(expression, "view_mark_kind", "unknown");
+        let mut targets = Vec::new();
+        for target in graph_strings(expression, "defines_view_ids") {
+            if !targets
+                .iter()
+                .any(|(role, id): &(String, String)| role == "defines" && id == &target)
+            {
+                targets.push(("defines".to_owned(), target));
+            }
+        }
+        for target in graph_strings(expression, "references_view_ids") {
+            if !targets
+                .iter()
+                .any(|(role, id): &(String, String)| role == "references" && id == &target)
+            {
+                targets.push(("references".to_owned(), target));
+            }
+        }
+        let known_targets: Vec<(String, String)> = targets
+            .iter()
+            .filter(|(_, id)| compositions.contains_key(id))
+            .cloned()
+            .collect();
+        let is_view_mark = kind != "unknown"
+            || matches!(
+                expression.get("kind").and_then(Value::as_str),
+                Some("view_mark" | "view_callout")
+            )
+            || expression.get("family").and_then(Value::as_str) == Some("view");
+        if !is_view_mark && targets.is_empty() {
+            continue;
+        }
+        let Some(expression_id) = expression.get("id").and_then(Value::as_str) else {
+            continue;
+        };
+        let mut source_handles = expression_handles
+            .get(expression_id)
+            .cloned()
+            .unwrap_or_default();
+        source_handles.sort();
+        source_handles.dedup();
+        let mut member_ids = expression
+            .get("member_ids")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str)
+            .map(str::to_owned)
+            .collect::<Vec<_>>();
+        if member_ids.is_empty() {
+            member_ids = expression_member_ids
+                .get(expression_id)
+                .cloned()
+                .unwrap_or_default();
+        }
+        let mut unique_member_ids = Vec::with_capacity(member_ids.len());
+        for member_id in member_ids {
+            if !unique_member_ids.contains(&member_id) {
+                unique_member_ids.push(member_id);
+            }
+        }
+        let member_ids = unique_member_ids;
+        let mut interval = [0., 1.];
+        let mut member_intervals = member_ids
+            .iter()
+            .filter_map(|id| member_by_id.get(id.as_str()).map(|m| graph_interval(m)));
+        if let Some(first) = member_intervals.next() {
+            interval = member_intervals.fold(first, |mut range, current| {
+                range[0] = range[0].min(current[0]);
+                range[1] = range[1].max(current[1]);
+                range
+            });
+        }
+        let targets = if known_targets.is_empty() {
+            vec![(String::new(), String::new())]
+        } else {
+            known_targets
+        };
+        for (relation_role, target_view_id) in targets {
+            let index = objects.len();
+            let id = if target_view_id.is_empty() {
+                format!("{layer}:view-mark-reference:{expression_id}")
+            } else {
+                format!(
+                    "{layer}:view-mark-reference:{expression_id}:{relation_role}:{target_view_id}"
+                )
+            };
+            objects.push(Object {
+                id,
+                classes: vec!["ViewMarkReference"],
+                source_handles: source_handles.clone(),
+                member_ids: member_ids.clone(),
+                expression_id: Some(expression_id.to_owned()),
+                expression_kind: expression
+                    .get("kind")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                view: expression
+                    .get("view_id")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                line_type: None,
+                text: expression
+                    .get("label")
+                    .and_then(Value::as_str)
+                    .map(str::to_owned),
+                rotation_deg: None,
+                angle_deg: None,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
+                inferred_geometry: false,
+                span: None,
+                view_fact: Some(ViewFact::Mark {
+                    view_mark_kind: kind.clone(),
+                    relation_role: if relation_role.is_empty() {
+                        "unknown".to_owned()
+                    } else {
+                        relation_role.clone()
+                    },
+                    target_view_id: (!target_view_id.is_empty()).then_some(target_view_id.clone()),
+                    interval,
+                    state: graph_value(expression, "state", "unknown"),
+                    evidence_ids: graph_strings(expression, "evidence_ids"),
+                    unknowns: graph_strings(expression, "unknowns"),
+                }),
+                geometry: Geometry::default(),
+            });
+            if let Some(&view_index) = compositions.get(&target_view_id) {
+                let predicate = if relation_role == "defines" {
+                    "definesView"
+                } else {
+                    "referencesView"
+                };
+                relations.push(Relation::node(index, predicate, view_index));
+            }
+        }
+    }
+
+    // Reuse the existing letter relation for the new view-component facts.  The relation is
+    // based on the composition target, so a cutting/detail mark located in one view can match
+    // the title in its target view without inventing a geometric adjacency.
+    let mut components_by_target: HashMap<usize, Vec<usize>> = HashMap::new();
+    for relation in relations.iter() {
+        if relation.predicate == "componentOf"
+            && let Some(target) = relation.object
+        {
+            components_by_target
+                .entry(target)
+                .or_default()
+                .push(relation.subject);
+        }
+    }
+    let mut component_groups: Vec<(usize, Vec<usize>)> = components_by_target.into_iter().collect();
+    component_groups.sort_by_key(|(target, _)| *target);
+    for (_, mut component_indices) in component_groups {
+        component_indices.sort_unstable();
+        for (offset, &left) in component_indices.iter().enumerate() {
+            for &right in &component_indices[offset + 1..] {
+                let (Some(left_kind), Some(right_kind)) = (
+                    view_component_kind(&objects[left]),
+                    view_component_kind(&objects[right]),
+                ) else {
+                    continue;
+                };
+                let pair = matches!(
+                    (left_kind, right_kind),
+                    ("view_title", "mark_letters" | "detail_label")
+                        | ("mark_letters" | "detail_label", "view_title")
+                );
+                if pair
+                    && objects[left]
+                        .text
+                        .as_deref()
+                        .map(view_letter)
+                        .filter(|s| !s.is_empty())
+                        == objects[right]
+                            .text
+                            .as_deref()
+                            .map(view_letter)
+                            .filter(|s| !s.is_empty())
+                {
+                    relations.push(Relation::node(left, "sameLetterAs", right));
+                    relations.push(Relation::node(right, "sameLetterAs", left));
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+/// The annotation-only view relation deliberately excludes drawn geometry, hatching and
+/// section regions. The V6 shapes can therefore inspect names, scales and marking members
+/// without traversing every line that composes a view.
+fn is_annotation_component_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "view_title"
+            | "view_scale"
+            | "cutting_location"
+            | "projection_direction"
+            | "mark_letters"
+            | "detail_circle"
+            | "detail_leader"
+            | "detail_label"
+            | "detail_indicator"
+            | "detail_boundary"
+    )
+}
+
+fn view_component_kind(object: &Object) -> Option<&str> {
+    match object.view_fact.as_ref() {
+        Some(ViewFact::Component {
+            view_component_kind,
+            ..
+        }) => Some(view_component_kind.as_str()),
+        _ => None,
+    }
 }
 
 /// Hatching drawn as loose parallel lines is one section region per expression: an object with the lines'
@@ -1671,7 +2410,10 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
         if indices.len() < 2 {
             continue;
         }
-        let mut angles: Vec<f64> = indices.iter().filter_map(|i| objects[*i].angle_deg).collect();
+        let mut angles: Vec<f64> = indices
+            .iter()
+            .filter_map(|i| objects[*i].angle_deg)
+            .collect();
         let Some(angle) = median(&mut angles) else {
             continue;
         };
@@ -1683,17 +2425,27 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
             .map(|(a, b)| ((a.0 + b.0) / 2.) * normal.0 + ((a.1 + b.1) / 2.) * normal.1)
             .collect();
         offsets.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-        let mut gaps: Vec<f64> = offsets.windows(2).map(|w| w[1] - w[0]).filter(|g| *g > 1e-6).collect();
+        let mut gaps: Vec<f64> = offsets
+            .windows(2)
+            .map(|w| w[1] - w[0])
+            .filter(|g| *g > 1e-6)
+            .collect();
         let spacing = median(&mut gaps).map(|s| (s * 1000.).round() / 1000.);
         let first = &objects[indices[0]];
-        let mut handles: Vec<String> = indices.iter().flat_map(|i| objects[*i].source_handles.clone()).collect();
+        let mut handles: Vec<String> = indices
+            .iter()
+            .flat_map(|i| objects[*i].source_handles.clone())
+            .collect();
         handles.sort();
         handles.dedup();
         regions.push(Object {
             id: format!("{layer}:hatch:{expression}"),
             classes: vec!["SectionRegion"],
             source_handles: handles,
-            member_ids: indices.iter().flat_map(|i| objects[*i].member_ids.clone()).collect(),
+            member_ids: indices
+                .iter()
+                .flat_map(|i| objects[*i].member_ids.clone())
+                .collect(),
             expression_id: Some(expression),
             expression_kind: first.expression_kind.clone(),
             view: first.view.clone(),
@@ -1707,6 +2459,8 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
             colour: first.colour,
             layer_colour: first.layer_colour,
             inferred_geometry: false,
+            span: None,
+            view_fact: None,
             geometry: Geometry::default(),
         });
     }
@@ -1719,7 +2473,8 @@ fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
 fn merge_boundaries(objects: &mut Vec<Object>) {
     let mut by_expression: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for (i, o) in objects.iter().enumerate() {
-        if o.is("BreakBoundary") && o.geometry.chains.len() == 1 && o.geometry.chains[0].len() >= 2 {
+        if o.is("BreakBoundary") && o.geometry.chains.len() == 1 && o.geometry.chains[0].len() >= 2
+        {
             by_expression
                 .entry(o.view.clone().unwrap_or_default())
                 .or_default()
@@ -1780,17 +2535,25 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
             }
             let first = &objects[members[0]];
             let mut classes = first.classes.clone();
-            if members.iter().any(|i| objects[*i].is("WavyBreakBoundary")) && !classes.contains(&"WavyBreakBoundary") {
+            if members.iter().any(|i| objects[*i].is("WavyBreakBoundary"))
+                && !classes.contains(&"WavyBreakBoundary")
+            {
                 classes.push("WavyBreakBoundary");
             }
-            let mut handles: Vec<String> = members.iter().flat_map(|i| objects[*i].source_handles.clone()).collect();
+            let mut handles: Vec<String> = members
+                .iter()
+                .flat_map(|i| objects[*i].source_handles.clone())
+                .collect();
             handles.sort();
             handles.dedup();
             merged.push(Object {
                 id: format!("{}+{}", first.id, members.len() - 1),
                 classes,
                 source_handles: handles,
-                member_ids: members.iter().flat_map(|i| objects[*i].member_ids.clone()).collect(),
+                member_ids: members
+                    .iter()
+                    .flat_map(|i| objects[*i].member_ids.clone())
+                    .collect(),
                 expression_id: first.expression_id.clone(),
                 expression_kind: first.expression_kind.clone(),
                 view: first.view.clone(),
@@ -1805,6 +2568,8 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
                 layer_colour: first.layer_colour,
                 inferred_geometry: first.inferred_geometry
                     || members.iter().any(|i| objects[*i].inferred_geometry),
+                span: None,
+                view_fact: None,
                 geometry: Geometry {
                     chains: vec![chain],
                     ..Geometry::default()
@@ -1833,7 +2598,10 @@ fn structural_chain(v: &Value) -> Result<StructuralChain> {
             .iter()
             .map(|x| x.as_f64().context("drafting_arc_number"))
             .collect::<Result<_>>()?;
-        return Ok((sample_arc((a[0], a[1]), a[2], a[3], a[4]), vec![((a[0], a[1]), a[2])]));
+        return Ok((
+            sample_arc((a[0], a[1]), a[2], a[3], a[4]),
+            vec![((a[0], a[1]), a[2])],
+        ));
     }
     let p = numbers(v, "points")?;
     ensure!(p.len() == 4, "drafting_structural_points");
@@ -1847,7 +2615,8 @@ fn collinear_pieces(objects: &[Object], i: usize, class: &str) -> (Vec<usize>, (
     let (a, b) = objects[i].segment().expect("a straight piece");
     let mut group = vec![i];
     // A lent outline or axis keeps its own extent: it is not a piece of the extension line it serves.
-    let lent = |o: &Object| class == "ExtensionLine" && (o.is("VisibleOutline") || o.is("CentreLine"));
+    let lent =
+        |o: &Object| class == "ExtensionLine" && (o.is("VisibleOutline") || o.is("CentreLine"));
     if objects[i].expression_id.is_some() && !lent(&objects[i]) {
         for (j, o) in objects.iter().enumerate() {
             if j != i
@@ -1873,14 +2642,29 @@ fn collinear_pieces(objects: &[Object], i: usize, class: &str) -> (Vec<usize>, (
             }
         }
     }
-    (group, ((a.0 + u.0 * lo, a.1 + u.1 * lo), (a.0 + u.0 * hi, a.1 + u.1 * hi)))
+    (
+        group,
+        (
+            (a.0 + u.0 * lo, a.1 + u.1 * lo),
+            (a.0 + u.0 * hi, a.1 + u.1 * hi),
+        ),
+    )
 }
 /// The piece of a group whose end lies nearest to the point (an end of the group's line).
 fn piece_at(objects: &[Object], group: &[usize], p: P) -> usize {
-    let end_distance = |i: usize| objects[i].segment().map(|(a, b)| dist(a, p).min(dist(b, p))).unwrap_or(f64::MAX);
+    let end_distance = |i: usize| {
+        objects[i]
+            .segment()
+            .map(|(a, b)| dist(a, p).min(dist(b, p)))
+            .unwrap_or(f64::MAX)
+    };
     *group
         .iter()
-        .min_by(|x, y| end_distance(**x).partial_cmp(&end_distance(**y)).unwrap_or(std::cmp::Ordering::Equal))
+        .min_by(|x, y| {
+            end_distance(**x)
+                .partial_cmp(&end_distance(**y))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        })
         .expect("a non-empty group")
 }
 
@@ -1896,20 +2680,54 @@ struct Relation {
 }
 impl Relation {
     fn node(subject: usize, predicate: &'static str, object: usize) -> Self {
-        Relation { subject, predicate, object: Some(object), literal: None, number: None }
+        Relation {
+            subject,
+            predicate,
+            object: Some(object),
+            literal: None,
+            number: None,
+        }
     }
     fn number(subject: usize, predicate: &'static str, value: f64) -> Self {
-        Relation { subject, predicate, object: None, literal: None, number: Some((value * 1000.).round() / 1000.) }
+        Relation {
+            subject,
+            predicate,
+            object: None,
+            literal: None,
+            number: Some((value * 1000.).round() / 1000.),
+        }
     }
 }
 
 /// The letter a view title or callout carries: the leading run of capital Latin letters (Roman numerals among
-/// them) once direction words, dashes and a scale are set aside; "A—A" and "A向" give "A", "Ⅰ 2:1" gives "Ⅰ".
+/// them) once direction words, dashes and a scale are set aside.  Unicode Roman numeral glyphs are normalized
+/// to their Latin spelling so `Ⅰ` and `I` identify one marking.
 fn view_letter(text: &str) -> String {
+    let roman = |c| match c {
+        'Ⅰ' => Some("I"),
+        'Ⅱ' => Some("II"),
+        'Ⅲ' => Some("III"),
+        'Ⅳ' => Some("IV"),
+        'Ⅴ' => Some("V"),
+        'Ⅵ' => Some("VI"),
+        'Ⅶ' => Some("VII"),
+        'Ⅷ' => Some("VIII"),
+        'Ⅸ' => Some("IX"),
+        'Ⅹ' => Some("X"),
+        'Ⅺ' => Some("XI"),
+        'Ⅻ' => Some("XII"),
+        'Ⅼ' => Some("L"),
+        'Ⅽ' => Some("C"),
+        'Ⅾ' => Some("D"),
+        'Ⅿ' => Some("M"),
+        _ => None,
+    };
     let mut letters = String::new();
     for c in text.chars() {
-        if c.is_ascii_uppercase() || ('\u{2160}'..='\u{216F}').contains(&c) {
+        if c.is_ascii_uppercase() {
             letters.push(c);
+        } else if let Some(spelling) = roman(c) {
+            letters.push_str(spelling);
         } else if c.is_whitespace() && letters.is_empty() {
             continue;
         } else {
@@ -1938,7 +2756,11 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             // The baseline (shelf) of a note's own leader carries the text; it runs along the bottom of the box.
             if objects[li].expression_id.is_some()
                 && objects[li].expression_id == t.expression_id
-                && objects[li].geometry.chains.iter().any(|c| c.len() == 2 && tb.is_shelf(c[0], c[1]))
+                && objects[li]
+                    .geometry
+                    .chains
+                    .iter()
+                    .any(|c| c.len() == 2 && tb.is_shelf(c[0], c[1]))
             {
                 continue;
             }
@@ -1959,7 +2781,9 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         for &j in &lines[n + 1..] {
             let (a, b) = (&objects[i], &objects[j]);
             if a.member_ids.iter().any(|m| b.member_ids.contains(m))
-                || a.source_handles.iter().any(|h| b.source_handles.contains(h))
+                || a.source_handles
+                    .iter()
+                    .any(|h| b.source_handles.contains(h))
             {
                 continue;
             }
@@ -1972,11 +2796,15 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                         crosses = true;
                     }
                     if !coincident && !same_expression {
-                        coincident = ca
-                            .windows(2)
-                            .any(|wa| cb.windows(2).any(|wb| segments_coincident(wa[0], wa[1], wb[0], wb[1])))
-                            || (ca.len() > 2 && cb.len() == 2 && chain_coincident(ca, cb[0], cb[1]))
-                            || (cb.len() > 2 && ca.len() == 2 && chain_coincident(cb, ca[0], ca[1]));
+                        coincident = ca.windows(2).any(|wa| {
+                            cb.windows(2)
+                                .any(|wb| segments_coincident(wa[0], wa[1], wb[0], wb[1]))
+                        }) || (ca.len() > 2
+                            && cb.len() == 2
+                            && chain_coincident(ca, cb[0], cb[1]))
+                            || (cb.len() > 2
+                                && ca.len() == 2
+                                && chain_coincident(cb, ca[0], ca[1]));
                     }
                 }
             }
@@ -1986,8 +2814,17 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 }
             }
             if coincident {
-                out.push(Relation::node(i, "coincidentWith", j));
-                out.push(Relation::node(j, "coincidentWith", i));
+                // G1-055 is interval-scoped.  Its ordinary line-to-line relation is
+                // replaced below by a relation to a derived visible-outline span; keeping
+                // the whole-line edge here would make the finding and review item cover the
+                // complete circle/arc.  Other coincidence rules retain the generic edge.
+                let g1_pair = (a.is("VisibleOutline")
+                    && (b.is("CentreLine") || b.is("HiddenOutline")))
+                    || (b.is("VisibleOutline") && (a.is("CentreLine") || a.is("HiddenOutline")));
+                if !g1_pair {
+                    out.push(Relation::node(i, "coincidentWith", j));
+                    out.push(Relation::node(j, "coincidentWith", i));
+                }
             }
             // A dimension line on the extension of a visible outline: collinear, not overlapping, close along the line.
             if !same_expression
@@ -2045,20 +2882,34 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         }
         let own: Vec<&(usize, P, P)> = dimension_segments
             .iter()
-            .filter(|(di, _, _)| objects[*di].expression_id == objects[ei].expression_id && !group.contains(di))
+            .filter(|(di, _, _)| {
+                objects[*di].expression_id == objects[ei].expression_id && !group.contains(di)
+            })
             .collect();
         if own.is_empty() {
             continue;
         }
-        let outside = |t: f64| if t < 0. { -t } else if t > 1. { t - 1. } else { 0. };
+        let outside = |t: f64| {
+            if t < 0. {
+                -t
+            } else if t > 1. {
+                t - 1.
+            } else {
+                0.
+            }
+        };
         let own_crossings: Vec<(f64, f64)> = own
             .iter()
-            .filter_map(|(_, c, d)| crossing(a, b, *c, *d, ARROW_REACH).map(|t| (t, angle_between(angle_deg(a, b), angle_deg(*c, *d)))))
+            .filter_map(|(_, c, d)| {
+                crossing(a, b, *c, *d, ARROW_REACH)
+                    .map(|t| (t, angle_between(angle_deg(a, b), angle_deg(*c, *d))))
+            })
             .collect();
-        let Some(&(t_own, angle)) = own_crossings
-            .iter()
-            .min_by(|x, y| outside(x.0).partial_cmp(&outside(y.0)).unwrap_or(std::cmp::Ordering::Equal))
-        else {
+        let Some(&(t_own, angle)) = own_crossings.iter().min_by(|x, y| {
+            outside(x.0)
+                .partial_cmp(&outside(y.0))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        }) else {
             continue;
         };
         let (piece, beyond) = if outside(t_own) > 1e-9 {
@@ -2083,7 +2934,10 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 // beyond the dimension line (a native dimension draws it as its own line), a long one stops there.
                 let far = from_a.max(from_b);
                 let end = if from_a > from_b { a } else { b };
-                (piece_at(objects, &group, end), if far <= ARROW_REACH { far } else { 0. })
+                (
+                    piece_at(objects, &group, end),
+                    if far <= ARROW_REACH { far } else { 0. },
+                )
             } else if from_a <= from_b {
                 (piece_at(objects, &group, a), from_a)
             } else {
@@ -2115,7 +2969,9 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             let o = &objects[oi];
             if group.contains(&oi)
                 || !(o.is("VisibleOutline") || o.is("BreakBoundary"))
-                || o.source_handles.iter().any(|h| handles.contains(h.as_str()))
+                || o.source_handles
+                    .iter()
+                    .any(|h| handles.contains(h.as_str()))
             {
                 continue;
             }
@@ -2131,14 +2987,26 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             params.iter().copied().reduce(f64::min),
             params.iter().copied().reduce(f64::max),
         ) {
-            out.push(Relation::number(piece_at(objects, &group, a), "overshootUnits", min * length));
-            out.push(Relation::number(piece_at(objects, &group, b), "overshootUnits", (1. - max) * length));
+            out.push(Relation::number(
+                piece_at(objects, &group, a),
+                "overshootUnits",
+                min * length,
+            ));
+            out.push(Relation::number(
+                piece_at(objects, &group, b),
+                "overshootUnits",
+                (1. - max) * length,
+            ));
         }
     }
     // A radial dimension line (all its collinear pieces) passes through the centre of an arc and reaches it. A
     // jogged line (a radial part with a landing for the number) is radial through its radial part: a piece that
     // meets a radial piece of the same expression end to end is radial to the same arc.
-    let radius_pieces: Vec<usize> = lines.iter().copied().filter(|i| straight(*i, "RadiusDimensionLine")).collect();
+    let radius_pieces: Vec<usize> = lines
+        .iter()
+        .copied()
+        .filter(|i| straight(*i, "RadiusDimensionLine"))
+        .collect();
     let mut radial_to: HashMap<usize, Vec<usize>> = HashMap::new();
     for &ri in &radius_pieces {
         let (group, (a, b)) = collinear_pieces(objects, ri, "DimensionLine");
@@ -2153,7 +3021,9 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             }
             let radial = objects[oi].geometry.arcs.iter().any(|(centre, radius)| {
                 point_line(*centre, a, b).0 <= RADIAL_EPS
-                    && ends.iter().any(|e| (dist(*e, *centre) - radius).abs() <= ARROW_REACH)
+                    && ends
+                        .iter()
+                        .any(|e| (dist(*e, *centre) - radius).abs() <= ARROW_REACH)
             });
             if radial {
                 radial_to.entry(ri).or_default().push(oi);
@@ -2169,7 +3039,9 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 if pi != ri
                     && objects[pi].expression_id == objects[ri].expression_id
                     && let Some((c, d)) = objects[pi].segment()
-                    && [a, b].iter().any(|e| dist(*e, c).min(dist(*e, d)) <= END_TOLERANCE)
+                    && [a, b]
+                        .iter()
+                        .any(|e| dist(*e, c).min(dist(*e, d)) <= END_TOLERANCE)
                     && let Some(found) = radial_to.get(&pi)
                 {
                     arcs.extend(found.iter().copied());
@@ -2194,11 +3066,15 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         let length = dist(a, b);
         let params: Vec<f64> = extension_segments
             .iter()
-            .filter(|(xi, _, _)| objects[*xi].expression_id == objects[di].expression_id && !group.contains(xi))
+            .filter(|(xi, _, _)| {
+                objects[*xi].expression_id == objects[di].expression_id && !group.contains(xi)
+            })
             .filter_map(|(_, c, d)| crossing(a, b, *c, *d, 1.0))
             .collect();
-        if let (Some(min), Some(max)) = (params.iter().copied().reduce(f64::min), params.iter().copied().reduce(f64::max))
-            && max - min > 1e-9
+        if let (Some(min), Some(max)) = (
+            params.iter().copied().reduce(f64::min),
+            params.iter().copied().reduce(f64::max),
+        ) && max - min > 1e-9
         {
             for &g in &group {
                 out.push(Relation::number(g, "extentUnits", (max - min) * length));
@@ -2224,9 +3100,19 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
     }
     // View titles and callout letters with the same letter; a title and the scale text of its expression. A title
     // written as several texts ("A" and "向") carries one letter: the letter of all the title texts of its expression.
-    let titles: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("ViewTitle")).collect();
-    let callouts: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("CalloutLetter")).collect();
-    let own_letter = |i: usize| objects[i].text.as_deref().map(view_letter).unwrap_or_default();
+    let titles: Vec<usize> = (0..objects.len())
+        .filter(|i| objects[*i].is("ViewTitle"))
+        .collect();
+    let callouts: Vec<usize> = (0..objects.len())
+        .filter(|i| objects[*i].is("CalloutLetter"))
+        .collect();
+    let own_letter = |i: usize| {
+        objects[i]
+            .text
+            .as_deref()
+            .map(view_letter)
+            .unwrap_or_default()
+    };
     let letter = |i: usize| -> String {
         let own = own_letter(i);
         if !own.is_empty() || !objects[i].is("ViewTitle") {
@@ -2234,7 +3120,10 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         }
         titles
             .iter()
-            .filter(|t| objects[**t].expression_id.is_some() && objects[**t].expression_id == objects[i].expression_id)
+            .filter(|t| {
+                objects[**t].expression_id.is_some()
+                    && objects[**t].expression_id == objects[i].expression_id
+            })
             .map(|t| own_letter(*t))
             .find(|l| !l.is_empty())
             .unwrap_or_default()
@@ -2251,13 +3140,18 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             }
         }
         for (si, s) in objects.iter().enumerate() {
-            if s.is("ScaleText") && s.expression_id.is_some() && s.expression_id == objects[ti].expression_id {
+            if s.is("ScaleText")
+                && s.expression_id.is_some()
+                && s.expression_id == objects[ti].expression_id
+            {
                 out.push(Relation::node(ti, "scaledBy", si));
             }
         }
     }
     // Section regions of one drawing compared pairwise: direction and spacing.
-    let regions: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("SectionRegion")).collect();
+    let regions: Vec<usize> = (0..objects.len())
+        .filter(|i| objects[*i].is("SectionRegion"))
+        .collect();
     for (n, &i) in regions.iter().enumerate() {
         for &j in &regions[n + 1..] {
             let (a, b) = (&objects[i], &objects[j]);
@@ -2283,13 +3177,17 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
     for (n, &(i, a0, a1)) in dimension_segments.iter().enumerate() {
         for &(j, b0, b1) in &dimension_segments[n + 1..] {
             let (a, b) = (&objects[i], &objects[j]);
-            if a.expression_id.is_none() || a.expression_id == b.expression_id || collinear_gap(a0, a1, b0, b1).is_none() {
+            if a.expression_id.is_none()
+                || a.expression_id == b.expression_id
+                || collinear_gap(a0, a1, b0, b1).is_none()
+            {
                 continue;
             }
             let (sa, sb) = (stretch(a0, a1, ARROW_REACH), stretch(b0, b1, ARROW_REACH));
             let joined = extension_segments.iter().any(|(_, e0, e1)| {
                 let (e0, e1) = stretch(*e0, *e1, 1.0);
-                segment_intersection(e0, e1, sa.0, sa.1).is_some() && segment_intersection(e0, e1, sb.0, sb.1).is_some()
+                segment_intersection(e0, e1, sa.0, sa.1).is_some()
+                    && segment_intersection(e0, e1, sb.0, sb.1).is_some()
             });
             if joined {
                 out.push(Relation::node(i, "chainedWith", j));
@@ -2334,6 +3232,469 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
     out
 }
 
+/// Parameters of the positive-length overlap of two collinear segments.  The existing
+/// `segments_coincident` predicate deliberately returns only a boolean; the rule findings need
+/// the two source intervals as well, so the calculation is repeated with the same tolerances.
+fn coincident_segment_ranges(a: P, b: P, c: P, d: P) -> Option<([f64; 2], [f64; 2])> {
+    let (la, lb) = (dist(a, b), dist(c, d));
+    if la < 1e-9 || lb < 1e-9 {
+        return None;
+    }
+    let ua = ((b.0 - a.0) / la, (b.1 - a.1) / la);
+    let ub = ((d.0 - c.0) / lb, (d.1 - c.1) / lb);
+    if (ua.0 * ub.1 - ua.1 * ub.0).abs() > (1f64).to_radians().sin() {
+        return None;
+    }
+    let offset = |p: P| ((p.0 - a.0) * -ua.1 + (p.1 - a.1) * ua.0).abs();
+    if offset(c) > EPS_COINCIDENT || offset(d) > EPS_COINCIDENT {
+        return None;
+    }
+    let along_a = |p: P| (p.0 - a.0) * ua.0 + (p.1 - a.1) * ua.1;
+    let (lo, hi) = (
+        along_a(c).min(along_a(d)).max(0.),
+        along_a(c).max(along_a(d)).min(la),
+    );
+    if hi - lo < MIN_OVERLAP {
+        return None;
+    }
+    let at_a = |p: P| ((p.0 - a.0) * ua.0 + (p.1 - a.1) * ua.1) / la;
+    let at_b = |p: P| ((p.0 - c.0) * ub.0 + (p.1 - c.1) * ub.1) / lb;
+    let p0 = (a.0 + ua.0 * lo, a.1 + ua.1 * lo);
+    let p1 = (a.0 + ua.0 * hi, a.1 + ua.1 * hi);
+    Some((
+        [at_a(p0), at_a(p1)],
+        [at_b(p0).min(at_b(p1)), at_b(p0).max(at_b(p1))],
+    ))
+}
+
+/// The normalized parameter interval of every sampled straight piece of an object.
+fn normalized_segments(o: &Object) -> Vec<(P, P, f64, f64)> {
+    let total: f64 = o
+        .geometry
+        .chains
+        .iter()
+        .flat_map(|chain| chain.windows(2))
+        .map(|w| dist(w[0], w[1]))
+        .sum();
+    if !total.is_finite() || total <= 1e-9 {
+        return Vec::new();
+    }
+    let mut offset = 0.;
+    let mut out = Vec::new();
+    for chain in &o.geometry.chains {
+        for w in chain.windows(2) {
+            let length = dist(w[0], w[1]);
+            if length > 1e-9 {
+                out.push((
+                    *w.first().unwrap(),
+                    *w.last().unwrap(),
+                    offset / total,
+                    (offset + length) / total,
+                ));
+            }
+            offset += length;
+        }
+    }
+    out
+}
+
+/// Normalized sampled pieces of native arcs/circles.  DXF keeps the centre/radius on the
+/// source object while the public `Geometry` keeps the sampled chain; retaining the angular
+/// endpoints here lets a full circle and differently sampled arc share an exact interval.
+type NormalizedArcSegment = ((P, f64), f64, f64, f64, f64);
+
+fn normalized_arc_segments(o: &Object) -> Vec<NormalizedArcSegment> {
+    let total: f64 = o
+        .geometry
+        .chains
+        .iter()
+        .flat_map(|chain| chain.windows(2))
+        .map(|w| dist(w[0], w[1]))
+        .sum();
+    if !total.is_finite() || total <= 1e-9 {
+        return Vec::new();
+    }
+    let mut offset = 0.;
+    let mut out = Vec::new();
+    for chain in &o.geometry.chains {
+        for w in chain.windows(2) {
+            let length = dist(w[0], w[1]);
+            if length <= 1e-9 {
+                continue;
+            }
+            for &(centre, radius) in &o.geometry.arcs {
+                let radial = |p: P| (dist(p, centre) - radius).abs();
+                if radial(w[0]) > EPS_COINCIDENT || radial(w[1]) > EPS_COINCIDENT {
+                    continue;
+                }
+                let start = (w[0].1 - centre.1).atan2(w[0].0 - centre.0);
+                let end = (w[1].1 - centre.1).atan2(w[1].0 - centre.0);
+                let mut sweep = end - start;
+                while sweep <= -PI {
+                    sweep += 2. * PI;
+                }
+                while sweep > PI {
+                    sweep -= 2. * PI;
+                }
+                if sweep.abs() > 1e-9 {
+                    out.push((
+                        (centre, radius),
+                        offset / total,
+                        (offset + length) / total,
+                        start,
+                        sweep,
+                    ));
+                }
+                break;
+            }
+            offset += length;
+        }
+    }
+    out
+}
+
+fn normalized_angle(angle: f64) -> f64 {
+    angle.rem_euclid(2. * PI)
+}
+
+/// Increasing angular pieces of an oriented sampled arc.  The two returned values are in
+/// [0, 2π] and may split at the zero angle.
+fn angle_parts(start: f64, sweep: f64) -> Vec<(f64, f64)> {
+    let magnitude = sweep.abs();
+    if magnitude >= 2. * PI - 1e-9 {
+        return vec![(0., 2. * PI)];
+    }
+    let (lo, hi) = if sweep >= 0. {
+        (normalized_angle(start), normalized_angle(start) + magnitude)
+    } else {
+        let end = normalized_angle(start - magnitude);
+        (end, end + magnitude)
+    };
+    if hi <= 2. * PI {
+        vec![(lo, hi)]
+    } else {
+        vec![(lo, 2. * PI), (0., hi - 2. * PI)]
+    }
+}
+
+fn angle_parameter(angle: f64, start: f64, sweep: f64) -> f64 {
+    let mut delta = if sweep >= 0. {
+        normalized_angle(angle - start)
+    } else {
+        -normalized_angle(start - angle)
+    };
+    if sweep > 0. && delta > sweep {
+        delta -= 2. * PI;
+    }
+    if sweep < 0. && delta < sweep {
+        delta += 2. * PI;
+    }
+    (delta / sweep).clamp(0., 1.)
+}
+
+fn coincident_arc_ranges(source: &Object, carrier: &Object) -> Vec<([f64; 2], [f64; 2])> {
+    let source_segments = normalized_arc_segments(source);
+    let carrier_segments = normalized_arc_segments(carrier);
+    let mut ranges = Vec::new();
+    for &((source_c, source_r), source_lo, source_hi, source_start, source_sweep) in
+        &source_segments
+    {
+        for &((carrier_c, carrier_r), carrier_lo, carrier_hi, carrier_start, carrier_sweep) in
+            &carrier_segments
+        {
+            if dist(source_c, carrier_c) > EPS_COINCIDENT
+                || (source_r - carrier_r).abs() > EPS_COINCIDENT
+            {
+                continue;
+            }
+            for (source_part_lo, source_part_hi) in angle_parts(source_start, source_sweep) {
+                for (carrier_part_lo, carrier_part_hi) in angle_parts(carrier_start, carrier_sweep)
+                {
+                    let lo = source_part_lo.max(carrier_part_lo);
+                    let hi = source_part_hi.min(carrier_part_hi);
+                    if hi - lo <= 1e-9 {
+                        continue;
+                    }
+                    let s0 = source_lo
+                        + (source_hi - source_lo) * angle_parameter(lo, source_start, source_sweep);
+                    let s1 = source_lo
+                        + (source_hi - source_lo) * angle_parameter(hi, source_start, source_sweep);
+                    let c0 = carrier_lo
+                        + (carrier_hi - carrier_lo)
+                            * angle_parameter(lo, carrier_start, carrier_sweep);
+                    let c1 = carrier_lo
+                        + (carrier_hi - carrier_lo)
+                            * angle_parameter(hi, carrier_start, carrier_sweep);
+                    if (s1 - s0).abs() > 1e-10 && (c1 - c0).abs() > 1e-10 {
+                        ranges.push(([s0.min(s1), s0.max(s1)], [c0.min(c1), c0.max(c1)]));
+                    }
+                }
+            }
+        }
+    }
+    ranges
+}
+
+/// Intervals of a presentation structural line that are backed by an actual member.  A wholly
+/// inferred line has no allowed interval; a mixed line keeps the native portions on both sides of
+/// each implied span.  This is the G1-055 provenance gate: a guessed hidden span cannot become a
+/// drawn dashed line merely because its page geometry touches an outline.
+fn native_intervals(g: &Value, o: &Object, tolerance: f64) -> Vec<[f64; 2]> {
+    if !o.inferred_geometry {
+        return vec![[0., 1.]];
+    }
+    let Some(index) =
+        o.id.strip_prefix("presentation:line:")
+            .and_then(|s| s.parse::<usize>().ok())
+    else {
+        return Vec::new();
+    };
+    let Some(line) = g
+        .get("structural_lines")
+        .and_then(Value::as_array)
+        .and_then(|v| v.get(index))
+    else {
+        return Vec::new();
+    };
+    let pieces = line
+        .get("pieces")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+        .unwrap_or_default();
+    if !pieces
+        .iter()
+        .filter_map(Value::as_str)
+        .any(|p| p.starts_with("member:"))
+    {
+        return Vec::new();
+    }
+    let Some(points) = line.get("points").and_then(Value::as_array) else {
+        return vec![[0., 1.]];
+    };
+    if points.len() != 4 {
+        return vec![[0., 1.]];
+    }
+    let (Some(x0), Some(y0), Some(x1), Some(y1)) = (
+        points[0].as_f64(),
+        points[1].as_f64(),
+        points[2].as_f64(),
+        points[3].as_f64(),
+    ) else {
+        return vec![[0., 1.]];
+    };
+    let a = (x0, y0);
+    let b = (x1, y1);
+    if dist(a, b) <= 1e-9 {
+        return Vec::new();
+    }
+    let mut implied = Vec::new();
+    if let Some(spans) = g.get("implied_spans").and_then(Value::as_array) {
+        for piece in pieces.iter().filter_map(Value::as_str) {
+            let Some(index) = piece
+                .strip_prefix("implied:")
+                .and_then(|s| s.parse::<usize>().ok())
+            else {
+                continue;
+            };
+            let Some(span) = spans.get(index) else {
+                continue;
+            };
+            let Some(p) = span.get("points").and_then(Value::as_array) else {
+                continue;
+            };
+            if p.len() != 4 {
+                continue;
+            }
+            let (Some(px), Some(py), Some(qx), Some(qy)) =
+                (p[0].as_f64(), p[1].as_f64(), p[2].as_f64(), p[3].as_f64())
+            else {
+                continue;
+            };
+            let (off_p, t_p) = point_line((px, py), a, b);
+            let (off_q, t_q) = point_line((qx, qy), a, b);
+            if off_p <= tolerance && off_q <= tolerance {
+                let lo = t_p.min(t_q).clamp(0., 1.);
+                let hi = t_p.max(t_q).clamp(0., 1.);
+                if hi > lo + 1e-10 {
+                    implied.push([lo, hi]);
+                }
+            }
+        }
+    }
+    implied.sort_by(|a, b| a[0].total_cmp(&b[0]));
+    let mut out = Vec::new();
+    let mut cursor = 0.;
+    for [lo, hi] in implied {
+        if lo > cursor + 1e-10 {
+            out.push([cursor, lo]);
+        }
+        cursor = cursor.max(hi);
+    }
+    if cursor < 1. - 1e-10 {
+        out.push([cursor, 1.]);
+    }
+    out
+}
+
+fn map_interval(layer: &str, g: &Value, o: &Object, local: [f64; 2]) -> [f64; 2] {
+    let range = if layer == "recognition" && o.member_ids.len() == 1 {
+        o.member_ids
+            .first()
+            .and_then(|id| {
+                g.get("members").and_then(Value::as_array).and_then(|ms| {
+                    ms.iter()
+                        .find(|m| m.get("id").and_then(Value::as_str) == Some(id))
+                })
+            })
+            .and_then(|m| m.get("interval").and_then(Value::as_array))
+            .and_then(|a| Some([a.first()?.as_f64()?, a.get(1)?.as_f64()?]))
+            .filter(|r| r[1] > r[0])
+            .unwrap_or([0., 1.])
+    } else {
+        [0., 1.]
+    };
+    [
+        (range[0] + (range[1] - range[0]) * local[0]).clamp(0., 1.),
+        (range[0] + (range[1] - range[0]) * local[1]).clamp(0., 1.),
+    ]
+}
+
+fn intersect_interval(a: [f64; 2], b: [f64; 2]) -> Option<[f64; 2]> {
+    let lo = a[0].max(b[0]);
+    let hi = a[1].min(b[1]);
+    (hi > lo + 1e-10).then_some([lo, hi])
+}
+
+/// Replace whole-line G1-055 relations with visible-outline carrier objects carrying the exact
+/// source and carrier intervals.  The source object remains the SHACL focus, so all existing
+/// rule metadata and layer accounting stay stable while the finding value identifies the span.
+fn append_coincidence_spans(
+    layer: &str,
+    g: &Value,
+    objects: &mut Vec<Object>,
+    relations: &mut Vec<Relation>,
+) {
+    let original_count = objects.len();
+    let mut additions = Vec::new();
+    for i in 0..original_count {
+        for j in (i + 1)..original_count {
+            let (source, carrier) = if (objects[i].is("CentreLine")
+                || objects[i].is("HiddenOutline"))
+                && objects[j].is("VisibleOutline")
+            {
+                (i, j)
+            } else if (objects[j].is("CentreLine") || objects[j].is("HiddenOutline"))
+                && objects[i].is("VisibleOutline")
+            {
+                (j, i)
+            } else {
+                continue;
+            };
+            let source_object = &objects[source];
+            let carrier_object = &objects[carrier];
+            if source_object.expression_id.is_some()
+                && source_object.expression_id == carrier_object.expression_id
+                || source_object
+                    .member_ids
+                    .iter()
+                    .any(|m| carrier_object.member_ids.contains(m))
+                || source_object
+                    .source_handles
+                    .iter()
+                    .any(|h| carrier_object.source_handles.contains(h))
+            {
+                continue;
+            }
+            if source_object.inferred_geometry
+                && native_intervals(g, source_object, EPS_COINCIDENT).is_empty()
+            {
+                continue;
+            }
+            let source_allowed = native_intervals(g, source_object, EPS_COINCIDENT);
+            let carrier_allowed = native_intervals(g, carrier_object, EPS_COINCIDENT);
+            let mut ranges = Vec::new();
+            if source_object.geometry.arcs.is_empty() || carrier_object.geometry.arcs.is_empty() {
+                let source_segments = normalized_segments(source_object);
+                let carrier_segments = normalized_segments(carrier_object);
+                for (a0, a1, alo, ahi) in &source_segments {
+                    for (b0, b1, blo, bhi) in &carrier_segments {
+                        let Some(([sa, sb], [ta, tb])) =
+                            coincident_segment_ranges(*a0, *a1, *b0, *b1)
+                        else {
+                            continue;
+                        };
+                        let source_local = [alo + (ahi - alo) * sa, alo + (ahi - alo) * sb];
+                        let carrier_local = [blo + (bhi - blo) * ta, blo + (bhi - blo) * tb];
+                        for allowed_source in &source_allowed {
+                            for allowed_carrier in &carrier_allowed {
+                                if let (Some(s), Some(c)) = (
+                                    intersect_interval(source_local, *allowed_source),
+                                    intersect_interval(carrier_local, *allowed_carrier),
+                                ) {
+                                    ranges.push((
+                                        map_interval(layer, g, source_object, s),
+                                        map_interval(layer, g, carrier_object, c),
+                                    ));
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (source_local, carrier_local) in
+                    coincident_arc_ranges(source_object, carrier_object)
+                {
+                    for allowed_source in &source_allowed {
+                        for allowed_carrier in &carrier_allowed {
+                            if let (Some(s), Some(c)) = (
+                                intersect_interval(source_local, *allowed_source),
+                                intersect_interval(carrier_local, *allowed_carrier),
+                            ) {
+                                ranges.push((
+                                    map_interval(layer, g, source_object, s),
+                                    map_interval(layer, g, carrier_object, c),
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+            ranges.sort_by(|(a, b), (c, d)| a[0].total_cmp(&c[0]).then(b[0].total_cmp(&d[0])));
+            let mut merged: Vec<([f64; 2], [f64; 2])> = Vec::new();
+            for (s, c) in ranges {
+                if let Some((last_s, last_c)) = merged.last_mut()
+                    && s[0] <= last_s[1] + 1e-8
+                    && c[0] <= last_c[1] + 1e-8
+                {
+                    last_s[1] = last_s[1].max(s[1]);
+                    last_c[1] = last_c[1].max(c[1]);
+                } else {
+                    merged.push((s, c));
+                }
+            }
+            for (serial, (source_range, carrier_range)) in merged.into_iter().enumerate() {
+                let mut span = carrier_object.clone();
+                span.id = format!(
+                    "{layer}:coincidence_span:{:.9}:{:.9}:target:{:.9}:{:.9}:{serial}",
+                    source_range[0], source_range[1], carrier_range[0], carrier_range[1]
+                );
+                span.span = Some(SpanInfo {
+                    source: source_range,
+                    parameter: "coincidence",
+                    detail: serde_json::json!({"kind":"coincidence","source":source_range,"carrier":carrier_range,"length":0.0}).to_string(),
+                });
+                span.geometry = carrier_object.geometry.clone();
+                additions.push((source, span));
+            }
+        }
+    }
+    for (source, span) in additions {
+        let index = objects.len();
+        objects.push(span);
+        relations.push(Relation::node(source, "coincidentWith", index));
+    }
+}
+
 // ------------------------------------------------------------------------------------------------ facts
 
 fn turtle_literal(s: &str) -> String {
@@ -2367,9 +3728,21 @@ fn node_iri(id: &str) -> String {
 }
 
 /// The facts of one layer as Turtle, with the typed contract rows for the report.
-fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(String, usize, Vec<MdDraftingObject>, Vec<MdDraftingRelation>)> {
+fn facts(
+    layer: &str,
+    objects: &[Object],
+    relations: &[Relation],
+) -> Result<(
+    String,
+    usize,
+    Vec<MdDraftingObject>,
+    Vec<MdDraftingRelation>,
+)> {
     let mut ttl = String::new();
-    writeln!(ttl, "@prefix md: <{NS}> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n")?;
+    writeln!(
+        ttl,
+        "@prefix md: <{NS}> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n"
+    )?;
     let mut triples = 0;
     let mut rows = Vec::new();
     let mut relation_rows = Vec::new();
@@ -2379,9 +3752,7 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
         let types: Vec<String> = o.classes.iter().map(|c| format!("md:{c}")).collect();
         writeln!(ttl, "{s} a {} ;", types.join(", "))?;
         triples += o.classes.len();
-        let mut props: Vec<(&str, String)> = vec![
-            ("layer", turtle_literal(layer)),
-        ];
+        let mut props: Vec<(&str, String)> = vec![("layer", turtle_literal(layer))];
         for h in &o.source_handles {
             props.push(("sourceHandle", turtle_literal(h)));
         }
@@ -2424,6 +3795,119 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
         if let Some(c) = o.layer_colour {
             props.push(("layerColourIndex", format!("\"{c}\"^^xsd:integer")));
         }
+        if let Some(span) = &o.span {
+            // `sectionOrigin` belongs to the section-boundary vocabulary and is restricted to
+            // its four source values.  Derived coincidence/overrun geometry therefore has its
+            // own numeric interval predicates and a grouped detail payload.
+            match span.parameter {
+                "coincidence" => {
+                    props.push(("coincidenceIntervalStart", number(span.source[0])));
+                    props.push(("coincidenceIntervalEnd", number(span.source[1])));
+                    if let Ok(detail) = serde_json::from_str::<Value>(&span.detail)
+                        && let Some(range) = detail
+                            .get("carrier")
+                            .and_then(Value::as_array)
+                            .filter(|v| v.len() == 2)
+                        && let (Some(start), Some(end)) = (range[0].as_f64(), range[1].as_f64())
+                    {
+                        props.push(("coincidenceCarrierIntervalStart", number(start)));
+                        props.push(("coincidenceCarrierIntervalEnd", number(end)));
+                    }
+                    props.push(("factDetail", turtle_literal(&span.detail)));
+                }
+                "hatch_overrun" => {
+                    props.push(("hatchOverrunIntervalStart", number(span.source[0])));
+                    props.push(("hatchOverrunIntervalEnd", number(span.source[1])));
+                    if let Ok(detail) = serde_json::from_str::<Value>(&span.detail) {
+                        if let Some(range) = detail
+                            .get("outline_interval")
+                            .and_then(Value::as_array)
+                            .filter(|v| v.len() == 2)
+                            && let (Some(start), Some(end)) = (range[0].as_f64(), range[1].as_f64())
+                        {
+                            props.push(("hatchOverrunOutlineIntervalStart", number(start)));
+                            props.push(("hatchOverrunOutlineIntervalEnd", number(end)));
+                        }
+                        if let Some(length) = detail.get("length").and_then(Value::as_f64) {
+                            props.push(("extentUnits", number(length)));
+                        }
+                    }
+                    props.push(("factDetail", turtle_literal(&span.detail)));
+                }
+                _ => {}
+            }
+        }
+        if let Some(view_fact) = &o.view_fact {
+            let direct_metadata = |props: &mut Vec<(&str, String)>,
+                                   state: &str,
+                                   evidence_ids: &[String],
+                                   unknowns: &[String]| {
+                props.push(("factState", turtle_literal(state)));
+                for evidence_id in evidence_ids {
+                    props.push(("evidenceId", turtle_literal(evidence_id)));
+                }
+                for unknown in unknowns {
+                    props.push(("unknownReason", turtle_literal(unknown)));
+                }
+            };
+            match view_fact {
+                ViewFact::Composition {
+                    position_role,
+                    representation_kind,
+                    section_extent,
+                    cutting_surface_kind,
+                    detail_part_count,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("positionRole", turtle_literal(position_role)));
+                    props.push(("representationKind", turtle_literal(representation_kind)));
+                    props.push(("sectionExtent", turtle_literal(section_extent)));
+                    props.push(("cuttingSurfaceKind", turtle_literal(cutting_surface_kind)));
+                    if let Some(count) = detail_part_count {
+                        props.push(("detailPartCount", format!("{count}")));
+                    }
+                    direct_metadata(&mut props, state, evidence_ids, unknowns);
+                }
+                ViewFact::Component {
+                    view_relation_role,
+                    view_component_kind,
+                    interval,
+                    native_member_id,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("viewRelationRole", turtle_literal(view_relation_role)));
+                    props.push(("viewComponentKind", turtle_literal(view_component_kind)));
+                    props.push(("viewIntervalStart", number(interval[0])));
+                    props.push(("viewIntervalEnd", number(interval[1])));
+                    if let Some(native_member_id) = native_member_id {
+                        props.push(("nativeMemberId", turtle_literal(native_member_id)));
+                    }
+                    direct_metadata(&mut props, state, evidence_ids, unknowns);
+                }
+                ViewFact::Mark {
+                    view_mark_kind,
+                    relation_role,
+                    target_view_id,
+                    interval,
+                    state,
+                    evidence_ids,
+                    unknowns,
+                } => {
+                    props.push(("viewMarkKind", turtle_literal(view_mark_kind)));
+                    props.push(("viewMarkRelationRole", turtle_literal(relation_role)));
+                    if let Some(target_view_id) = target_view_id {
+                        props.push(("targetViewId", turtle_literal(target_view_id)));
+                    }
+                    props.push(("viewIntervalStart", number(interval[0])));
+                    props.push(("viewIntervalEnd", number(interval[1])));
+                    direct_metadata(&mut props, state, evidence_ids, unknowns);
+                }
+            }
+        }
         let n = props.len();
         for (i, (p, v)) in props.iter().enumerate() {
             writeln!(ttl, "    md:{p} {v} {}", if i + 1 == n { "." } else { ";" })?;
@@ -2432,7 +3916,11 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
         let row = MdDraftingObject {
             layer: layer.into(),
             id: o.id.clone(),
-            class: o.classes.last().map(|c| (*c).to_owned()).unwrap_or_default(),
+            class: o
+                .classes
+                .last()
+                .map(|c| (*c).to_owned())
+                .unwrap_or_default(),
             classes: o.classes.iter().map(|c| (*c).to_owned()).collect(),
             source_handles: o.source_handles.clone(),
             member_ids: o.member_ids.clone(),
@@ -2483,6 +3971,23 @@ fn related_facts(objects: &[Object], relations: &[Relation]) -> HashMap<String, 
             .or_default()
             .push(format!("{} {object}", r.predicate));
     }
+    // Findings with an interval-scoped derived carrier must expose that carrier in the
+    // existing fallback value.  Keep the authored relation order for every other object, but
+    // move coincidence/overrun carriers ahead of unrelated crossedBy evidence so the finding
+    // and page highlighter can recover every relevant source interval.
+    for values in out.values_mut() {
+        let mut scoped = Vec::new();
+        let mut ordinary = Vec::new();
+        for value in values.drain(..) {
+            if value.contains("coincidence_span:") || value.contains("hatch_overrun_span:") {
+                scoped.push(value);
+            } else {
+                ordinary.push(value);
+            }
+        }
+        scoped.extend(ordinary);
+        *values = scoped;
+    }
     out
 }
 
@@ -2491,7 +3996,8 @@ fn related_facts(objects: &[Object], relations: &[Relation]) -> HashMap<String, 
 fn merge_finding_messages(mut messages: Vec<(String, String)>) -> String {
     messages.sort();
     let mut seen = BTreeSet::new();
-    messages.into_iter()
+    messages
+        .into_iter()
         .filter_map(|(_, message)| seen.insert(message.clone()).then_some(message))
         .collect::<Vec<_>>()
         .join("；")
@@ -2506,7 +4012,11 @@ fn evaluate(
     related: &HashMap<String, Vec<String>>,
 ) -> Result<(Vec<MdDraftingFinding>, u64)> {
     let store = semantica_runtime::graph::load(facts.as_bytes())?;
-    ensure!(store.len() <= QUAD_BUDGET, "drafting_facts_budget:{layer}:{}", store.len());
+    ensure!(
+        store.len() <= QUAD_BUDGET,
+        "drafting_facts_budget:{layer}:{}",
+        store.len()
+    );
     let report = semantica_runtime::shacl::validate_dataset(&store, shapes.as_bytes())?;
     let focus_count = report["focus_count"].as_u64().unwrap_or(0);
     let mut by_shape: HashMap<&str, &Rule> = HashMap::new();
@@ -2517,7 +4027,11 @@ fn evaluate(
         }
     }
     let mut grouped = BTreeMap::new();
-    for f in report["findings"].as_array().map(Vec::as_slice).unwrap_or_default() {
+    for f in report["findings"]
+        .as_array()
+        .map(Vec::as_slice)
+        .unwrap_or_default()
+    {
         let shape = f["source_shape"].as_str().unwrap_or("");
         let rule = by_shape
             .get(shape)
@@ -2548,25 +4062,34 @@ fn evaluate(
             .map(str::to_owned)
             .or_else(|| rule.messages.first().cloned())
             .unwrap_or_else(|| rule.label.clone());
-        let (_, messages) = grouped.entry((rule.id.clone(), object.id.clone(), value.clone()))
-            .or_insert_with(|| (MdDraftingFinding {
-                layer: layer.into(),
-                rule_id: rule.id.clone(),
-                focus: object.id.clone(),
-                focus_classes: object.classes.iter().map(|c| (*c).to_owned()).collect(),
-                source_handles: object.source_handles.clone(),
-                expression_ids: object.expression_id.iter().cloned().collect(),
-                value,
-                message: String::new(),
-                severity: rule.severity.clone(),
-            }, Vec::new()));
+        let (_, messages) = grouped
+            .entry((rule.id.clone(), object.id.clone(), value.clone()))
+            .or_insert_with(|| {
+                (
+                    MdDraftingFinding {
+                        layer: layer.into(),
+                        rule_id: rule.id.clone(),
+                        focus: object.id.clone(),
+                        focus_classes: object.classes.iter().map(|c| (*c).to_owned()).collect(),
+                        source_handles: object.source_handles.clone(),
+                        expression_ids: object.expression_id.iter().cloned().collect(),
+                        value,
+                        message: String::new(),
+                        severity: rule.severity.clone(),
+                    },
+                    Vec::new(),
+                )
+            });
         messages.push((shape.to_owned(), message));
     }
     // The original deduplication key also fixes the order of each layer's exported findings.
-    let findings = grouped.into_values().map(|(mut finding, messages)| {
-        finding.message = merge_finding_messages(messages);
-        finding
-    }).collect();
+    let findings = grouped
+        .into_values()
+        .map(|(mut finding, messages)| {
+            finding.message = merge_finding_messages(messages);
+            finding
+        })
+        .collect();
     Ok((findings, focus_count))
 }
 
@@ -2603,6 +4126,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         rels.extend(constituents::relations(&g, &d, &objs)?);
         sections::augment(layer, &g, &d, &mut objs, &mut rels)?;
         cutting::append(layer, &g, &d, &mut objs, &mut rels)?;
+        append_coincidence_spans(layer, &g, &mut objs, &mut rels);
+        append_view_facts(layer, &g, &mut objs, &mut rels)?;
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2664,7 +4189,10 @@ fn read_json(path: &Path) -> Result<Value> {
 }
 
 /// Facts and findings of an authored DXF and graph, for tests and fixtures: no files are written.
-pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
+pub fn evaluate_bytes(
+    dxf_bytes: &[u8],
+    graph: &Value,
+) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
     let k = knowledge()?;
     let rules = rules(&k.shapes)?;
     let records = dxf::records(&dxf::decode(dxf_bytes)?)?;
@@ -2676,6 +4204,8 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
         rels.extend(constituents::relations(graph, &d, &objs)?);
         sections::augment(layer, graph, &d, &mut objs, &mut rels)?;
         cutting::append(layer, graph, &d, &mut objs, &mut rels)?;
+        append_coincidence_spans(layer, graph, &mut objs, &mut rels);
+        append_view_facts(layer, graph, &mut objs, &mut rels)?;
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
@@ -2691,13 +4221,27 @@ mod tests {
     #[test]
     fn finding_messages_keep_all_reasons_in_shape_order_without_duplicates() {
         let messages: Vec<(String, String)> = [
-            ("shape:z", "later reason"), ("shape:b", "shared reason"),
-            ("shape:a", "first reason"), ("shape:c", "shared reason"),
+            ("shape:z", "later reason"),
+            ("shape:b", "shared reason"),
             ("shape:a", "first reason"),
-        ].into_iter().map(|(shape, message)| (shape.into(), message.into())).collect();
-        assert_eq!(merge_finding_messages(messages.clone()), "first reason；shared reason；later reason");
-        assert_eq!(merge_finding_messages(messages.into_iter().rev().collect()), "first reason；shared reason；later reason");
-        assert_eq!(merge_finding_messages(vec![("shape:a".into(), "one；authored message".into())]), "one；authored message");
+            ("shape:c", "shared reason"),
+            ("shape:a", "first reason"),
+        ]
+        .into_iter()
+        .map(|(shape, message)| (shape.into(), message.into()))
+        .collect();
+        assert_eq!(
+            merge_finding_messages(messages.clone()),
+            "first reason；shared reason；later reason"
+        );
+        assert_eq!(
+            merge_finding_messages(messages.into_iter().rev().collect()),
+            "first reason；shared reason；later reason"
+        );
+        assert_eq!(
+            merge_finding_messages(vec![("shape:a".into(), "one；authored message".into())]),
+            "one；authored message"
+        );
     }
     #[test]
     fn a_chord_through_a_rotated_box_is_measured() {
@@ -2710,7 +4254,11 @@ mod tests {
         // The box is shrunk by a tenth of the height on every side.
         assert!((tb.chord((-5., 1.), (15., 1.)) - 9.3).abs() < 1e-9);
         assert_eq!(tb.chord((-5., 5.), (15., 5.)), 0.);
-        assert_eq!(tb.chord((-5., 0.), (15., 0.)), 0., "a line along the edge is not a crossing");
+        assert_eq!(
+            tb.chord((-5., 0.), (15., 0.)),
+            0.,
+            "a line along the edge is not a crossing"
+        );
         let vertical = TextBox {
             origin: (10., 0.),
             rotation_rad: PI / 2.,
@@ -2751,7 +4299,10 @@ mod tests {
         let stack = stack.expect("stack box");
         assert!((main.height - 3.5).abs() < 1e-9);
         assert!((stack.height - STACK_HEIGHT * 3.5).abs() < 1e-9);
-        assert!((stack.origin.0 - (main.origin.0 + main.width)).abs() < 1e-9, "the stack begins where the main text ends");
+        assert!(
+            (stack.origin.0 - (main.origin.0 + main.width)).abs() < 1e-9,
+            "the stack begins where the main text ends"
+        );
         assert!((stack.origin.1 - (main.origin.1 - STACK_DROP * 3.5)).abs() < 1e-9);
         // A line through the stack region, past the end of the main text, is a crossing of the stack box only.
         let y = main.origin.1 + 0.5 * 3.5;
@@ -2761,7 +4312,10 @@ mod tests {
         // A line passing just above the main text, before the stack begins, crosses nothing.
         let y = main.origin.1 + 3.5 + 0.3;
         let (x0, x1) = (main.origin.0 - 5., main.origin.0 + 0.5 * main.width);
-        assert_eq!(main.chord((x0, y), (x1, y)) + stack.chord((x0, y), (x1, y)), 0.);
+        assert_eq!(
+            main.chord((x0, y), (x1, y)) + stack.chord((x0, y), (x1, y)),
+            0.
+        );
     }
     #[test]
     fn polyline_bulges_are_arcs_with_centres() {
@@ -2772,9 +4326,19 @@ mod tests {
         let (chains, arcs) = d.chains(d.by_handle["B1"], (0., 0.)).unwrap();
         assert_eq!(arcs.len(), 1);
         let (c, r) = arcs[0];
-        assert!(dist(c, (0., 0.)) < 1e-6 && (r - 10.).abs() < 1e-6, "{c:?} {r}");
-        assert!(chains[0].iter().all(|p| (dist(*p, (0., 0.)) - 10.).abs() < 1e-6));
-        assert!(dist(chains[0][0], (10., 0.)) < 1e-9 && dist(*chains[0].last().unwrap(), (0., 10.)) < 1e-6);
+        assert!(
+            dist(c, (0., 0.)) < 1e-6 && (r - 10.).abs() < 1e-6,
+            "{c:?} {r}"
+        );
+        assert!(
+            chains[0]
+                .iter()
+                .all(|p| (dist(*p, (0., 0.)) - 10.).abs() < 1e-6)
+        );
+        assert!(
+            dist(chains[0][0], (10., 0.)) < 1e-9
+                && dist(*chains[0].last().unwrap(), (0., 10.)) < 1e-6
+        );
     }
     #[test]
     fn an_extension_line_without_a_measure_is_not_a_finding() {
@@ -2800,12 +4364,19 @@ mod tests {
             colour: None,
             layer_colour: None,
             inferred_geometry: false,
-            geometry: Geometry { chains: vec![vec![(0., 0.), (10., 0.)]], ..Geometry::default() },
+            span: None,
+            view_fact: None,
+            geometry: Geometry {
+                chains: vec![vec![(0., 0.), (10., 0.)]],
+                ..Geometry::default()
+            },
         };
         let objects = vec![object];
         let (ttl, _, _, _) = facts("source", &objects, &[]).unwrap();
-        let by_iri: HashMap<String, &Object> = objects.iter().map(|o| (node_iri(&o.id), o)).collect();
-        let (found, _) = evaluate("source", &ttl, &k.shapes, &rules, &by_iri, &HashMap::new()).unwrap();
+        let by_iri: HashMap<String, &Object> =
+            objects.iter().map(|o| (node_iri(&o.id), o)).collect();
+        let (found, _) =
+            evaluate("source", &ttl, &k.shapes, &rules, &by_iri, &HashMap::new()).unwrap();
         assert!(found.is_empty(), "{found:#?}\n{ttl}");
     }
     #[test]
@@ -2813,22 +4384,45 @@ mod tests {
         assert_eq!(view_letter("A向"), "A");
         assert_eq!(view_letter("B—B"), "B");
         assert_eq!(view_letter(" K 向"), "K");
-        assert_eq!(view_letter("Ⅰ 2:1"), "Ⅰ");
+        assert_eq!(view_letter("Ⅰ 2:1"), "I");
+        assert_eq!(view_letter("Ⅱ"), "II");
         assert_eq!(view_letter("2:1"), "");
-        assert_eq!(collinear_gap((0., 0.), (10., 0.), (12., 0.05), (20., 0.05)), Some(2.));
+        assert_eq!(
+            collinear_gap((0., 0.), (10., 0.), (12., 0.05), (20., 0.05)),
+            Some(2.)
+        );
         assert!(collinear_gap((0., 0.), (10., 0.), (5., 0.), (20., 0.)).is_some_and(|g| g < 0.));
-        assert_eq!(collinear_gap((0., 0.), (10., 0.), (12., 2.), (20., 2.)), None);
+        assert_eq!(
+            collinear_gap((0., 0.), (10., 0.), (12., 2.), (20., 2.)),
+            None
+        );
         assert_eq!(angle_between(10., 170.), 20.);
-        assert_eq!(line_param((0., 0.), (10., 0.), (2., -1.), (2., 1.)), Some(0.2));
+        assert_eq!(
+            line_param((0., 0.), (10., 0.), (2., -1.), (2., 1.)),
+            Some(0.2)
+        );
     }
     #[test]
     fn crossing_and_coincidence_are_interior_relations() {
         assert!(chains_cross(&[(0., 0.), (10., 0.)], &[(5., -5.), (5., 5.)]));
-        assert!(!chains_cross(&[(0., 0.), (10., 0.)], &[(10., -5.), (10., 5.)]));
+        assert!(!chains_cross(
+            &[(0., 0.), (10., 0.)],
+            &[(10., -5.), (10., 5.)]
+        ));
         assert!(!chains_cross(&[(0., 0.), (10., 0.)], &[(5., 0.), (5., 5.)]));
-        assert!(chains_cross(&[(0., 0.), (5., 1.), (10., 0.)], &[(5., -5.), (5., 5.)]));
+        assert!(chains_cross(
+            &[(0., 0.), (5., 1.), (10., 0.)],
+            &[(5., -5.), (5., 5.)]
+        ));
         // A line ending on a wavy curve whose waves run back across the line's end is a T-junction.
-        let wavy = [(0., 0.), (2., 1.), (4., -1.), (6., 1.), (8., -1.), (10., 0.)];
+        let wavy = [
+            (0., 0.),
+            (2., 1.),
+            (4., -1.),
+            (6., 1.),
+            (8., -1.),
+            (10., 0.),
+        ];
         assert!(!chains_cross(&wavy, &[(5., 0.), (5., 20.)]));
         assert!(chains_cross(&wavy, &[(5., -20.), (5., 20.)]));
         let tb = TextBox {
@@ -2839,9 +4433,82 @@ mod tests {
         };
         assert!(tb.is_shelf((-2., 0.2), (12., 0.2)));
         assert!(!tb.is_shelf((-2., 1.8), (12., 1.8)));
-        assert!(segments_coincident((0., 0.), (10., 0.), (5., 0.05), (20., 0.05)));
-        assert!(!segments_coincident((0., 0.), (10., 0.), (5., 0.5), (20., 0.5)));
+        assert!(segments_coincident(
+            (0., 0.),
+            (10., 0.),
+            (5., 0.05),
+            (20., 0.05)
+        ));
+        assert!(!segments_coincident(
+            (0., 0.),
+            (10., 0.),
+            (5., 0.5),
+            (20., 0.5)
+        ));
         assert_eq!(angle_deg((0., 0.), (1., 1.)), 45.);
         assert_eq!(angle_deg((0., 0.), (-1., 1.)), 135.);
+    }
+    #[test]
+    fn view_facts_keep_one_target_per_component_and_mark() {
+        let graph = serde_json::json!({
+            "views": [
+                {"id":"view:source", "label":"源", "position_role":"principal", "representation_kind":"view", "section_extent":"unknown", "cutting_surface_kind":"unknown"},
+                {"id":"view:target-a", "label":"Ⅰ", "position_role":"free", "representation_kind":"detail_view", "section_extent":"unknown", "cutting_surface_kind":"unknown"},
+                {"id":"view:target-b", "label":"Ⅱ", "position_role":"free", "representation_kind":"detail_view", "section_extent":"unknown", "cutting_surface_kind":"unknown"}
+            ],
+            "members": [
+                {"id":"member:detail-label", "source_handle":"C1", "expression_id":"expression:mark", "interval":[0.2,0.6], "view_id":"view:source", "view_relation_role":"component", "composition_view_ids":["view:target-a","view:target-b"], "view_component_kind":"detail_label", "state":"observed", "evidence_ids":["source:C1"], "unknowns":[]},
+                {"id":"member:located-only", "source_handle":"C2", "expression_id":"expression:note", "interval":[0.1,0.3], "view_id":"view:source", "view_relation_role":"located_only", "composition_view_ids":[], "view_component_kind":"auxiliary_annotation", "state":"candidate", "evidence_ids":[], "unknowns":["target unclear"]}
+            ],
+            "expressions": [
+                {"id":"expression:mark", "kind":"view_callout", "label":"Ⅰ", "member_ids":["member:detail-label"], "view_id":"view:source", "view_mark_kind":"detail_mark", "defines_view_ids":[], "references_view_ids":["view:target-a","view:target-b"], "state":"observed", "evidence_ids":["source:C1"], "unknowns":[]},
+                {"id":"expression:note", "kind":"technical_general", "label":"说明", "member_ids":["member:located-only"], "view_id":"view:source", "view_mark_kind":"unknown", "defines_view_ids":[], "references_view_ids":[], "state":"candidate", "evidence_ids":[], "unknowns":[]}
+            ]
+        });
+        let mut objects = Vec::new();
+        let mut relations = Vec::new();
+        append_view_facts("source", &graph, &mut objects, &mut relations).unwrap();
+        let (ttl, _, rows, relation_rows) = facts("source", &objects, &relations).unwrap();
+        assert_eq!(
+            rows.iter()
+                .filter(|row| row.class == "ViewComposition")
+                .count(),
+            3
+        );
+        assert_eq!(
+            rows.iter()
+                .filter(|row| row.class == "ViewComponent")
+                .count(),
+            3
+        );
+        assert_eq!(
+            rows.iter()
+                .filter(|row| row.class == "ViewMarkReference")
+                .count(),
+            2
+        );
+        let count = |predicate: &str| {
+            relation_rows
+                .iter()
+                .filter(|r| r.predicate == predicate)
+                .count()
+        };
+        assert_eq!(count("locatedInView"), 3);
+        assert_eq!(count("componentOf"), 2);
+        assert_eq!(count("hasComponent"), 2);
+        assert_eq!(count("hasAnnotationComponent"), 2);
+        assert_eq!(count("referencesView"), 2);
+        assert!(
+            !relation_rows
+                .iter()
+                .any(|r| r.predicate == "componentOf" && r.subject.contains("located-only"))
+        );
+        assert!(ttl.contains("md:viewComponentKind \"detail_label\""));
+        assert!(ttl.contains("md:viewIntervalStart \"0.2\"^^xsd:double"));
+        assert!(ttl.contains("md:viewIntervalEnd \"0.6\"^^xsd:double"));
+        assert!(ttl.contains("md:factState \"observed\""));
+        assert!(ttl.contains("md:evidenceId \"source:C1\""));
+        assert!(ttl.contains("md:viewMarkKind \"detail_mark\""));
+        assert!(!ttl.contains("md:sectionOrigin"));
     }
 }

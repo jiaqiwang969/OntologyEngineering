@@ -407,15 +407,17 @@ fn polygon_area(points: &[P]) -> f64 {
 }
 
 fn point_in_polygon(p: P, polygon: &[P], tol: f64) -> bool {
-    if polygon.windows(2).any(|w| point_segment(p, w[0], w[1]).0 <= tol) {
+    if polygon
+        .windows(2)
+        .any(|w| point_segment(p, w[0], w[1]).0 <= tol)
+    {
         return false;
     }
     polygon
         .windows(2)
         .filter(|w| {
             (w[0].1 > p.1) != (w[1].1 > p.1)
-                && p.0
-                    < (w[1].0 - w[0].0) * (p.1 - w[0].1) / (w[1].1 - w[0].1) + w[0].0
+                && p.0 < (w[1].0 - w[0].0) * (p.1 - w[0].1) / (w[1].1 - w[0].1) + w[0].0
         })
         .count()
         % 2
@@ -601,12 +603,9 @@ fn cut_side_evidence(
         let segment = Edge::Line(window[0], window[1]);
         let mut cuts = vec![0., 1.];
         for boundary in polygon.windows(2) {
-            if let Some(point) = segment_intersection(
-                window[0],
-                window[1],
-                boundary[0],
-                boundary[1],
-            ) {
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+            {
                 cuts.extend(
                     segment
                         .parameters(point)
@@ -736,7 +735,11 @@ fn boundary_cut_chains(
                         } else {
                             data.edge.slice(1., 0.)
                         });
-                        current = if forward { data.nodes[1] } else { data.nodes[0] };
+                        current = if forward {
+                            data.nodes[1]
+                        } else {
+                            data.nodes[0]
+                        };
                         member_set.insert(data.object);
                     }
                     if current != end_node {
@@ -824,20 +827,28 @@ fn native_pattern_segments(
     if count == 0 || face.polygon_edges.len() < 3 {
         return Vec::new();
     }
-    let Some((min_x, max_x, min_y, max_y)) = face.polygon_edges.iter().fold(
-        None,
-        |acc: Option<(f64, f64, f64, f64)>, (a, b)| {
-            let next = [*a, *b];
-            let (lo_x, hi_x, lo_y, hi_y) = next.iter().fold(
-                (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
-                |(lx, hx, ly, hy), p| (lx.min(p.0), hx.max(p.0), ly.min(p.1), hy.max(p.1)),
-            );
-            Some(match acc {
-                Some((lx, hx, ly, hy)) => (lx.min(lo_x), hx.max(hi_x), ly.min(lo_y), hy.max(hi_y)),
-                None => (lo_x, hi_x, lo_y, hi_y),
+    let Some((min_x, max_x, min_y, max_y)) =
+        face.polygon_edges
+            .iter()
+            .fold(None, |acc: Option<(f64, f64, f64, f64)>, (a, b)| {
+                let next = [*a, *b];
+                let (lo_x, hi_x, lo_y, hi_y) = next.iter().fold(
+                    (
+                        f64::INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::INFINITY,
+                        f64::NEG_INFINITY,
+                    ),
+                    |(lx, hx, ly, hy), p| (lx.min(p.0), hx.max(p.0), ly.min(p.1), hy.max(p.1)),
+                );
+                Some(match acc {
+                    Some((lx, hx, ly, hy)) => {
+                        (lx.min(lo_x), hx.max(hi_x), ly.min(lo_y), hy.max(hi_y))
+                    }
+                    None => (lo_x, hi_x, lo_y, hi_y),
+                })
             })
-        },
-    ) else {
+    else {
         return Vec::new();
     };
     let diagonal = ((max_x - min_x).powi(2) + (max_y - min_y).powi(2)).sqrt();
@@ -922,7 +933,11 @@ fn native_pattern_segments(
             let line = Edge::Line(a, b);
             for (p, q) in &face.polygon_edges {
                 if let Some(point) = segment_intersection(a, b, *p, *q) {
-                    cuts.extend(line.parameters(point).into_iter().filter(|u| *u > 0. && *u < 1.));
+                    cuts.extend(
+                        line.parameters(point)
+                            .into_iter()
+                            .filter(|u| *u > 0. && *u < 1.),
+                    );
                 }
             }
             cuts.sort_by(f64::total_cmp);
@@ -953,8 +968,12 @@ fn overrun_inside_cut(edge: Edge, contour: &[P], polygon: &[P], tol: f64, sagitt
         let mut cuts = vec![0., 1.];
         let mut crossings = Vec::new();
         for boundary in contour.windows(2) {
-            if let Some(point) = segment_intersection(window[0], window[1], boundary[0], boundary[1])
-                && let Some(t) = segment.parameters(point).into_iter().find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+                && let Some(t) = segment
+                    .parameters(point)
+                    .into_iter()
+                    .find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
                 && t > 1e-9
                 && t < 1. - 1e-9
                 && contour.iter().all(|q| dist(*q, point) > tol)
@@ -970,9 +989,15 @@ fn overrun_inside_cut(edge: Edge, contour: &[P], polygon: &[P], tol: f64, sagitt
             if !point_in_polygon(midpoint, polygon, tol) {
                 continue;
             }
-            let touches_crossing = crossings.iter().any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8);
+            let touches_crossing = crossings
+                .iter()
+                .any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8);
             if touches_crossing {
-                best = best.max(interval_overrun(segment.at(w[0]), segment.at(w[1]), contour));
+                best = best.max(interval_overrun(
+                    segment.at(w[0]),
+                    segment.at(w[1]),
+                    contour,
+                ));
             }
         }
     }
@@ -999,13 +1024,20 @@ fn overrun_outside_face(
         let mut cuts = vec![0., 1.];
         let mut crossings = Vec::new();
         for boundary in outline_samples.windows(2) {
-            if let Some(point) = segment_intersection(window[0], window[1], boundary[0], boundary[1])
-                && let Some(t) = segment.parameters(point).into_iter().find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+                && let Some(t) = segment
+                    .parameters(point)
+                    .into_iter()
+                    .find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
                 && t > 1e-9
                 && t < 1. - 1e-9
-                && [*outline_samples.first().unwrap(), *outline_samples.last().unwrap()]
-                    .iter()
-                    .all(|q| dist(*q, point) > tol)
+                && [
+                    *outline_samples.first().unwrap(),
+                    *outline_samples.last().unwrap(),
+                ]
+                .iter()
+                .all(|q| dist(*q, point) > tol)
             {
                 cuts.push(t);
                 crossings.push(t);
@@ -1018,8 +1050,15 @@ fn overrun_outside_face(
             if inside(midpoint, &face.polygon_edges, tol) {
                 continue;
             }
-            if crossings.iter().any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8) {
-                best = best.max(interval_overrun(segment.at(w[0]), segment.at(w[1]), &outline_samples));
+            if crossings
+                .iter()
+                .any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+            {
+                best = best.max(interval_overrun(
+                    segment.at(w[0]),
+                    segment.at(w[1]),
+                    &outline_samples,
+                ));
             }
         }
     }
@@ -1141,13 +1180,12 @@ fn record_points(record: &dxf::Record) -> Vec<P> {
     points
 }
 
-fn arrow_length(
-    objects: &[Object],
-    d: &Dxf<'_>,
-    members: &BTreeMap<&str, &Value>,
-) -> Option<f64> {
+fn arrow_length(objects: &[Object], d: &Dxf<'_>, members: &BTreeMap<&str, &Value>) -> Option<f64> {
     let mut longest: f64 = 0.;
-    for object in objects.iter().filter(|o| o.is("Arrowhead") && !o.inferred_geometry) {
+    for object in objects
+        .iter()
+        .filter(|o| o.is("Arrowhead") && !o.inferred_geometry)
+    {
         for chain in &object.geometry.chains {
             for window in chain.windows(2) {
                 longest = longest.max(dist(window[0], window[1]));
@@ -1177,6 +1215,256 @@ struct OverrunScale {
     visible_ratio: f64,
 }
 
+#[derive(Clone, Copy, Debug)]
+struct OverrunSpan {
+    hatch: [f64; 2],
+    outline: [f64; 2],
+    entry: P,
+    exit: P,
+    /// The same visible-continuation measure used by the existing threshold decision.
+    exposed: f64,
+    /// Physical length of the hatch interval, retained for the exported fact.
+    length: f64,
+}
+
+fn piece_interval(piece: &Piece, local: [f64; 2]) -> [f64; 2] {
+    [
+        piece.lo + (piece.hi - piece.lo) * local[0],
+        piece.lo + (piece.hi - piece.lo) * local[1],
+    ]
+}
+
+fn edge_parameter(edge: Edge, point: P) -> f64 {
+    edge.parameters(point)
+        .into_iter()
+        .filter(|t| *t >= -1e-8 && *t <= 1. + 1e-8)
+        .min_by(f64::total_cmp)
+        .unwrap_or(0.)
+        .clamp(0., 1.)
+}
+
+fn crossings(hatch: Edge, outline: Edge, sagitta: f64) -> Vec<(f64, P, f64)> {
+    let (Some(hatch_samples), Some(outline_samples)) =
+        (hatch.sample(sagitta), outline.sample(sagitta))
+    else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for hw in hatch_samples.windows(2) {
+        let hseg = Edge::Line(hw[0], hw[1]);
+        for ow in outline_samples.windows(2) {
+            let oseg = Edge::Line(ow[0], ow[1]);
+            let Some(point) = segment_intersection(hw[0], hw[1], ow[0], ow[1]) else {
+                continue;
+            };
+            let Some(ht) = hseg
+                .parameters(point)
+                .into_iter()
+                .find(|t| *t > 1e-9 && *t < 1. - 1e-9)
+            else {
+                continue;
+            };
+            let Some(ot) = oseg
+                .parameters(point)
+                .into_iter()
+                .find(|t| *t > 1e-9 && *t < 1. - 1e-9)
+            else {
+                continue;
+            };
+            out.push((ht, point, ot));
+        }
+    }
+    out
+}
+
+fn overrun_span_for_interval(
+    hatch: &Piece,
+    outline: &Piece,
+    hatch_local: [f64; 2],
+    outline_point: P,
+    exposed: f64,
+) -> OverrunSpan {
+    let hatch_range = piece_interval(hatch, hatch_local);
+    let outline_t = edge_parameter(outline.edge, outline_point);
+    let outline_range = [
+        outline.lo + (outline.hi - outline.lo) * outline_t,
+        outline.lo + (outline.hi - outline.lo) * outline_t,
+    ];
+    OverrunSpan {
+        hatch: hatch_range,
+        outline: outline_range,
+        entry: hatch.edge.at(hatch_local[0]),
+        exit: hatch.edge.at(hatch_local[1]),
+        exposed,
+        length: (hatch_local[1] - hatch_local[0]).abs() * hatch.edge.length(),
+    }
+}
+
+fn overrun_outside_face_spans(
+    hatch: &Piece,
+    outline: &Piece,
+    face: &Face,
+    tol: f64,
+    sagitta: f64,
+) -> Vec<OverrunSpan> {
+    let Some(hatch_samples) = hatch.edge.sample(sagitta) else {
+        return Vec::new();
+    };
+    let Some(outline_samples) = outline.edge.sample(sagitta) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    let n = hatch_samples.len().saturating_sub(1).max(1) as f64;
+    for (index, window) in hatch_samples.windows(2).enumerate() {
+        let segment = Edge::Line(window[0], window[1]);
+        let mut cuts = vec![0., 1.];
+        let mut crossed = Vec::new();
+        for (t, point, _) in crossings(segment, outline.edge, sagitta) {
+            if [
+                *outline_samples.first().unwrap_or(&point),
+                *outline_samples.last().unwrap_or(&point),
+            ]
+            .iter()
+            .all(|q| dist(*q, point) > tol)
+            {
+                cuts.push(t);
+                crossed.push((t, point));
+            }
+        }
+        cuts.sort_by(f64::total_cmp);
+        cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
+        for w in cuts.windows(2) {
+            let midpoint = segment.at((w[0] + w[1]) / 2.);
+            if inside(midpoint, &face.polygon_edges, tol)
+                || !crossed
+                    .iter()
+                    .any(|(t, _)| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+            {
+                continue;
+            }
+            let exposed = interval_overrun(segment.at(w[0]), segment.at(w[1]), &outline_samples);
+            if exposed <= 0. {
+                continue;
+            }
+            let base = [index as f64 / n, (index as f64 + 1.) / n];
+            let local = [
+                base[0] + (base[1] - base[0]) * w[0],
+                base[0] + (base[1] - base[0]) * w[1],
+            ];
+            let point = crossed
+                .iter()
+                .find(|(t, _)| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+                .map(|(_, p)| *p)
+                .unwrap_or_else(|| segment.at(w[0]));
+            out.push(overrun_span_for_interval(
+                hatch, outline, local, point, exposed,
+            ));
+        }
+    }
+    out
+}
+
+fn overrun_without_face_spans(hatch: &Piece, outline: &Piece, sagitta: f64) -> Vec<OverrunSpan> {
+    let Some(hatch_samples) = hatch.edge.sample(sagitta) else {
+        return Vec::new();
+    };
+    let Some(outline_samples) = outline.edge.sample(sagitta) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    let n = hatch_samples.len().saturating_sub(1).max(1) as f64;
+    for (index, window) in hatch_samples.windows(2).enumerate() {
+        let segment = Edge::Line(window[0], window[1]);
+        for (t, point, _) in crossings(segment, outline.edge, sagitta) {
+            let base = [index as f64 / n, (index as f64 + 1.) / n];
+            let local_cross = base[0] + (base[1] - base[0]) * t;
+            for local in [[base[0], local_cross], [local_cross, base[1]]].into_iter() {
+                if local[1] - local[0] <= 1e-9 {
+                    continue;
+                }
+                let exposed = interval_overrun(
+                    hatch.edge.at(local[0]),
+                    hatch.edge.at(local[1]),
+                    &outline_samples,
+                );
+                if exposed > 0. {
+                    out.push(overrun_span_for_interval(
+                        hatch, outline, local, point, exposed,
+                    ));
+                }
+            }
+        }
+    }
+    out
+}
+
+fn overrun_inside_cut_spans(
+    hatch: &Piece,
+    outline: &Piece,
+    contour: &[P],
+    polygon: &[P],
+    tol: f64,
+    sagitta: f64,
+) -> Vec<OverrunSpan> {
+    let Some(hatch_samples) = hatch.edge.sample(sagitta) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    let n = hatch_samples.len().saturating_sub(1).max(1) as f64;
+    for (index, window) in hatch_samples.windows(2).enumerate() {
+        let segment = Edge::Line(window[0], window[1]);
+        let mut cuts = vec![0., 1.];
+        let mut crossed = Vec::new();
+        for boundary in contour.windows(2) {
+            let Some(point) = segment_intersection(window[0], window[1], boundary[0], boundary[1])
+            else {
+                continue;
+            };
+            let Some(t) = segment
+                .parameters(point)
+                .into_iter()
+                .find(|u| *u > 1e-9 && *u < 1. - 1e-9)
+            else {
+                continue;
+            };
+            if contour.iter().all(|q| dist(*q, point) > tol) {
+                cuts.push(t);
+                crossed.push((t, point));
+            }
+        }
+        cuts.sort_by(f64::total_cmp);
+        cuts.dedup_by(|a, b| (*a - *b).abs() < 1e-10);
+        for w in cuts.windows(2) {
+            let midpoint = segment.at((w[0] + w[1]) / 2.);
+            if !point_in_polygon(midpoint, polygon, tol)
+                || !crossed
+                    .iter()
+                    .any(|(t, _)| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+            {
+                continue;
+            }
+            let exposed = interval_overrun(segment.at(w[0]), segment.at(w[1]), contour);
+            if exposed <= 0. {
+                continue;
+            }
+            let base = [index as f64 / n, (index as f64 + 1.) / n];
+            let local = [
+                base[0] + (base[1] - base[0]) * w[0],
+                base[0] + (base[1] - base[0]) * w[1],
+            ];
+            let point = crossed
+                .iter()
+                .find(|(t, _)| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+                .map(|(_, p)| *p)
+                .unwrap_or_else(|| segment.at(w[0]));
+            out.push(overrun_span_for_interval(
+                hatch, outline, local, point, exposed,
+            ));
+        }
+    }
+    out
+}
+
 fn visible_overrun_threshold(
     contour: &Object,
     d: &Dxf<'_>,
@@ -1185,7 +1473,11 @@ fn visible_overrun_threshold(
 ) -> Option<f64> {
     let thick = contour_lineweight(contour, d, members)
         .or_else(|| scale.text_height.map(|height| height * scale.text_ratio))
-        .or_else(|| scale.arrow_length.map(|length| length / scale.arrow_strokes))?;
+        .or_else(|| {
+            scale
+                .arrow_length
+                .map(|length| length / scale.arrow_strokes)
+        })?;
     Some((thick * scale.visible_ratio).max(1e-9))
 }
 
@@ -1588,6 +1880,7 @@ fn occurrence(
     o.angle_deg = None;
     o.spacing = None;
     o.text = None;
+    o.span = None;
     o
 }
 fn context(
@@ -1773,12 +2066,8 @@ pub(super) fn augment(
         literal(relations, ri, "crossSectionType", &ctype);
         literal(relations, ri, "sectionExtent", &extent);
         literal(relations, ri, "sectionGeometry", geometry);
-        let same_view = |i: usize| objects[i].view == region.view;
-        // A loose HatchLine relation is only a deviation when a visible portion of that
-        // segment continues outside the native hatch face.  Touches, endpoint contacts and
-        // portions hidden under the outline's nominal stroke are retained as geometry facts but
-        // do not feed G2-019.
         let region_expression = region.expression_id.clone();
+        let mut overrun_specs: Vec<(usize, usize, OverrunSpan)> = Vec::new();
         relations.retain(|r| {
             if r.predicate != "crossedBy" {
                 return true;
@@ -1803,27 +2092,54 @@ pub(super) fn augment(
             if outline_pieces.is_empty() {
                 return false;
             }
-            let Some(threshold) = visible_overrun_threshold(
-                target,
-                d,
-                &members,
-                &overrun_scale,
-            ) else {
+            let Some(threshold) = visible_overrun_threshold(target, d, &members, &overrun_scale)
+            else {
                 return false;
             };
-            let mut max_overrun: f64 = 0.;
             for hatch in &curves[r.subject] {
                 for outline in &outline_pieces {
-                    let overrun = if face.complete {
-                        overrun_outside_face(hatch.edge, outline.edge, &face, tol, sagitta)
+                    let spans = if face.complete {
+                        overrun_outside_face_spans(hatch, outline, &face, tol, sagitta)
                     } else {
-                        overrun_without_face(hatch.edge, outline.edge, sagitta)
+                        overrun_without_face_spans(hatch, outline, sagitta)
                     };
-                    max_overrun = max_overrun.max(overrun);
+                    for span in spans.into_iter().filter(|span| span.exposed > threshold) {
+                        overrun_specs.push((r.subject, r.object.unwrap_or(r.subject), span));
+                    }
                 }
             }
-            max_overrun > threshold
+            // The generic relation is replaced by one relation per visible continuation.  A
+            // conforming touch therefore leaves no G2-019 edge, while a long line crossing more
+            // than once produces independently highlightable spans.
+            false
         });
+        let mut overrun_serial = 0usize;
+        for (source_index, carrier_index, span) in overrun_specs.drain(..) {
+            let mut carrier = objects[carrier_index].clone();
+            overrun_serial += 1;
+            carrier.id = format!(
+                "{layer}:hatch_overrun_span:{:.9}:{:.9}:target:{:.9}:{:.9}:{overrun_serial}",
+                span.hatch[0], span.hatch[1], span.outline[0], span.outline[1]
+            );
+            carrier.span = Some(SpanInfo {
+                source: span.hatch,
+                parameter: "hatch_overrun",
+                detail: serde_json::json!({
+                    "kind":"hatch_overrun",
+                    "hatch_interval":span.hatch,
+                    "outline_interval":span.outline,
+                    "entry":[span.entry.0,span.entry.1],
+                    "exit":[span.exit.0,span.exit.1],
+                    "length":span.length,
+                    "exposed":span.exposed
+                })
+                .to_string(),
+            });
+            let carrier_index = objects.len();
+            objects.push(carrier);
+            relations.push(Relation::node(source_index, "crossedBy", carrier_index));
+        }
+        let same_view = |i: usize| objects[i].view == region.view;
         let centers: Vec<usize> = (0..original_count)
             .filter(|i| objects[*i].is("CentreLine") && same_view(*i))
             .collect();
@@ -1887,21 +2203,67 @@ pub(super) fn augment(
             .unwrap_or_default();
         for cut in boundary_cuts.iter() {
             for &outline in &cut.members {
-                let Some(threshold) = visible_overrun_threshold(
-                    &objects[outline],
-                    d,
-                    &members,
-                    &overrun_scale,
-                ) else {
+                let Some(threshold) =
+                    visible_overrun_threshold(&objects[outline], d, &members, &overrun_scale)
+                else {
                     continue;
                 };
-                if !native_pattern.iter().any(|line| {
-                    overrun_inside_cut(*line, &cut.contour, &cut.polygon, tol, sagitta) > threshold
-                }) {
-                    continue;
+                for line in &native_pattern {
+                    let hatch_piece = Piece {
+                        edge: *line,
+                        lo: 0.,
+                        hi: 1.,
+                        parameter: "pattern_derived",
+                    };
+                    for segment in cut.contour.windows(2) {
+                        let outline_piece = Piece {
+                            edge: Edge::Line(segment[0], segment[1]),
+                            lo: 0.,
+                            hi: 1.,
+                            parameter: "polyline_length",
+                        };
+                        for span in overrun_inside_cut_spans(
+                            &hatch_piece,
+                            &outline_piece,
+                            &cut.contour,
+                            &cut.polygon,
+                            tol,
+                            sagitta,
+                        )
+                        .into_iter()
+                        .filter(|span| span.exposed > threshold)
+                        {
+                            overrun_specs.push((ri, outline, span));
+                        }
+                    }
                 }
-                relations.push(Relation::node(ri, "crossedBy", outline));
             }
+        }
+        for (source_index, carrier_index, span) in overrun_specs.drain(..) {
+            let mut carrier = objects[carrier_index].clone();
+            overrun_serial += 1;
+            carrier.id = format!(
+                "{layer}:hatch_overrun_span:{:.9}:{:.9}:target:{:.9}:{:.9}:{overrun_serial}",
+                span.hatch[0], span.hatch[1], span.outline[0], span.outline[1]
+            );
+            carrier.span = Some(SpanInfo {
+                source: span.hatch,
+                parameter: "hatch_overrun",
+                detail: serde_json::json!({
+                    "kind":"hatch_overrun",
+                    "hatch_interval":span.hatch,
+                    "outline_interval":span.outline,
+                    "entry":[span.entry.0,span.entry.1],
+                    "exit":[span.exit.0,span.exit.1],
+                    "length":span.length,
+                    "exposed":span.exposed,
+                    "pattern_derived":true
+                })
+                .to_string(),
+            });
+            let carrier_index = objects.len();
+            objects.push(carrier);
+            relations.push(Relation::node(source_index, "crossedBy", carrier_index));
         }
         let region_id = region.expression_id.as_deref().unwrap_or("");
         let mut serial = 0;

@@ -5812,6 +5812,10 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "boundaryParameter"),
     ("MdDraftingRelation", "predicate", "boundedContinuationOf"),
     ("MdDraftingRelation", "predicate", "chainedWith"),
+    ("MdDraftingRelation", "predicate", "coincidenceCarrierIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "coincidenceCarrierIntervalStart"),
+    ("MdDraftingRelation", "predicate", "coincidenceIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "coincidenceIntervalStart"),
     ("MdDraftingRelation", "predicate", "coincidentWith"),
     ("MdDraftingRelation", "predicate", "colourIndex"),
     ("MdDraftingRelation", "predicate", "componentOf"),
@@ -5820,14 +5824,23 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "cutLetterCount"),
     ("MdDraftingRelation", "predicate", "cuttingSurfaceKind"),
     ("MdDraftingRelation", "predicate", "definesView"),
+    ("MdDraftingRelation", "predicate", "detailPartCount"),
     ("MdDraftingRelation", "predicate", "dxfLayer"),
     ("MdDraftingRelation", "predicate", "endOnOutline"),
+    ("MdDraftingRelation", "predicate", "evidenceId"),
     ("MdDraftingRelation", "predicate", "expressionId"),
     ("MdDraftingRelation", "predicate", "expressionKind"),
     ("MdDraftingRelation", "predicate", "extensionBeyondUnits"),
     ("MdDraftingRelation", "predicate", "extentUnits"),
+    ("MdDraftingRelation", "predicate", "factDetail"),
+    ("MdDraftingRelation", "predicate", "factState"),
+    ("MdDraftingRelation", "predicate", "hasAnnotationComponent"),
     ("MdDraftingRelation", "predicate", "hasComponent"),
     ("MdDraftingRelation", "predicate", "hatchDirectionDiffersFrom"),
+    ("MdDraftingRelation", "predicate", "hatchOverrunIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "hatchOverrunIntervalStart"),
+    ("MdDraftingRelation", "predicate", "hatchOverrunOutlineIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "hatchOverrunOutlineIntervalStart"),
     ("MdDraftingRelation", "predicate", "hatchSpacingDiffersFrom"),
     ("MdDraftingRelation", "predicate", "heightUnits"),
     ("MdDraftingRelation", "predicate", "layer"),
@@ -5835,6 +5848,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "lineType"),
     ("MdDraftingRelation", "predicate", "locatedInView"),
     ("MdDraftingRelation", "predicate", "memberId"),
+    ("MdDraftingRelation", "predicate", "nativeMemberId"),
     ("MdDraftingRelation", "predicate", "onExtensionOf"),
     ("MdDraftingRelation", "predicate", "overshootUnits"),
     ("MdDraftingRelation", "predicate", "parentOutlineContinuation"),
@@ -5852,11 +5866,16 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "sourceHandle"),
     ("MdDraftingRelation", "predicate", "sourceLine"),
     ("MdDraftingRelation", "predicate", "spacingUnits"),
+    ("MdDraftingRelation", "predicate", "targetViewId"),
     ("MdDraftingRelation", "predicate", "terminatorOnCarrier"),
     ("MdDraftingRelation", "predicate", "text"),
+    ("MdDraftingRelation", "predicate", "unknownReason"),
     ("MdDraftingRelation", "predicate", "view"),
     ("MdDraftingRelation", "predicate", "viewComponentKind"),
+    ("MdDraftingRelation", "predicate", "viewIntervalEnd"),
+    ("MdDraftingRelation", "predicate", "viewIntervalStart"),
     ("MdDraftingRelation", "predicate", "viewMarkKind"),
+    ("MdDraftingRelation", "predicate", "viewMarkRelationRole"),
     ("MdDraftingRelation", "predicate", "viewRelationRole"),
     ("MdDraftingRule", "confidence", "certain"),
     ("MdDraftingRule", "confidence", "likely"),
@@ -20941,7 +20960,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundaryCarrier","boundaryIntervalEnd","boundaryIntervalStart","boundaryParameter","boundedContinuationOf","chainedWith","coincidentWith","colourIndex","componentOf","crossSectionType","crossedBy","cutLetterCount","cuttingSurfaceKind","definesView","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hasComponent","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","locatedInView","memberId","onExtensionOf","overshootUnits","parentOutlineContinuation","positionRole","radialTo","referencesView","representationKind","rotationDeg","sameLetterAs","scaledBy","sectionExtent","sectionGeometry","sectionOrigin","sectionRegion","sourceHandle","sourceLine","spacingUnits","terminatorOnCarrier","text","view","viewComponentKind","viewMarkKind","viewRelationRole",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","boundaryCarrier","boundaryIntervalEnd","boundaryIntervalStart","boundaryParameter","boundedContinuationOf","chainedWith","coincidenceCarrierIntervalEnd","coincidenceCarrierIntervalStart","coincidenceIntervalEnd","coincidenceIntervalStart","coincidentWith","colourIndex","componentOf","crossSectionType","crossedBy","cutLetterCount","cuttingSurfaceKind","definesView","detailPartCount","dxfLayer","endOnOutline","evidenceId","expressionId","expressionKind","extensionBeyondUnits","extentUnits","factDetail","factState","hasAnnotationComponent","hasComponent","hatchDirectionDiffersFrom","hatchOverrunIntervalEnd","hatchOverrunIntervalStart","hatchOverrunOutlineIntervalEnd","hatchOverrunOutlineIntervalStart","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","locatedInView","memberId","nativeMemberId","onExtensionOf","overshootUnits","parentOutlineContinuation","positionRole","radialTo","referencesView","representationKind","rotationDeg","sameLetterAs","scaledBy","sectionExtent","sectionGeometry","sectionOrigin","sectionRegion","sourceHandle","sourceLine","spacingUnits","targetViewId","terminatorOnCarrier","text","unknownReason","view","viewComponentKind","viewIntervalEnd","viewIntervalStart","viewMarkKind","viewMarkRelationRole","viewRelationRole",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

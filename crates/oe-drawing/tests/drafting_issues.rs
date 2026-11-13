@@ -138,6 +138,7 @@ fn old_rule_metadata_defaults_and_source_occurrences_merge_without_expression_id
         ("V6-section-direction-required", "likely"),
         ("V6-section-letters-required", "likely"),
         ("V6-detail-marking", "certain"),
+        ("V6-detail-single-numbered", "needs_expert"),
         ("V6-direction-view-marking", "likely"),
     ];
     let mut defaults = 0;

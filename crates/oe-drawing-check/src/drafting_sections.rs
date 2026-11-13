@@ -407,15 +407,17 @@ fn polygon_area(points: &[P]) -> f64 {
 }
 
 fn point_in_polygon(p: P, polygon: &[P], tol: f64) -> bool {
-    if polygon.windows(2).any(|w| point_segment(p, w[0], w[1]).0 <= tol) {
+    if polygon
+        .windows(2)
+        .any(|w| point_segment(p, w[0], w[1]).0 <= tol)
+    {
         return false;
     }
     polygon
         .windows(2)
         .filter(|w| {
             (w[0].1 > p.1) != (w[1].1 > p.1)
-                && p.0
-                    < (w[1].0 - w[0].0) * (p.1 - w[0].1) / (w[1].1 - w[0].1) + w[0].0
+                && p.0 < (w[1].0 - w[0].0) * (p.1 - w[0].1) / (w[1].1 - w[0].1) + w[0].0
         })
         .count()
         % 2
@@ -601,12 +603,9 @@ fn cut_side_evidence(
         let segment = Edge::Line(window[0], window[1]);
         let mut cuts = vec![0., 1.];
         for boundary in polygon.windows(2) {
-            if let Some(point) = segment_intersection(
-                window[0],
-                window[1],
-                boundary[0],
-                boundary[1],
-            ) {
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+            {
                 cuts.extend(
                     segment
                         .parameters(point)
@@ -736,7 +735,11 @@ fn boundary_cut_chains(
                         } else {
                             data.edge.slice(1., 0.)
                         });
-                        current = if forward { data.nodes[1] } else { data.nodes[0] };
+                        current = if forward {
+                            data.nodes[1]
+                        } else {
+                            data.nodes[0]
+                        };
                         member_set.insert(data.object);
                     }
                     if current != end_node {
@@ -824,20 +827,28 @@ fn native_pattern_segments(
     if count == 0 || face.polygon_edges.len() < 3 {
         return Vec::new();
     }
-    let Some((min_x, max_x, min_y, max_y)) = face.polygon_edges.iter().fold(
-        None,
-        |acc: Option<(f64, f64, f64, f64)>, (a, b)| {
-            let next = [*a, *b];
-            let (lo_x, hi_x, lo_y, hi_y) = next.iter().fold(
-                (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
-                |(lx, hx, ly, hy), p| (lx.min(p.0), hx.max(p.0), ly.min(p.1), hy.max(p.1)),
-            );
-            Some(match acc {
-                Some((lx, hx, ly, hy)) => (lx.min(lo_x), hx.max(hi_x), ly.min(lo_y), hy.max(hi_y)),
-                None => (lo_x, hi_x, lo_y, hi_y),
+    let Some((min_x, max_x, min_y, max_y)) =
+        face.polygon_edges
+            .iter()
+            .fold(None, |acc: Option<(f64, f64, f64, f64)>, (a, b)| {
+                let next = [*a, *b];
+                let (lo_x, hi_x, lo_y, hi_y) = next.iter().fold(
+                    (
+                        f64::INFINITY,
+                        f64::NEG_INFINITY,
+                        f64::INFINITY,
+                        f64::NEG_INFINITY,
+                    ),
+                    |(lx, hx, ly, hy), p| (lx.min(p.0), hx.max(p.0), ly.min(p.1), hy.max(p.1)),
+                );
+                Some(match acc {
+                    Some((lx, hx, ly, hy)) => {
+                        (lx.min(lo_x), hx.max(hi_x), ly.min(lo_y), hy.max(hi_y))
+                    }
+                    None => (lo_x, hi_x, lo_y, hi_y),
+                })
             })
-        },
-    ) else {
+    else {
         return Vec::new();
     };
     let diagonal = ((max_x - min_x).powi(2) + (max_y - min_y).powi(2)).sqrt();
@@ -922,7 +933,11 @@ fn native_pattern_segments(
             let line = Edge::Line(a, b);
             for (p, q) in &face.polygon_edges {
                 if let Some(point) = segment_intersection(a, b, *p, *q) {
-                    cuts.extend(line.parameters(point).into_iter().filter(|u| *u > 0. && *u < 1.));
+                    cuts.extend(
+                        line.parameters(point)
+                            .into_iter()
+                            .filter(|u| *u > 0. && *u < 1.),
+                    );
                 }
             }
             cuts.sort_by(f64::total_cmp);
@@ -953,8 +968,12 @@ fn overrun_inside_cut(edge: Edge, contour: &[P], polygon: &[P], tol: f64, sagitt
         let mut cuts = vec![0., 1.];
         let mut crossings = Vec::new();
         for boundary in contour.windows(2) {
-            if let Some(point) = segment_intersection(window[0], window[1], boundary[0], boundary[1])
-                && let Some(t) = segment.parameters(point).into_iter().find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+                && let Some(t) = segment
+                    .parameters(point)
+                    .into_iter()
+                    .find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
                 && t > 1e-9
                 && t < 1. - 1e-9
                 && contour.iter().all(|q| dist(*q, point) > tol)
@@ -970,9 +989,15 @@ fn overrun_inside_cut(edge: Edge, contour: &[P], polygon: &[P], tol: f64, sagitt
             if !point_in_polygon(midpoint, polygon, tol) {
                 continue;
             }
-            let touches_crossing = crossings.iter().any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8);
+            let touches_crossing = crossings
+                .iter()
+                .any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8);
             if touches_crossing {
-                best = best.max(interval_overrun(segment.at(w[0]), segment.at(w[1]), contour));
+                best = best.max(interval_overrun(
+                    segment.at(w[0]),
+                    segment.at(w[1]),
+                    contour,
+                ));
             }
         }
     }
@@ -999,13 +1024,20 @@ fn overrun_outside_face(
         let mut cuts = vec![0., 1.];
         let mut crossings = Vec::new();
         for boundary in outline_samples.windows(2) {
-            if let Some(point) = segment_intersection(window[0], window[1], boundary[0], boundary[1])
-                && let Some(t) = segment.parameters(point).into_iter().find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
+            if let Some(point) =
+                segment_intersection(window[0], window[1], boundary[0], boundary[1])
+                && let Some(t) = segment
+                    .parameters(point)
+                    .into_iter()
+                    .find(|u| *u >= -1e-10 && *u <= 1. + 1e-10)
                 && t > 1e-9
                 && t < 1. - 1e-9
-                && [*outline_samples.first().unwrap(), *outline_samples.last().unwrap()]
-                    .iter()
-                    .all(|q| dist(*q, point) > tol)
+                && [
+                    *outline_samples.first().unwrap(),
+                    *outline_samples.last().unwrap(),
+                ]
+                .iter()
+                .all(|q| dist(*q, point) > tol)
             {
                 cuts.push(t);
                 crossings.push(t);
@@ -1018,8 +1050,15 @@ fn overrun_outside_face(
             if inside(midpoint, &face.polygon_edges, tol) {
                 continue;
             }
-            if crossings.iter().any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8) {
-                best = best.max(interval_overrun(segment.at(w[0]), segment.at(w[1]), &outline_samples));
+            if crossings
+                .iter()
+                .any(|t| (*t - w[0]).abs() < 1e-8 || (*t - w[1]).abs() < 1e-8)
+            {
+                best = best.max(interval_overrun(
+                    segment.at(w[0]),
+                    segment.at(w[1]),
+                    &outline_samples,
+                ));
             }
         }
     }
@@ -1141,13 +1180,12 @@ fn record_points(record: &dxf::Record) -> Vec<P> {
     points
 }
 
-fn arrow_length(
-    objects: &[Object],
-    d: &Dxf<'_>,
-    members: &BTreeMap<&str, &Value>,
-) -> Option<f64> {
+fn arrow_length(objects: &[Object], d: &Dxf<'_>, members: &BTreeMap<&str, &Value>) -> Option<f64> {
     let mut longest: f64 = 0.;
-    for object in objects.iter().filter(|o| o.is("Arrowhead") && !o.inferred_geometry) {
+    for object in objects
+        .iter()
+        .filter(|o| o.is("Arrowhead") && !o.inferred_geometry)
+    {
         for chain in &object.geometry.chains {
             for window in chain.windows(2) {
                 longest = longest.max(dist(window[0], window[1]));
@@ -1435,7 +1473,11 @@ fn visible_overrun_threshold(
 ) -> Option<f64> {
     let thick = contour_lineweight(contour, d, members)
         .or_else(|| scale.text_height.map(|height| height * scale.text_ratio))
-        .or_else(|| scale.arrow_length.map(|length| length / scale.arrow_strokes))?;
+        .or_else(|| {
+            scale
+                .arrow_length
+                .map(|length| length / scale.arrow_strokes)
+        })?;
     Some((thick * scale.visible_ratio).max(1e-9))
 }
 
@@ -2063,8 +2105,8 @@ pub(super) fn augment(
                     };
                     for span in spans.into_iter().filter(|span| span.exposed > threshold) {
                         overrun_specs.push((r.subject, r.object.unwrap_or(r.subject), span));
+                    }
                 }
-            }
             }
             // The generic relation is replaced by one relation per visible continuation.  A
             // conforming touch therefore leaves no G2-019 edge, while a long line crossing more
@@ -2092,7 +2134,7 @@ pub(super) fn augment(
                     "exposed":span.exposed
                 })
                 .to_string(),
-        });
+            });
             let carrier_index = objects.len();
             objects.push(carrier);
             relations.push(Relation::node(source_index, "crossedBy", carrier_index));
@@ -2193,9 +2235,9 @@ pub(super) fn augment(
                         {
                             overrun_specs.push((ri, outline, span));
                         }
+                    }
                 }
             }
-        }
         }
         for (source_index, carrier_index, span) in overrun_specs.drain(..) {
             let mut carrier = objects[carrier_index].clone();

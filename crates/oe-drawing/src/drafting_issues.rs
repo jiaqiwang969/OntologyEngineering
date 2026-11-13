@@ -40,9 +40,10 @@ fn derived_source_intervals(value: Option<&str>) -> Vec<[f64; 2]> {
             continue;
         }
         let interval = [start.clamp(0., 1.), end.clamp(0., 1.)];
-        if !out.iter().any(|old| {
-            (old[0] - interval[0]).abs() < 1e-10 && (old[1] - interval[1]).abs() < 1e-10
-        }) {
+        if !out
+            .iter()
+            .any(|old| (old[0] - interval[0]).abs() < 1e-10 && (old[1] - interval[1]).abs() < 1e-10)
+        {
             out.push(interval);
         }
     }
@@ -306,9 +307,7 @@ fn group_order_key<'a>(
     )
 }
 
-fn ordered_rule_groups(
-    issues: &[MdDraftingIssue],
-) -> Vec<(&str, Vec<&MdDraftingIssue>)> {
+fn ordered_rule_groups(issues: &[MdDraftingIssue]) -> Vec<(&str, Vec<&MdDraftingIssue>)> {
     let mut by_rule: BTreeMap<&str, Vec<&MdDraftingIssue>> = BTreeMap::new();
     for issue in issues {
         by_rule.entry(issue.rule.as_str()).or_default().push(issue);

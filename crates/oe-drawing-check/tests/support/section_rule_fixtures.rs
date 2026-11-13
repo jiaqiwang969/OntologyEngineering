@@ -52,10 +52,7 @@ fn large_rectangle() -> Vec<[f64; 3]> {
 fn native_boundary_chain_drawing(chain: &[[[f64; 2]; 2]]) -> Drawing {
     native_boundary_chain_drawing_with_pattern(chain, true)
 }
-fn native_boundary_chain_drawing_with_pattern(
-    chain: &[[[f64; 2]; 2]],
-    pattern: bool,
-) -> Drawing {
+fn native_boundary_chain_drawing_with_pattern(chain: &[[[f64; 2]; 2]], pattern: bool) -> Drawing {
     let mut d = Drawing::default();
     let t = d.text("QZ", [140., 130.], 4., 0.);
     d.member(&t, "note_text", "thin_continuous", "note", "");
@@ -66,14 +63,20 @@ fn native_boundary_chain_drawing_with_pattern(
             .iter_mut()
             .find(|s| s.starts_with("0\nHATCH\n"))
             .unwrap();
-        hatch.push_str("78\n1\n53\n45\n43\n0\n44\n0\n45\n-2.82842712474619\n46\n2.82842712474619\n79\n0\n");
+        hatch.push_str(
+            "78\n1\n53\n45\n43\n0\n44\n0\n45\n-2.82842712474619\n46\n2.82842712474619\n79\n0\n",
+        );
     }
     for [a, b] in chain {
         outline(&mut d, *a, *b);
     }
     d
 }
-fn loose_overrun_drawing(text_height: Option<f64>, hatch_spacing: Option<f64>, lineweight: Option<i64>) -> Drawing {
+fn loose_overrun_drawing(
+    text_height: Option<f64>,
+    hatch_spacing: Option<f64>,
+    lineweight: Option<i64>,
+) -> Drawing {
     let mut d = Drawing::default();
     if let Some(height) = text_height {
         let t = d.text("QZ", [80., 70.], height, 0.);
@@ -102,7 +105,13 @@ fn loose_overrun_drawing(text_height: Option<f64>, hatch_spacing: Option<f64>, l
             .unwrap()
             .push_str(&format!("370\n{weight}\n"));
     }
-    d.member(&contour, "contour_segment", "thick_continuous", "visible_contour", "");
+    d.member(
+        &contour,
+        "contour_segment",
+        "thick_continuous",
+        "visible_contour",
+        "",
+    );
     d
 }
 fn axis(d: &mut Drawing, a: [f64; 2], b: [f64; 2]) -> String {
@@ -355,8 +364,7 @@ fn pitch_circle_is_not_section_boundary() {
     );
     let e = d.expression("section_hatch", "");
     d.member_in(&e, &h, "hatch_fill", "thin_continuous");
-    d.expressions.last_mut().unwrap()["evidence_ids"] =
-        json!(["section_context:local"]);
+    d.expressions.last_mut().unwrap()["evidence_ids"] = json!(["section_context:local"]);
     let circle = d.arc([12., 8.], 8., 0., 360.);
     d.member(&circle, "center_line", "thin_dash_dot", "center_axis", "");
     let fs = new_findings(&d);
@@ -402,14 +410,25 @@ fn section_native_line_alias_boundary_is_not_interior() {
         .iter_mut()
         .find(|s| s.starts_with("0\nHATCH\n"))
         .unwrap()
-        .push_str("78\n1\n53\n45\n43\n0\n44\n0\n45\n-2.82842712474619\n46\n2.82842712474619\n79\n0\n");
+        .push_str(
+            "78\n1\n53\n45\n43\n0\n44\n0\n45\n-2.82842712474619\n46\n2.82842712474619\n79\n0\n",
+        );
     let h = d.line([0., 10.], [10., 0.]);
-    d.member(&h, "contour_segment", "thick_continuous", "visible_contour", "");
+    d.member(
+        &h,
+        "contour_segment",
+        "thick_continuous",
+        "visible_contour",
+        "",
+    );
     let dimension = d.expression("dimension_linear", "10");
     d.member_in(&dimension, &h, "extension_origin", "thin_continuous");
     d.members.last_mut().unwrap()["view_id"] = json!("view:main");
     let fs = new_findings(&d);
-    assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-018")), "{fs:?}");
+    assert!(
+        fs.iter().all(|f| !f.rule_id.starts_with("G2-018")),
+        "{fs:?}"
+    );
     for layer in ["source", "recognition", "presentation"] {
         assert_eq!(layer_rule_count(&d, layer, "G2-018"), 0, "{layer}");
         assert_eq!(
@@ -427,13 +446,22 @@ fn section_native_line_alias_two_sided_remains_interior() {
     d.member(&t, "note_text", "thin_continuous", "note", "");
     let _e = face(&mut d, &[large_rectangle()], "removed", "unknown", 1.);
     let h = d.line([-10., 50.], [110., 50.]);
-    d.member(&h, "contour_segment", "thick_continuous", "visible_contour", "");
+    d.member(
+        &h,
+        "contour_segment",
+        "thick_continuous",
+        "visible_contour",
+        "",
+    );
     let dimension = d.expression("dimension_linear", "120");
     d.member_in(&dimension, &h, "extension_origin", "thin_continuous");
     d.members.last_mut().unwrap()["view_id"] = json!("view:main");
     let fs = new_findings(&d);
     assert!(fs.iter().any(|f| f.rule_id.starts_with("G2-018")), "{fs:?}");
-    assert!(fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"));
+    assert!(
+        fs.iter()
+            .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline")
+    );
     for layer in ["source", "recognition", "presentation"] {
         assert!(layer_rule_count(&d, layer, "G2-018") >= 1, "{layer}");
         assert_eq!(
@@ -657,10 +685,12 @@ fn section_hatch_boundary_touch_is_not_reported() {
 fn section_native_pattern_visible_overrun_is_reported() {
     let d = native_boundary_chain_drawing(&[[[0., 10.], [10., 0.]]]);
     let fs = new_findings(&d);
-    assert!(fs.iter().any(|f| {
-        f.rule_id == "G2-019-section-hatch-crosses-outline" && f.layer == "source"
-    }),
-    "a source HATCH pattern line with visible continuation must report: {fs:?}");
+    assert!(
+        fs.iter().any(|f| {
+            f.rule_id == "G2-019-section-hatch-crosses-outline" && f.layer == "source"
+        }),
+        "a source HATCH pattern line with visible continuation must report: {fs:?}"
+    );
 }
 
 #[test]
@@ -683,7 +713,10 @@ fn section_inferred_local_span_is_ignored() {
         "view_id": "view:main"
     }));
     let fs = new_findings(&d);
-    assert!(fs.is_empty(), "an inferred local-section span is not an original contour: {fs:?}");
+    assert!(
+        fs.is_empty(),
+        "an inferred local-section span is not an original contour: {fs:?}"
+    );
 }
 
 #[test]
@@ -693,7 +726,10 @@ fn section_tiny_overrun_under_stroke_is_ignored() {
     let hatch = d.line([11.8, -0.17], [12.2, 0.3]);
     d.member_in(&e, &hatch, "hatch_fill", "thin_continuous");
     outline(&mut d, [0., 0.], [24., 0.]);
-    assert!(new_findings(&d).is_empty(), "a covered continuation is below the visible threshold");
+    assert!(
+        new_findings(&d).is_empty(),
+        "a covered continuation is below the visible threshold"
+    );
 }
 
 #[test]
@@ -704,26 +740,36 @@ fn section_tangent_endpoint_is_ignored() {
     d.member_in(&e, &hatch, "hatch_fill", "thin_continuous");
     // The hatch ends at the corner; there is no segment beyond the contour.
     outline(&mut d, [0., 0.], [24., 0.]);
-    assert!(new_findings(&d).is_empty(), "a tangent endpoint is contact only");
+    assert!(
+        new_findings(&d).is_empty(),
+        "a tangent endpoint is contact only"
+    );
 }
 
 #[test]
 fn section_native_boundary_without_pattern_is_ignored() {
     let d = native_boundary_chain_drawing_with_pattern(&[[[0., 10.], [10., 0.]]], false);
     let fs = new_findings(&d);
-    assert!(fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"), "{fs:?}");
+    assert!(
+        fs.iter()
+            .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        "{fs:?}"
+    );
 }
 
 #[test]
 fn section_contour_lineweight_controls_visible_overrun() {
     let narrow = new_findings(&loose_overrun_drawing(Some(4.), Some(1.), Some(50)));
     assert!(
-        narrow.iter().any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
+        narrow
+            .iter()
+            .any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
         "a 0.5-unit contour exposes the continuation: {narrow:?}"
     );
     let wide = new_findings(&loose_overrun_drawing(Some(4.), Some(10.), Some(110)));
     assert!(
-        wide.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        wide.iter()
+            .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "a 1-unit contour covers the same continuation: {wide:?}"
     );
 }
@@ -732,19 +778,29 @@ fn section_contour_lineweight_controls_visible_overrun() {
 fn section_text_height_sets_fallback_and_hatch_spacing_does_not() {
     let small_text = new_findings(&loose_overrun_drawing(Some(2.), Some(1.), None));
     assert!(
-        small_text.iter().any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
+        small_text
+            .iter()
+            .any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
         "the same continuation is visible at small text height: {small_text:?}"
     );
     let large_text = new_findings(&loose_overrun_drawing(Some(8.), Some(10.), None));
     assert!(
-        large_text.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        large_text
+            .iter()
+            .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "the same continuation is covered at large text height: {large_text:?}"
     );
     let spacing_one = new_findings(&loose_overrun_drawing(Some(4.), Some(1.), None));
     let spacing_ten = new_findings(&loose_overrun_drawing(Some(4.), Some(10.), None));
     assert_eq!(
-        spacing_one.iter().filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline").count(),
-        spacing_ten.iter().filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline").count(),
+        spacing_one
+            .iter()
+            .filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline")
+            .count(),
+        spacing_ten
+            .iter()
+            .filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline")
+            .count(),
         "changing hatch spacing cannot change a contour-width decision"
     );
 }
@@ -759,7 +815,8 @@ fn section_arrow_length_is_the_second_fallback() {
     d.member(&arrow, "arrowhead", "thin_continuous", "", "");
     let fs = new_findings(&d);
     assert!(
-        fs.iter().any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
+        fs.iter()
+            .any(|f| f.rule_id == "G2-019-section-hatch-crosses-outline"),
         "an arrow length supplies the missing contour scale: {fs:?}"
     );
 }
@@ -769,7 +826,8 @@ fn section_missing_contour_width_scale_is_not_judged() {
     let d = loose_overrun_drawing(None, Some(4.), None);
     let fs = new_findings(&d);
     assert!(
-        fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+        fs.iter()
+            .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "without contour width, text height, or arrow length the rule stays unknown: {fs:?}"
     );
 }
@@ -799,7 +857,10 @@ fn section_native_boundary_slot_chain_is_reported() {
         [[6., 30.], [0., 30.]],
     ]);
     let fs = new_findings(&d);
-    assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-018")), "{fs:?}");
+    assert!(
+        fs.iter().all(|f| !f.rule_id.starts_with("G2-018")),
+        "{fs:?}"
+    );
     assert!(
         fs.iter()
             .filter(|f| f.rule_id == "G2-019-section-hatch-crosses-outline")
@@ -814,7 +875,9 @@ fn section_large_boundary_cut_remains_interior() {
     let fs = new_findings(&d);
     assert!(
         fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
-            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+            && fs
+                .iter()
+                .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "large cut-off area must not be promoted: {fs:?}"
     );
 }
@@ -829,7 +892,9 @@ fn section_two_sided_boundary_cut_remains_interior() {
     let fs = new_findings(&d);
     assert!(
         fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
-            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+            && fs
+                .iter()
+                .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "two-sided entity evidence must not be promoted: {fs:?}"
     );
 }
@@ -844,7 +909,9 @@ fn section_spoke_crossing_superimposed_remains_interior() {
     let fs = new_findings(&d);
     assert!(
         fs.iter().any(|f| f.rule_id == "G2-018-outline-in-cut-face")
-            && fs.iter().all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
+            && fs
+                .iter()
+                .all(|f| f.rule_id != "G2-019-section-hatch-crosses-outline"),
         "a spoke crossing both sides remains an interior use: {fs:?}"
     );
 }
@@ -864,7 +931,10 @@ fn section_local_pitch_circle_is_not_an_axis_divider() {
     let h = d.circle([12., 0.], 12.);
     d.member(&h, "center_line", "thin_dash_dot", "center_axis", "");
     let fs = new_findings(&d);
-    assert!(fs.iter().all(|f| !f.rule_id.starts_with("G2-028")), "{fs:?}");
+    assert!(
+        fs.iter().all(|f| !f.rule_id.starts_with("G2-028")),
+        "{fs:?}"
+    );
 }
 
 #[test]

@@ -1850,17 +1850,137 @@ fn append_view_facts(
         .and_then(Value::as_array)
         .map(Vec::as_slice)
         .unwrap_or_default();
-    // The standard counts the enlarged portions on the whole sheet.  A member id is one
-    // source circled portion, even when the same portion is related to more than one target
-    // view or the drawing chooses to show only one of two equal enlarged views.
-    let detail_part_count = members
+    // The standard counts the enlarged portions on the same drawing sheet.  A member id is one
+    // source circled portion, even when the same portion is related to more than one target view
+    // or the drawing chooses to show only one of two equal enlarged views.  Classifier graphs do
+    // not currently carry a normalized sheet id, so use an explicit id when present and otherwise
+    // place views by their bounding box inside the sheet view.  With no sheet views, the whole
+    // graph remains one sheet for backwards compatibility with single-sheet drawings.
+    let sheet_views: Vec<&Value> = views
         .iter()
-        .filter(|member| {
-            member.get("view_component_kind").and_then(Value::as_str) == Some("detail_circle")
+        .filter(|view| {
+            view.get("kind").and_then(Value::as_str) == Some("sheet")
+                || view.get("representation_kind").and_then(Value::as_str) == Some("sheet")
         })
-        .filter_map(|member| member.get("id").and_then(Value::as_str))
-        .collect::<BTreeSet<_>>()
-        .len() as u64;
+        .collect();
+    let explicit_sheet_id = |value: &Value| {
+        ["sheet_id", "page_id", "sheet"]
+            .into_iter()
+            .find_map(|key| value.get(key).and_then(Value::as_str))
+            .filter(|id| !id.is_empty())
+            .map(str::to_owned)
+    };
+    let view_sheet_id = |view: &Value| {
+        if let Some(sheet_id) = explicit_sheet_id(view) {
+            return sheet_id;
+        }
+        if sheet_views.is_empty() {
+            return "__all__".to_owned();
+        }
+        let center = view
+            .get("bbox")
+            .and_then(Value::as_array)
+            .filter(|bbox| bbox.len() == 4)
+            .and_then(|bbox| {
+                let (x0, y0, x1, y1) = (
+                    bbox[0].as_f64()?,
+                    bbox[1].as_f64()?,
+                    bbox[2].as_f64()?,
+                    bbox[3].as_f64()?,
+                );
+                Some(((x0 + x1) / 2., (y0 + y1) / 2.))
+            });
+        if let Some((x, y)) = center {
+            for sheet in &sheet_views {
+                let Some(bbox) = sheet
+                    .get("bbox")
+                    .and_then(Value::as_array)
+                    .filter(|bbox| bbox.len() == 4)
+                else {
+                    continue;
+                };
+                let (Some(x0), Some(y0), Some(x1), Some(y1)) = (
+                    bbox[0].as_f64(),
+                    bbox[1].as_f64(),
+                    bbox[2].as_f64(),
+                    bbox[3].as_f64(),
+                ) else {
+                    continue;
+                };
+                let (left, right) = (x0.min(x1), x0.max(x1));
+                let (bottom, top) = (y0.min(y1), y0.max(y1));
+                if x >= left && x <= right && y >= bottom && y <= top {
+                    return sheet
+                        .get("id")
+                        .and_then(Value::as_str)
+                        .filter(|id| !id.is_empty())
+                        .unwrap_or("__unassigned__")
+                        .to_owned();
+                }
+            }
+        }
+        "__unassigned__".to_owned()
+    };
+    let view_sheet_ids: HashMap<String, String> = views
+        .iter()
+        .filter_map(|view| {
+            Some((
+                view.get("id").and_then(Value::as_str)?.to_owned(),
+                view_sheet_id(view),
+            ))
+        })
+        .collect();
+    let mut detail_parts_by_sheet: HashMap<String, BTreeSet<String>> = HashMap::new();
+    for member in members {
+        if member.get("view_component_kind").and_then(Value::as_str) != Some("detail_circle") {
+            continue;
+        }
+        let Some(member_id) = member.get("id").and_then(Value::as_str) else {
+            continue;
+        };
+        let sheet_id = explicit_sheet_id(member)
+            .or_else(|| {
+                member
+                    .get("view_id")
+                    .and_then(Value::as_str)
+                    .and_then(|view_id| view_sheet_ids.get(view_id).cloned())
+            })
+            .or_else(|| {
+                member
+                    .get("composition_view_ids")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .find_map(|view_id| view_sheet_ids.get(view_id).cloned())
+            })
+            .unwrap_or_else(|| {
+                if sheet_views.is_empty() {
+                    "__all__".to_owned()
+                } else {
+                    "__unassigned__".to_owned()
+                }
+            });
+        detail_parts_by_sheet
+            .entry(sheet_id)
+            .or_default()
+            .insert(member_id.to_owned());
+    }
+    let detail_part_count = |view: &Value| {
+        detail_parts_by_sheet
+            .get(
+                view.get("id")
+                    .and_then(Value::as_str)
+                    .and_then(|id| view_sheet_ids.get(id))
+                    .map(String::as_str)
+                    .unwrap_or(if sheet_views.is_empty() {
+                        "__all__"
+                    } else {
+                        "__unassigned__"
+                    }),
+            )
+            .map_or(0, |parts| parts.len() as u64)
+    };
     let mut compositions: HashMap<String, usize> = HashMap::new();
     for view in views {
         let Some(view_id) = view
@@ -1900,7 +2020,7 @@ fn append_view_facts(
                 cutting_surface_kind: graph_value(view, "cutting_surface_kind", "unknown"),
                 detail_part_count: (graph_value(view, "representation_kind", "unknown")
                     == "detail_view")
-                    .then_some(detail_part_count),
+                    .then(|| detail_part_count(view)),
                 state: graph_value(view, "state", "unknown"),
                 evidence_ids: graph_strings(view, "evidence_ids"),
                 unknowns: graph_strings(view, "unknowns"),
@@ -3677,7 +3797,6 @@ fn facts(
                             props.push(("extentUnits", number(length)));
                         }
                     }
-                    props.push(("boundaryParameter", turtle_literal(span.parameter)));
                     props.push(("factDetail", turtle_literal(&span.detail)));
                 }
                 _ => {}

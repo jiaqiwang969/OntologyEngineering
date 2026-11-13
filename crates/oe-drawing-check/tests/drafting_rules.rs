@@ -1033,6 +1033,73 @@ fn synthetic_detail_unicode_and_latin_roman_labels_match() {
 }
 
 #[test]
+fn synthetic_detail_part_count_is_per_drawing_sheet() {
+    let mut expressions = Vec::new();
+    let mut members = Vec::new();
+    let mut add_detail = |source_view: &str, target_view: &str, label: &str| {
+        let suffix = target_view.replace(':', "-");
+        let parts = [
+            ("detail_circle", "circle"),
+            ("detail_label", label),
+            ("view_title", label),
+            ("view_scale", "2:1"),
+        ];
+        for (index, (component_kind, text)) in parts.into_iter().enumerate() {
+            let expression_id = format!("expression:{suffix}:{index}");
+            let member_id = format!("{expression_id}:member");
+            expressions.push(json!({
+                "id": expression_id,
+                "kind": "view_mark",
+                "label": text,
+                "member_ids": [member_id],
+                "defines_view_ids": [],
+                "references_view_ids": [],
+                "view_mark_kind": "detail_mark",
+                "view_id": source_view,
+                "state": "observed",
+                "evidence_ids": [],
+                "unknowns": []
+            }));
+            members.push(json!({
+                "id": member_id,
+                "source_handle": format!("source:{suffix}:{index}"),
+                "member_role": "special_mark",
+                "line_type": "thin_continuous",
+                "expression_id": format!("expression:{suffix}:{index}"),
+                "interval": [0.0, 1.0],
+                "view_id": source_view,
+                "view_relation_role": "component",
+                "composition_view_ids": [target_view],
+                "view_component_kind": component_kind,
+                "state": "observed",
+                "evidence_ids": [],
+                "unknowns": []
+            }));
+        }
+    };
+    add_detail("view:source-a", "view:detail-a", "Ⅰ");
+    add_detail("view:source-b", "view:detail-b", "Ⅰ");
+    let graph = json!({
+        "views": [
+            {"id": "view:sheet-a", "kind": "sheet", "representation_kind": "sheet", "bbox": [0.0, 0.0, 100.0, 100.0]},
+            {"id": "view:source-a", "kind": "principal", "representation_kind": "view", "bbox": [10.0, 10.0, 30.0, 30.0]},
+            {"id": "view:detail-a", "kind": "detail_view", "representation_kind": "detail_view", "bbox": [40.0, 10.0, 60.0, 30.0], "position_role": "free", "section_extent": "unknown", "cutting_surface_kind": "unknown"},
+            {"id": "view:sheet-b", "kind": "sheet", "representation_kind": "sheet", "bbox": [200.0, 0.0, 300.0, 100.0]},
+            {"id": "view:source-b", "kind": "principal", "representation_kind": "view", "bbox": [210.0, 10.0, 230.0, 30.0]},
+            {"id": "view:detail-b", "kind": "detail_view", "representation_kind": "detail_view", "bbox": [240.0, 10.0, 260.0, 30.0], "position_role": "free", "section_extent": "unknown", "cutting_surface_kind": "unknown"}
+        ],
+        "members": members,
+        "expressions": expressions,
+        "structural_lines": [],
+        "implied_spans": [],
+        "source": {"entities": []}
+    });
+    let findings = Drawing::synthetic_findings(graph);
+    assert!(findings.contains("V6-detail-single-numbered"));
+    assert!(!findings.contains("V6-detail-marking"));
+}
+
+#[test]
 fn synthetic_section_without_cutting_symbol_is_reported() {
     let graph = Drawing::synthetic_view(
         "section_view",
